@@ -1,0 +1,1 @@
+!function(){if(!window.__xvaryGa4Init){window.__xvaryGa4Init=!0;var a="G-WGTVY0S8QC",n=document,t=n.createElement("script");t.async=!0,t.src="https://www.googletagmanager.com/gtag/js?id="+a,n.head.appendChild(t),window.dataLayer=window.dataLayer||[],window.gtag=w,w("js",new Date),w("config",a)}function w(){window.dataLayer.push(arguments)}}();

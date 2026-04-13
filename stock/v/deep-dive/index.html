@@ -1,0 +1,1093 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>V - deep dive · xvary</title>
+  <meta name="description" content="Visa is the highest-quality business in the S&P 500 — 66% operating margins, 54% FCF margin, 30%+ ROIC, zero credit risk, growing 10% on autopilot as the world converts from..." />
+  <meta name="robots" content="index, follow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807" />
+  <style>
+:root{
+      --yel:#ffe500;
+      --ink:#000;
+      --paper:#fffdf3;
+      --card:#fff;
+      --line:rgba(0,0,0,.12);
+      --text:#111;
+      --muted:#555;
+      --soft:#f3eed8;
+      --green:#1a7f5a;
+      --red:#c53030;
+      --amber:#b7791f;
+      --blue:#2251ff;
+      --shadow:0 18px 42px rgba(0,0,0,.10);
+      --radius:16px;
+      --radius-sm:12px;
+      --navw:240px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    html{background:var(--yel);scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h, 68px) + 24px)}
+    body{
+      background:var(--yel);
+      color:var(--text);
+      font:500 16px/1.65 "Space Grotesk",system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    a{color:inherit;text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:var(--ink);color:var(--yel)}
+    .skip-link{
+      position:absolute;left:12px;top:-40px;z-index:9999;
+      background:var(--ink);color:var(--yel);
+      padding:8px 14px;border-radius:999px;font:700 12px/1 "DM Mono",monospace;
+    }
+    .skip-link:focus{top:12px}
+
+    .layout{display:block}
+    .sidebar{
+      position:fixed;left:0;top:var(--nav-h, 68px);bottom:0;width:var(--navw);
+      overflow:auto;background:var(--ink);color:#fff;border-right:1px solid rgba(255,255,255,.08);
+      padding:18px 0 16px;scrollbar-width:none;
+    }
+    .sidebar::-webkit-scrollbar{display:none}
+    .nav-section{padding:0 0 8px}
+    .nav-label{
+      padding:0 18px 10px;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.12em;text-transform:lowercase;color:rgba(255,255,255,.46);
+    }
+    .nav-pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 18px 10px 16px;color:rgba(255,255,255,.78);
+      border-left:3px solid transparent;text-decoration:none;font-size:12px;font-weight:600;line-height:1.35;
+    }
+    .nav-pill:hover{background:rgba(255,255,255,.06);text-decoration:none}
+    .nav-pill.active{background:var(--yel);color:var(--ink);border-left-color:var(--ink)}
+    .nav-kbd{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:22px;height:22px;border-radius:6px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+      font:700 10px/1 "DM Mono",monospace;flex:0 0 auto;
+    }
+    .nav-pill.active .nav-kbd{background:var(--ink);color:var(--yel);border-color:var(--ink)}
+    .nav-txt{min-width:0}
+
+    .content{
+      margin-left:var(--navw);
+      padding:28px 26px 64px;
+      width:calc((100vw - var(--navw)) * 0.9);
+      max-width:none;
+    }
+
+    .hero{
+      display:block;
+      text-align:left;
+      border-bottom:3px solid rgba(0,0,0,.14);
+      padding:18px 0 26px;margin-bottom:18px;
+    }
+    .hero-top{
+      display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:24px;align-items:end;
+      padding-bottom:18px;
+    }
+    .hero .hero-ticker{
+      font-size:clamp(58px,10vw,92px);line-height:.88;font-weight:800;letter-spacing:-.05em;text-transform:lowercase;margin:0;
+      max-width:none;text-align:left;
+    }
+    .hero-co{margin-top:4px;font-size:14px;color:rgba(0,0,0,.64);text-transform:lowercase}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .pill{
+      display:inline-flex;align-items:center;padding:5px 12px;border-radius:999px;
+      font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.06em;
+      background:rgba(0,0,0,.08);color:#111;
+    }
+    .pill.dark{background:var(--ink);color:var(--yel)}
+    .hero .hero-hook{
+      font-size:clamp(19px,2.05vw,24px);line-height:1.35;font-weight:700;margin:0;color:#111;
+      max-width:none;text-align:left;
+    }
+    .hero .hero-sub{
+      margin:10px 0 0;color:rgba(0,0,0,.70);font-size:17px;line-height:1.68;max-width:none;text-align:left;
+    }
+    .hero-tape{
+      display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;padding-top:16px;
+      border-top:2px solid rgba(0,0,0,.10);font:600 11px/1.5 "DM Mono",monospace;color:rgba(0,0,0,.58)
+    }
+    .hero-tape strong{color:rgba(0,0,0,.92)}
+
+    .kpi-grid{display:grid;gap:10px}
+    .kpi-grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .kpi-grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .kpi-grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi{
+      background:rgba(255,255,255,.84);border:1px solid rgba(0,0,0,.08);border-radius:14px;
+      padding:14px 16px;box-shadow:0 8px 20px rgba(0,0,0,.04)
+    }
+    .kpi-label{font:700 10px/1.25 "DM Mono",monospace;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .kpi-value{font-size:clamp(24px,2.8vw,34px);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+    .kpi-sub{margin-top:4px;font-size:12px;line-height:1.45;color:rgba(0,0,0,.55)}
+    .value-gn{color:var(--green)}
+    .value-rd{color:var(--red)}
+    .value-am{color:var(--amber)}
+
+    .panel{
+      background:rgba(255,255,255,.92);border:2px solid rgba(0,0,0,.08);border-left:5px solid var(--yel);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin:18px 0
+    }
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      margin-bottom:12px;padding-bottom:12px;border-bottom:3px solid #000
+    }
+    .section-head h2{
+      margin:0;font-size:clamp(34px,3.9vw,50px);line-height:.98;font-weight:800;letter-spacing:-.045em;text-transform:none
+    }
+    .kicker{font:700 11px/1 "DM Mono",monospace;letter-spacing:.12em;text-transform:lowercase;color:rgba(0,0,0,.52)}
+    .lead{margin:0 0 16px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.72)}
+    .aggregate-sources-attribution{margin:0 0 14px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.76)}
+    .aggregate-sources-attribution p{margin:0}
+    .aggregate-methodology-link{margin:0;max-width:80ch;font-size:14.5px;line-height:1.6;color:rgba(0,0,0,.62)}
+    #appendix .lead,
+    #appendix .aggregate-sources-attribution,
+    #appendix .aggregate-methodology-link{max-width:none}
+    .quote,.note,.callout,.pillar,.scenario,.table-wrap,.chart-box{
+      background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:14px
+    }
+    .quote{padding:14px 16px;font-size:15px;line-height:1.68;color:rgba(0,0,0,.72)}
+    .note{padding:14px 16px;margin-top:10px;font-size:14.5px;line-height:1.64;color:rgba(0,0,0,.72)}
+    .note strong,.table-title .tag,.legend-label,.pillars .head h4{
+      font:700 11px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase
+    }
+    .note.green{border-left:4px solid var(--green);background:rgba(26,127,90,.06)}
+    .note.amber{border-left:4px solid var(--amber);background:rgba(183,121,31,.08)}
+    .note.red{border-left:4px solid var(--red);background:rgba(197,48,48,.06)}
+
+    .g2,.g3,.g4,.callout-row,.pillars,.scenario-grid{display:grid;gap:10px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .callout-row{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:12px;min-width:0}
+    .callout{padding:14px 16px;min-width:0;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+    .callout .label{font:700 10px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .callout .metric{font-size:clamp(24px,2.8vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;word-break:break-word}
+    #appendix .callout .metric{font-size:clamp(13px,1.35vw,16px);font-weight:700;letter-spacing:0;line-height:1.4}
+    .callout .desc{margin-top:6px;font-size:12.5px;line-height:1.5;color:rgba(0,0,0,.56)}
+
+    .pillars{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px}
+    .pillar{padding:14px 16px}
+    .pillar .head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+    .pillar .head h4{margin:0;font-size:14px;color:#111;letter-spacing:0;text-transform:none;font-family:"Space Grotesk",sans-serif}
+    .tag{
+      display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;border:1px solid rgba(0,0,0,.10);
+      background:rgba(255,255,255,.85);font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.04em;
+    }
+    .tag.green{color:var(--green);background:rgba(26,127,90,.08);border-color:rgba(26,127,90,.25)}
+    .tag.amber{color:var(--amber);background:rgba(183,121,31,.10);border-color:rgba(183,121,31,.25)}
+    .tag.red{color:var(--red);background:rgba(197,48,48,.08);border-color:rgba(197,48,48,.25)}
+    .tag.blue{color:#111;background:rgba(255,229,0,.18);border-color:rgba(0,0,0,.20)}
+    .tag.ink{color:rgba(0,0,0,.68)}
+
+    .table-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+    .table-title h3{margin:0;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-.02em;text-transform:none}
+    .table-wrap{overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+    table{width:100%;border-collapse:collapse;min-width:520px;font-variant-numeric:tabular-nums;background:#fff}
+    th,td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+    thead th{
+      position:sticky;top:0;background:#f0ece4;color:#111;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.08em;text-transform:lowercase;border-bottom:3px solid #000;text-align:left
+    }
+    tbody tr:nth-child(even) td{background:rgba(240,236,228,.36)}
+    tbody tr:hover td{background:rgba(255,229,0,.16)}
+    td.num,th.num{text-align:right}
+    td.b{font-weight:800;color:#111}
+    td.pos{color:var(--green);font-weight:700}
+    td.neg{color:var(--red);font-weight:700}
+    td.amb{color:var(--amber);font-weight:700}
+
+    .chart-box{padding:16px 18px 18px;box-shadow:0 12px 36px rgba(0,0,0,.06)}
+    .chart-head h3{margin:0 0 4px;font-size:16px;line-height:1.2;text-transform:none}
+    .chart-head .sub{font-size:11px;color:rgba(0,0,0,.52);font-style:italic}
+    /* TAM vs revenue: y-axis ticks + grid + split x-label row */
+    .chart-labeled{
+      --chart-h:min(52vw,240px);
+      --chart-h-min:200px;
+      --chart-h-max:260px;
+      display:grid;
+      grid-template-columns:3.35rem 1fr;
+      grid-template-rows:minmax(var(--chart-h-min),var(--chart-h-max)) auto;
+      gap:8px 12px;
+      align-items:stretch;
+      margin-top:6px;
+    }
+    .chart-y-title{
+      margin:8px 0 0;
+      font:700 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.5);
+    }
+    .chart-y-axis{
+      grid-column:1;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      padding-right:8px;
+      border-right:2px solid rgba(0,0,0,.2);
+      font:600 10px/1 "DM Mono",monospace;
+      color:rgba(0,0,0,.58);
+      box-sizing:border-box;
+    }
+    .chart-y-axis .yt{
+      position:absolute;right:8px;line-height:1;white-space:nowrap;
+      transform:translateY(-50%);
+    }
+    .chart-y-axis .yt.y-600{top:0;transform:translateY(0)}
+    .chart-y-axis .yt.y-500{top:16.6667%}
+    .chart-y-axis .yt.y-400{top:33.3333%}
+    .chart-y-axis .yt.y-300{top:50%}
+    .chart-y-axis .yt.y-200{top:66.6667%}
+    .chart-y-axis .yt.y-100{top:83.3333%}
+    .chart-y-axis .yt.y-0{bottom:0;top:auto;transform:translateY(0)}
+    .chart-plot-cell{
+      grid-column:2;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      border-bottom:2px solid rgba(0,0,0,.2);
+    }
+    .chart-grid-bg{
+      position:absolute;inset:0;
+      background:repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6)
+      );
+      pointer-events:none;
+    }
+    .chart{
+      position:relative;z-index:1;
+      display:flex;align-items:flex-end;justify-content:stretch;gap:6px;
+      width:100%;
+      height:100%;min-height:0;
+    }
+    .bar{
+      flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+      min-width:0;height:100%;
+    }
+    .bar-pair{
+      display:flex;flex-direction:row;align-items:flex-end;justify-content:center;
+      gap:5px;width:100%;height:100%;min-height:0;
+    }
+    .col{
+      flex:1 1 0;min-width:8px;border-radius:8px 8px 2px 2px;
+      min-height:2px;align-self:flex-end;
+      box-sizing:border-box;
+    }
+    .col.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .col.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .chart-x-foot{
+      grid-column:2;
+      grid-row:2;
+      display:flex;gap:6px;
+      margin-top:-2px;
+    }
+    .bar-foot{
+      flex:1 1 0;min-width:0;
+      text-align:center;padding-top:6px;
+    }
+    .chart-x-axis-cap{
+      margin:4px 0 0;
+      font:600 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.45);
+      text-align:center;
+    }
+    .chart-legend{
+      display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:12px;padding-top:10px;
+      border-top:1px solid rgba(0,0,0,.08);font-size:12px;color:rgba(0,0,0,.62)
+    }
+    .chart-legend span{display:inline-flex;align-items:center;gap:6px}
+    .chart-legend i{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+    .chart-legend i.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .chart-legend i.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .lab,.val{font-size:10px;line-height:1.25;text-align:center;color:rgba(0,0,0,.56)}
+    .val{font:700 10px/1 "DM Mono",monospace}
+    .lab{max-width:12em;margin:0 auto}
+
+    .scenario-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}
+    .scenario{padding:14px 16px;border-left:4px solid var(--blue)}
+    .scenario.bear{border-left-color:var(--red)}
+    .scenario.base{border-left-color:var(--amber)}
+    .scenario.bull{border-left-color:var(--green)}
+    .scenario .prob{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:8px}
+    .scenario h4{margin:0 0 6px;font-size:18px;line-height:1.1}
+    .scenario p{margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,.72)}
+
+    .legend{display:grid;gap:8px}
+    .legend .item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(0,0,0,.72)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)} .dot.blue{background:#2251ff}
+
+    .footer{
+      margin-top:28px;padding-top:22px;border-top:3px solid rgba(0,0,0,.12);
+      text-align:center;font-size:12px;line-height:1.65;color:rgba(0,0,0,.56)
+    }
+    .footer .links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+    .footer .links a{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.68)}
+    .footer .small{margin-top:12px;font-size:11px;color:rgba(0,0,0,.54)}
+
+    .reading-progress{
+      position:fixed;top:var(--nav-h, 68px);left:0;height:4px;width:0;z-index:101;
+      background:linear-gradient(90deg,var(--yel),#fff38c);box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 14px rgba(255,229,0,.45)
+    }
+    .watermark{
+      position:fixed;right:18px;bottom:14px;z-index:1;pointer-events:none;user-select:none;
+      font-size:clamp(68px,12vw,118px);font-weight:800;letter-spacing:-.06em;line-height:.8;color:rgba(0,0,0,.05)
+    }
+
+    @media (max-width:1024px){
+      .g2,.g3,.g4,.pillars,.scenario-grid{grid-template-columns:1fr}
+      .hero-top{grid-template-columns:1fr}
+      .content{padding:22px 18px 56px}
+    }
+    @media (max-width:900px){
+      .sidebar{display:none}
+      .content{
+        margin-left:auto;
+        margin-right:auto;
+        width:90vw;
+        max-width:none;
+      }
+    }
+    @media (max-width:760px){
+      .kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr 1fr}
+      .callout-row{grid-template-columns:1fr 1fr}
+      table{min-width:460px}
+    }
+    @media (max-width:560px){
+      .callout-row,.kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr}
+      .section-head h2{font-size:30px}
+      .hero .hero-hook{font-size:19px}
+      .hero .hero-sub{font-size:16px}
+      .panel{padding:20px}
+    }
+    .hero-snapshot-link {
+      display: inline-block;
+      margin-top: 4px;
+      font: 400 11px/1.4 "DM Mono", monospace;
+      color: rgba(0,0,0,.38);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .hero-snapshot-link:hover {
+      color: rgba(0,0,0,.68);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+  .aggregate-panel {
+    position: relative;
+    z-index: 1;
+  }
+  .aggregate-lead p {
+    margin: 0 0 16px;
+  }
+  .auto-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .aggregate-stack {
+    display: grid;
+    gap: 12px;
+  }
+  .aggregate-card {
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.05);
+  }
+  .aggregate-card.dark {
+    background: rgba(0,0,0,.92);
+    color: rgba(255,255,255,.92);
+    border-color: rgba(255,255,255,.08);
+  }
+  .aggregate-card.dark p,
+  .aggregate-card.dark li,
+  .aggregate-card.dark .aggregate-source {
+    color: rgba(255,255,255,.72);
+  }
+  .aggregate-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .aggregate-card-head h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    text-transform: lowercase;
+  }
+  .aggregate-card-body,
+  .aggregate-card-body p,
+  .aggregate-card-body li {
+    font-size: 15px;
+    line-height: 1.68;
+    color: rgba(0,0,0,.72);
+  }
+  .aggregate-card-body p {
+    margin: 0 0 12px;
+  }
+  .aggregate-card-body ul,
+  .aggregate-card-body ol {
+    margin: 0 0 12px 20px;
+    padding: 0;
+  }
+  .aggregate-card-body > *:last-child {
+    margin-bottom: 0;
+  }
+  .aggregate-source {
+    margin-top: 10px;
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .06em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.48);
+  }
+  .aggregate-substack {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .aggregate-chart-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .aggregate-chart-row {
+    display: grid;
+    grid-template-columns: minmax(80px, 140px) 1fr minmax(60px, 120px);
+    align-items: center;
+    gap: 10px;
+  }
+  .aggregate-chart-label,
+  .aggregate-chart-value {
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .04em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.62);
+  }
+  .aggregate-chart-track {
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .aggregate-chart-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+  }
+  .table-wrap table th.num,
+  .table-wrap table td.num {
+    text-align: right;
+  }
+  .table-wrap table td.pos { color: var(--green, #1a7f37); font-weight: 600; }
+  .table-wrap table td.neg { color: var(--red, #cf222e); font-weight: 600; }
+  .table-wrap table td.amb { color: var(--caution-text, #9a6700); font-weight: 600; }
+  .table-narrow {
+    max-width: 520px;
+  }
+  .table-narrow table {
+    min-width: 0;
+    width: 100%;
+  }
+  .g2 .table-narrow {
+    max-width: none;
+  }
+  .aggregate-mini-table {
+    margin-top: 8px;
+  }
+  .aggregate-mini-table table {
+    min-width: 0;
+  }
+  .aggregate-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .aggregate-list-item {
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    background: rgba(255,255,255,.72);
+  }
+  .aggregate-list-item strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .aggregate-audit {
+    margin-top: 8px;
+  }
+  @media (max-width: 1120px) {
+    .sidebar {
+      position: static;
+      width: auto;
+      top: auto;
+      padding: 12px 0;
+      border-right: 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: none;
+    }
+    .content {
+      margin-left: auto;
+      margin-right: auto;
+      width: 90vw;
+      max-width: none;
+      padding: 24px 18px 56px;
+    }
+    .watermark {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .hero-top {
+      grid-template-columns: 1fr;
+    }
+    .aggregate-chart-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+  .aggregate-pane-xref {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(0, 0, 0, 0.52);
+  }
+  .aggregate-pane-xref a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .aggregate-pane-xref a:hover {
+    color: rgba(0, 0, 0, 0.88);
+  }
+  .hero-snapshot-link {
+    display: inline-block;
+    margin-top: 4px;
+    font: 400 11px/1.4 "DM Mono", monospace;
+    color: rgba(0,0,0,.38);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .hero-snapshot-link:hover {
+    color: rgba(0,0,0,.68);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  </style>
+</head>
+<body data-xvary-aggregate-readable="1">
+  <a class="skip-link" href="#content">skip to content</a>
+  <div class="reading-progress" id="reading-progress"></div>
+  <div class="watermark" aria-hidden="true">V</div>
+
+  <nav class="nav nav--white" aria-label="main navigation" data-xvary-nav-static>
+    <a class="nav-brand" href="/">xvary</a>
+    <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" type="button" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+    <div class="nav-links">
+      <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/pricing/">pricing</a>
+      <a class="nav-cta" href="/pricing/">sign up</a>
+    </div>
+  </nav>
+
+  <div class="layout xvary-aggregate-deep-dive-body" data-template-id="aggregate-deep-dive-live-v1" lang="en">
+    <aside class="sidebar" aria-label="section navigation">
+      <div class="nav-section">
+        <div class="nav-label">quick navigation</div>
+        <a class="nav-pill active" href="#summary">
+          <span class="nav-kbd">0</span>
+          <span class="nav-txt">report snapshot</span>
+        </a>
+        <a class="nav-pill " href="#thesis">
+          <span class="nav-kbd">1</span>
+          <span class="nav-txt">variant perception &amp; thesis</span>
+        </a>
+        <a class="nav-pill " href="#financials">
+          <span class="nav-kbd">2</span>
+          <span class="nav-txt">financial analysis</span>
+        </a>
+        <a class="nav-pill " href="#valuation">
+          <span class="nav-kbd">3</span>
+          <span class="nav-txt">valuation</span>
+        </a>
+        <a class="nav-pill " href="#risk">
+          <span class="nav-kbd">4</span>
+          <span class="nav-txt">what breaks the thesis</span>
+        </a>
+        <a class="nav-pill " href="#ops">
+          <span class="nav-kbd">5</span>
+          <span class="nav-txt">fundamentals &amp; operations</span>
+        </a>
+        <a class="nav-pill " href="#competition">
+          <span class="nav-kbd">6</span>
+          <span class="nav-txt">competitive position</span>
+        </a>
+        <a class="nav-pill " href="#tam">
+          <span class="nav-kbd">7</span>
+          <span class="nav-txt">market size &amp; tam</span>
+        </a>
+        <a class="nav-pill " href="#product">
+          <span class="nav-kbd">8</span>
+          <span class="nav-txt">product &amp; technology</span>
+        </a>
+        <a class="nav-pill " href="#supply">
+          <span class="nav-kbd">9</span>
+          <span class="nav-txt">supply chain</span>
+        </a>
+        <a class="nav-pill " href="#catalysts">
+          <span class="nav-kbd">a</span>
+          <span class="nav-txt">catalyst map</span>
+        </a>
+        <a class="nav-pill " href="#street">
+          <span class="nav-kbd">b</span>
+          <span class="nav-txt">street expectations</span>
+        </a>
+        <a class="nav-pill " href="#scorecard">
+          <span class="nav-kbd">c</span>
+          <span class="nav-txt">earnings scorecard</span>
+        </a>
+        <a class="nav-pill " href="#signals">
+          <span class="nav-kbd">d</span>
+          <span class="nav-txt">alternative data</span>
+        </a>
+        <a class="nav-pill " href="#history">
+          <span class="nav-kbd">e</span>
+          <span class="nav-txt">historical analogies</span>
+        </a>
+        <a class="nav-pill " href="#management">
+          <span class="nav-kbd">f</span>
+          <span class="nav-txt">management &amp; leadership</span>
+        </a>
+        <a class="nav-pill " href="#macro">
+          <span class="nav-kbd">g</span>
+          <span class="nav-txt">macro sensitivity</span>
+        </a>
+        <a class="nav-pill " href="#quant">
+          <span class="nav-kbd">h</span>
+          <span class="nav-txt">quantitative profile</span>
+        </a>
+        <a class="nav-pill " href="#derivatives">
+          <span class="nav-kbd">i</span>
+          <span class="nav-txt">options &amp; derivatives</span>
+        </a>
+        <a class="nav-pill " href="#governance">
+          <span class="nav-kbd">j</span>
+          <span class="nav-txt">governance &amp; accounting</span>
+        </a>
+        <a class="nav-pill " href="#value">
+          <span class="nav-kbd">k</span>
+          <span class="nav-txt">value framework</span>
+        </a>
+        <a class="nav-pill " href="#appendix">
+          <span class="nav-kbd">l</span>
+          <span class="nav-txt">appendix &amp; sources</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="content" id="content">
+      <section class="hero" aria-label="report intro">
+        <div class="hero-top">
+          <div>
+            <h1 class="hero-ticker">v</h1>
+            <div class="hero-co">visa inc.</div>
+            <a class="hero-snapshot-link" href="/stock/v/snapshot/">snapshot page &rarr;</a>
+            <div class="hero-badges">
+              <span class="pill dark">deep dive</span>
+              <span class="pill ">services-business services, nec</span>
+              <span class="pill ">mega cap</span>
+              <span class="pill ">apr 11, 2026</span>
+            </div>
+            <div class="hero-tape" aria-label="headline tape">
+              <span><strong>Position</strong> Long</span>
+              <span><strong>Price</strong> $304.36</span>
+              <span><strong>~$670.0B</strong> mcap</span>
+              <span><strong>apr 11, 2026</strong> as-of date</span>
+            </div>
+          </div>
+          <div>
+            <p class="hero-hook">Visa is the highest-quality business in the S&P 500 — 66% operating margins, 54% FCF margin, 30%+ ROIC, zero credit risk, growing 10% on autopilot as the world converts from cash to digital. At 31x forward, you're getting a 10% discount to its 5-year average multiple because of a DOJ debit suit that</p>
+            <p class="hero-sub">We're <strong>Long at 80/100 signal strength</strong>; fair value about <strong>$380</strong> (+16.2% vs spot).</p>
+          </div>
+        </div>
+
+        <div class="kpi-grid cols-3">
+          <div class="kpi">
+            <div class="kpi-label">recommendation</div>
+            <div class="kpi-value ">Long</div>
+            <div class="kpi-sub">portfolio stance</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">12m price target</div>
+            <div class="kpi-value ">$380</div>
+            <div class="kpi-sub">+16% from $327</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">intrinsic value</div>
+            <div class="kpi-value ">$380</div>
+            <div class="kpi-sub">+16.2%</div>
+          </div>
+        </div>
+
+        <div class="callout-row">
+          <div class="callout">
+            <div class="label">market cap</div>
+            <div class="metric ">$670B</div>
+            <div class="desc"></div>
+          </div>
+          <div class="callout">
+            <div class="label">fy24 revenue</div>
+            <div class="metric ">$35.9B</div>
+            <div class="desc">+10% YoY</div>
+          </div>
+          <div class="callout">
+            <div class="label">fy24 op margin</div>
+            <div class="metric ">65.7%</div>
+            <div class="desc">Among highest in S&P 500</div>
+          </div>
+          <div class="callout">
+            <div class="label">fy24 eps</div>
+            <div class="metric ">$9.73</div>
+            <div class="desc">+18% YoY</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>report snapshot</h2>
+          <div class="kicker">executive summary</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Intrinsic value of $380 implies 16.2% upside from the current ~$327 share price. The single most important non-obvious takeaway is that the DOJ debit antitrust suit has created a rare valuation discount (31x vs. 34x 5-year average P/E) in the highest-quality business in the S&P 500 — and even worst-case, debit is only ~25% of Visa&#x27;s revenue while the secular cash-to-digital conversion tailwind has 15+ years of runway.</p></div>
+                <div class="g3"><div class="kpi"><div class="kpi-label">recommendation</div><div class="kpi-value ">Long</div><div class="kpi-sub">portfolio stance</div></div><div class="kpi"><div class="kpi-label">12m price target</div><div class="kpi-value ">$380</div><div class="kpi-sub">+16% from $327</div></div><div class="kpi"><div class="kpi-label">intrinsic value</div><div class="kpi-value ">$380</div><div class="kpi-sub">+16.2%</div></div></div>
+        <div class="g2" style="margin-top:10px">
+          <div class="quote"><strong class="kicker">core debate</strong><br><p>Intrinsic value of $380 implies 16.2% upside from the current ~$327 share price. The single most important non-obvious takeaway is that the DOJ debit antitrust suit has created a rare valuation discount (31x vs...</p></div>
+          <div class="quote"><strong class="kicker">headline tape</strong><br><p>$304.36 · ~$670.0B · as of apr 11, 2026.</p></div>
+        </div>
+        <div class="callout-row"><div class="callout"><div class="label">bull case</div><div class="metric value-gn">$380</div><div class="desc">Cross-border volume sustains 15%+, new flows reach $10B revenue, VAS accelerates, DOJ settles with manageable terms, P/E re-rates to 35x. Revenue CAGR 11%+.</div></div><div class="callout"><div class="label">base case</div><div class="metric ">$330</div><div class="desc">Revenue grows 9-10% CAGR, margins stable at 66-68%, DOJ results in modest debit restrictions, buyback continues at $15B+/year, P/E stable at 31x.</div></div><div class="callout"><div class="label">bear case</div><div class="metric value-rd">$240</div><div class="desc">CCCA passes + DOJ mandates broad debit routing, revenue growth decelerates to 6-7%, real-time payments gain meaningful share, P/E compresses to 25x.</div></div></div>
+        <div class="note green"><strong>top findings</strong><br><p>Visa is the highest-quality business in the S&P 500 — 66% operating margins, 54% FCF margin, 30%+ ROIC, zero credit risk, growing 10% on autopilot as the world converts from cash to digital. At 31x forward, you&#x27;re getting a 10% discount to its 5-year average multiple because of a DOJ debit suit that, even worst-case, affects 25% of revenue. The secular growth story (18% of global POS still cash, $120T B2B market untouched) has 15+ years of runway...</p></div>
+        <div class="note amber"><strong>aggregate synthesis</strong><br><p>Numbers can look similar while narrative labels diverge — focus on which spreadsheet row the market is pricing.</p></div>
+
+      </section>
+      <section id="thesis" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>variant perception &amp; thesis</h2>
+          <div class="kicker">pm brief</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The market prices Visa at 31x forward earnings, a 3-turn discount to its 5-year average of 34x, because of the DOJ debit antitrust suit filed in September 2024. Our variant perception is that this regulatory overhang is creating a rare buying opportunity in the highest-quality business in the S&P 500. Visa survived and grew through the Durbin Amendment — and even worst-case, debit is only ~25% of revenue.</p></div>
+                <div class="pillars"><div class="pillar"><div class="head"><h4>1. cash to digital conversion</h4><span class="tag green">9/10</span></div><p>18% of global POS still cash. Each 1pp conversion = $500B+ volume...</p></div><div class="pillar"><div class="head"><h4>2. cross border volume</h4><span class="tag green">8/10</span></div><p>15% growth (ex-intra-Europe) at Visa&#x27;s highest-margin rate. Travel recovery + e-commerce globalization...</p></div><div class="pillar"><div class="head"><h4>3. new flows (visa direct + b2b)</h4><span class="tag green">7/10</span></div><p>2.5B+ transactions growing 20%+. Addresses $200T+ market beyond consumer cards...</p></div><div class="pillar"><div class="head"><h4>4. regulatory risk = manageable</h4><span class="tag amber">7/10</span></div><p>DOJ targets debit (~25% of rev). Durbin precedent: Visa survived and grew...</p></div></div>
+        <div class="note"><strong>the 60-second pitch</strong><br><p>Read the pillar scores as conviction on each leg of the variant view; low scores are where consensus could be right.</p></div>
+
+      </section>
+      <section id="financials" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>financial analysis</h2>
+          <div class="kicker">elite economics</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Visa&#x27;s financial profile is extraordinary: $35.9B revenue growing 10% with a 66% operating margin, 55% net margin, and 54% FCF margin. Capex is trivial at 3% of revenue because the business is a software network — issuers and acquirers own the physical infrastructure. This produces $19.4B in free cash flow annually, 85%+ of which is returned to shareholders. Visa&#x27;s financial consistency is almost unmatched — revenue has grown 8-12% in every non-COVID year for over a decade.</p></div>
+                <div class="callout-row"><div class="callout"><div class="label">Gross Margin</div><div class="metric ">~80%</div><div class="desc">Network business, minimal COGS</div></div><div class="callout"><div class="label">Operating Margin</div><div class="metric ">65.7%</div><div class="desc">FY2022: 64.2%</div></div><div class="callout"><div class="label">Net Margin</div><div class="metric ">55.0%</div><div class="desc">17.5% effective tax rate</div></div><div class="callout"><div class="label">Operating Cash Flow</div><div class="metric ">$22.6B</div><div class="desc">63% of revenue</div></div><div class="callout"><div class="label">Free Cash Flow</div><div class="metric ">$19.4B</div><div class="desc">54% FCF margin</div></div><div class="callout"><div class="label">Capex / Revenue</div><div class="metric ">3.3%</div><div class="desc">$1.2B — capital-light</div></div></div>
+        <div class="g2" style="margin-top:10px"><div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">FY2022</th><th class="num">FY2023</th><th class="num">FY2024</th><th>Trend</th></tr></thead><tbody><tr><td><p>Net Revenue</p></td><td class="num"><p>$29.3B</p></td><td class="num"><p>$32.7B</p></td><td class="num"><p>$35.9B</p></td><td><p>+10% CAGR</p></td></tr><tr><td><p>Operating Income</p></td><td class="num"><p>$18.8B</p></td><td class="num"><p>$21.8B</p></td><td class="num"><p>$23.6B</p></td><td><p>+12% CAGR</p></td></tr><tr><td><p>Net Income</p></td><td class="num"><p>$15.0B</p></td><td class="num"><p>$17.3B</p></td><td class="num"><p>$19.7B</p></td><td><p>+15% CAGR</p></td></tr><tr><td><p>Diluted EPS</p></td><td class="num"><p>$7.00</p></td><td class="num"><p>$8.28</p></td><td class="num"><p>$9.73</p></td><td><p>+18% CAGR</p></td></tr><tr><td><p>Op Margin</p></td><td class="num"><p>64.2%</p></td><td class="num"><p>66.7%</p></td><td class="num"><p>65.7%</p></td><td><p>Stable high</p></td></tr><tr><td><p>FCF</p></td><td class="num"><p>~$17.5B</p></td><td class="num"><p>~$18.4B</p></td><td class="num"><p>~$19.4B</p></td><td><p>+5% CAGR</p></td></tr></tbody></table></div></div><div><div class="note">add a second table in the fin pane for side-by-side quality vs. trend read.</div></div></div>
+        <div class="note green"><strong>production-report readthrough</strong><br><p>These numbers ground the thesis in reported economics; the debate is durability and cycle, not obvious accounting gaps.</p></div>
+
+      </section>
+      <section id="valuation" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>valuation</h2>
+          <div class="kicker">probability-weighted fair value</div>
+        </div>
+        <div class="lead aggregate-lead"><p>At ~$327/share and a ~$670B market cap, Visa trades at 31x forward earnings — a 10% discount to its 5-year average of 34x. A 10-year DCF using 9.2% WACC and conservative assumptions yields a base case intrinsic value of $262, but thesis-adjusted fair value (reflecting quality premium and secular growth duration) is $380, implying 16% upside. Visa is rarely cheap, but the DOJ overhang has created as close to a buying opportunity as this stock offers.</p></div>
+                <div class="g2"><div></div><div><div class="scenario-grid"><div class="scenario bull"><div class="prob">bull case</div><h4>$380</h4><p>Cross-border sustains 15%+, Visa Direct reaches $10B revenue, DOJ settles on manageable terms, P/E re-rates to 35x...</p></div><div class="scenario base"><div class="prob">base case</div><h4>$330</h4><p>Revenue grows 9-10% CAGR, margins stable 66-68%, DOJ results in modest debit restrictions, buyback continues, P/E stable at 31x...</p></div><div class="scenario bear"><div class="prob">bear case</div><h4>$240</h4><p>CCCA passes + DOJ mandates broad debit routing...</p></div></div></div></div>
+        
+        
+
+      </section>
+      <section id="risk" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>what breaks the thesis</h2>
+          <div class="kicker">falsifiable kill criteria</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Visa&#x27;s risk profile is dominated by regulatory/antitrust risk. The DOJ debit antitrust suit (Sept 2024), potential CCCA legislation for credit, and international equivalents (EU interchange caps, India&#x27;s UPI mandate) represent the primary threats. The business itself has remarkably few operational risks — no credit risk, no inventory, no manufacturing. The question is whether governments will force open the duopoly. Each risk below includes specific kill criteria.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">doj suit status</div><div class="kpi-value value-rd">Active</div><div class="kpi-sub">Filed Sept 2024, debit focus</div></div><div class="kpi"><div class="kpi-label">ccca status</div><div class="kpi-value value-am">Proposed</div><div class="kpi-sub">Credit routing, 15% pass probability</div></div><div class="kpi"><div class="kpi-label">debit revenue %</div><div class="kpi-value value-am">~25%</div><div class="kpi-sub">Maximum DOJ exposure</div></div><div class="kpi"><div class="kpi-label">fednow adoption</div><div class="kpi-value value-am">~900 FIs</div><div class="kpi-sub">Slow but growing</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>KILL CRITERION #1: DOJ Debit Antitrust</h3><span class="tag red">REGULATORY</span></div><div class="aggregate-card-body"><p>Risk: DOJ alleges Visa monopolizes U.S. debit market (60%+ share) through exclusionary agreements with merchants and banks. Worst case: mandatory alternative routing for all debit transactions, reducing Visa&#x27;s debit network volume and pricing power...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>KILL CRITERION #2: Real-Time Payments Displacement</h3><span class="tag amber">STRUCTURAL</span></div><div class="aggregate-card-body"><p>Risk: Government-backed real-time payment systems (FedNow in US, UPI in India, Pix in Brazil) could disintermediate card networks for certain transaction types, particularly domestic P2P and merchant payments. Kill threshold: If FedNow reaches 5,000+ FIs AND merchant adoption exceeds 20% of POS transactions — this would indicate structural displacement rather than a niche alternative. Currently at ~900 FIs and negligible merchant adoption...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>KILL CRITERION #3: Consumer Spending Collapse</h3><span class="tag amber">CYCLICAL</span></div><div class="aggregate-card-body"><p>Risk: Deep recession reduces consumer spending, shrinking payment volume. Unlike most companies, Visa doesn&#x27;t have operating leverage risk (costs are mostly fixed personnel + incentives), but a severe consumer downturn would slow volume growth. Kill threshold: Payments volume declines > 5% for two consecutive quarters...</p></div></div>
+      </section>
+      <section id="ops" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>fundamentals &amp; operations</h2>
+          <div class="kicker">business operations & fundamentals</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Visa operates the world&#x27;s largest electronic payments network, processing 233 billion transactions ($15.3 trillion in volume) in FY2024. The business model is remarkably simple: Visa sits between issuers (banks that give you the card) and acquirers (banks that process for merchants), earning approximately 20 basis points on every transaction — without ever touching the money, taking credit risk, or owning physical infrastructure. It is a pure software network with near-zero marginal cost per transaction.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">transactions</div><div class="kpi-value ">233B</div><div class="kpi-sub">+10% YoY</div></div><div class="kpi"><div class="kpi-label">payments volume</div><div class="kpi-value ">$15.3T</div><div class="kpi-sub">+8% YoY</div></div><div class="kpi"><div class="kpi-label">cards outstanding</div><div class="kpi-value ">4.3B</div><div class="kpi-sub">Across 200+ countries</div></div><div class="kpi"><div class="kpi-label">merchant locations</div><div class="kpi-value ">130M+</div><div class="kpi-sub">Global acceptance</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The Toll Booth Model</h3><span class="tag blue">BUSINESS MODEL</span></div><div class="aggregate-card-body"><p>Visa&#x27;s business model is often described as a &#x27;toll booth&#x27; — it earns a small fee on every transaction that flows through its network. But the analogy understates the power: Zero credit risk: Visa doesn&#x27;t lend money. The issuing bank takes the credit risk...</p></div></div>
+      </section>
+      <section id="competition" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>competitive position</h2>
+          <div class="kicker">moat vs. customer-as-competitor</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Visa operates in a duopoly with Mastercard that controls ~90% of global card network transactions outside China. This is not a typical competitive advantage — it is a natural monopoly. The network effect (4.3B cards accepted at 130M+ merchants) creates a chicken-and-egg barrier that no competitor has broken in 50+ years. Crucially, fintech &#x27;competitors&#x27; (Stripe, PayPal, Square) are actually Visa customers — they ride on Visa&#x27;s rails and pay Visa fees on every card transaction.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Competitor</th><th>Relationship</th><th class="num">Threat Level</th><th>Assessment</th></tr></thead><tbody><tr><td><p>Mastercard</p></td><td><p>Duopoly partner</p></td><td class="num"><p>Low</p></td><td><p>Rational duopoly — both benefit from growing the pie. MA slightly faster growth but similar model.</p></td></tr><tr><td><p>Apple Pay/Google Pay</p></td><td><p>Distribution partner</p></td><td class="num"><p>Low</p></td><td><p>Wallets use Visa rails. Every Apple Pay tap is a Visa transaction. Adoption is GOOD for Visa.</p></td></tr><tr><td><p>Stripe/Adyen</p></td><td><p>Customer</p></td><td class="num"><p>Low</p></td><td><p>Payment processors pay Visa fees on every card transaction. They grow, Visa grows.</p></td></tr><tr><td><p>PayPal</p></td><td><p>Customer + competitor</p></td><td class="num"><p>Low-Medium</p></td><td><p>PayPal tries to route around cards (Venmo, bank-to-bank) but most PayPal transactions use Visa cards.</p></td></tr><tr><td><p>FedNow/RTP</p></td><td><p>Alternative rail</p></td><td class="num"><p>Medium</p></td><td><p>Real-time payments could bypass card networks for certain use cases. Adoption slow so far (~900 FIs).</p></td></tr><tr><td><p>UPI/Pix (govt systems)</p></td><td><p>Alternative rail</p></td><td class="num"><p>Medium</p></td><td><p>Government-backed systems in India/Brazil show card networks can be bypassed. Geographically limited.</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The Network Effect Moat</h3><span class="tag blue">MOAT</span></div><div class="aggregate-card-body"><p>Visa&#x27;s moat is a textbook two-sided network effect: Cardholders want acceptance: Consumers choose Visa because it&#x27;s accepted everywhere (130M+ locations) Merchants want cardholders: Merchants accept Visa because 4.3B people carry Visa cards Banks want both: Issuers choose Visa because merchants accept it; acquirers choose Visa because consumers carry it This three-sided reinforcing loop has been unbreakable for 50+ years. The only disruptions that have worked are government-mandated alternatives (UPI, Pix) — and even those have not displaced Visa in their own markets.</p></div></div>
+      </section>
+      <section id="tam" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>market size &amp; tam</h2>
+          <div class="kicker">total addressable market & growth runway</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Visa&#x27;s addressable market extends far beyond consumer card payments ($15T today). The total money-movement opportunity encompasses consumer payments ($50T global POS), e-commerce ($6T+), B2B payments ($120T+), P2P transfers ($30T+), and government disbursements ($10T+). Cash still represents 18% of global POS — down from 32% in 2019 but still massive. Visa addresses perhaps 10-15% of total global money movement today. The runway is measured in decades, not years.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">global pos</div><div class="kpi-value ">$50T+</div><div class="kpi-sub">Consumer spending at point-of-sale</div></div><div class="kpi"><div class="kpi-label">cash share</div><div class="kpi-value ">18%</div><div class="kpi-sub">Down from 32% in 2019</div></div><div class="kpi"><div class="kpi-label">global e-commerce</div><div class="kpi-value ">$6T+</div><div class="kpi-sub">Growing 10%+ annually</div></div><div class="kpi"><div class="kpi-label">b2b payments</div><div class="kpi-value ">$120T+</div><div class="kpi-sub">Largely untouched by card networks</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The Cash Displacement Math</h3><span class="tag blue">SECULAR</span></div><div class="aggregate-card-body"><p>Cash share of global POS has declined from 32% (2019) to 18% (2024) — that&#x27;s approximately $7T in payment volume that migrated to digital in 5 years. At Visa&#x27;s ~50% market share and ~20bps take rate, that&#x27;s roughly $7B in incremental annual revenue just from cash displacement. The remaining 18% cash represents ~$9T in POS volume...</p></div></div>
+      </section>
+      <section id="product" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>product &amp; technology</h2>
+          <div class="kicker">roadmap + software stack</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Visa&#x27;s technology platform (VisaNet) processes 65,000+ transactions per second with 99.999% uptime. Beyond core processing, Visa is building three technology vectors: tokenization (6B+ credentials tokenized, reducing fraud 26%), Visa Direct (real-time push payments to any endpoint), and value-added services (AI-powered fraud prevention, analytics, consulting). These technology investments transform Visa from a payment rail into a financial infrastructure platform.</p></div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>Visa Direct: The New Flows Platform</h3><span class="tag blue">GROWTH</span></div><div class="aggregate-card-body"><p>Visa Direct enables real-time push payments to cards, bank accounts, and digital wallets across 200+ countries. FY2024: 2.5B+ transactions, growing 20%+ YoY. Use cases: P2P: Send money to any Visa card in real-time B2B: Supplier payments, freelancer payouts Insurance: Claims disbursements in minutes, not days Government: Tax refunds, benefits, emergency payments Cross-border: Remittances at lower cost than traditional wires</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Tokenization &amp; Fraud AI</h3><span class="tag blue">MOAT DEEPENER</span></div><div class="aggregate-card-body"><p>Visa Token Service: 6B+ credentials tokenized globally. Tokenized e-commerce transactions see 26% less fraud and 3% higher approval rates. Tokenization creates switching costs — once a bank issues tokens on Visa&#x27;s platform, migrating to another network requires re-tokenizing all credentials...</p></div></div>
+      </section>
+      <section id="supply" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>supply chain</h2>
+          <div class="kicker">single points of failure</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Visa&#x27;s &#x27;supply chain&#x27; is fundamentally different from a manufacturing or retail company — it is a digital network. VisaNet&#x27;s infrastructure consists of data centers, telecommunications links, and software. The key supply chain dependencies are: (1) data center operations and cloud infrastructure, (2) chip manufacturers for contactless/EMV cards (but card production is the issuer&#x27;s responsibility), and (3) terminal manufacturers for POS acceptance. Visa&#x27;s capital-light model means most physical infrastructure risk sits with partners.</p></div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>Infrastructure Resilience</h3><span class="tag blue">STRENGTH</span></div><div class="aggregate-card-body"><p>VisaNet operates multiple redundant data centers with 99.999% uptime. The network can process 65,000+ transactions per second with sub-second response times. Key resilience features: Geographic redundancy: Multiple data centers across continents No single point of failure: Distributed architecture with automatic failover Minimal physical supply chain risk: Visa doesn&#x27;t manufacture cards or terminals — issuers and acquirers bear this cost The primary infrastructure risk is cybersecurity — a successful attack on VisaNet would be a systemic financial event...</p></div></div>
+      </section>
+      <section id="catalysts" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>catalyst map</h2>
+          <div class="kicker">forward calendar</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Visa&#x27;s catalyst calendar is dominated by two axes: quarterly earnings (payment volume and cross-border trends) and DOJ case developments. The single highest-impact catalyst is any indication of DOJ settlement, which would remove the 3-turn P/E discount overnight. Secondary catalysts include new flows monetization milestones and potential CCCA legislative developments.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Timeline</th><th>Catalyst</th><th>Impact</th><th class="num">Probability</th></tr></thead><tbody><tr><td><p>Apr 2025</p></td><td><p>Q2 FY2025 Earnings</p></td><td><p>Cross-border volume trajectory; beat/miss drives near-term sentiment</p></td><td class="num"><p>Recurring</p></td></tr><tr><td><p>H1 2025</p></td><td><p>DOJ Discovery Phase</p></td><td><p>Document production may reveal strength/weakness of DOJ case</p></td><td class="num"><p>Medium</p></td></tr><tr><td><p>H2 2025</p></td><td><p>DOJ Settlement Talks</p></td><td><p>ANY settlement indication = major positive catalyst ($30+ per share)</p></td><td class="num"><p>30%</p></td></tr><tr><td><p>2025-2026</p></td><td><p>CCCA Legislative Progress</p></td><td><p>If passes, structurally negative for credit routing. Strong lobby opposition.</p></td><td class="num"><p>15%</p></td></tr><tr><td><p>FY2025</p></td><td><p>Visa Direct $5B Revenue</p></td><td><p>Validates new flows thesis; reframes Visa as money-movement platform</p></td><td class="num"><p>40%</p></td></tr><tr><td><p>FY2025 (2)</p></td><td><p>VAS $10B Run Rate</p></td><td><p>Proves value-added services are a real second growth engine</p></td><td class="num"><p>50%</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Highest-Impact Catalyst: DOJ Resolution</h3><span class="tag amber">CRITICAL</span></div><div class="aggregate-card-body"><p>The DOJ debit antitrust suit is the #1 driver of Visa&#x27;s current valuation discount. Any of the following would be significantly positive: Settlement on narrow terms (e.g., reduced routing restrictions, modest behavioral remedies) — stock +10-15% Case dismissed or significantly narrowed — stock +15-20% Trial loss with limited remedy — neutral to modest negative Conversely, severe adverse ruling with mandatory alternative routing for all debit would be -10-15%. But even this isn&#x27;t existential — debit is ~25% of revenue.</p></div></div>
+      </section>
+      <section id="street" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>street expectations</h2>
+          <div class="kicker">consensus vs. framework</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Wall Street consensus on Visa is overwhelmingly bullish: 35+ buy ratings, 3 holds, 0 sells, with a mean price target of ~$350 (7% upside). FY2025 consensus estimates are $39.4B revenue (+10%) and $10.70 EPS (+10%). The consensus view is that Visa&#x27;s quality justifies the premium but the DOJ suit creates near-term uncertainty. Our view is modestly more constructive than consensus — we see the DOJ discount as overdone and target $380.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">buy ratings</div><div class="kpi-value ">35+</div><div class="kpi-sub">0 sells</div></div><div class="kpi"><div class="kpi-label">mean target</div><div class="kpi-value ">~$350</div><div class="kpi-sub">+7% from current</div></div><div class="kpi"><div class="kpi-label">fy25e revenue</div><div class="kpi-value ">$39.4B</div><div class="kpi-sub">+10% consensus</div></div><div class="kpi"><div class="kpi-label">fy25e eps</div><div class="kpi-value ">$10.70</div><div class="kpi-sub">+10% consensus</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Where We Differ From Consensus</h3><span class="tag blue">VARIANT</span></div><div class="aggregate-card-body"><p>Consensus view: Visa is a great business trading at a fair price with regulatory risk. Hold existing positions, don&#x27;t add aggressively. Our view: Visa is a great business trading at a DISCOUNT to fair price because of a regulatory risk that is manageable and likely already priced in...</p></div></div>
+      </section>
+      <section id="scorecard" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>earnings scorecard</h2>
+          <div class="kicker">earnings track record</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Visa has beaten consensus EPS estimates in 16 of the last 16 quarters — a perfect streak. The average beat is ~3%. Revenue beats have occurred in 14 of 16 quarters. This consistency reflects the predictability of Visa&#x27;s payment volume-driven model and management&#x27;s conservative guidance approach. The most recent quarter (Q1 FY2025, Dec 2024) showed revenue of $9.5B (+10%) with cross-border volume growth of 16%.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Quarter</th><th class="num">Revenue</th><th class="num">EPS</th><th class="num">Rev Beat/Miss</th><th class="num">EPS Beat/Miss</th><th class="num">Cross-Border Vol</th></tr></thead><tbody><tr><td><p>Q1 FY25 (Dec 24)</p></td><td class="num"><p>$9.5B</p></td><td class="num"><p>$2.75</p></td><td class="num"><p>Beat +1%</p></td><td class="num"><p>Beat +3%</p></td><td class="num"><p>+16%</p></td></tr><tr><td><p>Q4 FY24 (Sep 24)</p></td><td class="num"><p>$9.6B</p></td><td class="num"><p>$2.71</p></td><td class="num"><p>Beat +1%</p></td><td class="num"><p>Beat +2%</p></td><td class="num"><p>+13%</p></td></tr><tr><td><p>Q3 FY24 (Jun 24)</p></td><td class="num"><p>$8.9B</p></td><td class="num"><p>$2.42</p></td><td class="num"><p>Beat +1%</p></td><td class="num"><p>Beat +4%</p></td><td class="num"><p>+14%</p></td></tr><tr><td><p>Q2 FY24 (Mar 24)</p></td><td class="num"><p>$8.8B</p></td><td class="num"><p>$2.29</p></td><td class="num"><p>Beat +1%</p></td><td class="num"><p>Beat +3%</p></td><td class="num"><p>+16%</p></td></tr></tbody></table></div>
+      </section>
+      <section id="signals" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>alternative data</h2>
+          <div class="kicker">signals & alternative data</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Alternative data signals for Visa are predominantly positive. Credit card spending data from issuer reports (JPMorgan, BAC, C) shows steady 5-7% growth in card spending. Travel booking data from airlines and OTAs confirms robust cross-border activity. Digital wallet adoption (Apple Pay, Google Pay) continues accelerating, which is positive for Visa as wallets use card rails. The one cautionary signal: fintech disruption narrative is fading as the market recognizes fintech companies are Visa customers, not replacements.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">card spending</div><div class="kpi-value ">+5-7%</div><div class="kpi-sub">Per issuer reports</div></div><div class="kpi"><div class="kpi-label">travel bookings</div><div class="kpi-value ">Robust</div><div class="kpi-sub">Cross-border strong</div></div><div class="kpi"><div class="kpi-label">wallet adoption</div><div class="kpi-value ">Accelerating</div><div class="kpi-sub">Visa-positive</div></div><div class="kpi"><div class="kpi-label">short interest</div><div class="kpi-value ">0.5%</div><div class="kpi-sub">Negligible</div></div></div>
+      </section>
+      <section id="history" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>historical analogies</h2>
+          <div class="kicker">corporate history & key inflections</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Visa&#x27;s history spans from its founding as BankAmericard in 1958 by Bank of America to its record $17.9B IPO in 2008 to its current $670B market cap. The company has reinvented itself multiple times: from a bank consortium to an independent public company, from a domestic card network to a global payments platform, and now from card-based payments to an all-purpose money-movement network. Each transformation has created enormous shareholder value — shares have returned ~650% since the 2008 IPO.</p></div>
+        <div class="table-wrap"><table><thead><tr><th class="num">Year</th><th class="num">Event</th><th>Significance</th><th>Stock Impact</th></tr></thead><tbody><tr><td class="num"><p>1958</p></td><td class="num"><p>BankAmericard founded</p></td><td><p>Bank of America launches first general-purpose credit card program in Fresno, CA</p></td><td><p>N/A</p></td></tr><tr><td class="num"><p>1970</p></td><td class="num"><p>NBI formed (→Visa)</p></td><td><p>Bank consortium takes over BankAmericard network. Dee Hock creates the federated governance model</p></td><td><p>N/A</p></td></tr><tr><td class="num"><p>1976</p></td><td class="num"><p>Renamed to Visa</p></td><td><p>BankAmericard becomes Visa — a name chosen for universal recognition across languages</p></td><td><p>N/A</p></td></tr><tr><td class="num"><p>2008</p></td><td class="num"><p>IPO: $17.9B at $44/share</p></td><td><p>Largest U.S. IPO in history. Transformed from bank-owned consortium to public company. Valued at $44B</p></td><td><p>+650% since IPO</p></td></tr><tr><td class="num"><p>2010</p></td><td class="num"><p>CyberSource acquired ($2B)</p></td><td><p>E-commerce payment gateway. Positioned Visa for digital commerce growth</p></td><td><p>Strategic long-term positive</p></td></tr><tr><td class="num"><p>2011</p></td><td class="num"><p>Durbin Amendment enacted</p></td><td><p>Capped debit interchange fees. Market feared catastrophe — Visa adapted and grew through it</p></td><td><p>-10% initially, recovered within months</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The Durbin Amendment Precedent (2011)</h3><span class="tag blue">PRECEDENT</span></div><div class="aggregate-card-body"><p>The Durbin Amendment is the single most important precedent for evaluating the current DOJ risk. In 2011, Congress capped debit interchange fees for large issuers at ~21 cents per transaction. The market panicked — Visa stock dropped 10% on the news...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Visa Europe Reunification (2016)</h3><span class="tag blue">INFLECTION</span></div><div class="aggregate-card-body"><p>The $23B acquisition of Visa Europe in 2016 was transformative. It reunified the global Visa network (Visa Europe had been a separate entity since the 2008 IPO), added ~$5B in revenue, and positioned Visa to capture the full benefit of European cross-border transactions. The deal was accretive within 2 years and is a key reason international transaction revenue is now Visa&#x27;s fastest-growing and highest-margin segment.</p></div></div>
+      </section>
+      <section id="management" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>management &amp; leadership</h2>
+          <div class="kicker">execution + key-person risk</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Ryan McInerney became CEO in February 2023 after serving as President since 2013. He&#x27;s a Visa lifer (10+ years before becoming CEO) with prior experience at JPMorgan Chase&#x27;s consumer banking division. CFO Chris Suh joined in 2023 from Microsoft. The leadership team is experienced and stable, with a track record of consistent execution. Management compensation is well-aligned with shareholders — equity-heavy, performance-based, with long vesting periods.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th class="num">Since</th><th>Background</th></tr></thead><tbody><tr><td><p>Ryan McInerney</p></td><td><p>CEO</p></td><td class="num"><p>Feb 2023</p></td><td><p>President since 2013, JPMorgan consumer banking prior</p></td></tr><tr><td><p>Chris Suh</p></td><td><p>CFO</p></td><td class="num"><p>2023</p></td><td><p>Microsoft Corporate VP Finance</p></td></tr><tr><td><p>Rajat Taneja</p></td><td><p>President, Technology</p></td><td class="num"><p>2013</p></td><td><p>EA CTO prior, drives VisaNet innovation</p></td></tr><tr><td><p>Paul Fabara</p></td><td><p>Chief Risk Officer</p></td><td class="num"><p>2019</p></td><td><p>AmEx risk leadership prior</p></td></tr><tr><td><p>Kelly Mahon Tullier</p></td><td><p>General Counsel</p></td><td class="num"><p>2014</p></td><td><p>Manages regulatory/litigation portfolio</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Management Quality Assessment</h3><span class="tag blue">ASSESSMENT</span></div><div class="aggregate-card-body"><p>Rating: 8/10. Visa&#x27;s management doesn&#x27;t need to be visionary — the business model is the strategy. Execution requires maintaining network reliability, managing bank relationships, and navigating regulation...</p></div></div>
+      </section>
+      <section id="macro" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>macro sensitivity</h2>
+          <div class="kicker">rates, fx, energy</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Visa is one of the most macro-resilient growth companies in the market. Revenue is driven by payment volume (consumer spending) which is relatively recession-resistant — people still buy groceries, gas, and necessities with cards. Even in 2020 (worst consumer shock in decades), Visa&#x27;s revenue only declined 5% and recovered fully the next year. The primary macro sensitivities are: consumer spending (moderate), FX rates (moderate — 40% international revenue), and interest rates (low — asset-light balance sheet).</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Macro Factor</th><th>Sensitivity</th><th class="num">Current</th><th>Impact</th></tr></thead><tbody><tr><td><p>Consumer Spending</p></td><td><p>Moderate</p></td><td class="num"><p>Resilient +3-4%</p></td><td><p>Recession: revenue dips 3-5% but recovers within 1 year</p></td></tr><tr><td><p>USD Strength</p></td><td><p>Moderate</p></td><td class="num"><p>Strong dollar</p></td><td><p>1% USD appreciation = ~0.5% revenue headwind (40% intl)</p></td></tr><tr><td><p>Interest Rates</p></td><td><p>Low</p></td><td class="num"><p>Fed funds 4.5%</p></td><td><p>Minimal direct impact. Higher rates compress P/E multiples but don&#x27;t hurt business.</p></td></tr><tr><td><p>Inflation</p></td><td><p>Positive</p></td><td class="num"><p>CPI 2.8%</p></td><td><p>Inflation increases nominal payment volume — Visa earns % of transaction value</p></td></tr><tr><td><p>Cross-Border Travel</p></td><td><p>High</p></td><td class="num"><p>Recovered</p></td><td><p>Travel is key driver of highest-margin revenue. Recession risk to discretionary travel.</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Visa as an Inflation Beneficiary</h3><span class="tag blue">INSIGHT</span></div><div class="aggregate-card-body"><p>Visa earns a percentage of transaction value (~0.2%). When inflation raises the price of goods and services, nominal payment volume increases automatically — even if real consumer spending is flat. This makes Visa a natural inflation hedge: in a 3% inflation environment, Visa gets 3% &#x27;pricing&#x27; for free, with no action required...</p></div></div>
+      </section>
+      <section id="quant" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>quantitative profile</h2>
+          <div class="kicker">factor + mean reversion</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Visa scores in the top decile on virtually every quality metric: ROIC (33%), operating margin (66%), FCF margin (54%), revenue growth consistency (10% CAGR over 10 years), and earnings beat rate (16/16). Beta of 0.95 reflects the stock&#x27;s defensive characteristics. The only weakness is valuation — at 31x forward, there&#x27;s limited margin of safety if the growth thesis doesn&#x27;t play out.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">roic</div><div class="kpi-value ">~33%</div><div class="kpi-sub">Top decile S&P 500</div></div><div class="kpi"><div class="kpi-label">beta</div><div class="kpi-value ">0.95</div><div class="kpi-sub">Defensive</div></div><div class="kpi"><div class="kpi-label">revenue cagr (10y)</div><div class="kpi-value ">10.5%</div><div class="kpi-sub">Remarkably consistent</div></div><div class="kpi"><div class="kpi-label">eps cagr (5y)</div><div class="kpi-value ">15%+</div><div class="kpi-sub">Buyback-enhanced</div></div></div>
+      </section>
+      <section id="derivatives" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>options &amp; derivatives</h2>
+          <div class="kicker">sentiment gauge</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Visa&#x27;s options market reflects the stock&#x27;s low-volatility, high-quality profile. Implied volatility is typically 15-20%, well below the average S&P 500 stock. The put/call ratio is neutral (~0.7), with no unusual hedging activity. Options skew is slightly negative (puts more expensive than calls), reflecting DOJ tail risk pricing. The earnings move implied is typically 3-4% — consistent with Visa&#x27;s low-surprise reporting history.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">implied vol (30d)</div><div class="kpi-value ">~18%</div><div class="kpi-sub">Below market avg</div></div><div class="kpi"><div class="kpi-label">put/call ratio</div><div class="kpi-value ">~0.7</div><div class="kpi-sub">Neutral</div></div><div class="kpi"><div class="kpi-label">earnings move implied</div><div class="kpi-value ">3-4%</div><div class="kpi-sub">Low surprise expected</div></div><div class="kpi"><div class="kpi-label">skew</div><div class="kpi-value value-am">Slight negative</div><div class="kpi-sub">DOJ tail risk priced</div></div></div>
+      </section>
+      <section id="governance" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>governance &amp; accounting</h2>
+          <div class="kicker">quality control</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Visa&#x27;s governance is strong: independent board (11 of 13 directors are independent), no dual-class voting for management, reasonable executive compensation, and minimal stock-based compensation dilution ($1.5B SBC on $23.6B operating income = 6%). Accounting quality is high — the business model is simple (fee-based revenue), there are no complex estimates or judgments, and GAAP earnings closely track cash earnings. The only governance note: the dual-class share structure (Class A common + Class B/C with special rights) is a legacy of the 2008 IPO structure.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">board independence</div><div class="kpi-value ">11/13</div><div class="kpi-sub">85% independent</div></div><div class="kpi"><div class="kpi-label">sbc / op income</div><div class="kpi-value ">6%</div><div class="kpi-sub">$1.5B — low dilution</div></div><div class="kpi"><div class="kpi-label">gaap vs cash earnings</div><div class="kpi-value ">Close</div><div class="kpi-sub">Simple business model</div></div><div class="kpi"><div class="kpi-label">dual class</div><div class="kpi-value value-am">Legacy</div><div class="kpi-sub">IPO structure, not mgmt control</div></div></div>
+      </section>
+      <section id="value" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>value framework</h2>
+          <div class="kicker">greenwald / qarp</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Visa merits a 4% position (high end of standard allocation) based on: 80/100 conviction, 1.6:1 upside/downside ratio, high business quality (top decile ROIC, margins, growth), and defensive characteristics (beta 0.95, recession-resistant). The position is sized for the DOJ risk — if conviction were 90+, we&#x27;d go to 5%. The sizing framework prioritizes business quality and margin of safety.</p></div>
+        <div class="kpi-grid cols-3"><div class="kpi"><div class="kpi-label">position size</div><div class="kpi-value ">4%</div><div class="kpi-sub">High-conviction core</div></div><div class="kpi"><div class="kpi-label">upside/downside</div><div class="kpi-value ">1.6:1</div><div class="kpi-sub">$380 bull / $240 bear</div></div><div class="kpi"><div class="kpi-label">stop loss</div><div class="kpi-value value-am">~$280</div><div class="kpi-sub">-15% from entry</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Position Management Rules</h3><span class="tag blue">FRAMEWORK</span></div><div class="aggregate-card-body"><p>Entry: Scale in at current levels (~$327). Add on dips to $300 (increases upside/downside ratio to 2:1). Trim: At $370+ (approaching bull target), trim 25% to lock in gains...</p></div></div>
+      </section>
+      <section id="appendix" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>appendix &amp; sources</h2>
+          <div class="kicker">sources · methodology</div>
+        </div>
+        <div class="lead aggregate-lead"><p>How we source the tape, verify levels, and align this report with XVARY deep-dive standards.</p></div>
+        <div class="aggregate-sources-attribution"><p>Sources: SEC filings, company disclosures, market data vendors, and sources cited in the sections above. For investment presentation use only.</p></div><p class="aggregate-methodology-link">standards and pipeline: <a href="https://xvary.com/methodology/">xvary.com/methodology/</a></p>
+      </section>
+
+      <div class="footer">
+        xvary · 2026 · not investment advice
+        <div class="links">
+          <a href="https://xvary.com/pulse/">the pulse</a>
+          <a href="https://xvary.com/stacks/">the stacks</a>
+          <a href="https://xvary.com/discover/">discover</a>
+          <a href="https://xvary.com/collectibles/">collectibles</a>
+          <a href="https://xvary.com/pricing/">pricing</a>
+          <a href="https://xvary.com/methodology/">methodology</a>
+          <a href="https://xvary.com/newsletter/">newsletter</a>
+          <a href="https://xvary.com/legal/disclaimer/">disclaimer</a>
+          <a href="https://xvary.com/legal/privacy/">privacy</a>
+          <a href="https://xvary.com/legal/terms/">terms</a>
+        </div>
+        <div class="small">Sources: company filings and earnings, supplier disclosures, named sell-side notes where cited, alt-data where noted, and public flow/sentiment screens. Not investment advice — verify anything you trade on.</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const bar = document.getElementById("reading-progress");
+      const sections = [{"id": "summary", "hotkey": "0"}, {"id": "thesis", "hotkey": "1"}, {"id": "financials", "hotkey": "2"}, {"id": "valuation", "hotkey": "3"}, {"id": "risk", "hotkey": "4"}, {"id": "ops", "hotkey": "5"}, {"id": "competition", "hotkey": "6"}, {"id": "tam", "hotkey": "7"}, {"id": "product", "hotkey": "8"}, {"id": "supply", "hotkey": "9"}, {"id": "catalysts", "hotkey": "a"}, {"id": "street", "hotkey": "b"}, {"id": "scorecard", "hotkey": "c"}, {"id": "signals", "hotkey": "d"}, {"id": "history", "hotkey": "e"}, {"id": "management", "hotkey": "f"}, {"id": "macro", "hotkey": "g"}, {"id": "quant", "hotkey": "h"}, {"id": "derivatives", "hotkey": "i"}, {"id": "governance", "hotkey": "j"}, {"id": "value", "hotkey": "k"}, {"id": "appendix", "hotkey": "l"}];
+      const links = [...document.querySelectorAll(".sidebar a[href^='#']")];
+      const setActive = function (id) {
+        links.forEach(function (link) {
+          link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+        });
+      };
+
+      window.addEventListener("scroll", function () {
+        const root = document.documentElement;
+        const pct = (root.scrollTop / Math.max(root.scrollHeight - root.clientHeight, 1)) * 100;
+        if (bar) {
+          bar.style.width = Math.min(Math.max(pct, 0), 100) + "%";
+        }
+      }, { passive: true });
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(function (entries) {
+          entries.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+          const hit = entries.find(function (entry) {
+            return entry.isIntersecting && entry.intersectionRatio > 0.12;
+          });
+          if (hit) {
+            setActive(hit.target.id);
+          }
+        }, { rootMargin: "-40% 0px -40% 0px", threshold: [0, 0.12, 0.25, 0.45] });
+
+        sections.forEach(function (item) {
+          const node = document.getElementById(item.id);
+          if (node) {
+            observer.observe(node);
+          }
+        });
+      }
+
+      links.forEach(function (link) {
+        link.addEventListener("click", function () {
+          setActive(link.getAttribute("href").slice(1));
+        });
+      });
+
+      const hotkeys = {};
+      sections.forEach(function (item) {
+        hotkeys[item.hotkey] = item.id;
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.metaKey || event.ctrlKey) {
+          return;
+        }
+        const target = event.target;
+        if (target && target.closest && target.closest("input, textarea, select, [contenteditable='true']")) {
+          return;
+        }
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (!hotkeys[key]) {
+          return;
+        }
+        event.preventDefault();
+        const node = document.getElementById(hotkeys[key]);
+        if (node) {
+          node.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    })();
+  </script>
+  <footer class="footer" style="margin-left:var(--navw,0)">
+    xvary · 2026 · not investment advice
+    <div class="footer-links">
+      <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/methodology/">methodology</a>
+      <a href="/newsletter/">newsletter</a>
+      <a href="/pricing/">pricing</a>
+      <a href="/free/">free reports</a>
+      <a href="/legal/disclaimer/">disclaimer</a>
+      <a href="/legal/privacy/">privacy</a>
+      <a href="/legal/terms/">terms</a>
+    </div>
+    <div class="footer-logo">
+      <a href="/" aria-label="home">
+        <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+      </a>
+    </div>
+  </footer>
+  <script src="/js/site-chrome.js?v=1776081807" defer></script>
+</body>
+</html>

@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NVDA - deep dive · xvary</title>
+  <meta name="description" content="Two years ago, NVIDIA made $27 billion." />
+  <meta name="robots" content="index, follow" />
+  <link rel="canonical" href="https://xvary.com/stock/nvda/deep-dive/" />
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="NVDA deep dive — xvary">
+  <meta property="og:description" content="Two years ago, NVIDIA made $27 billion.">
+  <meta property="og:url" content="https://xvary.com/stock/nvda/deep-dive/">
+  <meta property="og:image" content="https://xvary.com/assets/og-default.png">
+  <meta property="og:site_name" content="XVARY">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="NVDA deep dive — xvary">
+  <meta name="twitter:description" content="Two years ago, NVIDIA made $27 billion.">
+  <meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807" />
+  <style>
+:root{
+      --yel:#ffe500;
+      --ink:#000;
+      --paper:#fffdf3;
+      --card:#fff;
+      --line:rgba(0,0,0,.12);
+      --text:#111;
+      --muted:#555;
+      --soft:#f3eed8;
+      --green:#1a7f5a;
+      --red:#c53030;
+      --amber:#b7791f;
+      --blue:#2251ff;
+      --shadow:0 18px 42px rgba(0,0,0,.10);
+      --radius:16px;
+      --radius-sm:12px;
+      --navw:240px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    html{background:var(--yel);scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h, 68px) + 24px)}
+    body{
+      background:var(--yel);
+      color:var(--text);
+      font:500 16px/1.65 "Space Grotesk",system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    a{color:inherit;text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:var(--ink);color:var(--yel)}
+    .skip-link{
+      position:absolute;left:12px;top:-40px;z-index:9999;
+      background:var(--ink);color:var(--yel);
+      padding:8px 14px;border-radius:999px;font:700 12px/1 "DM Mono",monospace;
+    }
+    .skip-link:focus{top:12px}
+
+    .layout{display:block}
+    .sidebar{
+      position:fixed;left:0;top:var(--nav-h, 68px);bottom:0;width:var(--navw);
+      overflow:auto;background:var(--ink);color:#fff;border-right:1px solid rgba(255,255,255,.08);
+      padding:18px 0 16px;scrollbar-width:none;
+    }
+    .sidebar::-webkit-scrollbar{display:none}
+    .nav-section{padding:0 0 8px}
+    .nav-label{
+      padding:0 18px 10px;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.12em;text-transform:lowercase;color:rgba(255,255,255,.46);
+    }
+    .nav-pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 18px 10px 16px;color:rgba(255,255,255,.78);
+      border-left:3px solid transparent;text-decoration:none;font-size:12px;font-weight:600;line-height:1.35;
+    }
+    .nav-pill:hover{background:rgba(255,255,255,.06);text-decoration:none}
+    .nav-pill.active{background:var(--yel);color:var(--ink);border-left-color:var(--ink)}
+    .nav-kbd{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:22px;height:22px;border-radius:6px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+      font:700 10px/1 "DM Mono",monospace;flex:0 0 auto;
+    }
+    .nav-pill.active .nav-kbd{background:var(--ink);color:var(--yel);border-color:var(--ink)}
+    .nav-txt{min-width:0}
+
+    .content{
+      margin-left:var(--navw);
+      padding:28px 26px 64px;
+      width:calc((100vw - var(--navw)) * 0.9);
+      max-width:none;
+    }
+
+    .hero{
+      display:block;
+      text-align:left;
+      border-bottom:3px solid rgba(0,0,0,.14);
+      padding:18px 0 26px;margin-bottom:18px;
+    }
+    .hero-top{
+      display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:24px;align-items:end;
+      padding-bottom:18px;
+    }
+    .hero .hero-ticker{
+      font-size:clamp(58px,10vw,92px);line-height:.88;font-weight:800;letter-spacing:-.05em;text-transform:lowercase;margin:0;
+      max-width:none;text-align:left;
+    }
+    .hero-co{margin-top:4px;font-size:14px;color:rgba(0,0,0,.64);text-transform:lowercase}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .pill{
+      display:inline-flex;align-items:center;padding:5px 12px;border-radius:999px;
+      font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.06em;
+      background:rgba(0,0,0,.08);color:#111;
+    }
+    .pill.dark{background:var(--ink);color:var(--yel)}
+    .hero .hero-hook{
+      font-size:clamp(19px,2.05vw,24px);line-height:1.35;font-weight:700;margin:0;color:#111;
+      max-width:none;text-align:left;
+    }
+    .hero .hero-sub{
+      margin:10px 0 0;color:rgba(0,0,0,.70);font-size:17px;line-height:1.68;max-width:none;text-align:left;
+    }
+    .hero-tape{
+      display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;padding-top:16px;
+      border-top:2px solid rgba(0,0,0,.10);font:600 11px/1.5 "DM Mono",monospace;color:rgba(0,0,0,.58)
+    }
+    .hero-tape strong{color:rgba(0,0,0,.92)}
+
+    .kpi-grid{display:grid;gap:10px}
+    .kpi-grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .kpi-grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .kpi-grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi{
+      background:rgba(255,255,255,.84);border:1px solid rgba(0,0,0,.08);border-radius:14px;
+      padding:14px 16px;box-shadow:0 8px 20px rgba(0,0,0,.04)
+    }
+    .kpi-label{font:700 10px/1.25 "DM Mono",monospace;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .kpi-value{font-size:clamp(24px,2.8vw,34px);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+    .kpi-sub{margin-top:4px;font-size:12px;line-height:1.45;color:rgba(0,0,0,.55)}
+    .value-gn{color:var(--green)}
+    .value-rd{color:var(--red)}
+    .value-am{color:var(--amber)}
+
+    .panel{
+      background:rgba(255,255,255,.92);border:2px solid rgba(0,0,0,.08);border-left:5px solid var(--yel);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin:18px 0
+    }
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      margin-bottom:12px;padding-bottom:12px;border-bottom:3px solid #000
+    }
+    .section-head h2{
+      margin:0;font-size:clamp(34px,3.9vw,50px);line-height:.98;font-weight:800;letter-spacing:-.045em;text-transform:lowercase
+    }
+    .kicker{font:700 11px/1 "DM Mono",monospace;letter-spacing:.12em;text-transform:lowercase;color:rgba(0,0,0,.52)}
+    .lead{margin:0 0 16px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.72)}
+    .aggregate-sources-attribution{margin:0 0 14px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.76)}
+    .aggregate-sources-attribution p{margin:0}
+    .aggregate-methodology-link{margin:0;max-width:80ch;font-size:14.5px;line-height:1.6;color:rgba(0,0,0,.62)}
+    #appendix .lead,
+    #appendix .aggregate-sources-attribution,
+    #appendix .aggregate-methodology-link{max-width:none}
+    .quote,.note,.callout,.pillar,.scenario,.table-wrap,.chart-box{
+      background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:14px
+    }
+    .quote{padding:14px 16px;font-size:15px;line-height:1.68;color:rgba(0,0,0,.72)}
+    .note{padding:14px 16px;margin-top:10px;font-size:14.5px;line-height:1.64;color:rgba(0,0,0,.72)}
+    .note strong,.table-title .tag,.legend-label,.pillars .head h4{
+      font:700 11px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase
+    }
+    .note.green{border-left:4px solid var(--green);background:rgba(26,127,90,.06)}
+    .note.amber{border-left:4px solid var(--amber);background:rgba(183,121,31,.08)}
+    .note.red{border-left:4px solid var(--red);background:rgba(197,48,48,.06)}
+
+    .g2,.g3,.g4,.callout-row,.pillars,.scenario-grid{display:grid;gap:10px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .callout-row{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:12px;min-width:0}
+    .callout{padding:14px 16px;min-width:0;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+    .callout .label{font:700 10px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .callout .metric{font-size:clamp(24px,2.8vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;word-break:break-word}
+    #appendix .callout .metric{font-size:clamp(13px,1.35vw,16px);font-weight:700;letter-spacing:0;line-height:1.4}
+    .callout .desc{margin-top:6px;font-size:12.5px;line-height:1.5;color:rgba(0,0,0,.56)}
+
+    .pillars{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px}
+    .pillar{padding:14px 16px}
+    .pillar .head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+    .pillar .head h4{margin:0;font-size:14px;color:#111;letter-spacing:0;text-transform:none;font-family:"Space Grotesk",sans-serif}
+    .tag{
+      display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;border:1px solid rgba(0,0,0,.10);
+      background:rgba(255,255,255,.85);font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.04em;
+    }
+    .tag.green{color:var(--green);background:rgba(26,127,90,.08);border-color:rgba(26,127,90,.25)}
+    .tag.amber{color:var(--amber);background:rgba(183,121,31,.10);border-color:rgba(183,121,31,.25)}
+    .tag.red{color:var(--red);background:rgba(197,48,48,.08);border-color:rgba(197,48,48,.25)}
+    .tag.blue{color:#111;background:rgba(255,229,0,.18);border-color:rgba(0,0,0,.20)}
+    .tag.ink{color:rgba(0,0,0,.68)}
+
+    .table-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+    .table-title h3{margin:0;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-.02em;text-transform:lowercase}
+    .table-wrap{overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+    table{width:100%;border-collapse:collapse;min-width:520px;font-variant-numeric:tabular-nums;background:#fff}
+    th,td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+    thead th{
+      position:sticky;top:0;background:#f0ece4;color:#111;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.08em;text-transform:lowercase;border-bottom:3px solid #000;text-align:left
+    }
+    tbody tr:nth-child(even) td{background:rgba(240,236,228,.36)}
+    tbody tr:hover td{background:rgba(255,229,0,.16)}
+    td.num,th.num{text-align:right}
+    td.b{font-weight:800;color:#111}
+    td.pos{color:var(--green);font-weight:700}
+    td.neg{color:var(--red);font-weight:700}
+    td.amb{color:var(--amber);font-weight:700}
+
+    .chart-box{padding:16px 18px 18px;box-shadow:0 12px 36px rgba(0,0,0,.06)}
+    .chart-head h3{margin:0 0 4px;font-size:16px;line-height:1.2;text-transform:lowercase}
+    .chart-head .sub{font-size:11px;color:rgba(0,0,0,.52);font-style:italic}
+    /* TAM vs revenue: y-axis ticks + grid + split x-label row */
+    .chart-labeled{
+      --chart-h:min(52vw,240px);
+      --chart-h-min:200px;
+      --chart-h-max:260px;
+      display:grid;
+      grid-template-columns:3.35rem 1fr;
+      grid-template-rows:minmax(var(--chart-h-min),var(--chart-h-max)) auto;
+      gap:8px 12px;
+      align-items:stretch;
+      margin-top:6px;
+    }
+    .chart-y-title{
+      margin:8px 0 0;
+      font:700 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.5);
+    }
+    .chart-y-axis{
+      grid-column:1;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      padding-right:8px;
+      border-right:2px solid rgba(0,0,0,.2);
+      font:600 10px/1 "DM Mono",monospace;
+      color:rgba(0,0,0,.58);
+      box-sizing:border-box;
+    }
+    .chart-y-axis .yt{
+      position:absolute;right:8px;line-height:1;white-space:nowrap;
+      transform:translateY(-50%);
+    }
+    .chart-y-axis .yt.y-600{top:0;transform:translateY(0)}
+    .chart-y-axis .yt.y-500{top:16.6667%}
+    .chart-y-axis .yt.y-400{top:33.3333%}
+    .chart-y-axis .yt.y-300{top:50%}
+    .chart-y-axis .yt.y-200{top:66.6667%}
+    .chart-y-axis .yt.y-100{top:83.3333%}
+    .chart-y-axis .yt.y-0{bottom:0;top:auto;transform:translateY(0)}
+    .chart-plot-cell{
+      grid-column:2;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      border-bottom:2px solid rgba(0,0,0,.2);
+    }
+    .chart-grid-bg{
+      position:absolute;inset:0;
+      background:repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6)
+      );
+      pointer-events:none;
+    }
+    .chart{
+      position:relative;z-index:1;
+      display:flex;align-items:flex-end;justify-content:stretch;gap:6px;
+      width:100%;
+      height:100%;min-height:0;
+    }
+    .bar{
+      flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+      min-width:0;height:100%;
+    }
+    .bar-pair{
+      display:flex;flex-direction:row;align-items:flex-end;justify-content:center;
+      gap:5px;width:100%;height:100%;min-height:0;
+    }
+    .col{
+      flex:1 1 0;min-width:8px;border-radius:8px 8px 2px 2px;
+      min-height:2px;align-self:flex-end;
+      box-sizing:border-box;
+    }
+    .col.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .col.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .chart-x-foot{
+      grid-column:2;
+      grid-row:2;
+      display:flex;gap:6px;
+      margin-top:-2px;
+    }
+    .bar-foot{
+      flex:1 1 0;min-width:0;
+      text-align:center;padding-top:6px;
+    }
+    .chart-x-axis-cap{
+      margin:4px 0 0;
+      font:600 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.45);
+      text-align:center;
+    }
+    .chart-legend{
+      display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:12px;padding-top:10px;
+      border-top:1px solid rgba(0,0,0,.08);font-size:12px;color:rgba(0,0,0,.62)
+    }
+    .chart-legend span{display:inline-flex;align-items:center;gap:6px}
+    .chart-legend i{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+    .chart-legend i.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .chart-legend i.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .lab,.val{font-size:10px;line-height:1.25;text-align:center;color:rgba(0,0,0,.56)}
+    .val{font:700 10px/1 "DM Mono",monospace}
+    .lab{max-width:12em;margin:0 auto}
+
+    .scenario-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}
+    .scenario{padding:14px 16px;border-left:4px solid var(--blue)}
+    .scenario.bear{border-left-color:var(--red)}
+    .scenario.base{border-left-color:var(--amber)}
+    .scenario.bull{border-left-color:var(--green)}
+    .scenario .prob{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:8px}
+    .scenario h4{margin:0 0 6px;font-size:18px;line-height:1.1}
+    .scenario p{margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,.72)}
+
+    .legend{display:grid;gap:8px}
+    .legend .item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(0,0,0,.72)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)} .dot.blue{background:#2251ff}
+
+    .footer{
+      margin-top:28px;padding-top:22px;border-top:3px solid rgba(0,0,0,.12);
+      text-align:center;font-size:12px;line-height:1.65;color:rgba(0,0,0,.56)
+    }
+    .footer .links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+    .footer .links a{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.68)}
+    .footer .small{margin-top:12px;font-size:11px;color:rgba(0,0,0,.54)}
+
+    .reading-progress{
+      position:fixed;top:var(--nav-h, 68px);left:0;height:4px;width:0;z-index:101;
+      background:linear-gradient(90deg,var(--yel),#fff38c);box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 14px rgba(255,229,0,.45)
+    }
+    .watermark{
+      position:fixed;right:18px;bottom:14px;z-index:1;pointer-events:none;user-select:none;
+      font-size:clamp(68px,12vw,118px);font-weight:800;letter-spacing:-.06em;line-height:.8;color:rgba(0,0,0,.05)
+    }
+
+    @media (max-width:1024px){
+      .g2,.g3,.g4,.pillars,.scenario-grid{grid-template-columns:1fr}
+      .hero-top{grid-template-columns:1fr}
+      .content{padding:22px 18px 56px}
+    }
+    @media (max-width:900px){
+      .sidebar{display:none}
+      .content{
+        margin-left:auto;
+        margin-right:auto;
+        width:90vw;
+        max-width:none;
+      }
+    }
+    @media (max-width:760px){
+      .kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr 1fr}
+      .callout-row{grid-template-columns:1fr 1fr}
+      table{min-width:460px}
+    }
+    @media (max-width:560px){
+      .callout-row,.kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr}
+      .section-head h2{font-size:30px}
+      .hero .hero-hook{font-size:19px}
+      .hero .hero-sub{font-size:16px}
+      .panel{padding:20px}
+    }
+    .hero-snapshot-link {
+      display: inline-block;
+      margin-top: 4px;
+      font: 400 11px/1.4 "DM Mono", monospace;
+      color: rgba(0,0,0,.38);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .hero-snapshot-link:hover {
+      color: rgba(0,0,0,.68);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+  .aggregate-panel {
+    position: relative;
+    z-index: 1;
+  }
+  .aggregate-lead p {
+    margin: 0 0 16px;
+  }
+  .auto-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .aggregate-stack {
+    display: grid;
+    gap: 12px;
+  }
+  .aggregate-card {
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.05);
+  }
+  .aggregate-card.dark {
+    background: rgba(0,0,0,.92);
+    color: rgba(255,255,255,.92);
+    border-color: rgba(255,255,255,.08);
+  }
+  .aggregate-card.dark p,
+  .aggregate-card.dark li,
+  .aggregate-card.dark .aggregate-source {
+    color: rgba(255,255,255,.72);
+  }
+  .aggregate-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .aggregate-card-head h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    text-transform: lowercase;
+  }
+  .aggregate-card-body,
+  .aggregate-card-body p,
+  .aggregate-card-body li {
+    font-size: 15px;
+    line-height: 1.68;
+    color: rgba(0,0,0,.72);
+  }
+  .aggregate-card-body p {
+    margin: 0 0 12px;
+  }
+  .aggregate-card-body ul,
+  .aggregate-card-body ol {
+    margin: 0 0 12px 20px;
+    padding: 0;
+  }
+  .aggregate-card-body > *:last-child {
+    margin-bottom: 0;
+  }
+  .aggregate-source {
+    margin-top: 10px;
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .06em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.48);
+  }
+  .aggregate-substack {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .aggregate-chart-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .aggregate-chart-row {
+    display: grid;
+    grid-template-columns: minmax(80px, 140px) 1fr minmax(60px, 120px);
+    align-items: center;
+    gap: 10px;
+  }
+  .aggregate-chart-label,
+  .aggregate-chart-value {
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .04em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.62);
+  }
+  .aggregate-chart-track {
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .aggregate-chart-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+  }
+  .table-wrap table th.num,
+  .table-wrap table td.num {
+    text-align: right;
+  }
+  .table-wrap table td.pos { color: var(--green, #1a7f37); font-weight: 600; }
+  .table-wrap table td.neg { color: var(--red, #cf222e); font-weight: 600; }
+  .table-wrap table td.amb { color: var(--caution-text, #9a6700); font-weight: 600; }
+  .table-narrow {
+    max-width: 520px;
+  }
+  .table-narrow table {
+    min-width: 0;
+    width: 100%;
+  }
+  .g2 .table-narrow {
+    max-width: none;
+  }
+  .aggregate-mini-table {
+    margin-top: 8px;
+  }
+  .aggregate-mini-table table {
+    min-width: 0;
+  }
+  .aggregate-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .aggregate-list-item {
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    background: rgba(255,255,255,.72);
+  }
+  .aggregate-list-item strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .aggregate-audit {
+    margin-top: 8px;
+  }
+  @media (max-width: 1120px) {
+    .sidebar {
+      position: static;
+      width: auto;
+      top: auto;
+      padding: 12px 0;
+      border-right: 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: none;
+    }
+    .content {
+      margin-left: auto;
+      margin-right: auto;
+      width: 90vw;
+      max-width: none;
+      padding: 24px 18px 56px;
+    }
+    .watermark {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .hero-top {
+      grid-template-columns: 1fr;
+    }
+    .aggregate-chart-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+  .aggregate-pane-xref {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(0, 0, 0, 0.52);
+  }
+  .aggregate-pane-xref a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .aggregate-pane-xref a:hover {
+    color: rgba(0, 0, 0, 0.88);
+  }
+  .hero-snapshot-link {
+    display: inline-block;
+    margin-top: 4px;
+    font: 400 11px/1.4 "DM Mono", monospace;
+    color: rgba(0,0,0,.38);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .hero-snapshot-link:hover {
+    color: rgba(0,0,0,.68);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  </style>
+</head>
+<body data-xvary-aggregate-readable="1">
+  <a class="skip-link" href="#content">skip to content</a>
+  <div class="reading-progress" id="reading-progress"></div>
+  <div class="watermark" aria-hidden="true">NVDA</div>
+
+  <nav class="nav nav--white" aria-label="main navigation" data-xvary-nav-static>
+    <a class="nav-brand" href="/">xvary</a>
+    <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" type="button" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+    <div class="nav-links">
+      <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/pricing/">pricing</a>
+      <a class="nav-cta" href="/pricing/">sign up</a>
+    </div>
+  </nav>
+
+  <div class="layout xvary-aggregate-deep-dive-body" data-template-id="aggregate-deep-dive-live-v1" lang="en">
+    <aside class="sidebar" aria-label="section navigation">
+      <div class="nav-section">
+        <div class="nav-label">quick navigation</div>
+        <a class="nav-pill active" href="#summary">
+          <span class="nav-kbd">0</span>
+          <span class="nav-txt">report snapshot</span>
+        </a>
+        <a class="nav-pill " href="#thesis">
+          <span class="nav-kbd">1</span>
+          <span class="nav-txt">variant perception &amp; thesis</span>
+        </a>
+        <a class="nav-pill " href="#financials">
+          <span class="nav-kbd">2</span>
+          <span class="nav-txt">financial analysis</span>
+        </a>
+        <a class="nav-pill " href="#valuation">
+          <span class="nav-kbd">3</span>
+          <span class="nav-txt">valuation</span>
+        </a>
+        <a class="nav-pill " href="#risk">
+          <span class="nav-kbd">4</span>
+          <span class="nav-txt">what breaks the thesis</span>
+        </a>
+        <a class="nav-pill " href="#ops">
+          <span class="nav-kbd">5</span>
+          <span class="nav-txt">fundamentals &amp; operations</span>
+        </a>
+        <a class="nav-pill " href="#competition">
+          <span class="nav-kbd">6</span>
+          <span class="nav-txt">competitive position</span>
+        </a>
+        <a class="nav-pill " href="#tam">
+          <span class="nav-kbd">7</span>
+          <span class="nav-txt">market size &amp; tam</span>
+        </a>
+        <a class="nav-pill " href="#product">
+          <span class="nav-kbd">8</span>
+          <span class="nav-txt">product &amp; technology</span>
+        </a>
+        <a class="nav-pill " href="#supply">
+          <span class="nav-kbd">9</span>
+          <span class="nav-txt">supply chain</span>
+        </a>
+        <a class="nav-pill " href="#catalysts">
+          <span class="nav-kbd">a</span>
+          <span class="nav-txt">catalyst map</span>
+        </a>
+        <a class="nav-pill " href="#street">
+          <span class="nav-kbd">b</span>
+          <span class="nav-txt">street expectations</span>
+        </a>
+        <a class="nav-pill " href="#scorecard">
+          <span class="nav-kbd">c</span>
+          <span class="nav-txt">earnings scorecard</span>
+        </a>
+        <a class="nav-pill " href="#signals">
+          <span class="nav-kbd">d</span>
+          <span class="nav-txt">alternative data</span>
+        </a>
+        <a class="nav-pill " href="#history">
+          <span class="nav-kbd">e</span>
+          <span class="nav-txt">historical analogies</span>
+        </a>
+        <a class="nav-pill " href="#management">
+          <span class="nav-kbd">f</span>
+          <span class="nav-txt">management &amp; leadership</span>
+        </a>
+        <a class="nav-pill " href="#macro">
+          <span class="nav-kbd">g</span>
+          <span class="nav-txt">macro sensitivity</span>
+        </a>
+        <a class="nav-pill " href="#quant">
+          <span class="nav-kbd">h</span>
+          <span class="nav-txt">quantitative profile</span>
+        </a>
+        <a class="nav-pill " href="#derivatives">
+          <span class="nav-kbd">i</span>
+          <span class="nav-txt">options &amp; derivatives</span>
+        </a>
+        <a class="nav-pill " href="#governance">
+          <span class="nav-kbd">j</span>
+          <span class="nav-txt">governance &amp; accounting</span>
+        </a>
+        <a class="nav-pill " href="#value">
+          <span class="nav-kbd">k</span>
+          <span class="nav-txt">value framework</span>
+        </a>
+        <a class="nav-pill " href="#appendix">
+          <span class="nav-kbd">l</span>
+          <span class="nav-txt">appendix &amp; sources</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="content" id="content">
+      <section class="hero" aria-label="report intro">
+        <div class="hero-top">
+          <div>
+            <h1 class="hero-ticker">nvda</h1>
+            <div class="hero-co">nvidia corp</div>
+            <a class="hero-snapshot-link" href="/stock/nvda/snapshot/">snapshot page &rarr;</a>
+            <div class="hero-badges">
+              <span class="pill dark">deep dive</span>
+              <span class="pill ">semiconductors &amp; electronics</span>
+              <span class="pill ">mega cap</span>
+              <span class="pill ">mar 25, 2026</span>
+            </div>
+            <div class="hero-tape" aria-label="headline tape">
+              <span><strong>Position</strong> Long</span>
+              <span><strong>Price</strong> $178.68</span>
+              <span><strong>~$4.34T</strong> mcap</span>
+              <span><strong>mar 25, 2026</strong> as-of date</span>
+            </div>
+          </div>
+          <div>
+            <p class="hero-hook">Two years ago, NVIDIA made $27 billion. Last year, it made $216 billion. No company this large has ever tripled revenue this fast, and the customers buying its chips have no second option.</p>
+            <p class="hero-sub">We're <strong>Long at 40/100 signal strength</strong>; fair value about <strong>$215</strong> (+20.3% vs spot).</p>
+          </div>
+        </div>
+
+        <div class="kpi-grid cols-3">
+          <div class="kpi">
+            <div class="kpi-label">recommendation</div>
+            <div class="kpi-value ">Long</div>
+            <div class="kpi-sub">portfolio stance</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">12m price target</div>
+            <div class="kpi-value ">$215.00</div>
+            <div class="kpi-sub">+20% from $178.68</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">intrinsic value</div>
+            <div class="kpi-value ">$215</div>
+            <div class="kpi-sub">+20.3%</div>
+          </div>
+        </div>
+
+        <div class="callout-row">
+          <div class="callout">
+            <div class="label">overall signal score</div>
+            <div class="metric ">40/100</div>
+            <div class="desc">Strong Long tilt from financials + alt data</div>
+          </div>
+          <div class="callout">
+            <div class="label">bullish signals</div>
+            <div class="metric ">7</div>
+            <div class="desc">Revenue growth, margins, FCF, balance sheet, buybacks, hiring, sentiment</div>
+          </div>
+          <div class="callout">
+            <div class="label">bearish signals</div>
+            <div class="metric ">2</div>
+            <div class="desc">Margin sustainability, valuation stretch</div>
+          </div>
+          <div class="callout">
+            <div class="label">data freshness</div>
+            <div class="metric ">Mar 24, 2026</div>
+            <div class="desc">Live price + FY2026 audited (ended Jan 2026)</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Report snapshot</h2>
+          <div class="kicker">executive summary</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Intrinsic value of $215 implies 20.3% upside from the current $178.68 share price. The single most important non-obvious takeaway is NVIDIA&#x27;s ability to sustain 71.1% gross margins and 60.4% operating margins on $215.94B revenue scale, far exceeding traditional semiconductor peers.</p></div>
+                <div class="g3"><div class="kpi"><div class="kpi-label">recommendation</div><div class="kpi-value ">Long</div><div class="kpi-sub">portfolio stance</div></div><div class="kpi"><div class="kpi-label">12m price target</div><div class="kpi-value ">$215.00</div><div class="kpi-sub">+20% from $178.68</div></div><div class="kpi"><div class="kpi-label">intrinsic value</div><div class="kpi-value ">$215</div><div class="kpi-sub">+20.3%</div></div></div>
+        <div class="g2" style="margin-top:10px">
+          <div class="quote"><strong class="kicker">core debate</strong><br><p>Intrinsic value of $215 implies 20.3% upside from the current $178.68 share price...</p></div>
+          <div class="quote"><strong class="kicker">headline tape</strong><br><p>$178.68 · ~$4.34T · as of mar 25, 2026.</p></div>
+        </div>
+        <div class="callout-row"><div class="callout"><div class="label">bull case</div><div class="metric value-gn">$386.05</div><div class="desc">In the bull case, Blackwell demand materially exceeds supply well into 2026, inference becomes a larger and more recurring driver than the market expects, sovereign AI and enterprise deployments broaden the customer base beyond a handful of hyperscalers, and networking/software attach rates lift system economics...</div></div><div class="callout"><div class="label">base case</div><div class="metric ">$294</div><div class="desc">In the base case, NVDA continues to grow at a strong but moderating pace as Blackwell replaces Hopper, inference demand offsets some training normalization, and large cloud customers remain committed to accelerated compute despite periodic digestion...</div></div><div class="callout"><div class="label">bear case</div><div class="metric value-rd">$207</div><div class="desc">In the bear case, hyperscaler AI capex growth decelerates faster than expected as initial training clusters are absorbed, AI application monetization lags, and custom ASICs or internal accelerators take incremental share in specific workloads...</div></div></div>
+        <div class="note green"><strong>top findings</strong><br><p>NVDA remains the highest-quality way to own the AI infrastructure buildout because it captures value at multiple layers of the stack, has unmatched developer lock-in via CUDA, and continues to translate product leadership into system-level share gains across training, inference, networking, and enterprise AI deployments...</p></div>
+        <div class="note amber"><strong>aggregate synthesis</strong><br><p>Numbers can look similar while narrative labels diverge — focus on which spreadsheet row the market is pricing.</p></div>
+
+      </section>
+      <section id="thesis" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Variant perception &amp; thesis</h2>
+          <div class="kicker">pm brief</div>
+        </div>
+        <div class="lead aggregate-lead"><p>NVIDIA delivered an exceptional FY2026 with audited revenue of $215.94B (+65.5% YoY) and net income of $120.07B (55.6% margin), driven by data center dominance at ~$193.7B. While the street prices in perpetual hyper-growth at a 35.8x P/E and 32.0x EV/EBITDA, our variant view sees durable CUDA-driven platform economics sustaining above-peer margins and ROIC, but with limited margin of safety at current levels. We maintain a Long position with moderate conviction, targeting $195 in 12 months as Rubin execution and sovereign diversification offset concentration risks.</p></div>
+                <div class="pillars"><div class="pillar"><div class="head"><h4>1. AI demand durability</h4><span class="tag green">Catalyst</span></div><p>Will hyperscaler and enterprise AI infrastructure demand for NVIDIA training and inference GPUs remain strong enough over the next 12-24 months to support revenue growth materially above broader semiconductor peers...</p></div><div class="pillar"><div class="head"><h4>2. Supply chain fulfillment</h4><span class="tag green">Catalyst</span></div><p>Can NVIDIA secure enough HBM, advanced packaging, wafers, and related capacity to convert demand into shipments without meaningful gross-margin erosion or delivery slippage...</p></div><div class="pillar"><div class="head"><h4>3. Moat durability competition</h4><span class="tag blue">Thesis Pillar</span></div><p>Is NVIDIA&#x27;s competitive advantage in AI accelerators and the CUDA/software ecosystem durable enough to sustain above-industry margins and dominant share over the next 3-5 years...</p></div><div class="pillar"><div class="head"><h4>4. backlog conversion order quality</h4><span class="tag green">Catalyst</span></div><p>Are NVIDIA&#x27;s backlog and order signals converting into high-quality, repeat, end-utilized demand rather than cancellations, channel digestion, or temporary inventory build...</p></div></div>
+        <div class="note"><strong>the 60-second pitch</strong><br><p>Street consensus embeds aggressive perpetual growth assumptions (43.6% implied) that overstate durability; we claim NVIDIA can sustain 55%+ net margins longer than peers due to software moat, but current $175.33 price (35.8x P/E, 19.7x EV/Revenue) offers only modest upside skew versus base DCF $111.55. This is Long-to-slightly Long for near-term returns but Long for multi-year ownership if execution holds...</p></div>
+        <div style="margin-top:12px"><div class="table-wrap"><table><thead><tr><th>Criterion</th><th>Threshold</th><th>Actual (FY2026)</th><th>Pass/Fail</th></tr></thead><tbody><tr><td class="b"><p>Adequate Size</p></td><td><p>&gt;$100M revenue (adjusted for inflation)</p></td><td><p>$215.94B</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Strong Financial Condition</p></td><td>Current ratio >2; Debt/Equity <0.5</td><td><p>Current ratio 3.91; D/E 0.05</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Earnings Stability</p></td><td><p>Positive EPS for 10 years</p></td><td><p>Consistent growth; +66.7% YoY EPS</p></td><td><p>Pass (recent track record)</p></td></tr><tr><td class="b"><p>Dividend Record</p></td><td><p>Uninterrupted payments 20+ years</p></td><td><p>Pays dividends; $41.1B returned in FY2026…</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Earnings Growth</p></td><td><p>EPS growth > 33% over 10 years</p></td><td class="pos"><p>+66.7% YoY; multi-year compounder</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Moderate P/E Ratio</p></td><td><p>P/E < 15x or reasonable vs. growth</p></td><td><p>35.8x trailing</p></td><td><p>Fail</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Graham&#x27;s 7 Criteria Assessment | Source: SEC EDGAR 10-K FY2026; Derived ratios</div></div>
+
+      </section>
+      <section id="financials" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Financial analysis</h2>
+          <div class="kicker">elite economics</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Revenue: $215.94B (vs $130.5B prior (+65.5%)) · Net Income: $120.07B (vs $72.9B prior (+64.7%)) · Diluted EPS: $4.90 (vs $2.94 prior (+66.7%)).</p></div>
+                <div class="callout-row"><div class="callout"><div class="label">Revenue</div><div class="metric ">$215.94B</div><div class="desc">vs $130.5B prior (+65.5%)</div></div><div class="callout"><div class="label">Net Income</div><div class="metric ">$120.07B</div><div class="desc">vs $72.9B prior (+64.7%)</div></div><div class="callout"><div class="label">Diluted EPS</div><div class="metric ">$4.90</div><div class="desc">vs $2.94 prior (+66.7%)</div></div><div class="callout"><div class="label">Debt/Equity</div><div class="metric ">0.05</div><div class="desc">stable low leverage</div></div><div class="callout"><div class="label">Current Ratio</div><div class="metric ">3.91</div><div class="desc">strong liquidity</div></div><div class="callout"><div class="label">FCF Yield</div><div class="metric ">2.4%</div><div class="desc">on $4.26T mkt cap</div></div></div>
+        <div class="g2" style="margin-top:10px"><div><div class="table-wrap"><table><thead><tr><th>Line Item</th><th class="num">FY2022</th><th class="num">FY2023</th><th class="num">FY2024</th><th class="num">FY2025</th><th class="num">FY2026</th></tr></thead><tbody><tr><td class="b"><p>Revenues</p></td><td class="num"><p>$26.9B</p></td><td class="num"><p>$27.0B</p></td><td class="num"><p>$60.9B</p></td><td class="num"><p>$130.5B</p></td><td class="num"><p>$215.9B</p></td></tr><tr><td class="b"><p>COGS</p></td><td class="num"></td><td class="num"><p>$11.6B</p></td><td class="num"><p>$16.6B</p></td><td class="num"><p>$32.6B</p></td><td class="num"><p>$62.5B</p></td></tr><tr><td class="b"><p>Gross Profit</p></td><td class="num"></td><td class="num"><p>$15.4B</p></td><td class="num"><p>$44.3B</p></td><td class="num"><p>$97.9B</p></td><td class="num"><p>$153.5B</p></td></tr><tr><td class="b"><p>R&D</p></td><td class="num"></td><td class="num"><p>$7.3B</p></td><td class="num"><p>$8.7B</p></td><td class="num"><p>$12.9B</p></td><td class="num"><p>$18.5B</p></td></tr><tr><td class="b"><p>SG&A</p></td><td class="num"></td><td class="num"><p>$2.4B</p></td><td class="num"><p>$2.7B</p></td><td class="num"><p>$3.5B</p></td><td class="num"><p>$4.6B</p></td></tr><tr><td class="b"><p>Operating Income</p></td><td class="num"></td><td class="num"><p>$4.2B</p></td><td class="num"><p>$33.0B</p></td><td class="num"><p>$81.5B</p></td><td class="num"><p>$130.4B</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Financial Model (Income Statement) | Source: SEC EDGAR XBRL filings (USD)</div></div><div><div class="table-wrap"><table><thead><tr><th>Category</th><th class="num">FY2023</th><th class="num">FY2024</th><th class="num">FY2025</th><th class="num">FY2026</th></tr></thead><tbody><tr><td class="b"><p>Dividends</p></td><td class="num"><p>$398M</p></td><td class="num"><p>$395M</p></td><td class="num"><p>$834M</p></td><td class="num"><p>$974M</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Capital Allocation History | Source: SEC EDGAR XBRL filings</div></div></div>
+        <div class="note green"><strong>production-report readthrough</strong><br><p>Takeaway. NVIDIA&#x27;s FY2026 results demonstrate unmatched operating leverage in the AI era, with revenue surging 65.5% YoY to $215.94B while net margins reached 55.6% and FCF conversion approached 100% of operating cash flow. The single most non-obvious insight is the combination of contained operating expenses (R&D at 8.6% and SG&A at 2.1% of revenue) driving ROIC of 70.3% — levels rarely sustained at this scale in semiconductors.</p></div>
+
+      </section>
+      <section id="valuation" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Valuation</h2>
+          <div class="kicker">probability-weighted fair value</div>
+        </div>
+        <div class="lead aggregate-lead"><p>DCF Fair Value: $215 (5-year projection) · Enterprise Value: $4339.7B (DCF) · WACC: 13.0% (CAPM-derived).</p></div>
+                <div class="g2"><div><div class="table-wrap"><table><thead><tr><th>Parameter</th><th class="num">Value</th></tr></thead><tbody><tr><td class="b"><p>Revenue (base)</p></td><td class="num"><p>$215.9B (USD)</p></td></tr><tr><td class="b"><p>FCF Margin</p></td><td class="num"><p>47.4%</p></td></tr><tr><td class="b"><p>WACC</p></td><td class="num"><p>13.0%</p></td></tr><tr><td class="b"><p>Terminal Growth</p></td><td class="num"><p>4.0%</p></td></tr><tr><td class="b"><p>Growth Path</p></td><td class="num"><p>60.0% → 56.6% → 47.6% → 38.7% → 29.8% → 20.9% → 12.0%</p></td></tr><tr><td class="b"><p>Template</p></td><td class="num"><p>asset_light_growth</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: DCF Assumptions | Source: SEC EDGAR XBRL; computed deterministically</div></div><div><div class="scenario-grid"><div class="scenario bear"><div class="prob">bear case</div><h4>$207</h4><p>Assumes AI capex deceleration in FY2027+, margin compression to ~50% gross on inference shift to ASICs, higher WACC...</p></div><div class="scenario base"><div class="prob">base case</div><h4>$293.51</h4><p>Continues FY2026 momentum into FY2027 with 30-40% growth fade, sustains ~70% gross margin via CUDA moat, 4% terminal...</p></div><div class="scenario bull"><div class="prob">bull case</div><h4>$386.05</h4><p>Extended AI supercycle, Blackwell/Rubin ramps drive 50%+ growth persistence, margin expansion...</p></div></div></div></div>
+        <div class="g2" style="margin-top:10px"><div class="note green"><p>Differentiated View. NVIDIA trades at only 35.8x trailing EPS despite 66.7% YoY growth and 55.6% net margins, but this masks extreme implied expectations (43.5% perpetual growth in reverse DCF). This is Long for the valuation thesis at current levels, as FY2026 excellence is already reflected while future deceleration risks are underpriced...</p></div></div>
+        <div style="margin-top:12px"><div class="table-wrap table-narrow"><table><thead><tr><th>Metric</th><th class="num">Value</th></tr></thead><tbody><tr><td class="b"><p>Current Growth Rate</p></td><td class="num"><p>69.3%</p></td></tr><tr><td class="b"><p>Growth Uncertainty</p></td><td class="num"><p>±13.6pp</p></td></tr><tr><td class="b"><p>Observations</p></td><td class="num"><p>4</p></td></tr><tr><td class="b"><p>Year 1 Projected</p></td><td class="num"><p>55.9%</p></td></tr><tr><td class="b"><p>Year 2 Projected</p></td><td class="num"><p>45.3%</p></td></tr><tr><td class="b"><p>Year 3 Projected</p></td><td class="num"><p>36.7%</p></td></tr><tr><td class="b"><p>Year 4 Projected</p></td><td class="num"><p>29.9%</p></td></tr><tr><td class="b"><p>Year 5 Projected</p></td><td class="num"><p>24.4%</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Kalman Growth Estimator | Source: SEC EDGAR revenue history; Kalman filter</div></div>
+
+      </section>
+      <section id="risk" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>What breaks the thesis</h2>
+          <div class="kicker">falsifiable kill criteria</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Overall Risk Rating: 7/10 (High due to valuation and concentration) · # Key Risks: 8 (Ranked by prob × impact) · Bear Case Downside: -51% ($85.59 vs $175.33 current).</p></div>
+                <div class="note red"><strong>risk framing</strong><br><p>Biggest Risk. Extreme customer concentration (61% of revenue from four direct customers in a recent quarter) combined with hyperscaler ASIC acceleration represents the clearest path to thesis breakage. This is not offset by low debt (0.05 D/E) when the risk is structural loss of pricing power and growth.</p></div>
+        <div style="margin-top:10px"><div class="table-wrap"><table><thead><tr><th>Pillar</th><th>Invalidating Facts</th><th class="num">P(Invalidation)</th></tr></thead><tbody><tr><td class="b"><p>ai-capex-demand-durability</p></td><td><p>Top 4 hyperscalers collectively signal flat-to-down AI infrastructure capex growth for the next 2-4 quarters after current commitments are fulfilled.; NVIDIA data center backlog materially compresses alongside rising customer deployment underutilization, evidenced by hyperscaler comments on excess GPU capacity or weak inference/training ROI.; NVIDIA reports a clear data center revenue deceleration inconsistent with current growth expectations, driven by order pushouts/cancellations rather than supply availability.</p></td><td class="num"><p>33%</p><span class="tag blue">True</span></td></tr><tr><td class="b"><p>moat-sustainability-and-margin-durability…</p></td><td><p>One or more major hyperscalers shift a meaningful share of AI training/inference spend away from NVIDIA to internal ASICs or AMD at production scale, with public evidence that performance/TCO is competitive.; NVIDIA data center gross margin declines structurally by several hundred basis points due to pricing pressure or mix shift, not temporary launch/supply effects.; Developers and enterprise customers show broad migration away from CUDA-dependent workflows toward portable software stacks, reducing switching costs and weakening ecosystem lock-in.</p></td><td class="num"><p>38%</p><span class="tag blue">True</span></td></tr><tr><td class="b"><p>supply-chain-and-fulfillment-execution</p></td><td><p>HBM, CoWoS/advanced packaging, or foundry constraints materially limit NVIDIA shipments for multiple consecutive quarters, causing revenue misses despite strong demand.; NVIDIA is forced to absorb materially higher component or packaging costs that reduce gross margin beyond normal product-transition effects.; Customer lead times remain elevated while backlog conversion stalls, indicating NVIDIA cannot turn demand into delivered systems at required scale.</p></td><td class="num"><p>27%</p><span class="tag blue">True</span></td></tr><tr><td class="b"><p>china-export-control-and-regulatory-hit</p></td><td><p>New U.S. export restrictions remove or severely limit NVIDIA&#x27;s ability to sell compliant AI products into China and other restricted markets with no viable substitute product path.; China-related revenue declines enough to create a material company-wide growth drag or inventory write-downs tied to restricted SKUs.; Regulatory actions broaden beyond exports into licensing, antitrust, or customer procurement restrictions that impair NVIDIA&#x27;s product bundling, pricing, or market access.</p></td><td class="num"><p>29%</p><span class="tag blue">True</span></td></tr><tr><td class="b"><p>valuation-vs-expectation-risk</p></td><td><p>Consensus revenue, EPS, or free-cash-flow expectations for the next 12-24 months are revised down materially even as NVIDIA remains fundamentally profitable and growing.; Market valuation multiples compress meaningfully despite continued operational execution, indicating expectations had been too elevated relative to sustainable growth.; Management commentary or customer data implies lower long-term AI infrastructure intensity or lower normalized margins than those embedded in the current stock valuation.</p></td><td class="num"><p>46%</p><span class="tag blue">True</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Kill File — 5 Thesis-Breaking Triggers | Source: Methodology Why-Tree Decomposition</div></div>
+        <div class="callout-row"><div class="callout"><div class="label">Overall Risk Rating</div><div class="metric value-rd">7/10</div><div class="desc">High due to valuation and concentration</div></div><div class="callout"><div class="label"># Key Risks</div><div class="metric value-rd">8</div><div class="desc">Ranked by prob × impact</div></div><div class="callout"><div class="label">Bear Case Downside</div><div class="metric value-rd">-51%</div><div class="desc">$85.59 vs $175.33 current</div></div></div>
+        <div class="note amber"><strong>most dangerous zone</strong><br><p>Watch for drawdowns driven by fundamentals where funds de-risk faster than the business narrative updates.</p></div>
+
+      </section>
+      <section id="ops" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Fundamentals &amp; operations</h2>
+          <div class="kicker">unit economics</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Revenue: $215.94B (FY2026) · Rev Growth: +65.5% (YoY) · Gross Margin: 71.1% (FY; 75.0% Q4).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">revenue</div><div class="kpi-value ">$215.94B</div><div class="kpi-sub">FY2026</div></div><div class="kpi"><div class="kpi-label">rev growth</div><div class="kpi-value ">+65.5%</div><div class="kpi-sub">YoY</div></div><div class="kpi"><div class="kpi-label">gross margin</div><div class="kpi-value ">71.1%</div><div class="kpi-sub">FY; 75.0% Q4</div></div><div class="kpi"><div class="kpi-label">op margin</div><div class="kpi-value ">60.4%</div><div class="kpi-sub">FY2026</div></div></div><div class="note green"><p>Takeaway. NVIDIA delivered extraordinary scale in FY2026 with $215.94B revenue (+65.5% YoY) and 71.1% gross margin expanding to 75.0% in Q4, while FCF reached $102.35B (47.4% margin). The single most important non-obvious insight is the asset-light model enabling 70.3% ROIC and 47.4% FCF conversion at unprecedented revenue levels, far surpassing historical semiconductor norms and funding ecosystem investments without leverage.</p></div><div class="table-wrap"><table><thead><tr><th>Segment</th><th class="num">Revenue ($B)</th><th class="num">% of Total</th><th class="num">YoY Growth</th><th>Notes</th></tr></thead><tbody><tr><td class="b"><p>Compute &amp; Networking (Data Center)</p></td><td class="num"><p>193.48</p></td><td class="num"><p>89.6%</p></td><td class="pos num"><p>+67%</p></td><td><p>Includes AI, networking; Q4 $62.3B (+75%)</p></td></tr><tr><td class="b"><p>Graphics (Gaming + ProViz)</p></td><td class="num"><p>22.46</p></td><td class="num"><p>10.4%</p></td><td class="pos num"><p>+57%</p></td><td><p>Gaming $16.04B (+41%); ProViz $3.19B (+70%)</p></td></tr><tr><td class="b"><p>Automotive</p></td><td class="num"><p>2.35</p></td><td class="num"><p>1.1%</p></td><td class="pos num"><p>+39%</p></td><td><p>Record quarterly trends</p></td></tr><tr><td class="b"><p>OEM &amp; Other</p></td><td class="num"><p>0.62</p></td><td class="amb num"><p>0.3%</p></td><td class="num"><p>N/A</p></td><td><p>Residual</p></td></tr><tr><td class="b"><p>Total</p></td><td class="num"><p>215.94</p></td><td class="num"><p>100%</p></td><td class="pos num"><p>+65.5%</p></td><td><p>Record FY with strong sequential ramps</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Revenue by Segment FY2026 | Source: Company 10-K FY2026; Earnings Releases</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Top 3 Revenue Drivers</h3><span class="tag blue">AI Dominance</span></div><div class="aggregate-card-body"><p>NVIDIA&#x27;s FY2026 growth was overwhelmingly driven by the Data Center segment, which generated $193.48B or 89.6% of total revenue, up 67% YoY. Within this, accelerated computing and AI platforms, powered by Hopper and the early Blackwell ramp, accounted for the bulk, with networking sub-segment growing 142% in the year and reaching 18% of Data Center in Q4...</p></div><div class="aggregate-source">Source: Company 10-K FY2026; Earnings Releases</div></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Contribution</th><th>Notes</th><th>Risk</th></tr></thead><tbody><tr><td class="b"><p>Top 2 Customers (FY2026)</p></td><td><p>36%</p></td><td><p>Unnamed hyperscalers, primarily Compute &amp; Networking…</p></td><td><p>HIGH - Order or in-sourcing risk</p></td></tr><tr><td class="b"><p>Top 4 Customers (Q3 FY2026)</p></td><td><p>61%</p></td><td><p>All in Compute &amp; Networking</p></td><td><span class="tag blue">HIGH</span></td></tr><tr><td class="b"><p>U.S. Headquartered Customers</p></td><td><p>69.29% ($149.62B)</p></td><td><p>Up sharply YoY</p></td><td><p>MEDIUM - Geopolitical alignment</p></td></tr><tr><td class="b"><p>Taiwan</p></td><td><p>19.61% ($42.35B)</p></td><td><p>Manufacturing hub</p></td><td><span class="tag blue">MEDIUM</span></td></tr><tr><td class="b"><p>China</p></td><td><p>9.11% ($19.68B)</p></td><td><p>Down YoY due to export controls</p></td><td><p>HIGH - Regulatory</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Customer &amp; Geographic Concentration | Source: Company 10-K FY2026; 10-Q Filings</div><div class="table-wrap"><table><thead><tr><th>Region</th><th class="num">Revenue ($B)</th><th class="num">% of Total</th><th>YoY Trend</th><th>Currency/Other Risk</th></tr></thead><tbody><tr><td class="b"><p>United States</p></td><td class="num"><p>149.62</p></td><td class="num"><p>69.29%</p></td><td><p>Sharply up</p></td><td><p>Low currency; high concentration</p></td></tr><tr><td class="b"><p>Taiwan</p></td><td class="num"><p>42.35</p></td><td class="num"><p>19.61%</p></td><td class="amb"><span class="tag blue">STABLE</span></td><td><p>Supply chain</p></td></tr><tr><td class="b"><p>China</p></td><td class="num"><p>19.68</p></td><td class="num"><p>9.11%</p></td><td><p>Down</p></td><td><p>Export controls; low single-digit contribution expected…</p></td></tr><tr><td class="b"><p>Other Americas</p></td><td class="num"><p>4.30</p></td><td class="num"><p>~2%</p></td><td><p>N/A</p></td><td><span class="tag blue">LOW</span></td></tr><tr><td class="b"><p>Total International (ex-US)</p></td><td class="num"><p>66.32</p></td><td class="num"><p>30.71%</p></td><td><p>N/A</p></td><td><p>Geopolitical &amp; FX exposure</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 4: Geographic Revenue FY2026 | Source: Company 10-K FY2026</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Unit Economics &amp; Cost Structure</h3><span class="tag blue">Software-like</span></div><div class="aggregate-card-body"><p>NVIDIA exhibits software-like unit economics despite being a fabless semiconductor company. Pricing power remains robust, evidenced by stable-to-expanding gross margins (71.1% FY2026, rising to 75.0% in Q4) amid Blackwell ramp and mix shift toward higher-value AI platforms. Cost of revenue was $62.48B on $215.94B sales, reflecting efficient supply chain management and limited component inflation impact...</p></div><div class="aggregate-source">Source: Company 10-K FY2026</div></div><p class="aggregate-pane-xref"><a href="#product">See product &amp; technology</a></p><p class="aggregate-pane-xref"><a href="#supply">See supply chain</a></p><p class="aggregate-pane-xref"><a href="#financials">See financial analysis</a></p>
+      </section>
+      <section id="competition" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Competitive position</h2>
+          <div class="kicker">moat vs. customer-as-competitor</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Market Share (AI Data Center Accelerators): 85-90% (Dominant; stable-to-slight erosion risk from ASICs) · # Direct Competitors: 4-5 (AMD, Broadcom (ASICs), hyperscaler customs (Google TPU, etc.)) · Moat Score (1-10): 9 (Position-based via CUDA ecosystem + scale).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">market share (ai data center</div><div class="kpi-value ">85-90%</div><div class="kpi-sub">Dominant; stable-to-slight erosion risk from ASICs</div></div><div class="kpi"><div class="kpi-label"># direct competitors</div><div class="kpi-value ">4-5</div><div class="kpi-sub">AMD, Broadcom (ASICs), hyperscaler customs (Google TPU, etc.)</div></div><div class="kpi"><div class="kpi-label">moat score (1-10)</div><div class="kpi-value ">9</div><div class="kpi-sub">Position-based via CUDA ecosystem + scale</div></div><div class="kpi"><div class="kpi-label">contestability</div><div class="kpi-value ">Semi-Contestable</div><div class="kpi-sub">High barriers but multiple protected players emerging</div></div></div><div class="note green"><p>Key Takeaway. NVIDIA&#x27;s fiscal 2026 results—$215.94B revenue (+65.5% YoY), 71.1% gross margin, and 55.6% net margin—reflect a dominant position-based competitive advantage in AI accelerators. The combination of strong customer captivity through the CUDA ecosystem and economies of scale from massive volume protects elevated profitability far above typical semiconductor peers, though semi-contestability signals potential gradual margin pressure from custom ASICs.</p></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">NVIDIA</th><th>AMD</th><th>Broadcom (ASICs)</th><th>Hyperscaler Customs (Google/Amazon/Meta)</th></tr></thead><tbody><tr><td class="b"><p>Revenue (FY2026 or equiv.)</p></td><td class="num"><p>$215.94B</p></td><td><p>~$30B (est. total)</p></td><td><p>~$10-12B AI</p></td><td><p>Internal, non-disclosed</p></td></tr><tr><td class="b"><p>Revenue Growth YoY</p></td><td class="pos num"><p>+65.5%</p></td><td><p>High single-digit AI</p></td><td class="pos"><p>+100%+ AI</p></td><td><p>N/A (internal)</p></td></tr><tr><td class="b"><p>Gross Margin</p></td><td class="num"><p>71.1%</p></td><td><p>~49.5%</p></td><td><p>~67.9%</p></td><td><p>Higher (custom optimized)</p></td></tr><tr><td class="b"><p>Op Margin</p></td><td class="num"><p>60.4%</p></td><td><p>Lower</p></td><td><p>Strong AI</p></td><td><p>N/A</p></td></tr><tr><td class="b"><p>R&D / Revenue</p></td><td class="num"><p>8.6%</p></td><td><p>Higher %</p></td><td><p>Significant</p></td><td><p>Internal heavy</p></td></tr><tr><td class="b"><p>P/E</p></td><td class="num"><p>35.8</p></td><td><p>Higher</p></td><td><p>Elevated</p></td><td><p>N/A</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Competitor Comparison Matrix (Porter Forces 1-4 Scope) | Source: SEC EDGAR FY2026 data for NVIDIA; market estimates from industry reports</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Market Contestability Assessment</h3><span class="tag blue">Semi-Contestable</span></div><div class="aggregate-card-body"><p>Under the Greenwald framework, the AI accelerator market is semi-contestable . NVIDIA maintains dominant position (~85-90% share in data center GPUs), but multiple rivals enjoy partial protection via specialized capabilities: AMD in merchant GPUs, Broadcom in custom ASICs, and hyperscalers (Google TPU, Amazon Trainium, Meta MTIA) in inference-optimized silicon. A new entrant cannot easily replicate NVIDIA&#x27;s cost structure due to massive R&amp;amp;D scale ($18.50B or 8.6% of revenue) and TSMC capacity lock-in...</p></div></div><div class="table-wrap"><table><thead><tr><th>Mechanism</th><th class="num">Relevance</th><th>Strength</th><th class="num">Evidence</th><th>Durability</th></tr></thead><tbody><tr><td class="b"><p>Habit Formation</p></td><td class="num"><p>Moderate (recurring purchases in data centers)</p></td><td class="amb"><span class="tag blue">MODERATE</span></td><td class="num"><p>High-frequency AI training/inference cycles…</p></td><td><p>Medium (workload-dependent)</p></td></tr><tr><td class="b"><p>Switching Costs</p></td><td class="num"><p>High (ecosystem investments)</p></td><td><span class="tag blue">STRONG</span></td><td class="num"><p>CUDA code base, NVLink, libraries; months-years to migrate…</p></td><td><p>High (organizational inertia)</p></td></tr><tr><td class="b"><p>Brand as Reputation</p></td><td class="num"><p>High (experience good in AI performance)</p></td><td><span class="tag blue">STRONG</span></td><td class="num"><p>Proven track record in training LLMs; 4M+ CUDA developers…</p></td><td><span class="tag blue">HIGH</span></td></tr><tr><td class="b"><p>Network Effects</p></td><td class="num"><p>Moderate-High (platform effects)</p></td><td><span class="tag blue">STRONG</span></td><td class="num"><p>Developer ecosystem and partner integrations grow with adoption…</p></td><td><span class="tag blue">HIGH</span></td></tr><tr><td class="b"><p>Search Costs</p></td><td class="num"><p>High (complex, customized AI stacks)</p></td><td><span class="tag blue">STRONG</span></td><td class="num"><p>Evaluating alternatives requires extensive benchmarking and risk assessment…</p></td><td><span class="tag blue">HIGH</span></td></tr><tr><td class="b"><p>Overall Captivity Strength</p></td><td class="num"><p>N/A</p></td><td><span class="tag blue">STRONG</span></td><td class="num"><p>Weighted: Switching + Search + Brand dominate…</p></td><td><p>High (years)</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Customer Captivity Scorecard | Source: SEC EDGAR filings; industry ecosystem analysis</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Economies of Scale Assessment</h3><span class="tag blue">Strong when paired with captivity</span></div><div class="aggregate-card-body"><p>NVIDIA exhibits high fixed cost intensity in R&amp;amp;D ($18.50B annually) and architecture development, with MES representing a large fraction of the ~$160B+ AI accelerator market. At $215.94B revenue scale, per-unit costs benefit from spreading these fixed investments and securing preferential TSMC capacity. A hypothetical entrant at 10% share would face meaningful cost disadvantage (estimated 20-30% higher unit costs due to lower volume and weaker supplier terms)...</p></div></div><div class="table-wrap"><table><thead><tr><th>Dimension</th><th>Assessment</th><th class="num">Score (1-10)</th><th class="num">Evidence</th><th>Durability (years)</th></tr></thead><tbody><tr><td class="b"><p>Position-Based CA</p></td><td><p>Strong (captivity + scale)</p></td><td class="num"><p>9</p></td><td class="num"><p>CUDA switching costs + volume-driven cost edge…</p></td><td><p>5-10+</p></td></tr><tr><td class="b"><p>Capability-Based CA</p></td><td><p>Moderate (architecture expertise)</p></td><td class="amb num"><p>7</p></td><td class="num"><p>Learning curve in GPU design; partially portable…</p></td><td><p>3-5</p></td></tr><tr><td class="b"><p>Resource-Based CA</p></td><td class="amb"><p>Moderate</p></td><td class="amb num"><p>6</p></td><td class="num"><p>Patents, TSMC relationships, goodwill $20.83B…</p></td><td><p>Variable (legal)</p></td></tr><tr><td class="b"><p>Overall CA Type</p></td><td><p>Primarily Position-Based</p></td><td class="num"><p>9</p></td><td class="num"><p>Demand + cost disadvantages for entrants…</p></td><td><span class="tag blue">HIGH</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Competitive Advantage Classification | Source: SEC EDGAR FY2026; Greenwald framework application</div><p class="aggregate-pane-xref"><a href="#supply">See detailed supplier power (incl. TSMC) in Supply Chain tab</a></p><p class="aggregate-pane-xref"><a href="#tam">See TAM/SAM/SOM expansion in Market Size tab</a></p><p class="aggregate-pane-xref"><a href="#product">See product &amp; technology</a></p>
+      </section>
+      <section id="tam" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Market size &amp; TAM</h2>
+          <div class="kicker">runway vs. penetration</div>
+        </div>
+        <div class="lead aggregate-lead"><p>TAM (AI Accelerated Compute): $500B+ (2026 est. AI chip market; NVIDIA CEO data center opportunity view) · SAM (Data Center AI): ~$194B (NVIDIA FY2026 data center revenue as proxy for captured addressable) · SOM (NVIDIA Share): $215.94B (FY2026 total revenue; data center ~90%+).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">tam (ai accelerated compute)</div><div class="kpi-value ">$500B+</div><div class="kpi-sub">2026 est. AI chip market; NVIDIA CEO data center opportunity view</div></div><div class="kpi"><div class="kpi-label">sam (data center ai)</div><div class="kpi-value ">~$194B</div><div class="kpi-sub">NVIDIA FY2026 data center revenue as proxy for captured addressable</div></div><div class="kpi"><div class="kpi-label">som (nvidia share)</div><div class="kpi-value ">$215.94B</div><div class="kpi-sub">FY2026 total revenue; data center ~90%+</div></div><div class="kpi"><div class="kpi-label">market growth rate</div><div class="kpi-value ">65.5%</div><div class="kpi-sub">NVIDIA revenue YoY FY2026; AI chip CAGR est. 27-33%</div></div></div><div class="note green"><p>Key Takeaway. NVIDIA&#x27;s FY2026 revenue of $215.94B, with data center contributing approximately $193.7B (up 68% YoY), demonstrates that the company is already capturing a massive portion of the exploding AI infrastructure market, far outpacing historical semiconductor growth cycles.</p></div><div class="table-wrap"><table><thead><tr><th>Segment</th><th class="num">Current Size (FY2026)</th><th>2028 Projected</th><th>CAGR</th><th>NVIDIA Share</th></tr></thead><tbody><tr><td class="b"><p>AI Chip / Accelerated Compute</p></td><td class="num"><p>$500B (2026 est.)</p></td><td><p>$1T+</p></td><td><p>30%+</p></td><td><p>Dominant (80%+ in data center GPUs)</p></td></tr><tr><td class="b"><p>Data Center AI</p></td><td class="num"><p>$193.7B</p></td><td><p>$300B+</p></td><td><p>25-40%</p></td><td><p>~90% of NVIDIA revenue</p></td></tr><tr><td class="b"><p>Total Semiconductors</p></td><td class="num"><p>$775B (2024)</p></td><td><p>$1.6T</p></td><td><p>~13%</p></td><td><p>NVIDIA leading in AI subset</p></td></tr><tr><td class="b"><p>Inference / Edge / Robotics</p></td><td class="muted num"><span style="color:var(--muted,#999);font-style:italic">—</span></td><td><p>Significant expansion</p></td><td><span class="tag blue">HIGH</span></td><td><p>Emerging runway</p></td></tr><tr><td class="b"><p>Gaming + Other</p></td><td class="num"><p>~$22B (est. residual)</p></td><td class="amb"><p>Stable</p></td><td><p>Low single-digit</p></td><td><p>Minor diversification</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: TAM Breakdown by Key Segments | Source: NVIDIA FY2026 10-K equivalent filings; industry reports (Deloitte, McKinsey, NVIDIA statements)</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Bottom-Up TAM Sizing Methodology</h3><span class="tag blue">Methodology</span></div><div class="aggregate-card-body"><p>NVIDIA&#x27;s bottom-up approach starts from observed hyperscaler and enterprise capex on AI infrastructure. With FY2026 data center revenue at $193.7B (91.5%+ of total $215.94B in Q4 trends), the calculation layers unit shipments of GPUs/accelerators times average selling prices, plus networking and software. Key assumptions include continued 40%+ annual growth in data center capex through 2030 as stated by management, stable-to-expanding gross margins near 71.1%, and R&amp;amp;D spend of $18.50B supporting new architectures like Blackwell/Rubin...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Penetration Analysis &amp; Growth Runway</h3><span class="tag blue">Runway</span></div><div class="aggregate-card-body"><p>Current penetration in data center AI accelerators stands at dominant levels (~80-90% share based on industry observations), evidenced by NVIDIA&#x27;s $193.7B data center revenue in FY2026 versus broader AI chip estimates. Growth runway remains substantial: hyperscaler capex is projected to support 40% annual increases, with total data center spend potentially reaching $3-4T annually by 2030. Saturation risk is mitigated by expansion into inference, robotics, edge, and sovereign AI builds, where current non-data-center segments represent only ~8-10% of revenue but offer diversification...</p></div></div><div class="chart-box"><div class="chart-head"><h3>TAM Growth &amp; NVIDIA Revenue Overlay</h3><div class="sub">bar</div></div><div class="aggregate-mini-table table-wrap"><table><thead><tr><th>period</th><th class="num">AI/Accelerated Compute TAM</th><th class="num">NVIDIA Revenue (Data Center Focus)</th></tr></thead><tbody><tr><td class="b">FY2026</td><td class="num">500</td><td class="num">216</td></tr><tr><td class="b">2028 Est.</td><td class="num">800</td><td class="num">350</td></tr><tr><td class="b">2030 Est.</td><td class="num">1200</td><td class="num">500</td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Projected TAM vs. NVIDIA Capture | Source: NVIDIA FY2026 filings ($215.94B revenue); aggregated industry projections (Deloitte AI chips ~$500B 2026, scaling estimates)</div></div><div class="note red"><p>Biggest Risk. Evidence gaps on granular segment breakdowns (e.g., exact training vs. inference split) and forward TAM quantification mean projections rely on implied dominance from $193.7B data center revenue; any faster-than-expected shift to custom ASICs by hyperscalers could compress NVIDIA&#x27;s share despite current 71.1% gross margins.</p></div><p class="aggregate-pane-xref"><a href="#competition">See competitive position</a></p><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="product" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Product &amp; technology</h2>
+          <div class="kicker">roadmap + software stack</div>
+        </div>
+        <div class="lead aggregate-lead"><p>R&D Spend (FY2026): $18.50B (8.6% of $215.94B revenue) · R&D % Revenue: 8.6% (Supports AI accelerator leadership) · Products/Services Count: 5 Major Segments (Data Center dominant at ~90%).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">r&amp;d spend (fy2026)</div><div class="kpi-value ">$18.50B</div><div class="kpi-sub">8.6% of $215.94B revenue</div></div><div class="kpi"><div class="kpi-label">r&amp;d % revenue</div><div class="kpi-value ">8.6%</div><div class="kpi-sub">Supports AI accelerator leadership</div></div><div class="kpi"><div class="kpi-label">products/services count</div><div class="kpi-value ">5 Major Segments</div><div class="kpi-sub">Data Center dominant at ~90%</div></div><div class="kpi"><div class="kpi-label">patent portfolio</div><div class="kpi-value ">18,658</div><div class="kpi-sub">Strong AI/GPU concentration</div></div></div><div class="note green"><p>Key Takeaway. NVIDIA&#x27;s product and technology engine delivered explosive scale in FY2026, with consolidated revenue reaching $215.94B (up 65.5% YoY) and Data Center segment driving the majority of growth through Blackwell platform adoption. The $18.50B R&D investment (8.6% of revenue) combined with 71.1% gross margin underscores efficient conversion of innovation spend into premium AI accelerator pricing power and operating leverage.</p></div><div class="table-wrap"><table><thead><tr><th>Product/Segment</th><th class="num">Revenue Contribution (FY2026)</th><th class="num">% of Total</th><th class="num">Growth Rate (YoY)</th><th>Lifecycle Stage</th><th>Competitive Position</th></tr></thead><tbody><tr><td class="b"><p>Data Center (AI Accelerators, Networking, DGX)</p></td><td class="num"><p>$193.7B</p></td><td class="num"><p>89.7%</p></td><td class="pos num"><p>+68%</p></td><td><p>Growth</p><span class="tag blue">HIGH</span></td><td><p>Leader</p></td></tr><tr><td class="b"><p>Gaming &amp; AI PC (GeForce RTX)</p></td><td class="num"><p>$16.0B</p></td><td class="num"><p>7.4%</p></td><td class="pos num"><p>+41%</p></td><td><p>Growth</p><span class="tag blue">MED</span></td><td><p>Leader</p></td></tr><tr><td class="b"><p>Professional Visualization (RTX PRO, Omniverse)</p></td><td class="num"><p>$3.2B</p></td><td class="num"><p>1.5%</p></td><td class="pos num"><p>+70%</p></td><td><p>Growth</p><span class="tag blue">HIGH</span></td><td><p>Leader</p></td></tr><tr><td class="b"><p>Automotive &amp; Robotics (DRIVE, Omniverse)</p></td><td class="num"><p>~$2.35B</p></td><td class="num"><p>1.1%</p></td><td class="pos num"><p>+40% (est.)</p></td><td><p>Growth</p><span class="tag blue">MED</span></td><td><p>Leader</p></td></tr><tr><td class="b"><p>OEM &amp; Other</p></td><td class="num"><p>~$0.69B</p></td><td class="amb num"><p>0.3%</p></td><td class="num"><p>N/A</p></td><td><p>Mature</p><span class="tag blue">LOW</span></td><td><p>Niche</p></td></tr><tr><td class="b"><p>Total Consolidated</p></td><td class="num"><p>$215.94B</p></td><td class="num"><p>100%</p></td><td class="pos num"><p>+65.5%</p></td><td><p>Growth</p></td><td><p>Dominant</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Product Portfolio by Segment (FY2026) | Source: Company FY2026 earnings release &amp; 10-K; SEC EDGAR consolidated revenue $215.94B</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Core Technology Stack &amp; Differentiation</h3><span class="tag blue">Moat</span></div><div class="aggregate-card-body"><p>NVIDIA&#x27;s proprietary full-stack architecture centers on CUDA, the 15+ year programming model that has created deep developer lock-in across AI workloads. This is augmented by high-speed NVLink interconnects (scaling to 900 GB/s+ in clusters), BlueField DPUs for networking offload, and the unified software ecosystem including cuDNN, TensorRT, and Omniverse. Unlike commodity GPU offerings, NVIDIA&#x27;s platform integrates hardware acceleration with optimized libraries and reference designs, delivering superior performance-per-watt and ease of deployment for hyperscalers building AI factories...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>R&D Pipeline &amp; Upcoming Launches</h3><span class="tag blue">Roadmap</span></div><div class="aggregate-card-body"><p>NVIDIA&#x27;s R&D engine, funded by $18.50B in FY2026 spend, is executing a predictable annual architecture cadence. Blackwell platforms reached volume production and drove significant Data Center revenue acceleration in FY2026 (Q4 Data Center $62.3B). The next major inflection is the Vera Rubin platform (Rubin GPUs + Vera CPUs), entering full production with partner shipments targeted for the second half of 2026...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Intellectual Property &amp; Technology Moat</h3><span class="tag blue">Defensibility</span></div><div class="aggregate-card-body"><p>NVIDIA maintains a robust IP portfolio of approximately 18,658 patents (with over 3,500 specifically tied to AI accelerators and GPU computing), concentrated in GPU architecture, memory hierarchies, interconnects (NVLink), and software optimizations. This portfolio, spanning 26 jurisdictions with heavy weighting in the US, China, and Germany, creates multiple layers of protection around core technologies such as CUDA extensions, high-bandwidth interconnects, and system-level optimizations that underpin data-center scale AI clusters...</p></div></div><div class="note green"><p>Caution. While Data Center segment achieved ~90% revenue share and 71.1% gross margins in FY2026, any material delay in Vera Rubin ramp or supply constraints during architecture transitions could pressure the operating leverage demonstrated by sequential gross profit growth from $26.67B in Q1 to higher levels later in the year.</p></div><p class="aggregate-pane-xref"><a href="#competition">See competitive position</a></p><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="supply" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Supply chain</h2>
+          <div class="kicker">single points of failure</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Key Supplier Count: 8+ (Primary: TSMC (wafers/packaging), SK Hynix/Samsung/Micron (HBM), Hon Hai/Wistron/Fabrinet (assembly)) · Single-Source %: ~90%+ (Advanced nodes &amp; CoWoS packaging via TSMC; HBM heavily skewed to SK Hynix) · Customer Concentration: 34% (Top-2 direct customers: 21% + 13% of 9M FY2026 revenue (Compute &amp; Networking)).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">key supplier count</div><div class="kpi-value ">8+</div><div class="kpi-sub">Primary: TSMC (wafers/packaging), SK Hynix/Samsung/Micron (HBM), Hon Hai/Wistron/Fabrinet (assembly)</div></div><div class="kpi"><div class="kpi-label">single-source %</div><div class="kpi-value ">~90%+</div><div class="kpi-sub">Advanced nodes &amp; CoWoS packaging via TSMC; HBM heavily skewed to SK Hynix</div></div><div class="kpi"><div class="kpi-label">customer concentration</div><div class="kpi-value ">34%</div><div class="kpi-sub">Top-2 direct customers: 21% + 13% of 9M FY2026 revenue (Compute &amp; Networking)</div></div><div class="kpi"><div class="kpi-label">lead time trend</div><div class="kpi-value ">Worsening</div><div class="kpi-sub">CoWoS &amp; HBM capacity oversubscribed through mid-2026</div></div></div><div class="note red"><p>Key Takeaway. NVIDIA scaled FY2026 revenue to $215.94B with Cost of Revenue at $62.48B and Gross Margin holding at 71.1% despite documented HBM price surges (30-70%) and CoWoS bottlenecks. The near-doubling of inventories to $21.403B (from $10.08B) signals proactive capacity securing via $50.3B Long-term commitments, but heavy reliance on a concentrated Asia-based supply base remains the dominant structural vulnerability.</p></div><div class="table-wrap"><table><thead><tr><th>Supplier</th><th>Component/Service</th><th class="num">Revenue Dependency (%)</th><th>Substitution Difficulty</th><th class="num">Risk Level</th><th>Signal</th></tr></thead><tbody><tr><td class="b"><p>TSMC</p></td><td><p>Advanced wafers &amp; CoWoS packaging</p></td><td class="num"><p>90%+</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><span class="tag blue">CRITICAL</span></td><td class="amb"><span class="tag blue">NEUTRAL</span></td></tr><tr><td class="b"><p>SK Hynix</p></td><td><p>HBM memory (leading share)</p></td><td class="num"><p>~50-60% of HBM</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><span class="tag blue">HIGH</span></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td class="b"><p>Samsung</p></td><td><p>Wafers &amp; HBM</p></td><td class="num"><p>20-25% HBM</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><span class="tag blue">MEDIUM</span></td><td class="amb"><span class="tag blue">NEUTRAL</span></td></tr><tr><td class="b"><p>Micron</p></td><td><p>HBM (growing)</p></td><td class="num"><p>~20% HBM</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td class="b"><p>Hon Hai (Foxconn)</p></td><td><p>Assembly &amp; testing</p></td><td class="num"><p>Not quantified</p></td><td><span class="tag blue">LOW</span></td><td class="num"><span class="tag blue">LOW</span></td><td class="amb"><span class="tag blue">NEUTRAL</span></td></tr><tr><td class="b"><p>Wistron</p></td><td><p>Assembly &amp; systems</p></td><td class="num"><p>Not quantified</p></td><td><span class="tag blue">LOW</span></td><td class="num"><span class="tag blue">LOW</span></td><td class="amb"><span class="tag blue">NEUTRAL</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Supplier Scorecard | Source: NVIDIA 10-K FY2026; industry capacity reports</div><div class="table-wrap"><table><thead><tr><th>Customer</th><th class="num">Revenue Contribution (%)</th><th>Contract Duration</th><th>Renewal Risk</th><th>Relationship Trend</th></tr></thead><tbody><tr><td class="b"><p>Customer A (hyperscaler)</p></td><td class="num"><p>21% (9M FY2026)</p></td><td><p>Multi-year commitments</p></td><td><span class="tag blue">LOW</span></td><td><p>Growing</p></td></tr><tr><td class="b"><p>Customer B (hyperscaler)</p></td><td class="num"><p>13% (9M FY2026)</p></td><td><p>Multi-year commitments</p></td><td><span class="tag blue">LOW</span></td><td><p>Growing</p></td></tr><tr><td class="b"><p>Customer C</p></td><td class="num"><p>Significant AR (part of top-4 at 22%)</p></td><td class="muted"><span style="color:var(--muted,#999);font-style:italic">—</span></td><td><span class="tag blue">MEDIUM</span></td><td class="amb"><p>Stable</p></td></tr><tr><td class="b"><p>Customer D</p></td><td class="num"><p>Significant AR (part of top-4 at 12-17%)</p></td><td class="muted"><span style="color:var(--muted,#999);font-style:italic">—</span></td><td><span class="tag blue">MEDIUM</span></td><td class="amb"><p>Stable</p></td></tr><tr><td class="b"><p>Other direct customers</p></td><td class="num"><p>Balance (~66% aggregate)</p></td><td><p>Varies</p></td><td><span class="tag blue">MEDIUM</span></td><td class="amb"><p>Stable</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Customer Concentration | Source: NVIDIA 10-Q/10-K FY2026</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Supply Concentration &amp; Single Points of Failure</h3><span class="tag amber">High Dependency</span></div><div class="aggregate-card-body"><p>NVIDIA operates a fabless model with manufacturing, assembly, testing, and packaging outsourced primarily to Asia-Pacific partners. TSMC provides the vast majority of advanced-node wafers and CoWoS advanced packaging, which is critical for Blackwell and future platforms. HBM memory supply is concentrated with SK Hynix holding the leading share (~57% global HBM), followed by Samsung and Micron...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Geographic Risk Exposure</h3><span class="tag red">Asia-Centric</span></div><div class="aggregate-card-body"><p>NVIDIA&#x27;s supply chain is mainly concentrated in the Asia-Pacific region, with semiconductor wafers manufactured by TSMC (Taiwan) and Samsung (South Korea), memory from SK Hynix, Samsung, and Micron, and assembly/testing by Hon Hai, Wistron, and Fabrinet. Filings explicitly note this Asia-Pacific focus. International sales accounted for 31% of FY2026 revenue, with customer billing often routed through hubs like Singapore and Taiwan; 86% of Data Center revenue from certain Taiwan-headquartered customers is ultimately attributed to U.S./Europe end-users...</p></div></div><div class="table-wrap"><table><thead><tr><th>Component</th><th>% of COGS (est. for B200-class)</th><th>Trend</th><th>Key Risk</th></tr></thead><tbody><tr><td class="b"><p>HBM Memory</p></td><td><p>~45%</p></td><td><span class="tag blue">RISING</span></td><td><p>Price surges 30-70%; capacity sold out</p></td></tr><tr><td class="b"><p>Advanced Packaging (CoWoS)</p></td><td><p>~17%</p></td><td><span class="tag blue">RISING</span></td><td><p>Oversubscribed; NVIDIA takes majority share…</p></td></tr><tr><td class="b"><p>Logic Wafer (TSMC)</p></td><td><p>&lt;15%</p></td><td class="amb"><span class="tag blue">STABLE</span></td><td><p>Geopolitical/Taiwan exposure</p></td></tr><tr><td class="b"><p>Assembly &amp; Test</p></td><td><p>Balance</p></td><td class="amb"><span class="tag blue">STABLE</span></td><td><p>Lower complexity but Asia concentration</p></td></tr><tr><td class="b"><p>Other (substrates, etc.)</p></td><td><p>Remaining</p></td><td><span class="tag blue">RISING</span></td><td><p>Component shortages</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: BOM/Cost Structure Breakdown | Source: NVIDIA FY2026 financials &amp; industry BOM estimates (e.g., B200 ~$6,400 COGS)</div><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="catalysts" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Catalyst map</h2>
+          <div class="kicker">forward calendar</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Total Catalysts: 12 (Next 12 Months) · Next Event Date: May 20, 2026 (Q1 FY2027 Earnings) · Net Catalyst Score: +65 (Long bias (7 Bull / 2 Bear / 3 Long)).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">total catalysts</div><div class="kpi-value ">12</div><div class="kpi-sub">Next 12 Months</div></div><div class="kpi"><div class="kpi-label">next event date</div><div class="kpi-value ">May 20, 2026</div><div class="kpi-sub">Q1 FY2027 Earnings</div></div><div class="kpi"><div class="kpi-label">net catalyst score</div><div class="kpi-value ">+65</div><div class="kpi-sub">Long bias (7 Bull / 2 Bear / 3 Long)</div></div><div class="kpi"><div class="kpi-label">expected price impact range</div><div class="kpi-value ">$15–$45</div><div class="kpi-sub">Per share, weighted avg.</div></div></div><div class="note green"><p>Key Takeaway. NVIDIA&#x27;s accelerated ~12-month product cadence from Blackwell to Blackwell Ultra to Vera Rubin creates recurring upgrade demand that underpins sustained hyper-growth, with FY2026 revenue already at $215.94B (+65.5% YoY) providing hard data foundation for multiple high-impact catalysts in the next four quarters.</p></div><div class="table-wrap"><table><thead><tr><th>Date</th><th class="num">Event</th><th>Category</th><th>Impact</th><th class="num">Probability (%)</th><th>Directional Signal</th></tr></thead><tbody><tr><td class="b"><p>May 20, 2026</p></td><td class="num"><p>Q1 FY2027 Earnings</p></td><td><p>Earnings</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>95</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td class="b"><p>Jun 2026 (est.)</p></td><td class="num"><p>Blackwell Ultra Ramp Update</p></td><td><p>Product</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>80</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td class="b"><p>Aug 26, 2026 (est.)</p></td><td class="num"><p>Q2 FY2027 Earnings</p></td><td><p>Earnings</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>90</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td class="b"><p>H2 2026</p></td><td class="num"><p>Vera Rubin Production Shipments</p></td><td><p>Product</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>75</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td class="b"><p>Nov 2026 (est.)</p></td><td class="num"><p>Q3 FY2027 Earnings</p></td><td><p>Earnings</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>85</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td class="b"><p>2026 Ongoing</p></td><td class="num"><p>Sovereign AI &amp; Enterprise Inference Demand…</p></td><td><p>Macro</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><p>70</p></td><td><span class="tag blue">BULLISH</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Catalyst Calendar (Next 12 Months) | Source: Company guidance, investor presentations, and market data as of Mar 24, 2026</div><div class="table-wrap"><table><thead><tr><th>Quarter</th><th class="num">Event</th><th>Category</th><th class="num">Expected Impact ($/share)</th><th>Bull Outcome</th><th>Bear Outcome</th></tr></thead><tbody><tr><td class="b"><p>Q2 2026</p></td><td class="num"><p>Q1 FY27 Earnings + Blackwell Update</p></td><td><p>Earnings/Product</p></td><td class="pos num"><p>+$12</p></td><td><p>Revenue &gt;$78B guidance beat</p></td><td><p>Miss on margin pressure</p></td></tr><tr><td class="b"><p>Q3 2026</p></td><td class="num"><p>Blackwell Ultra Ramp</p></td><td><p>Product</p></td><td class="pos num"><p>+$18</p></td><td><p>30-40% perf uplift confirmed</p></td><td><p>Supply delays</p></td></tr><tr><td class="b"><p>Q4 2026</p></td><td class="num"><p>Vera Rubin Initial Shipments</p></td><td><p>Product</p></td><td class="pos num"><p>+$25</p></td><td><p>H2 2026 revenue acceleration</p></td><td><p>Delayed to 2027</p></td></tr><tr><td class="b"><p>Q1 2027</p></td><td class="num"><p>Q4 FY27 Earnings</p></td><td><p>Earnings</p></td><td class="pos num"><p>+$15</p></td><td><p>Sustained 60%+ op margin</p></td><td><p>Growth digestion pause</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: 12-Month Catalyst Timeline | Source: Company filings FY2026, guidance, and product roadmap signals</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Top 3 Catalysts by Probability × Impact</h3><span class="tag green">High Conviction</span></div><div class="aggregate-card-body"><p>NVIDIA&#x27;s top catalysts center on execution of its accelerated product roadmap and continued AI demand momentum. 1. Vera Rubin Production Ramp (H2 2026, Probability 75%, Est...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Quarterly Outlook: Next 1-2 Quarters</h3><span class="tag blue">Watch Metrics</span></div><div class="aggregate-card-body"><p>In Q1-Q2 FY2027, focus on Blackwell ramp traction and early Blackwell Ultra signals amid ongoing AI capex from hyperscalers. Key metrics: Data Center revenue sequential growth above 15-20%, gross margin holding near 71.1% , and operating margin above 60.4% . Thresholds to watch: Revenue beat on $78B Q1 guidance by > 2%, R&D spend trajectory remaining ~8.6% of revenue, and any commentary on Vera Rubin customer commitments...</p></div></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Quarter</th><th class="num">Consensus EPS</th><th class="num">Consensus Revenue</th><th>Key Watch Items</th></tr></thead><tbody><tr><td class="b"><p>May 20, 2026</p></td><td><p>Q1 FY2027</p></td><td class="num"><p>$1.75</p></td><td class="num"><p>~$78B</p></td><td><p>Blackwell ramp, China revenue exclusion</p></td></tr><tr><td class="b"><p>Aug 26, 2026 (est.)</p></td><td><p>Q2 FY2027</p></td><td class="num"><p>~$1.90</p></td><td class="num"><p>~$86B</p></td><td><p>Blackwell Ultra progress, margins</p></td></tr><tr><td class="b"><p>Nov 2026 (est.)</p></td><td><p>Q3 FY2027</p></td><td class="num"><p>~$2.10</p></td><td class="num"><p>~$92B</p></td><td><p>Inference demand inflection</p></td></tr><tr><td class="b"><p>Feb 2027 (est.)</p></td><td><p>Q4 FY2027</p></td><td class="num"><p>~$2.30</p></td><td class="num"><p>~$98B</p></td><td><p>Vera Rubin early revenue</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Next 4 Earnings Dates | Source: Company announcements and consensus data as of Mar 2026</div><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p><p class="aggregate-pane-xref"><a href="#valuation">See valuation</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="street" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Street expectations</h2>
+          <div class="kicker">consensus vs. framework</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Wall Street maintains a Strong Buy consensus on NVDA with an average 12-month price target near $270, implying over 50% upside from the March 24, 2026 closing price of $175.33. This reflects continued optimism on AI-driven Data Center growth moderating from fiscal 2026&#x27;s 65.5% YoY revenue surge to the low-to-mid 20s percent range in fiscal 2027-2028, while our DCF-based fair value of $111.55 highlights valuation stretch at 35.8x trailing P/E and 19.7x EV/Revenue.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">current price</div><div class="kpi-value ">$178.68</div><div class="kpi-sub">Mar 25, 2026</div></div><div class="kpi"><div class="kpi-label">market cap</div><div class="kpi-value ">~$4.34T</div><div class="kpi-sub"></div></div><div class="kpi"><div class="kpi-label">dcf fair value</div><div class="kpi-value ">$215</div><div class="kpi-sub">our model</div></div><div class="kpi"><div class="kpi-label">vs current</div><div class="kpi-value ">+64.3%</div><div class="kpi-sub">DCF implied</div></div></div><div class="note green"><p>Takeaway. Street&#x27;s $270 average target embeds sustained AI infrastructure demand and operating leverage near fiscal 2026 levels (71.1% gross margin, 60.4% operating margin), yet contrasts sharply with our $111.55 DCF that uses a conservative 14.9% WACC and 4% terminal growth—highlighting how market pricing assumes 43.6% perpetual growth from reverse DCF calibration.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Consensus vs. Our Thesis</h3><span class="tag blue">Variant View</span></div><div class="aggregate-card-body"><p>STREET SAYS: Robust AI tailwinds will drive fiscal 2027 revenue toward $370B (up ~71% YoY from fiscal 2026&#x27;s $215.94B) and EPS to ~$8.30 (69% growth from $4.90), supporting average price targets of ~$270 (53-58% upside from $175.33). Analysts cite $1T+ revenue visibility across Blackwell/Rubin platforms through 2027 and inference demand, maintaining Strong Buy ratings with recent upward revisions (e.g., Rosenblatt to $325). WE SAY: Fiscal 2026 results were exceptional—$215.94B revenue (+65.5% YoY), $120.07B net income (55.6% margin), and $4.90 diluted EPS (+66.7% YoY)—but current valuation already prices in unsustainable growth...</p></div></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">Street Consensus</th><th class="num">Our Estimate</th><th>Diff %</th><th>Key Driver of Difference</th></tr></thead><tbody><tr><td class="b"><p>FY2027 Revenue</p></td><td class="num"><p>~$370B</p></td><td class="num"><p>$300B-$340B range</p></td><td class="neg"><p>-8% to -18%</p></td><td><p>Conservative moderation from 65.5% YoY; competition/ASIC risk…</p></td></tr><tr><td class="b"><p>FY2027 EPS (diluted)</p></td><td class="num"><p>~$8.30</p></td><td class="num"><p>$6.50-$7.50</p></td><td class="neg"><p>-10% to -22%</p></td><td><p>Margin sustainability at 71.1% gross vs. potential compression…</p></td></tr><tr><td class="b"><p>Gross Margin</p></td><td class="num"><p>~70-72%</p></td><td class="num"><p>68-70%</p></td><td class="neg"><p>-2% pts</p></td><td><p>Mix shift to networking/Blackwell; R&D intensity at 8.6%</p></td></tr><tr><td class="b"><p>Operating Margin</p></td><td class="num"><p>~58-60%</p></td><td class="num"><p>55-58%</p></td><td class="neg"><p>-2% pts</p></td><td><p>Operating leverage persists but SG&A/R&D scale slower…</p></td></tr><tr><td class="b"><p>FCF Margin</p></td><td class="num"><p>~45%</p></td><td class="num"><p>45-48%</p></td><td class="amb"><p>Flat</p></td><td><p>CapEx trends modest relative to $102.35B FCF…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Key Metric Comparison FY2027 | Source: Aggregated analyst estimates (MarketBeat, Zacks, Yahoo, TipRanks as of Mar 2026); XVARY DCF model from EDGAR data</div><div class="table-wrap"><table><thead><tr><th>Year</th><th class="num">Revenue Est</th><th class="num">EPS Est</th><th class="num">Growth %</th></tr></thead><tbody><tr><td class="b"><p>FY2026 (Actual)</p></td><td class="num"><p>$215.94B</p></td><td class="num"><p>$4.90</p></td><td class="pos num"><p>+65.5% Rev / +66.7% EPS</p></td></tr><tr><td class="b"><p>FY2027 (Street)</p></td><td class="num"><p>~$370B</p></td><td class="num"><p>~$8.30</p></td><td class="num"><p>~71% Rev / ~69% EPS</p></td></tr><tr><td class="b"><p>FY2028 (Street)</p></td><td class="num"><p>~$474B</p></td><td class="num"><p>~$11.01</p></td><td class="num"><p>~28% Rev / ~33% EPS</p></td></tr><tr><td class="b"><p>FY2027 (Our Base)</p></td><td class="num"><p>$320B</p></td><td class="num"><p>$7.00</p></td><td class="num"><p>~48% Rev / ~43% EPS</p></td></tr><tr><td class="b"><p>FY2028 (Our Base)</p></td><td class="num"><p>$400B</p></td><td class="num"><p>$8.80</p></td><td class="num"><p>~25% Rev / ~26% EPS</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Annual Revenue &amp; EPS Estimates | Source: EDGAR audited FY2026; Street aggregates (Yahoo, StockAnalysis); XVARY assumptions</div><div class="table-wrap"><table><thead><tr><th>Firm</th><th>Analyst</th><th>Rating</th><th class="num">Price Target</th><th>Date of Last Update</th></tr></thead><tbody><tr><td class="b"><p>Rosenblatt Securities</p></td><td><p>Kevin Cassidy</p></td><td><span class="tag blue">BUY</span></td><td class="num"><p>$325</p></td><td><p>Mar 18, 2026</p></td></tr><tr><td class="b"><p>Tigress Financial</p></td><td><p>N/A</p></td><td><span class="tag blue">BUY</span></td><td class="num"><p>$360</p></td><td><p>Mar 5, 2026</p></td></tr><tr><td class="b"><p>Wolfe Research</p></td><td><p>N/A</p></td><td><span class="tag blue">OUTPERFORM</span></td><td class="num"><p>$275</p></td><td><p>Recent</p></td></tr><tr><td class="b"><p>Bank of America</p></td><td><p>Vivek Arya</p></td><td><span class="tag blue">BUY</span></td><td class="num"><p>$300</p></td><td><p>Recent (post Q4)</p></td></tr><tr><td class="b"><p>Truist</p></td><td><p>N/A</p></td><td><span class="tag blue">BUY</span></td><td class="num"><p>$287</p></td><td><p>Recent</p></td></tr><tr><td class="b"><p>Cantor Fitzgerald</p></td><td><p>C.J. Muse</p></td><td><span class="tag blue">OVERWEIGHT</span></td><td class="num"><p>N/A</p></td><td><p>Mar 23, 2026</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Selected Analyst Coverage | Source: Aggregated from MarketBeat, TipRanks, Benzinga, TheStreet as of Mar 2026</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Revision Trends</h3><span class="tag green">Upward Bias</span></div><div class="aggregate-card-body"><p>Recent revisions show net upward momentum: Rosenblatt raised its target to $325 from $300 on March 18, 2026 citing $1T+ Blackwell/Rubin visibility; Bank of America and Truist also hiked targets post-fiscal 2026 results. Over the past 90 days, multiple firms (including Wolfe Research at $215) reaffirmed or increased targets amid strong Q4 beat ($68.1B revenue vs. ~$66B expected)...</p></div></div><p class="aggregate-pane-xref"><a href="#valuation">See valuation</a></p><p class="aggregate-pane-xref"><a href="#thesis">See variant perception &amp; thesis</a></p><p class="aggregate-pane-xref"><a href="#ops">See Fundamentals</a></p>
+      </section>
+      <section id="scorecard" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Earnings scorecard</h2>
+          <div class="kicker">execution quality</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Beat Rate (EPS): 7/8 (Last 8 quarters) · Avg EPS Surprise: +9.8% (Last 8 quarters) · TTM EPS (Diluted): $4.90 (FY2026 annual).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">beat rate (eps)</div><div class="kpi-value ">7/8</div><div class="kpi-sub">Last 8 quarters</div></div><div class="kpi"><div class="kpi-label">avg eps surprise</div><div class="kpi-value ">+9.8%</div><div class="kpi-sub">Last 8 quarters</div></div><div class="kpi"><div class="kpi-label">ttm eps (diluted)</div><div class="kpi-value ">$4.90</div><div class="kpi-sub">FY2026 annual</div></div><div class="kpi"><div class="kpi-label">latest q eps (non-gaap)</div><div class="kpi-value ">$1.62</div><div class="kpi-sub">Q4 FY2026 beat vs $1.53 est</div></div></div><div class="table-wrap"><table><thead><tr><th class="num">Period</th><th class="num">EPS</th><th class="num">YoY Change</th><th class="num">Sequential</th></tr></thead><tbody><tr><td class="b num"><p>2022-07</p></td><td class="num"><p>$0.26</p></td><td class="num"></td><td class="num"></td></tr><tr><td class="b num"><p>2022-10</p></td><td class="num"><p>$0.27</p></td><td class="num"></td><td class="num"><p>+3.8%</p></td></tr><tr><td class="b num"><p>2023-04</p></td><td class="num"><p>$0.82</p></td><td class="num"></td><td class="num"><p>+203.7%</p></td></tr><tr><td class="b num"><p>2023-07</p></td><td class="num"><p>$2.48</p></td><td class="num"></td><td class="num"><p>+202.4%</p></td></tr><tr><td class="b num"><p>2023-10</p></td><td class="num"><p>$3.71</p></td><td class="num"><p>+1326.9%</p></td><td class="num"><p>+49.6%</p></td></tr><tr><td class="b num"><p>2024-04</p></td><td class="num"><p>$5.98</p></td><td class="num"><p>+2114.8%</p></td><td class="num"><p>+61.2%</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: EPS History (Quarterly) | Source: SEC EDGAR XBRL filings</div><div class="note green"><p>Takeaway. NVIDIA has delivered consistent and substantial earnings beats over the past eight quarters, with an average EPS surprise of +9.8% alongside strong revenue outperformance averaging +8.9%. This track record, combined with sequential revenue acceleration through FY2026 (Q1 $44.06B → Q4 $68.13B), underscores exceptional demand visibility in AI infrastructure and pricing power that has sustained high gross margins near 71-75%.</p></div><div class="table-wrap"><table><thead><tr><th>Quarter</th><th class="num">EPS Est (Adj)</th><th class="num">EPS Actual (Adj)</th><th>Surprise %</th><th class="num">Revenue Est</th><th class="num">Revenue Actual</th><th>Stock Move Post-Earnings</th></tr></thead><tbody><tr><td class="b"><p>Q4 FY2026 (Jan 2026)</p></td><td class="num"><p>$4.90</p></td><td class="pos num"><p>$4.90</p></td><td class="pos"><p>+5.9%</p></td><td class="num"><p>$65.9-66.2B</p></td><td class="pos num"><p>$215.9B</p></td><td class="pos"><p>+0.5% to +3% AH (muted)</p></td></tr><tr><td class="b"><p>Q3 FY2026 (Oct 2025)</p></td><td class="num"><p>$4.90</p></td><td class="pos num"><p>$4.90</p></td><td class="pos"><p>+23.8%</p></td><td class="num"><p>$215.9B</p></td><td class="pos num"><p>$215.9B</p></td><td><p>Positive (beat &amp; raise)</p></td></tr><tr><td class="b"><p>Q2 FY2026 (Jul 2025)</p></td><td class="num"><p>$4.90</p></td><td class="pos num"><p>$4.90</p></td><td class="pos"><p>+4.0%</p></td><td class="num"><p>$215.9B</p></td><td class="pos num"><p>$215.9B</p></td><td><p>Positive</p></td></tr><tr><td class="b"><p>Q1 FY2026 (Apr 2025)</p></td><td class="num"><p>$4.90</p></td><td class="pos num"><p>$4.90</p></td><td><p>0% (in-line adj)</p></td><td class="num"><p>~$42-44B</p></td><td class="pos num"><p>$215.9B</p></td><td><p>Positive</p></td></tr><tr><td class="b"><p>Q4 FY2025</p></td><td class="num"><p>$2.94</p></td><td class="pos num"><p>$2.94</p></td><td class="pos"><p>+0% to low single-digit</p></td><td class="num"><p>N/A</p></td><td class="num"><p>$130.5B</p></td><td><p>Positive</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: NVIDIA Earnings Surprise History (Last 8 Quarters) | Source: NVIDIA earnings releases &amp; EDGAR filings (FY2026 quarters); historical surprise data from market sources</div><div class="table-wrap"><table><thead><tr><th>Quarter</th><th>Guidance (Midpoint)</th><th class="num">Actual</th><th>Within Range (Y/N)</th><th>Error %</th></tr></thead><tbody><tr><td class="b"><p>Q4 FY2026</p></td><td><p>$65.0B (±2%)</p></td><td class="num"><p>$68.13B</p></td><td><p>Y (beat upper)</p></td><td class="pos"><p>+4.8%</p></td></tr><tr><td class="b"><p>Q3 FY2026</p></td><td><p>$54B (±2%)</p></td><td class="num"><p>$57.01B</p></td><td><p>Y (beat upper)</p></td><td class="pos"><p>+5.6%</p></td></tr><tr><td class="b"><p>Q2 FY2026</p></td><td><p>~$46B range</p></td><td class="num"><p>$46.74B</p></td><td><p>Y</p></td><td><p>Slight beat</p></td></tr><tr><td class="b"><p>Q1 FY2026</p></td><td><p>Implied ~$42-44B</p></td><td class="num"><p>$44.06B</p></td><td><p>Y</p></td><td><p>In-line to beat</p></td></tr><tr><td class="b"><p>Q1 FY2027 (issued)</p></td><td><p>$78.0B (±2%)</p></td><td class="num"><p>Pending</p></td><td><p>N/A</p></td><td><p>Above prior consensus ~$72.6B</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Management Guidance Accuracy Track Record | Source: NVIDIA quarterly earnings releases &amp; guidance disclosures (2025-2026)</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Earnings Quality Assessment</h3><span class="tag green">High</span></div><div class="aggregate-card-body"><p>NVIDIA&#x27;s earnings quality remains exceptionally strong, characterized by consistent beat-and-raise patterns across the last eight quarters and close alignment between GAAP and non-GAAP results. FY2026 delivered revenue of $215.94B (+65.5% YoY), gross profit of $153.46B at a 71.1% margin, and net income of $120.07B at a 55.6% net margin. Free cash flow reached $102.35B (47.4% FCF margin), underscoring robust cash conversion that funds R&D ($18.50B or 8.6% of revenue) and share repurchases (reducing shares outstanding to 24.30B)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Estimate Revision Trends</h3><span class="tag green">Upward</span></div><div class="aggregate-card-body"><p>Analyst estimates for NVIDIA have shown a clear upward revision trend over recent quarters, reflecting accelerating AI demand visibility. For Q4 FY2026, consensus revenue estimates rose into the mid-$60B range prior to the print, with actual results of $68.13B exceeding the final pre-earnings bar. EPS revisions followed suit, with non-GAAP estimates settling near $1.53 before the $1.62 beat...</p></div></div><p class="aggregate-pane-xref"><a href="#financials">See financial analysis</a></p><p class="aggregate-pane-xref"><a href="#street">See street expectations</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="signals" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Alternative data</h2>
+          <div class="kicker">signals</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Strong Long tilt at 82/100 — financials, alt-data hiring trends, and institutional sentiment all confirm the fundamental thesis, while margin sustainability and valuation stretch are the two dissenting signals.</p></div>
+        <div class="kpi-grid cols-3"><div class="kpi"><div class="kpi-label">bullish signals</div><div class="kpi-value ">7</div><div class="kpi-sub">Revenue growth, margins, FCF, balance sheet, buybacks, hiring, sentiment</div></div><div class="kpi"><div class="kpi-label">bearish signals</div><div class="kpi-value ">2</div><div class="kpi-sub">Margin sustainability, valuation stretch</div></div><div class="kpi"><div class="kpi-label">data freshness</div><div class="kpi-value ">Mar 24, 2026</div><div class="kpi-sub">Live price + FY2026 audited (ended Jan 2026)</div></div></div><div class="note green"><p>Key Takeaway. NVIDIA&#x27;s FY2026 results delivered explosive scale with revenue of $215.94B (+65.5% YoY) and net income of $120.07B (net margin 55.6%), corroborated by strong alternative data trends in hiring and sentiment. The most non-obvious signal is the near-perfect cash conversion (FCF $102.346B, 47.4% margin) at this scale, which funds both R&D ($18.50B) and share reduction (24.30B outstanding) while maintaining a fortress balance sheet (Debt/Equity 0.05).</p></div><div class="table-wrap"><table><thead><tr><th>Category</th><th>Signal</th><th>Reading</th><th>Trend</th><th>Implication</th></tr></thead><tbody><tr><td class="b"><p>Financial Momentum</p></td><td><p>Revenue Acceleration</p></td><td><p>$215.94B FY2026 (+65.5% YoY)</p></td><td><p>Strong</p></td><td><p>Bullish — AI demand pull evident in sequential quarterly ramp…</p></td></tr><tr><td class="b"><p>Profitability</p></td><td><p>Margin Expansion</p></td><td><p>Gross 71.1%, Op 60.4%, Net 55.6%</p></td><td><p>Positive</p></td><td><p>Bullish — software-like economics persisting…</p></td></tr><tr><td class="b"><p>Capital Efficiency</p></td><td><p>Cash Generation</p></td><td><p>FCF $102.346B (47.4% margin)</p></td><td class="amb"><span class="tag blue">STABLE</span></td><td><p>Bullish — self-funding model at hyperscale…</p></td></tr><tr><td class="b"><p>Balance Sheet</p></td><td><p>Leverage &amp; Liquidity</p></td><td><p>Debt/Equity 0.05, Current Ratio 3.91</p></td><td class="amb"><span class="tag blue">STABLE</span></td><td><p>Bullish — resilience to capex pauses</p></td></tr><tr><td class="b"><p>Shareholder Returns</p></td><td><p>Buybacks</p></td><td><p>Shares down to 24.30B</p></td><td><p>Positive</p></td><td><p>Bullish — accretive to EPS (+66.7% YoY)</p></td></tr><tr><td class="b"><p>Valuation</p></td><td><p>Multiples</p></td><td><p>PE 35.8, PS 19.7</p></td><td><p>Elevated</p></td><td><p>Neutral/Caution — implies 43.6% growth</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: NVDA Signal Dashboard | Source: SEC EDGAR FY2026 filings (ended Jan 25, 2026); derived ratios; live market data Mar 24, 2026; alternative data sources as of early 2026</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Alternative Data Signals</h3><span class="tag blue">Mixed but Positive</span></div><div class="aggregate-card-body"><p>NVIDIA&#x27;s alternative data paints a picture of sustained expansion amid AI infrastructure demand. Job postings stood at approximately 2,395–3,000 open positions in early 2026 (down modestly from prior peaks around 3,000–4,000 in late 2025 but still elevated year-over-year), signaling continued hiring for engineering and AI-related roles even as the company scales to a $215.94B revenue base. Patent activity remains robust, with NVIDIA securing hundreds of U.S...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Retail &amp; Institutional Sentiment</h3><span class="tag blue">Strongly Positive</span></div><div class="aggregate-card-body"><p>Institutional and analyst sentiment toward NVIDIA remains overwhelmingly Long as of March 24, 2026. Consensus stands at Strong Buy with ~53 analysts (47 Buy/Strong Buy, minimal Holds), and average 12-month price targets around $276 (implying ~58% upside from $175.33). Recent updates post-GTC 2026, including New Street Research adding NVDA to its Best Ideas list for 2026 and multiple firms (Truist, Barclays, Argus, BofA) reaffirming Buy with targets up to $300+, highlight confidence in $1T+ cumulative demand visibility through 2027...</p></div></div><div class="note green"><p>Biggest Caution. While FY2026 delivered exceptional margins (gross 71.1%, net 55.6%) and cash flow ($102.346B FCF), the DCF base fair value of $111.55 versus current price $175.33, combined with Monte Carlo P(Upside) of only 24.1%, signals that current valuation leaves limited room for disappointment if AI capex moderates or gross margins compress from peak Q3 levels. Export restrictions and rising competition remain key risks not fully quantified in the snapshot.</p></div><div class="table-wrap"><table><thead><tr><th>Criterion</th><th>Result</th><th>Status</th></tr></thead><tbody><tr><td class="b"><p>Positive Net Income</p></td><td><p>✓</p></td><td><span class="tag blue">PASS</span></td></tr><tr><td class="b"><p>Positive Operating Cash Flow</p></td><td><p>✗</p></td><td><span class="tag blue">FAIL</span></td></tr><tr><td class="b"><p>ROA Improving</p></td><td><p>✓</p></td><td><span class="tag blue">PASS</span></td></tr><tr><td class="b"><p>Cash Flow &gt; Net Income (Accruals)</p></td><td><p>✗</p></td><td><span class="tag blue">FAIL</span></td></tr><tr><td class="b"><p>Declining Long-Term Debt</p></td><td><p>✗</p></td><td><span class="tag blue">FAIL</span></td></tr><tr><td class="b"><p>Improving Current Ratio</p></td><td><p>✗</p></td><td><span class="tag blue">FAIL</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Piotroski F-Score — 5/9 (Moderate) | Source: SEC EDGAR XBRL; computed deterministically</div><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p><p class="aggregate-pane-xref"><a href="#valuation">See valuation</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="history" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Historical analogies</h2>
+          <div class="kicker">base rates</div>
+        </div>
+        <div class="lead aggregate-lead"><p>NVIDIA&#x27;s trajectory from a 1993 graphics startup to the $4.26T AI infrastructure leader echoes pivotal tech platform shifts. Explosive FY2026 revenue of $215.94B (+65.5% YoY) and 55.6% net margins highlight a hypergrowth phase driven by CUDA-enabled data center dominance, inviting direct parallels to infrastructure buildouts in prior cycles while underscoring unique software-hardware lock-in.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">fy2026 revenue</div><div class="kpi-value ">$215.94B</div><div class="kpi-sub">+65.5% YoY</div></div><div class="kpi"><div class="kpi-label">net margin</div><div class="kpi-value ">55.6%</div><div class="kpi-sub">vs peers ~20-40%</div></div><div class="kpi"><div class="kpi-label">fcf margin</div><div class="kpi-value ">47.4%</div><div class="kpi-sub">robust cash conversion</div></div><div class="kpi"><div class="kpi-label">debt/equity</div><div class="kpi-value ">0.05</div><div class="kpi-sub">fortress balance sheet</div></div></div><div class="table-wrap"><table><thead><tr><th>Analog Company</th><th class="num">Era/Event</th><th>The Parallel</th><th>What Happened Next</th><th>Implication for NVDA</th></tr></thead><tbody><tr><td class="b"><p>Cisco Systems</p></td><td class="num"><p>1995-2000 Internet Buildout</p></td><td><p>Dominant provider of routers/switches for internet infrastructure; revenue +498%, stock +3,278% amid capex surge…</p></td><td><p>Post-2000 bust: revenue growth normalized, stock fell ~83% as multiples compressed from 200x+ P/E…</p></td><td><p>AI data center spend mirrors internet capex; current P/S 19.7 and implied 43.6% perpetual growth embed similar exuberance—watch for normalization…</p></td></tr><tr><td class="b"><p>Intel</p></td><td class="num"><p>1990s-2000s PC/CPU Dominance</p></td><td><p>x86 architecture lock-in with high margins; ecosystem (tools, software) created moat during PC boom…</p></td><td><p>Market share erosion to AMD/ARM; slower innovation led to multi-year underperformance…</p></td><td><p>CUDA software platform provides stronger stickiness than Intel&#x27;s ISA; sustained 80%+ AI GPU share critical to avoid similar fade…</p></td></tr><tr><td class="b"><p>NVIDIA (own 2006-2016 pivot)</p></td><td class="num"><p>CUDA Launch &amp; AI Inflection</p></td><td><p>Shift from gaming GPUs to programmable parallel computing; early AI adoption via Tesla/Volta…</p></td><td><p>Enabled data center revenue acceleration; market cap recovery and compounding post-2016…</p></td><td><p>Current Blackwell/Rubin transition extends this playbook; FY2026 $153.46B gross profit shows continued execution…</p></td></tr><tr><td class="b"><p>Cisco (late 1990s)</p></td><td class="num"><p>Peak Infrastructure Valuations</p></td><td><p>EV/EBITDA expansion on &#x27;picks and shovels&#x27; narrative; FCF margins > 40% at scale…</p></td><td><p>Demand visibility overstated; post-bubble ROIC declined sharply…</p></td><td><p>NVDA&#x27;s 70.3% ROIC and 47.4% FCF margin at $215.94B revenue suggest analogous peak-cycle positioning…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Key Historical Company Analogies | Source: SEC EDGAR FY2026 filings; historical tech cycle analysis</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Industry Cycle Positioning</h3><span class="tag blue">ACCELERATION</span></div><div class="aggregate-card-body"><p>NVIDIA sits squarely in the Acceleration phase of the semiconductor and AI infrastructure cycle. FY2026 revenue reached $215.94B, up 65.5% YoY from the implied prior-year base near $130.5B, with sequential quarterly acceleration from $44.06B (Q1) to $57.01B (Q3). This follows an even stronger prior expansion and mirrors the late-1990s networking buildout when infrastructure spending compounded rapidly before eventual normalization...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Recurring Historical Patterns</h3><span class="tag blue">PIVOT &amp; SCALE</span></div><div class="aggregate-card-body"><p>NVIDIA&#x27;s history reveals a repeatable pattern of architectural pivots followed by rapid scaling via software-hardware integration. Founded in 1993 with a focus on 3D graphics for gaming, early struggles with the NV1 chip led to a pivot toward industry-standard rendering (RIVA series), establishing a foothold. The 2006 CUDA launch represented the defining inflection, transforming GPUs from gaming accelerators into programmable platforms for high-performance computing and eventually AI...</p></div></div><div class="note green"><p>Core Takeaway. NVIDIA&#x27;s FY2026 performance—$215.94B revenue (+65.5% YoY), 55.6% net margin, and 47.4% FCF margin—demonstrates software-like economics on hardware scale, a non-obvious outcome of two decades of CUDA investment that few historical infrastructure plays achieved at this magnitude.</p></div><div class="note red"><p>Cycle Normalization Risk. Analogous to Cisco post-2000, where revenue visibility proved overstated amid capex pauses, NVIDIA&#x27;s implied 43.6% perpetual growth (reverse DCF) leaves limited room for AI spend deceleration; gross margin compression to 71.1% already signals early mix pressures.</p></div><p class="aggregate-pane-xref"><a href="#thesis">See variant perception &amp; thesis</a></p><p class="aggregate-pane-xref"><a href="#ops">See fundamentals</a></p><p class="aggregate-pane-xref"><a href="#valuation">See Valuation</a></p>
+      </section>
+      <section id="management" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Management &amp; leadership</h2>
+          <div class="kicker">execution + key-person risk</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Management Score: 4.7/5 (Exceptional execution in FY2026 hyper-growth) · Insider Ownership %: 3.62% (Primarily via CEO Huang ~880M shares) · CEO Tenure: 32.9 years (Founder-CEO since 1993).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">management score</div><div class="kpi-value ">4.7/5</div><div class="kpi-sub">Exceptional execution in FY2026 hyper-growth</div></div><div class="kpi"><div class="kpi-label">insider ownership %</div><div class="kpi-value ">3.62%</div><div class="kpi-sub">Primarily via CEO Huang ~880M shares</div></div><div class="kpi"><div class="kpi-label">ceo tenure</div><div class="kpi-value ">32.9 years</div><div class="kpi-sub">Founder-CEO since 1993</div></div><div class="kpi"><div class="kpi-label">compensation alignment</div><div class="kpi-value ">High</div><div class="kpi-sub">Pay-for-performance tied to revenue &amp; TSR</div></div></div><div class="note green"><p>Non-obvious takeaway. NVIDIA&#x27;s flat organizational structure with CEO Jensen Huang overseeing 36 direct reports (reduced from 55) combined with disciplined SG&A at only 2.1% of $215.94B FY2026 revenue enabled unmatched agility and 60.4% operating margin—far exceeding semiconductor peers—while maintaining conservative Debt to Equity of 0.05.</p></div><div class="table-wrap table-narrow"><table><thead><tr><th>Metric</th><th class="num">Value</th></tr></thead><tbody><tr><td class="b"><p>Revenue</p></td><td class="num"><p>$215.94B</p></td></tr><tr><td class="b"><p>Net income</p></td><td class="num"><p>$120.07B</p></td></tr><tr><td class="b"><p>EPS</p></td><td class="num"><p>$4.90</p></td></tr><tr><td class="b"><p>R&D</p></td><td class="num"><p>$18.50B</p></td></tr><tr><td class="b"><p>Revenue (2)</p></td><td class="num"><p>$20.83B</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Leadership Assessment</h3><span class="tag green">Founder-Led Excellence</span></div><div class="aggregate-card-body"><p>Under founder-CEO Jensen Huang (born 1963, tenure 32.9 years), NVIDIA has scaled from a graphics specialist to the AI infrastructure leader. In FY2026 (ended Jan 25, 2026), management delivered $215.94B revenue (+65.5% YoY), $120.07B net income (+64.7% YoY), and $4.90 diluted EPS . The unconventional flat structure—36 direct reports as of October 2025, with ~78% engineering/product focused—has accelerated innovation in CUDA ecosystem and GPU architecture, sustaining technological barriers against AMD and in-house silicon efforts by hyperscalers...</p></div></div><div class="table-wrap"><table><thead><tr><th>Name</th><th>Title</th><th>Tenure</th><th>Background</th><th class="num">Key Achievement</th></tr></thead><tbody><tr><td class="b"><p>Jensen Huang</p></td><td><p>Founder, President &amp; CEO</p></td><td><p>32.9 years</p></td><td><p>Co-founder since 1993</p></td><td class="num"><p>Led FY2026 revenue to $215.94B with 71.1% gross margin…</p></td></tr><tr><td class="b"><p>Colette Kress</p></td><td><p>EVP &amp; CFO</p></td><td><p>12.5 years</p></td><td><p>Finance executive</p></td><td class="num"><p>Oversaw balance sheet strength: equity to $157.29B, Debt/Equity 0.05…</p></td></tr><tr><td class="b"><p>Debora Shoquist</p></td><td><p>EVP Operations</p></td><td><p>17.2 years</p></td><td><p>Operations leadership</p></td><td class="num"><p>Supported scaling of high-margin data center business…</p></td></tr><tr><td class="b"><p>Ajay Puri</p></td><td><p>EVP Worldwide Field Operations</p></td><td><p>~10+ years</p></td><td><p>Sales &amp; field</p></td><td class="num"><p>Drove hyperscaler adoption amid 65.5% revenue growth…</p></td></tr><tr><td class="b"><p>Chris Malachowsky</p></td><td><p>Founder &amp; NVIDIA Fellow</p></td><td><p>32+ years</p></td><td><p>Co-founder</p></td><td class="num"><p>Architectural contributions to GPU leadership…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Key Executives Overview | Source: Company investor site &amp; analytical findings; FY2026 EDGAR data</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Governance Structure</h3><span class="tag green">Strong Independence</span></div><div class="aggregate-card-body"><p>NVIDIA maintains a majority-independent board with experienced directors from venture capital, technology, and operations backgrounds (e.g., Tench Coxe of Sutter Hill Ventures, Melissa Lora). The board oversees management performance, with dedicated committees for audit, compensation, and governance. Corporate governance policies, codes of conduct, and committee charters emphasize shareholder alignment and risk oversight...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Compensation Alignment</h3><span class="tag green">Pay-for-Performance</span></div><div class="aggregate-card-body"><p>NVIDIA&#x27;s executive compensation program follows a pay-for-performance philosophy, linking NEO pay to corporate performance goals such as revenue achievement. For FY2027, the Variable Compensation Plan ties cash bonuses to specified revenue targets, with CEO Huang&#x27;s target at $4M (200% of salary) and stretch opportunities. Equity awards further align interests with shareholders...</p></div></div><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="macro" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Macro sensitivity</h2>
+          <div class="kicker">rates, fx, energy</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Rate Sensitivity: High (High beta 1.95 &amp; WACC 14.9%; valuation sensitive to discount rate) · FX Exposure % Revenue: Low (Primarily USD functional; ~30% non-US revenue with limited translational risk) · Commodity Exposure Level: Med (Indirect via TSMC wafer &amp; HBM; &lt;5% COGS direct estimate).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">rate sensitivity</div><div class="kpi-value ">High</div><div class="kpi-sub">High beta 1.95 &amp; WACC 14.9%; valuation sensitive to discount rate</div></div><div class="kpi"><div class="kpi-label">fx exposure % revenue</div><div class="kpi-value ">Low</div><div class="kpi-sub">Primarily USD functional; ~30% non-US revenue with limited translational risk</div></div><div class="kpi"><div class="kpi-label">commodity exposure level</div><div class="kpi-value ">Med</div><div class="kpi-sub">Indirect via TSMC wafer &amp; HBM; &lt;5% COGS direct estimate</div></div><div class="kpi"><div class="kpi-label">trade policy risk</div><div class="kpi-value ">High</div><div class="kpi-sub">China ~9.11% revenue; ongoing export controls &amp; potential tariffs</div></div></div><div class="note red"><p>Key Takeaway. NVIDIA&#x27;s fortress balance sheet (Debt/Equity 0.05) and asset-light model insulate it from direct borrowing costs, yet its 1.95 beta and premium valuation (P/E 35.8) make the stock highly sensitive to any macro-driven rise in discount rates or risk premia that could compress AI growth multiples.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Interest Rate Sensitivity</h3><span class="tag amber">High via Valuation</span></div><div class="aggregate-card-body"><p>NVIDIA maintains a conservative capital structure with Long-Term Debt of only $8.47B against Shareholders&#x27; Equity of $157.29B, resulting in a Debt to Equity ratio of 0.05 as of FY2026 end. Interest coverage is exceptionally high, though noted as potentially understated in filings. Free Cash Flow reached $102.346B (47.4% margin) in FY2026, supporting minimal reliance on floating-rate debt...</p></div></div><div class="table-wrap"><table><thead><tr><th>Region</th><th class="num">Revenue %</th><th>Primary Currency</th><th>Hedging Strategy</th><th>Net Unhedged Exposure</th><th>Est. Impact of 10% USD Move</th></tr></thead><tbody><tr><td class="b"><p>United States</p></td><td class="num"><p>69.29%</p></td><td><p>USD</p></td><td><p>N/A (functional currency)</p></td><td><p>Minimal</p></td><td><p>Negligible</p></td></tr><tr><td class="b"><p>Taiwan</p></td><td class="num"><p>19.61%</p></td><td><p>TWD / USD</p></td><td><p>Partial (natural)</p></td><td class="amb"><p>Moderate</p></td><td><p>~1-2% revenue</p></td></tr><tr><td class="b"><p>China</p></td><td class="num"><p>9.11%</p></td><td><p>CNY / USD</p></td><td><p>Partial (natural + financial)</p></td><td><p>Elevated due to controls</p></td><td><p>~0.9% revenue</p></td></tr><tr><td class="b"><p>Other Americas</p></td><td class="num"><p>1.99%</p></td><td><p>Various</p></td><td><p>None disclosed</p></td><td><span class="tag blue">LOW</span></td><td><p>&lt;0.2% revenue</p></td></tr><tr><td class="b"><p>Singapore / Other</p></td><td class="num"><p>~0% explicit</p></td><td><p>Various</p></td><td><p>Partial</p></td><td><span class="tag blue">LOW</span></td><td><p>Negligible</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Revenue Exposure by Region (FY2026) | Source: Company filings &amp; FY2026 revenue geography data</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Commodity Exposure</h3><span class="tag amber">Indirect / Med</span></div><div class="aggregate-card-body"><p>NVIDIA&#x27;s direct commodity inputs represent a modest portion of COGS, with the majority of costs tied to advanced semiconductor manufacturing outsourced to TSMC. Key exposures include silicon wafers, high-bandwidth memory (HBM), and specialty gases/helium used in fabrication. Historical COGS data shows scaling efficiency, but future pressures could emerge from HBM4 allocations or rare-earth dependencies...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Trade Policy &amp; Tariff Risk</h3><span class="tag red">Elevated</span></div><div class="aggregate-card-body"><p>NVIDIA faces material China-related trade risks, with China contributing ~9.11% ($19.68B) of FY2026 revenue. U.S. export controls on advanced AI chips persist, though recent policy shifts have allowed limited H200 shipments under case-by-case licensing, volume caps (~50%), and a 25% tariff on certain advanced computing chips...</p></div></div><div class="table-wrap"><table><thead><tr><th>Indicator</th><th class="num">Current Value</th><th>Historical Avg</th><th>Signal</th><th>Impact on NVDA</th></tr></thead><tbody><tr><td class="b"><p>VIX</p></td><td class="num"><p>~20-29</p></td><td><p>~18-20</p></td><td><p>Elevated (am)</p></td><td><p>Higher volatility amplifies beta 1.95 moves…</p></td></tr><tr><td class="b"><p>ISM Manufacturing</p></td><td class="num"><p>~52.6</p></td><td><p>50</p></td><td><p>Expansionary (gn)</p></td><td><p>Supports capex environment</p></td></tr><tr><td class="b"><p>Fed Funds Rate</p></td><td class="num"><p>3.50-3.75%</p></td><td><p>~2% long-term</p></td><td><p>Neutral-Higher (am)</p></td><td><p>Stabilization limits WACC pressure</p></td></tr><tr><td class="b"><p>CPI YoY</p></td><td class="num"><p>~2.4-2.7%</p></td><td><p>2% target</p></td><td><p>Sticky (am)</p></td><td><p>Risk of delayed cuts compresses multiples…</p></td></tr><tr><td class="b"><p>Yield Curve</p></td><td class="num"><p>Steepening</p></td><td><p>Flat/inverted</p></td><td><p>Normalization (gn)</p></td><td><p>Positive for growth financing</p></td></tr><tr><td class="b"><p>Credit Spreads</p></td><td class="num"><p>Tight</p></td><td><p>Wider in stress</p></td><td><p>Benign (gn)</p></td><td><p>Supports hyperscaler borrowing</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Current Macro Cycle Indicators | Source: Macro context indicators &amp; derived ratios (as of Mar 2026)</div><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p><p class="aggregate-pane-xref"><a href="#valuation">See Valuation</a></p><p class="aggregate-pane-xref"><a href="#financials">See Financial Analysis</a></p>
+      </section>
+      <section id="quant" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Quantitative profile</h2>
+          <div class="kicker">factor + mean reversion</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Momentum Score: High (Top-decile growth; revenue +65.5% YoY) · Value Score: Low (P/E 35.8x, P/S 19.7x embed 43.6% implied growth) · Quality Score: Elite (Gross margin 71.1%, ROE 76.3%, FCF margin 47.4%).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">momentum score</div><div class="kpi-value ">High</div><div class="kpi-sub">Top-decile growth; revenue +65.5% YoY</div></div><div class="kpi"><div class="kpi-label">value score</div><div class="kpi-value ">Low</div><div class="kpi-sub">P/E 35.8x, P/S 19.7x embed 43.6% implied growth</div></div><div class="kpi"><div class="kpi-label">quality score</div><div class="kpi-value ">Elite</div><div class="kpi-sub">Gross margin 71.1%, ROE 76.3%, FCF margin 47.4%</div></div><div class="kpi"><div class="kpi-label">annualized volatility</div><div class="kpi-value ">39.41%</div><div class="kpi-sub">vs universe; recent 1-mo ~10.5%</div></div></div><div class="table-wrap"><table><thead><tr><th>Factor</th><th class="num">Score</th><th>Percentile vs Universe</th><th>Trend</th></tr></thead><tbody><tr><td class="b"><p>Momentum</p></td><td class="num"><p>High (Z~2.0+)</p></td><td><p>&gt;90th</p></td><td><span class="tag blue">IMPROVING</span></td></tr><tr><td class="b"><p>Value</p></td><td class="num"><span class="tag blue">LOW</span></td><td><p>&lt;10th</p></td><td><p>Deteriorating</p></td></tr><tr><td class="b"><p>Quality</p></td><td class="num"><p>Elite</p></td><td><p>&gt;95th</p></td><td class="amb"><span class="tag blue">STABLE</span></td></tr><tr><td class="b"><p>Size</p></td><td class="num"><p>Mega</p></td><td><p>&gt;99th</p></td><td class="amb"><span class="tag blue">STABLE</span></td></tr><tr><td class="b"><p>Volatility</p></td><td class="num"><span class="tag blue">HIGH</span></td><td><p>60-70th</p></td><td><span class="tag blue">IMPROVING</span></td></tr><tr><td class="b"><p>Growth</p></td><td class="num"><p>Exceptional</p></td><td><p>&gt;95th</p></td><td><span class="tag blue">IMPROVING</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Factor Exposure Profile | Source: Derived ratios &amp; market data as of Mar 24, 2026; factor Z-scores derived from FY2026 filings</div><div class="table-wrap"><table><thead><tr><th>Start Date</th><th>End Date</th><th class="num">Peak-to-Trough %</th><th class="num">Recovery Days</th><th>Catalyst</th></tr></thead><tbody><tr><td class="b"><p>Nov 30, 2021</p></td><td><p>Oct 14, 2022</p></td><td class="neg num"><p>-66.34%</p></td><td class="num"><p>153</p></td><td><p>Macro tightening &amp; tech re-rating</p></td></tr><tr><td class="b"><p>Oct 2, 2018</p></td><td><p>Dec 24, 2018</p></td><td class="neg num"><p>-56.04%</p></td><td class="num"><p>287</p></td><td><p>Crypto winter &amp; inventory correction</p></td></tr><tr><td class="b"><p>Jan 4, 2002</p></td><td><p>Oct 9, 2002</p></td><td class="neg num"><p>-89.72%</p></td><td class="num"><p>1032</p></td><td><p>Dot-com bust aftermath</p></td></tr><tr><td class="b"><p>Oct 18, 2007</p></td><td><p>Nov 20, 2008</p></td><td class="neg num"><p>-85.08%</p></td><td class="num"><p>1861</p></td><td><p>Global financial crisis</p></td></tr><tr><td class="b"><p>Feb/Mar 2020</p></td><td><p>Mar/Apr 2020</p></td><td class="neg num"><p>-37.6%</p></td><td class="num"><p>~100</p></td><td><p>COVID-19 pandemic shock</p></td></tr><tr><td class="b"><p>2022 Inflation Shock</p></td><td></td><td class="neg num"><p>-66.4%</p></td><td class="num"><p>223</p></td><td><p>Rate hikes &amp; growth de-rating</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Major Historical Drawdowns | Source: Historical price data &amp; drawdown analysis from PortfoliosLab, Trefis, AlphaCubator</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Liquidity Profile</h3><span class="tag green">High Liquidity</span></div><div class="aggregate-card-body"><p>NVIDIA exhibits exceptional liquidity consistent with its $4.26T market cap and status as a top-traded equity. Average daily volume stands at approximately 176M shares (3-month average near 175.9M-196M), with recent sessions showing 116M-241M shares. The bid-ask spread remains tight at roughly $0.02-$0.22 on a $175.33 price (typically Institutional ownership is elevated at ~65.27%, with net inflows of $386.5B over the last 24 months across thousands of institutions, indicating strong turnover and depth...</p></div></div><div class="table-wrap"><table><thead><tr><th>Asset</th><th class="num">1yr Correlation</th><th class="num">3yr Correlation</th><th class="num">Rolling 90d Current</th><th>Interpretation</th></tr></thead><tbody><tr><td class="b"><p>SPY</p></td><td class="num"><p>0.65</p></td><td class="num"><p>0.62</p></td><td class="num"><p>0.68</p></td><td><p>Moderate; beta-driven</p></td></tr><tr><td class="b"><p>QQQ</p></td><td class="num"><p>0.85</p></td><td class="num"><p>0.82</p></td><td class="num"><p>0.71</p></td><td><p>High; tech/AI proxy</p></td></tr><tr><td class="b"><p>SOXX (Semis)</p></td><td class="num"><p>0.78</p></td><td class="num"><p>0.75</p></td><td class="num"><p>0.80</p></td><td><p>Strong sector linkage</p></td></tr><tr><td class="b"><p>AMD</p></td><td class="num"><p>0.72</p></td><td class="num"><p>0.68</p></td><td class="num"><p>0.65</p></td><td><p>Peer correlation with divergence potential…</p></td></tr><tr><td class="b"><p>TSM</p></td><td class="num"><p>0.55</p></td><td class="num"><p>0.60</p></td><td class="num"><p>0.58</p></td><td><p>Supply-chain tie but lower</p></td></tr><tr><td class="b"><p>ASML</p></td><td class="num"><p>0.60</p></td><td class="num"><p>0.58</p></td><td class="num"><p>0.62</p></td><td><p>Equipment exposure</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Correlation Matrix | Source: Market data &amp; rolling correlation analysis as of Mar 2026</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Technical Profile</h3><span class="tag amber">Neutral to Bearish Bias</span></div><div class="aggregate-card-body"><p>As of Mar 24, 2026, NVDA trades at $175.33, positioned below its 50-day moving average (~179.13-184.40) and 200-day moving average (~178.78-183.77). This configuration indicates Short- and intermediate-term downward pressure with the stock in a recent consolidation/pullback phase from higher levels near $190-197. RSI (14) stands at approximately 38-42, reflecting Neutral-to-oversold territory without extreme exhaustion...</p></div></div><div class="chart-box"><div class="chart-head"><h3>Factor Exposure Radar</h3><div class="sub">radar</div></div><div class="aggregate-mini-table table-wrap"><table><thead><tr><th>period</th><th class="num">NVDA</th><th class="num">Universe Median</th></tr></thead><tbody><tr><td class="b">Momentum</td><td class="num">92</td><td class="num">50</td></tr><tr><td class="b">Value</td><td class="num">8</td><td class="num">50</td></tr><tr><td class="b">Quality</td><td class="num">96</td><td class="num">50</td></tr><tr><td class="b">Size</td><td class="num">99</td><td class="num">50</td></tr><tr><td class="b">Volatility</td><td class="num">65</td><td class="num">50</td></tr><tr><td class="b">Growth</td><td class="num">95</td><td class="num">50</td></tr></tbody></table></div><div class="aggregate-source">Exhibit 4: Multi-Factor Radar Chart | Source: Derived factor percentiles from FY2026 data &amp; market metrics</div></div><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p><p class="aggregate-pane-xref"><a href="#valuation">See Valuation</a></p><p class="aggregate-pane-xref"><a href="#ops">See Fundamentals</a></p>
+      </section>
+      <section id="derivatives" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Options &amp; derivatives</h2>
+          <div class="kicker">sentiment gauge</div>
+        </div>
+        <div class="lead aggregate-lead"><p>30-Day IV: 34.91% (vs ~42% 52-wk avg (low rank ~11%)) · IV Rank: 11% (subdued volatility pricing) · Put/Call Ratio (Vol): 0.78 (Bullish-to-neutral sentiment).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">30-day iv</div><div class="kpi-value ">34.91%</div><div class="kpi-sub">vs ~42% 52-wk avg (low rank ~11%)</div></div><div class="kpi"><div class="kpi-label">iv rank</div><div class="kpi-value ">11%</div><div class="kpi-sub">subdued volatility pricing</div></div><div class="kpi"><div class="kpi-label">put/call ratio (vol)</div><div class="kpi-value ">0.78</div><div class="kpi-sub">Bullish-to-neutral sentiment</div></div><div class="kpi"><div class="kpi-label">short interest</div><div class="kpi-value ">1.07%</div><div class="kpi-sub">of float; 248.34M shares</div></div></div><div class="note red"><p>Takeaway. NVDA&#x27;s derivatives market reflects subdued risk pricing with 30-day IV at 34.91% (near the low end of its historical range) despite the stock trading at $175.33 and a $4.26T market cap. The put/call volume ratio of 0.78 alongside low Short interest of 1.07% signals that options participants are not aggressively hedging downside even as the company scales to $215.94B FY2026 revenue and $120.07B net income.</p></div><div class="table-wrap"><table><thead><tr><th>Expiry</th><th class="num">IV (%)</th><th class="num">IV Change (1wk)</th><th class="num">Skew (25Δ Put - 25Δ Call)</th></tr></thead><tbody><tr><td class="b"><p>Mar 25 2026 (w)</p></td><td class="num"><p>36.4</p></td><td class="neg num"><p>-0.8</p></td><td class="num"><p>0.4</p></td></tr><tr><td class="b"><p>Apr 2026</p></td><td class="num"><p>38.5</p></td><td class="neg num"><p>-1.2</p></td><td class="num"><p>0.9</p></td></tr><tr><td class="b"><p>Jun 2026</p></td><td class="num"><p>40.2</p></td><td class="neg num"><p>-0.5</p></td><td class="num"><p>1.1</p></td></tr><tr><td class="b"><p>Sep 2026</p></td><td class="num"><p>42.1</p></td><td class="pos num"><p>+0.3</p></td><td class="num"><p>1.3</p></td></tr><tr><td class="b"><p>Jan 2027</p></td><td class="num"><p>43.8</p></td><td class="pos num"><p>+0.7</p></td><td class="num"><p>1.5</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: NVDA Implied Volatility Term Structure and Skew | Source: Market data platforms (Barchart, OptionCharts, MarketChameleon as of Mar 24, 2026)</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Implied Volatility Profile</h3><span class="tag blue">Subdued</span></div><div class="aggregate-card-body"><p>NVIDIA&#x27;s 30-day implied volatility stands at approximately 34.91% as of March 24, 2026, ranking in the 11th percentile over the past year and well below the 52-week average near 42%. This low IV environment contrasts with realized/historical volatility around 32-35% in recent sessions, suggesting the options market is pricing in a relatively contained expected move of roughly ±1.2% for near-term weekly expirations and ±8-10% into major events. Term structure shows mild contango with longer-dated IV rising to the low-40s, while skew remains modest (25Δ put-call difference ~0.4-1.5 points across expirations)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Unusual Options Activity &amp; Flow</h3><span class="tag blue">Balanced</span></div><div class="aggregate-card-body"><p>Recent options flow for NVDA shows elevated liquidity with daily volume often exceeding 600k contracts. Notable activity includes clusters of call buying in near-term strikes (e.g., Mar 25 177.50C and 175C) alongside selective put volume at lower strikes such as Oct 2026 150P, reflecting a mix of directional upside bets and yield-enhancing Short-put strategies. Open interest concentrates around at-the-money strikes near $175, with put/call OI ratio around 0.86-0.89...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Short Interest Analysis</h3><span class="tag green">Low Risk</span></div><div class="aggregate-card-body"><p>Short interest in NVDA stands at 248.34 million shares as of late February 2026, equating to just 1.07% of float . This represents a modest -2.35% decline from the prior reporting period and translates to only 1.3 days to cover at average daily volume near 200 million shares. Cost-to-borrow remains low given the stock&#x27;s liquidity and limited borrow demand...</p></div></div><div class="table-wrap"><table><thead><tr><th>Fund Type</th><th>Direction</th><th>Estimated Size</th><th>Notable Names</th></tr></thead><tbody><tr><td class="b"><p>Mutual Fund</p></td><td><p>Long</p></td><td><p>Large</p></td><td><p>State Street (~978M shares)</p></td></tr><tr><td class="b"><p>Mutual Fund (2)</p></td><td><p>Long</p></td><td><p>Large</p></td><td><p>Geode (~579M shares)</p></td></tr><tr><td class="b"><p>Sovereign</p></td><td><p>Long</p></td><td><p>Large</p></td><td><p>Norges Bank (new large position)</p></td></tr><tr><td class="b"><p>Asset Manager</p></td><td><p>Long</p></td><td><p>Large</p></td><td><p>Legal &amp; General (+1.5%)</p></td></tr><tr><td class="b"><p>Asset Manager (2)</p></td><td><p>Long</p></td><td><p>Large</p></td><td><p>Capital Research (+16.1%)</p></td></tr><tr><td class="b"><p>Hedge Fund</p></td><td><p>Mixed/Options</p></td><td class="amb"><p>Moderate</p></td><td><p>Various HF via options overlays</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Institutional Positioning via 13F and Options Exposure | Source: 13F filings and market data (latest available quarters into 2026)</div><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p><p class="aggregate-pane-xref"><a href="#valuation">See Valuation</a></p><p class="aggregate-pane-xref"><a href="#ops">See Fundamentals</a></p>
+      </section>
+      <section id="governance" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Governance &amp; accounting</h2>
+          <div class="kicker">quality control</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Board Independence: 92% (12 of 13 directors independent (per 2025 DEF 14A)) · Avg Board Tenure: 7 years (Balanced refreshment with recent additions) · CEO Pay Ratio: High (est. &gt;300:1) (Driven by equity awards; aligned to TSR).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">board independence</div><div class="kpi-value ">92%</div><div class="kpi-sub">12 of 13 directors independent (per 2025 DEF 14A)</div></div><div class="kpi"><div class="kpi-label">avg board tenure</div><div class="kpi-value ">7 years</div><div class="kpi-sub">Balanced refreshment with recent additions</div></div><div class="kpi"><div class="kpi-label">ceo pay ratio</div><div class="kpi-value ">High (est. &gt;300:1)</div><div class="kpi-sub">Driven by equity awards; aligned to TSR</div></div><div class="kpi"><div class="kpi-label">governance score</div><div class="kpi-value ">A-</div><div class="kpi-sub">Strong rights, no major defenses</div></div></div><div class="note green"><p>Key Takeaway. NVIDIA&#x27;s governance framework delivers exceptional capital efficiency, evidenced by FCF margin of 47.4% and ROIC of 70.3% in FY2026, with pristine accounting (zero restatements or clawbacks) enabling reliable scaling of $215.94B revenue and $120.07B net income without aggressive recognition practices.</p></div><div class="table-wrap"><table><thead><tr><th>Director</th><th>Independent</th><th class="num">Tenure (Years)</th><th>Key Committees</th><th class="num">Other Boards</th><th>Expertise</th></tr></thead><tbody><tr><td class="b"><p>Jen-Hsun Huang</p></td><td class="neg"><p>N</p></td><td class="num"><p>33</p></td><td><p>None (CEO)</p></td><td class="amb num"><p>0</p></td><td><p>AI/Tech Leadership</p></td></tr><tr><td class="b"><p>Tench Coxe</p></td><td><p>Y</p></td><td class="num"><p>33</p></td><td><p>AC, CC</p></td><td class="num"><p>1</p></td><td><p>Venture Capital/Finance</p></td></tr><tr><td class="b"><p>Stephen C. Neal</p></td><td><p>Y</p></td><td class="num"><p>7</p></td><td><p>NCGC (Chair)</p></td><td class="amb num"><p>0</p></td><td><p>Legal/Governance</p></td></tr><tr><td class="b"><p>A. Brooke Seawell</p></td><td><p>Y</p></td><td class="num"><p>29</p></td><td><p>AC (Chair)</p></td><td class="num"><p>1</p></td><td><p>Tech/Finance</p></td></tr><tr><td class="b"><p>Mark A. Stevens</p></td><td><p>Y</p></td><td class="num"><p>18</p></td><td><p>AC, NCGC</p></td><td class="amb num"><p>0</p></td><td><p>Tech/Operations</p></td></tr><tr><td class="b"><p>Dawn Hudson</p></td><td><p>Y</p></td><td class="num"><p>13</p></td><td><p>CC (Chair)</p></td><td class="num"><p>1</p></td><td><p>Marketing/Consumer</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Board Composition and Independence (2025 Annual Meeting Nominees) | Source: NVIDIA 2025 DEF 14A Proxy Statement</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Shareholder Rights Assessment</h3><span class="tag green">Strong</span></div><div class="aggregate-card-body"><p>NVIDIA maintains shareholder-friendly governance with no poison pill, a declassified board (annual elections for all directors), single-class common stock with no dual-class structure, and majority voting for directors in uncontested elections. Proxy access is voluntarily adopted, allowing qualifying stockholders (3% ownership for 3 years, up to 20 stockholders) to nominate up to 20% of the board. Stockholders can call special meetings, and the company engages in active outreach including Lead Director participation...</p></div></div><div class="table-wrap"><table><thead><tr><th>Executive</th><th>Title</th><th>Base Salary</th><th>Bonus/Variable</th><th>Equity Awards</th><th>Total Comp</th></tr></thead><tbody><tr><td class="b"><p>Jen-Hsun Huang</p></td><td><p>President &amp; CEO</p></td><td><p>$1.5M</p></td><td><p>$4M target (FY2027 plan); $6M in FY2025</p></td><td><p>$38.8M (FY2025)</p></td><td><p>$49.9M (FY2025)</p></td></tr><tr><td class="b"><p>Colette Kress</p></td><td><p>EVP &amp; CFO</p></td><td><p>Not specified</p></td><td><p>Performance-based</p></td><td><p>Increased ~$3-3.5M equity</p></td><td><p>Up 59-74% YoY</p></td></tr><tr><td class="b"><p>Ajay Puri</p></td><td><p>EVP, Worldwide Field Ops</p></td><td><p>Not specified</p></td><td><p>Performance-based</p></td><td><p>Increased ~$3-3.5M equity</p></td><td><p>Up 59-74% YoY</p></td></tr><tr><td class="b"><p>Debora Shoquist</p></td><td><p>EVP, Operations</p></td><td><p>Not specified</p></td><td><p>Performance-based</p></td><td><p>Increased ~$3-3.5M equity</p></td><td><p>Up 59-74% YoY</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Named Executive Officer Compensation and Alignment | Source: NVIDIA 2025 DEF 14A Proxy Statement &amp; FY2025/2026 Filings</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Accounting Quality Deep-Dive</h3><span class="tag green">Clean</span></div><div class="aggregate-card-body"><p>NVIDIA delivered FY2026 results with pristine accounting quality: no material restatements, no error corrections requiring incentive compensation recovery, and unqualified SOX 404 attestation with no reported material weaknesses in internal controls (per 2026-01-25 10-K Item 9). Auditor continuity remains strong with PricewaterhouseCoopers LLP providing clean opinions across periods. Revenue recognition policies follow standard GAAP with no unusual volatility; gross margin held steady at 71.1% and operating margin at 60.4% on $215.94B revenue despite rapid scaling, showing no signs of channel stuffing or aggressive accruals...</p></div></div><div class="table-wrap"><table><thead><tr><th>Dimension</th><th class="num">Score (1-5)</th><th class="num">Evidence Summary</th></tr></thead><tbody><tr><td class="b"><p>Capital Allocation</p></td><td class="num"><p>5</p></td><td class="num"><p>$41.1B returned to shareholders; shares reduced to 24.30B; FCF $102.346B funds growth without excess leverage…</p></td></tr><tr><td class="b"><p>Strategy Execution</p></td><td class="num"><p>5</p></td><td class="num"><p>Revenue +65.5% YoY to $215.94B; AI accelerator dominance sustained via full-stack optimization…</p></td></tr><tr><td class="b"><p>Communication</p></td><td class="num"><p>4</p></td><td class="num"><p>Proactive transparency on SBC inclusion in non-GAAP; regular investor outreach…</p></td></tr><tr><td class="b"><p>Culture</p></td><td class="num"><p>4</p></td><td class="num"><p>Talent retention via SBC (3.0% of revenue) and R&D intensity (8.6%); flat structure enables speed…</p></td></tr><tr><td class="b"><p>Track Record</p></td><td class="num"><p>5</p></td><td class="num"><p>Consistent margin expansion (Gross 71.1%, Net 55.6%) and ROIC 70.3% over multi-year AI ramp…</p></td></tr><tr><td class="b"><p>Alignment</p></td><td class="num"><p>4</p></td><td class="num"><p>Equity-heavy comp tied to TSR; however, key-person concentration around founder-CEO elevates succession considerations…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Management Quality Scorecard | Source: Derived from 2026-01-25 10-K, Derived ratios, and 2025 DEF 14A</div><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p><p class="aggregate-pane-xref"><a href="#scorecard">See Earnings Scorecard</a></p><p class="aggregate-pane-xref"><a href="#risk">See What Breaks the Thesis</a></p>
+      </section>
+      <section id="value" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Value framework</h2>
+          <div class="kicker">greenwald / qarp</div>
+        </div>
+        <div class="lead aggregate-lead"><p>NVIDIA&#x27;s value assessment integrates Graham&#x27;s strict quantitative criteria, Buffett&#x27;s qualitative moat and management evaluation, and cross-referenced DCF/multiples analysis. Despite exceptional FY2026 metrics—including $215.94B revenue (+65.5% YoY), 71.1% gross margin, 55.6% net margin, and $102.35B free cash flow—current valuation at $175.33 embeds aggressive growth assumptions exceeding sustainable levels, yielding limited margin of safety.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">graham score</div><div class="kpi-value ">4/7</div><div class="kpi-sub">Passes size, finances, stability, growth; fails P/E, P/B, dividends</div></div><div class="kpi"><div class="kpi-label">buffett quality</div><div class="kpi-value ">A-</div><div class="kpi-sub">Strong moat and prospects; premium pricing limits value</div></div><div class="kpi"><div class="kpi-label">peg ratio</div><div class="kpi-value ">0.54</div><div class="kpi-sub">35.8x P/E ÷ 66.7% EPS growth (trailing)</div></div><div class="kpi"><div class="kpi-label">margin of safety</div><div class="kpi-value value-rd">-36%</div><div class="kpi-sub">Current $175.33 vs DCF base $111.55</div></div></div><div class="note green"><p>Key Takeaway. NVIDIA delivered software-like economics in FY2026 with 55.6% net margin and 47.4% FCF margin on $215.94B revenue, yet trades at 35.8x P/E and 19.7x PS—implying a 43.6% perpetual growth rate via reverse DCF that far exceeds even the 65.5% revenue growth achieved. This disconnect highlights a high-quality compounder priced for perfection rather than deep value.</p></div><div class="table-wrap"><table><thead><tr><th>Criterion</th><th>Threshold</th><th>Actual</th><th>Pass/Fail</th></tr></thead><tbody><tr><td class="b"><p>Adequate Size</p></td><td><p>&gt;$100M revenue</p></td><td><p>$215.94B</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Strong Financial Condition</p></td><td>Current ratio >2; LTD/Equity <0.5</td><td><p>3.91; 0.05</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Earnings Stability</p></td><td><p>Positive EPS 10yrs</p></td><td><p>Consistent post-2023 surge</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Dividend Record</p></td><td><p>20+ yrs uninterrupted</p></td><td><p><span style="color:var(--muted,#999);font-style:italic">—</span> as primary focus</p></td><td><p>Fail</p></td></tr><tr><td class="b"><p>Earnings Growth</p></td><td><p>33%+ over 10yrs</p></td><td class="pos"><p>+66.7% YoY EPS; multi-year acceleration</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Moderate P/E</p></td><td><p>&lt;15x or PEG < 1</p></td><td><p>35.8x (PEG 0.54 trailing)</p></td><td><p>Fail</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Graham&#x27;s 7 Criteria Assessment (FY2026) | Source: SEC EDGAR 10-K FY2026; derived ratios</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Buffett Qualitative Checklist</h3><span class="tag blue">High Moat</span></div><div class="aggregate-card-body"><p>NVIDIA operates a highly understandable business centered on GPU architecture and the CUDA software ecosystem, delivering favorable Long-term prospects through AI platform dominance. The CUDA moat creates switching costs and full-stack economics that sustain 71.1% gross margins and 70.3% ROIC, far above traditional semiconductor peers. Management has demonstrated trustworthiness via disciplined capital allocation, including share repurchases that reduced outstanding shares to 24.30B while generating $102.35B FCF...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Investment Decision Framework</h3><span class="tag blue">Circle of Competence</span></div><div class="aggregate-card-body"><p>Position sizing targets 3-5% portfolio weight for high-conviction growth names like NVDA, scaling up on dips below $130 (near bull DCF) or down on acceleration beyond $200. Entry criteria focus on valuation compression to 20% versus base case; exit on sustained deceleration in data center growth below 30% YoY or competitive share loss to ASICs. Portfolio fit is strong within a technology/growth sleeve emphasizing AI infrastructure leaders with asset-light models and superior capital returns...</p></div></div><div class="table-wrap"><table><thead><tr><th>Bias</th><th class="num">Risk Level</th><th>Mitigation Step</th><th>Status</th></tr></thead><tbody><tr><td class="b"><p>Anchoring</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Cross-reference DCF vs multiples</p></td><td><p>Clear</p></td></tr><tr><td class="b"><p>Confirmation</p></td><td class="num"><span class="tag blue">HIGH</span></td><td><p>Explicitly test bear case (ASIC competition)</p></td><td><p>Watch</p></td></tr><tr><td class="b"><p>Recency</p></td><td class="num"><span class="tag blue">HIGH</span></td><td><p>Review full 10-K historical trends pre-AI boom…</p></td><td><p>Clear</p></td></tr><tr><td class="b"><p>Overconfidence</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Monte Carlo dispersion (5th-95th: $40-$513)</p></td><td><p>Watch</p></td></tr><tr><td class="b"><p>Herding</p></td><td class="num"><span class="tag blue">HIGH</span></td><td><p>Compare implied 43.6% growth to peer normalization…</p></td><td><p>Clear</p></td></tr><tr><td class="b"><p>Availability</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Stress-test concentration risk (hyperscalers)</p></td><td><p>Watch</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Cognitive Bias Mitigation Checklist | Source: Internal analytical framework applied to FY2026 data</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Conviction Scoring Breakdown</h3><span class="tag blue">6.8/10</span></div><div class="aggregate-card-body"><p>Thesis pillars scored as follows (weighted total 6.8/10): Growth durability (9/10, weight 30%, evidence high from 65.5% YoY revenue); Moat sustainability (8/10, weight 25%, CUDA + full-stack); Capital efficiency (9/10, weight 20%, 47.4% FCF margin); Valuation discipline (3/10, weight 15%, DCF $111.55 base); Risk management (6/10, weight 10%, concentration noted). Key drivers include FY2026 net income of $120.07B and ROIC 70.3%. Primary risks are execution on inference shift and potential hyperscaler ROI scrutiny...</p></div></div><p class="aggregate-pane-xref"><a href="#valuation">See detailed DCF, multiples, and precedent analysis</a></p><p class="aggregate-pane-xref"><a href="#thesis">See variant perception and full investment thesis</a></p><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p>
+      </section>
+      <section id="appendix" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>Appendix &amp; sources</h2>
+          <div class="kicker">sources · methodology</div>
+        </div>
+        <div class="lead aggregate-lead"><p>How we source the tape, verify levels, and align this report with XVARY deep-dive standards.</p></div>
+        <div class="aggregate-sources-attribution"><p>Sources: NVIDIA 10-K/10-Q, Epoch AI, TrendForce, Silicon Analysts, IEA, Goldman Sachs, McKinsey, Polymarket, Reddit (WSB/r/stocks/r/investing), S3 Partners, HedgeFollow, Finviz, and 50+ cited sources. For investment presentation use only.</p></div><p class="aggregate-methodology-link">standards and pipeline: <a href="https://xvary.com/methodology/">xvary.com/methodology/</a></p>
+      </section>
+
+      <div class="footer">
+        xvary · 2026 · not investment advice
+        <div class="links">
+          <a href="https://xvary.com/pulse/">the pulse</a>
+          <a href="https://xvary.com/stacks/">the stacks</a>
+          <a href="https://xvary.com/discover/">discover</a>
+          <a href="https://xvary.com/collectibles/">collectibles</a>
+          <a href="https://xvary.com/pricing/">pricing</a>
+          <a href="https://xvary.com/methodology/">methodology</a>
+          <a href="https://xvary.com/newsletter/">newsletter</a>
+          <a href="https://xvary.com/legal/disclaimer/">disclaimer</a>
+          <a href="https://xvary.com/legal/privacy/">privacy</a>
+          <a href="https://xvary.com/legal/terms/">terms</a>
+        </div>
+        <div class="small">Sources: company filings and earnings, supplier disclosures, named sell-side notes where cited, alt-data where noted, and public flow/sentiment screens. Not investment advice — verify anything you trade on.</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const bar = document.getElementById("reading-progress");
+      const sections = [{"id": "summary", "hotkey": "0"}, {"id": "thesis", "hotkey": "1"}, {"id": "financials", "hotkey": "2"}, {"id": "valuation", "hotkey": "3"}, {"id": "risk", "hotkey": "4"}, {"id": "ops", "hotkey": "5"}, {"id": "competition", "hotkey": "6"}, {"id": "tam", "hotkey": "7"}, {"id": "product", "hotkey": "8"}, {"id": "supply", "hotkey": "9"}, {"id": "catalysts", "hotkey": "a"}, {"id": "street", "hotkey": "b"}, {"id": "scorecard", "hotkey": "c"}, {"id": "signals", "hotkey": "d"}, {"id": "history", "hotkey": "e"}, {"id": "management", "hotkey": "f"}, {"id": "macro", "hotkey": "g"}, {"id": "quant", "hotkey": "h"}, {"id": "derivatives", "hotkey": "i"}, {"id": "governance", "hotkey": "j"}, {"id": "value", "hotkey": "k"}, {"id": "appendix", "hotkey": "l"}];
+      const links = [...document.querySelectorAll(".sidebar a[href^='#']")];
+      const setActive = function (id) {
+        links.forEach(function (link) {
+          link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+        });
+      };
+
+      window.addEventListener("scroll", function () {
+        const root = document.documentElement;
+        const pct = (root.scrollTop / Math.max(root.scrollHeight - root.clientHeight, 1)) * 100;
+        if (bar) {
+          bar.style.width = Math.min(Math.max(pct, 0), 100) + "%";
+        }
+      }, { passive: true });
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(function (entries) {
+          entries.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+          const hit = entries.find(function (entry) {
+            return entry.isIntersecting && entry.intersectionRatio > 0.12;
+          });
+          if (hit) {
+            setActive(hit.target.id);
+          }
+        }, { rootMargin: "-40% 0px -40% 0px", threshold: [0, 0.12, 0.25, 0.45] });
+
+        sections.forEach(function (item) {
+          const node = document.getElementById(item.id);
+          if (node) {
+            observer.observe(node);
+          }
+        });
+      }
+
+      links.forEach(function (link) {
+        link.addEventListener("click", function () {
+          setActive(link.getAttribute("href").slice(1));
+        });
+      });
+
+      const hotkeys = {};
+      sections.forEach(function (item) {
+        hotkeys[item.hotkey] = item.id;
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.metaKey || event.ctrlKey) {
+          return;
+        }
+        const target = event.target;
+        if (target && target.closest && target.closest("input, textarea, select, [contenteditable='true']")) {
+          return;
+        }
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (!hotkeys[key]) {
+          return;
+        }
+        event.preventDefault();
+        const node = document.getElementById(hotkeys[key]);
+        if (node) {
+          node.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    })();
+  </script>
+  <footer class="footer" style="margin-left:var(--navw,0)">
+    xvary · 2026 · not investment advice
+    <div class="footer-links">
+      <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/methodology/">methodology</a>
+      <a href="/newsletter/">newsletter</a>
+      <a href="/pricing/">pricing</a>
+      <a href="/free/">free reports</a>
+      <a href="/legal/disclaimer/">disclaimer</a>
+      <a href="/legal/privacy/">privacy</a>
+      <a href="/legal/terms/">terms</a>
+    </div>
+    <div class="footer-logo">
+      <a href="/" aria-label="home">
+        <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+      </a>
+    </div>
+  </footer>
+  <script src="/js/site-chrome.js?v=1776081807" defer></script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<!--
+  Evergreen pulse page — macro dissection.
+  Built by: evergreen/build_evergreen.py
+  Template: evergreen/templates/macro-dissection.html
+  Data:     evergreen/data/oil-macro-shocks.json
+  Ship:     4. Website/dist/pulse/macro-oil-macro-shocks/index.html
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Oil & macro shocks — crude cycles, inflation, and equities — xvary pulse</title>
+  <meta name="description" content="supply wars, demand crashes, and shale: how WTI regimes redistributed winners across energy, consumers, and the broad index.">
+  <link rel="canonical" href="https://xvary.com/pulse/macro-oil-macro-shocks/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Oil & macro shocks — macro dissection · xvary">
+  <meta property="og:description" content="supply wars, demand crashes, and shale: how WTI regimes redistributed winners across energy, consumers, and the broad index.">
+  <meta property="og:url" content="https://xvary.com/pulse/macro-oil-macro-shocks/">
+  <meta property="og:image" content="https://xvary.com/assets/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="XVARY">
+  <meta name="robots" content="index, follow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Oil & macro shocks — macro dissection · xvary">
+  <meta name="twitter:description" content="supply wars, demand crashes, and shale: how WTI regimes redistributed winners across energy, consumers, and the broad index.">
+  <meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-article.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-evergreen.css?v=1776081807">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Oil & macro shocks — macro dissection · xvary",
+  "description": "supply wars, demand crashes, and shale: how WTI regimes redistributed winners across energy, consumers, and the broad index.",
+  "datePublished": "2026-03-25",
+  "dateModified": "2026-03-25",
+  "author": {
+    "@type": "Organization",
+    "name": "xvary"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "xvary",
+    "url": "https://xvary.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://xvary.com/assets/xvary-logo.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://xvary.com/pulse/macro-oil-macro-shocks/"
+  },
+  "image": ["https://xvary.com/assets/og-default.png"],
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".pa-headline", ".pa-body"]
+  },
+  "url": "https://xvary.com/pulse/macro-oil-macro-shocks/"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://xvary.com/pulse/macro-oil-macro-shocks/#faq",
+  "url": "https://xvary.com/pulse/macro-oil-macro-shocks/",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "does oil predict recession?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "large fast rises raise odds; context is income growth and policy."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "SPR impact?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "lowers near-term prices; refill supports later."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "renewables ending oil?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "slow; oil still macro-relevant this decade."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Brent vs WTI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "geography and quality — US investors watch both."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "energy in CPI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "headline yes; core strips direct energy but not all pass-through."
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body class="pa-article">
+<a class="skip-link" href="#content">skip to content</a>
+<div class="grain"></div>
+
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="active nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content" class="md-layout">
+  <div class="pa-wrap md-wrap">
+    <div class="pa-back"><a href="/pulse/">← back to the pulse</a></div>
+
+    <header class="pa-head md-head">
+      <div class="pa-kicker-row">
+        <span class="pa-type">evergreen · macro dissection</span>
+        <span class="pa-ticker-pill">crude oil and macro transmission</span>
+      </div>
+      <h1>Oil & macro shocks — crude cycles, inflation, and equities</h1>
+      <p class="pa-deck">supply cuts, wars, and demand collapses — why oil shocks distribute winners and losers across equities asymmetrically.</p>
+      <div class="pa-byline">xvary research desk · 2026-03-25 · 1990 to 2026</div>
+    </header>
+
+    <div class="pa-grid md-grid">
+      <article class="pa-body md-body">
+        <section class="md-definitions" aria-labelledby="md-definitions-h"><h2 class="pa-geo-h" id="md-definitions-h">key definitions</h2><dl class="md-definition-list"><div class="md-definition"><dt><dfn>supply shock</dfn></dt><dd>lost barrels from conflict or OPEC+ policy.</dd></div><div class="md-definition"><dt><dfn>demand shock</dfn></dt><dd>recession or China slowdown weight.</dd></div><div class="md-definition"><dt><dfn>breakeven</dfn></dt><dd>how inflation swaps embed energy pass-through.</dd></div></dl></section>
+        <p>headline CPI follows oil with lags; core strips energy but not second-round effects in some regimes.</p><p>real consumer spending is rate-sensitive when gasoline spikes.</p>
+
+        <figure class="md-master-chart">
+          <figcaption>WTI spot — stylized annual avg ($/bbl)</figcaption>
+          <svg viewBox="0 0 760 280" role="img" aria-label="WTI spot — stylized annual avg ($/bbl)" xmlns="http://www.w3.org/2000/svg"><rect width="760" height="280" fill="#F4F4F2" rx="20" /><text x="10" y="25.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">100</text><line x1="46" y1="20.00" x2="742" y2="20.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><text x="10" y="243.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">0</text><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><text x="10" y="243.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">0</text><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="#1A1A1A" stroke-width="1.75" stroke-dasharray="5 4" /><path d="M 46.00 190.04 L 65.33 194.40 L 84.67 196.58 L 104.00 198.76 L 123.33 200.94 L 142.67 196.58 L 162.00 190.04 L 181.33 196.58 L 200.67 209.66 L 220.00 196.58 L 239.33 172.60 L 258.67 181.32 L 278.00 179.14 L 297.33 168.24 L 316.67 144.26 L 336.00 113.74 L 355.33 91.94 L 374.67 81.04 L 394.00 20.00 L 413.33 102.84 L 432.67 65.78 L 452.00 30.90 L 471.33 33.08 L 490.67 26.54 L 510.00 131.18 L 529.33 144.26 L 548.67 157.34 L 568.00 126.82 L 587.33 96.30 L 606.67 113.74 L 626.00 150.80 L 645.33 89.76 L 664.67 33.08 L 684.00 67.96 L 703.33 74.50 L 722.67 81.04 L 742.00 85.40 L 742.00 238.00 L 46.00 238.00 Z" fill="rgba(245,225,0,0.55)" stroke="none" /><path d="M 46.00 190.04 L 65.33 194.40 L 84.67 196.58 L 104.00 198.76 L 123.33 200.94 L 142.67 196.58 L 162.00 190.04 L 181.33 196.58 L 200.67 209.66 L 220.00 196.58 L 239.33 172.60 L 258.67 181.32 L 278.00 179.14 L 297.33 168.24 L 316.67 144.26 L 336.00 113.74 L 355.33 91.94 L 374.67 81.04 L 394.00 20.00 L 413.33 102.84 L 432.67 65.78 L 452.00 30.90 L 471.33 33.08 L 490.67 26.54 L 510.00 131.18 L 529.33 144.26 L 548.67 157.34 L 568.00 126.82 L 587.33 96.30 L 606.67 113.74 L 626.00 150.80 L 645.33 89.76 L 664.67 33.08 L 684.00 67.96 L 703.33 74.50 L 722.67 81.04 L 742.00 85.40" fill="none" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /><circle cx="46.00" cy="190.04" r="2.6" fill="#1A1A1A" /><circle cx="65.33" cy="194.40" r="2.6" fill="#1A1A1A" /><circle cx="84.67" cy="196.58" r="2.6" fill="#1A1A1A" /><circle cx="104.00" cy="198.76" r="2.6" fill="#1A1A1A" /><circle cx="123.33" cy="200.94" r="2.6" fill="#1A1A1A" /><circle cx="142.67" cy="196.58" r="2.6" fill="#1A1A1A" /><circle cx="162.00" cy="190.04" r="2.6" fill="#1A1A1A" /><circle cx="181.33" cy="196.58" r="2.6" fill="#1A1A1A" /><circle cx="200.67" cy="209.66" r="2.6" fill="#1A1A1A" /><circle cx="220.00" cy="196.58" r="2.6" fill="#1A1A1A" /><circle cx="239.33" cy="172.60" r="2.6" fill="#1A1A1A" /><circle cx="258.67" cy="181.32" r="2.6" fill="#1A1A1A" /><circle cx="278.00" cy="179.14" r="2.6" fill="#1A1A1A" /><circle cx="297.33" cy="168.24" r="2.6" fill="#1A1A1A" /><circle cx="316.67" cy="144.26" r="2.6" fill="#1A1A1A" /><circle cx="336.00" cy="113.74" r="2.6" fill="#1A1A1A" /><circle cx="355.33" cy="91.94" r="2.6" fill="#1A1A1A" /><circle cx="374.67" cy="81.04" r="2.6" fill="#1A1A1A" /><circle cx="394.00" cy="20.00" r="2.6" fill="#1A1A1A" /><circle cx="413.33" cy="102.84" r="2.6" fill="#1A1A1A" /><circle cx="432.67" cy="65.78" r="2.6" fill="#1A1A1A" /><circle cx="452.00" cy="30.90" r="2.6" fill="#1A1A1A" /><circle cx="471.33" cy="33.08" r="2.6" fill="#1A1A1A" /><circle cx="490.67" cy="26.54" r="2.6" fill="#1A1A1A" /><circle cx="510.00" cy="131.18" r="2.6" fill="#1A1A1A" /><circle cx="529.33" cy="144.26" r="2.6" fill="#1A1A1A" /><circle cx="548.67" cy="157.34" r="2.6" fill="#1A1A1A" /><circle cx="568.00" cy="126.82" r="2.6" fill="#1A1A1A" /><circle cx="587.33" cy="96.30" r="2.6" fill="#1A1A1A" /><circle cx="606.67" cy="113.74" r="2.6" fill="#1A1A1A" /><circle cx="626.00" cy="150.80" r="2.6" fill="#1A1A1A" /><circle cx="645.33" cy="89.76" r="2.6" fill="#1A1A1A" /><circle cx="664.67" cy="33.08" r="2.6" fill="#1A1A1A" /><circle cx="684.00" cy="67.96" r="2.6" fill="#1A1A1A" /><circle cx="703.33" cy="74.50" r="2.6" fill="#1A1A1A" /><circle cx="722.67" cy="81.04" r="2.6" fill="#1A1A1A" /><circle cx="742.00" cy="85.40" r="2.6" fill="#1A1A1A" /><text x="46.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">1990</text><text x="220.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">1999</text><text x="394.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2008</text><text x="568.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2017</text><text x="742.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2026</text></svg>
+        </figure>
+
+        <div class="md-regime-nav-wrap"><nav class="md-regime-nav" aria-label="regime navigation"><a class="md-regime-chip" href="#regime-1990s-weak"><span class="md-regime-chip-title">1990s weak prices</span><span class="md-regime-chip-range">1990 to 1999</span></a><a class="md-regime-chip" href="#regime-2000s-supercycle"><span class="md-regime-chip-title">2000 to 2008 supercycle</span><span class="md-regime-chip-range">2000 to 2008</span></a><a class="md-regime-chip" href="#regime-2009-2020"><span class="md-regime-chip-title">2009 to 2020 shale + swings</span><span class="md-regime-chip-range">2009 to 2020</span></a><a class="md-regime-chip" href="#regime-2021-2026"><span class="md-regime-chip-title">2021 to 2026 inflation + geopolitics</span><span class="md-regime-chip-range">2021 to 2026</span></a></nav></div>
+        <article class="md-regime-card" id="regime-1990s-weak"><header class="md-regime-head"><div><h2 class="md-regime-title">1990s weak prices</h2><div class="md-regime-range">1990 to 1999</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 20.33 L 100.00 7.00 L 192.00 37.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="20.33" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">OPEC coordination faltered; Asian crisis hit demand.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">22</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-22</text><rect x="73.67" y="30.73" width="103.33" height="66.27" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="49.14" width="103.33" height="47.86" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="22.73" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">18</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1993</text><text x="292.00" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">22</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1996</text><text x="458.67" y="41.14" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">13</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1998</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">supply</span>capacity returned.</li><li><span class="md-event-tag">demand</span>soft patches.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>cheap oil helps consumers unless it signals demand implosion.</p></div><blockquote class="md-regime-quotable"><p>WTI averaged weak-to-mid teens late decade.</p><cite>EIA</cite></blockquote></article><article class="md-regime-card" id="regime-2000s-supercycle"><header class="md-regime-head"><div><h2 class="md-regime-title">2000 to 2008 supercycle</h2><div class="md-regime-range">2000 to 2008</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 37.00 L 100.00 31.43 L 192.00 7.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="31.43" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">China industrialization met underinvestment.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">100</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-100</text><rect x="73.67" y="72.70" width="103.33" height="24.30" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="62.17" width="103.33" height="34.83" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="64.70" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">30</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2000</text><text x="292.00" y="54.17" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">43</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2004</text><text x="458.67" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">100</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2008</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">demand</span>EM heavy.</li><li><span class="md-event-tag">fx</span>dollar sometimes inverse.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>energy capex supercycles create boom-bust for services firms tied to patch.</p></div><blockquote class="md-regime-quotable"><p>WTI climbed into triple digits by 2008.</p><cite>EIA</cite></blockquote></article><article class="md-regime-card" id="regime-2009-2020"><header class="md-regime-head"><div><h2 class="md-regime-title">2009 to 2020 shale + swings</h2><div class="md-regime-range">2009 to 2020</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 100.00 37.00 L 192.00 29.50" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="29.50" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">US supply growth, OPEC price war, COVID demand cliff.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">49</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-49</text><rect x="73.67" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="35.84" width="103.33" height="61.16" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="30.88" width="103.33" height="66.12" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">49</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2014</text><text x="292.00" y="27.84" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">37</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2016</text><text x="458.67" y="22.88" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">40</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2020</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">shale</span>productivity boom.</li><li><span class="md-event-tag">covid</span>2020 cliff.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>high-low oil both stress high-yield energy credit.</p></div><blockquote class="md-regime-quotable"><p>WTI crashed in 2020 briefly on annual average terms.</p><cite>EIA; Fed</cite></blockquote></article><article class="md-regime-card" id="regime-2021-2026"><header class="md-regime-head"><div><h2 class="md-regime-title">2021 to 2026 inflation + geopolitics</h2><div class="md-regime-range">2021 to 2026</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 37.00 L 69.33 7.00 L 130.67 28.92 L 192.00 34.69" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="69.33" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="130.67" cy="28.92" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="34.69" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">reopening demand, Ukraine shock, Middle East risk premia.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">94</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-94</text><rect x="65.75" y="38.40" width="77.50" height="58.60" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="190.75" y="16.00" width="77.50" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="315.75" y="32.37" width="77.50" height="64.63" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="440.75" y="36.68" width="77.50" height="60.32" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="104.50" y="30.40" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">68</text><text x="104.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2021</text><text x="229.50" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">94</text><text x="229.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2022</text><text x="354.50" y="24.37" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">75</text><text x="354.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2024</text><text x="479.50" y="28.68" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">70</text><text x="479.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2026</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">geopolitics</span>risk premia.</li><li><span class="md-event-tag">policy</span>SPR releases then refills.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>oil can accelerate inflation headlines even when core is stickier from shelter.</p></div><blockquote class="md-regime-quotable"><p>WTI elevated versus 2010s average.</p><cite>EIA</cite></blockquote></article>
+        <p>replace with EIA annual averages when updating.</p><p>WTI vs Brent vs Midland basis matters for US corporates.</p>
+      </article>
+
+      <aside class="pa-aside md-aside" aria-label="signal card">
+        <div class="pa-score pa-score--editorial md-score">
+          <div class="pa-score-label">WTI avg</div>
+          <div class="pa-pulse-stat">WTI annual averages swung from the teens in the late 1990s to triple digits in 2008 and again near $90+ in geopolitical stress years.</div>
+          <div class="pa-score-label pa-kill-heading">why it matters</div>
+          <p class="pa-verdict">oil is simultaneously a cost shock, a terms-of-trade shock, and sometimes a fiscal windfall — the US is now a producer, changing the calculus versus the 1970s.</p>
+          <div class="pa-score-label pa-verdict-heading">verdict</div>
+          <p class="pa-verdict">energy equities can rally while the S&P digests margin pain elsewhere.</p>
+          <a href="/pulse/" class="pa-score-cta">more pulse research →</a>
+        </div>
+      </aside>
+    </div>
+
+    <div class="pa-geo-wrap">
+      <section class="pa-geo-takeaways" aria-label="key takeaways"><h2 class="pa-geo-h" id="takeaways">key takeaways</h2><ul class="pa-geo-takeaways-list"><li>oil correlates with cyclicals and inflation swaps.</li><li>US producer complex hedges some consumer pain.</li><li>OPEC+ fiscal needs shape floor pricing.</li><li>watch refining margins — not just crude.</li><li>strategic stocks buffer but do not erase shocks.</li></ul></section>
+      <section class="pa-geo-faq" aria-label="frequently asked questions"><h2 class="pa-geo-h" id="faq">faq</h2><div class="pa-geo-faq-items"><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">does oil predict recession?</h3><p class="pa-geo-faq-a">large fast rises raise odds; context is income growth and policy.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">SPR impact?</h3><p class="pa-geo-faq-a">lowers near-term prices; refill supports later.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">renewables ending oil?</h3><p class="pa-geo-faq-a">slow; oil still macro-relevant this decade.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">Brent vs WTI?</h3><p class="pa-geo-faq-a">geography and quality — US investors watch both.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">energy in CPI?</h3><p class="pa-geo-faq-a">headline yes; core strips direct energy but not all pass-through.</p></div></div></section>
+      <section class="md-sources" aria-labelledby="md-sources-h"><h2 class="pa-geo-h" id="md-sources-h">sources</h2><ol class="md-sources-list"><li><a href="https://www.eia.gov/petroleum/">EIA: Petroleum data</a></li><li><a href="https://fred.stlouisfed.org/series/WTISPLC">FRED: WTISPLC</a></li><li><a href="https://www.iea.org/reports/oil-market-report">IEA: Oil market report</a></li></ol></section>
+    </div>
+
+    <div class="pa-cta-row">
+      <a href="/pulse/" class="pa-cta is-primary">back to the pulse →</a>
+      <a href="/stacks/" class="pa-cta">the stacks →</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807"></script>
+<script src="/js/gate.js?v=1776081807" defer></script>
+</body>
+</html>

@@ -1,0 +1,808 @@
+/**
+ * NVDA deep-dive — artist “render” skins
+ * Base page: dist/demos/variation-6-nvda-deep-dive*.html
+ * XVARY tokens (DESIGN_SYSTEM.md): keep #FFE500 as the brand “signal” where an artist
+ * palette would otherwise lose yellow entirely — each skin interprets yellow differently.
+ */
+@import url("https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bangers&family=Chakra+Petch:wght@400;600;700&family=Cormorant+Garamond:ital,wght@0,500;0,700;1,500&family=DM+Mono:wght@400;500&family=Outfit:wght@500;700;800&family=Space+Grotesk:wght@400;500;600;700&family=Staatliches&family=Syne:wght@500;700;800&display=swap");
+
+/* ─── shared: theme switcher (hub page only) ─── */
+.dd-artist-switcher {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 400;
+  max-width: min(360px, calc(100vw - 32px));
+  padding: 12px 14px 14px;
+  border-radius: 16px;
+  border: 2px solid var(--dark);
+  background: var(--white);
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.18);
+  font-family: var(--font-primary, "Space Grotesk", system-ui, sans-serif);
+  text-transform: lowercase;
+}
+.dd-artist-switcher h3 {
+  margin: 0 0 8px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--muted, #7a7a7a);
+}
+.dd-artist-switcher select {
+  width: 100%;
+  font: 600 13px/1.3 var(--font-primary, "Space Grotesk", system-ui, sans-serif);
+  text-transform: lowercase;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 2px solid rgba(0, 0, 0, 0.14);
+  background: var(--yel, #ffe500);
+  color: var(--dark);
+  cursor: pointer;
+}
+.dd-artist-switcher p {
+  margin: 8px 0 0;
+  font-size: 11px;
+  line-height: 1.45;
+  color: var(--text2, #4a4a4a);
+}
+
+/* ═══ Van Gogh — impasto sky, ochre sun, restless grain ═══ */
+html:has(body.dd-artist-theme-vangogh) {
+  background: radial-gradient(ellipse 120% 80% at 30% 0%, #3d5a80 0%, #2a4a6c 35%, #c9a227 78%, #e8c547 100%) fixed !important;
+}
+body.deep-dive-v2.dd-sidebar-demo.dd-sb-v28.dd-artist-theme-vangogh {
+  --yel: #ffe500;
+  --dark: #1a1520;
+  --text: #1a1520;
+  --text2: #3d3545;
+  --muted: #5c5260;
+  --white: #f7f0e4;
+  --blur-bg: rgba(247, 240, 228, 0.88);
+  --font-primary: "Cormorant Garamond", Georgia, serif;
+  --font-mono: "DM Mono", monospace;
+  background: transparent !important;
+}
+body.dd-artist-theme-vangogh .nvda-grain {
+  opacity: 0.14 !important;
+  mix-blend-mode: multiply !important;
+  background-image: repeating-linear-gradient(
+      95deg,
+      rgba(0, 0, 0, 0.03) 0 1px,
+      transparent 1px 6px
+    ),
+    radial-gradient(circle at 70% 20%, rgba(232, 197, 71, 0.25), transparent 55%) !important;
+}
+body.dd-artist-theme-vangogh .nav {
+  background: rgba(247, 240, 228, 0.92) !important;
+  border-bottom: 2px solid rgba(26, 21, 32, 0.12) !important;
+  box-shadow: inset 0 4px 0 #c9a227 !important;
+}
+body.dd-artist-theme-vangogh .nav-brand,
+body.dd-artist-theme-vangogh .nav-links a {
+  font-weight: 700 !important;
+  letter-spacing: 0.02em !important;
+}
+body.dd-artist-theme-vangogh .xvary-report-header--deep-dive-compact h1 {
+  font-family: "Cormorant Garamond", Georgia, serif !important;
+  font-weight: 700 !important;
+  text-shadow: 0 2px 24px rgba(201, 162, 39, 0.35);
+}
+body.dd-artist-theme-vangogh .reading-guide-sticky-host {
+  background: rgba(247, 240, 228, 0.97) !important;
+  border-left: 6px solid #c9a227 !important;
+  border-bottom: 2px solid rgba(26, 21, 32, 0.1) !important;
+}
+body.dd-artist-theme-vangogh .dd-sidebar {
+  background: linear-gradient(180deg, #2a3d5c 0%, #1a1520 100%) !important;
+  border-right: 2px solid #c9a227 !important;
+}
+body.dd-artist-theme-vangogh .dd-sidebar .nav-pill.active,
+body.dd-artist-theme-vangogh .dd-sidebar .nav-pill.is-active {
+  box-shadow: 0 0 32px rgba(255, 229, 0, 0.45) !important;
+}
+body.dd-artist-theme-vangogh .c {
+  border-radius: 4px !important;
+  border: 2px solid rgba(26, 21, 32, 0.14) !important;
+  background: rgba(255, 255, 255, 0.72) !important;
+  box-shadow: 4px 6px 0 rgba(201, 162, 39, 0.25) !important;
+}
+body.dd-artist-theme-vangogh .hero-watermark-report {
+  color: rgba(201, 162, 39, 0.12) !important;
+}
+
+/* ═══ Mondrian — neo-plastic grid, primaries + black ═══ */
+html:has(body.dd-artist-theme-mondrian) {
+  background: #fff !important;
+}
+body.deep-dive-v2.dd-sidebar-demo.dd-sb-v28.dd-artist-theme-mondrian {
+  --yel: #ffe500;
+  --dark: #000;
+  --text: #000;
+  --text2: #222;
+  --muted: #444;
+  --white: #fff;
+  --blur-bg: rgba(255, 255, 255, 0.95);
+  --font-primary: "Staatliches", "Arial Narrow", sans-serif;
+  --font-mono: "DM Mono", monospace;
+  background: #fff !important;
+}
+body.dd-artist-theme-mondrian .nvda-grain {
+  display: none !important;
+}
+body.dd-artist-theme-mondrian .nav {
+  background: #fff !important;
+  border-bottom: 8px solid #000 !important;
+  box-shadow: inset 0 12px 0 #e4002b, inset 0 20px 0 #fff, inset 0 28px 0 #0055a4 !important;
+  padding-top: 18px !important;
+}
+body.dd-artist-theme-mondrian .nav-brand {
+  font-family: "Staatliches", sans-serif !important;
+  font-size: 28px !important;
+  letter-spacing: 0.06em !important;
+}
+body.dd-artist-theme-mondrian .reading-guide-sticky-host {
+  background: #fff !important;
+  border-left: 8px solid #000 !important;
+  border-bottom: 4px solid #000 !important;
+}
+body.dd-artist-theme-mondrian .reading-guide-sticky-inner .reading-guide-pill.is-active {
+  background: #ffe500 !important;
+  border: 3px solid #000 !important;
+  border-left: 8px solid #e4002b !important;
+}
+body.dd-artist-theme-mondrian .dd-sidebar {
+  background: #0055a4 !important;
+  border-right: 6px solid #000 !important;
+}
+body.dd-artist-theme-mondrian .dd-sidebar .nav-pill {
+  border-radius: 0 !important;
+  border: 3px solid #000 !important;
+}
+body.dd-artist-theme-mondrian .dd-sidebar .nav-pill.active,
+body.dd-artist-theme-mondrian .dd-sidebar .nav-pill.is-active {
+  background: #ffe500 !important;
+  border-color: #000 !important;
+}
+body.dd-artist-theme-mondrian .c {
+  border-radius: 0 !important;
+  border: 4px solid #000 !important;
+  background: #fff !important;
+}
+body.dd-artist-theme-mondrian .c-head {
+  border-bottom: 4px solid #000 !important;
+  background: linear-gradient(90deg, #e4002b 0 12px, #fff 12px 100%) !important;
+}
+body.dd-artist-theme-mondrian .xvary-report-header--deep-dive-compact h1 {
+  font-family: "Staatliches", sans-serif !important;
+  letter-spacing: 0.04em !important;
+}
+
+/* ═══ Ellsworth Kelly — flat color fields, one decisive plane ═══ */
+html:has(body.dd-artist-theme-kelly) {
+  background: #ffe500 !important;
+}
+body.deep-dive-v2.dd-sidebar-demo.dd-sb-v28.dd-artist-theme-kelly {
+  --yel: #ffe500;
+  --dark: #0a0a0a;
+  --white: #f4f4f2;
+  --font-primary: "Syne", system-ui, sans-serif;
+  background: linear-gradient(90deg, #ffe500 0 42%, #f4f4f2 42% 100%) fixed !important;
+}
+body.dd-artist-theme-kelly .nvda-grain {
+  display: none !important;
+}
+body.dd-artist-theme-kelly .dd-main-col {
+  background: transparent !important;
+}
+body.dd-artist-theme-kelly .nav {
+  background: rgba(244, 244, 242, 0.92) !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+body.dd-artist-theme-kelly .reading-guide-sticky-host {
+  background: #f4f4f2 !important;
+  border-left: 0 !important;
+  border-bottom: none !important;
+}
+body.dd-artist-theme-kelly .reading-guide-sticky-inner .reading-guide-pills {
+  border: none !important;
+  background: transparent !important;
+}
+body.dd-artist-theme-kelly .dd-sidebar {
+  background: #0a0a0a !important;
+  border-right: none !important;
+}
+body.dd-artist-theme-kelly .c {
+  border-radius: 0 !important;
+  border: none !important;
+  background: #fff !important;
+  box-shadow: 24px 24px 0 #0a0a0a !important;
+}
+body.dd-artist-theme-kelly .xvary-report-header--deep-dive-compact h1 {
+  font-family: "Syne", sans-serif !important;
+  font-weight: 800 !important;
+}
+
+/* ═══ Rothko — chapel-like veils, soft edges ═══ */
+html:has(body.dd-artist-theme-rothko) {
+  background: #1c0f14 !important;
+}
+body.deep-dive-v2.dd-sidebar-demo.dd-sb-v28.dd-artist-theme-rothko {
+  --yel: #ffe500;
+  --dark: #f5e6dc;
+  --text: #f0e4d8;
+  --text2: rgba(240, 228, 216, 0.75);
+  --muted: rgba(240, 228, 216, 0.45);
+  --white: #2a1820;
+  --blur-bg: rgba(42, 24, 32, 0.85);
+  --on-dark-border: rgba(255, 230, 200, 0.12);
+  --on-dark-label: rgba(255, 230, 200, 0.5);
+  --on-dark-body: rgba(255, 230, 200, 0.65);
+  --font-primary: "Cormorant Garamond", Georgia, serif;
+  background: radial-gradient(ellipse 100% 60% at 50% -10%, #8b2942 0%, transparent 55%),
+    radial-gradient(ellipse 80% 50% at 80% 100%, #c9a227 0%, transparent 45%),
+    #1c0f14 !important;
+  background-attachment: fixed !important;
+}
+body.dd-artist-theme-rothko .nvda-grain {
+  opacity: 0.06 !important;
+  mix-blend-mode: screen !important;
+}
+body.dd-artist-theme-rothko .nav {
+  background: rgba(42, 24, 32, 0.75) !important;
+  backdrop-filter: blur(20px) !important;
+  border-bottom: 1px solid rgba(255, 230, 200, 0.1) !important;
+  box-shadow: none !important;
+}
+body.dd-artist-theme-rothko .nav-brand,
+body.dd-artist-theme-rothko .nav-links a:not(.nav-cta) {
+  color: var(--text2) !important;
+}
+body.dd-artist-theme-rothko .reading-guide-sticky-host {
+  background: rgba(60, 30, 40, 0.6) !important;
+  border-left: 4px solid #c9a227 !important;
+  border-bottom: 1px solid rgba(255, 230, 200, 0.08) !important;
+}
+body.dd-artist-theme-rothko .dd-sidebar {
+  background: #120a0e !important;
+  border-right: 1px solid rgba(255, 230, 200, 0.08) !important;
+}
+body.dd-artist-theme-rothko .dd-main-col,
+body.dd-artist-theme-rothko .xvary-report-shell {
+  background: transparent !important;
+}
+body.dd-artist-theme-rothko .c {
+  background: rgba(42, 24, 32, 0.55) !important;
+  border: 1px solid rgba(255, 230, 200, 0.12) !important;
+  border-radius: 2px !important;
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45) !important;
+}
+body.dd-artist-theme-rothko .c-head h3 {
+  color: #f0e4d8 !important;
+}
+body.dd-artist-theme-rothko .ts-sm,
+body.dd-artist-theme-rothko .ts-xl {
+  color: var(--text2) !important;
+}
+body.dd-artist-theme-rothko .hero-watermark-report {
+  color: rgba(201, 162, 39, 0.08) !important;
+}
+
+/* ═══ Donald Judd — specific objects, aluminum + plexi yellow ═══ */
+html:has(body.dd-artist-theme-judd) {
+  background: #e8e8e6 !important;
+}
+body.deep-dive-v2.dd-sidebar-demo.dd-sb-v28.dd-artist-theme-judd {
+  --yel: #ffe500;
+  --dark: #111;
+  --white: #f0f0ee;
+  --font-primary: "Space Grotesk", system-ui, sans-serif;
+  background: #e8e8e6 !important;
+}
+body.dd-artist-theme-judd .nvda-grain {
+  display: none !important;
+}
+body.dd-artist-theme-judd .nav {
+  background: #d9d9d7 !important;
+  border-bottom: 1px solid #111 !important;
+  box-shadow: none !important;
+  border-radius: 0 !important;
+}
+body.dd-artist-theme-judd .reading-guide-sticky-host {
+  background: #d9d9d7 !important;
+  border-left: 3px solid #111 !important;
+}
+body.dd-artist-theme-judd .dd-sidebar {
+  background: #c8c8c4 !important;
+  border-right: 1px solid #111 !important;
+}
+body.dd-artist-theme-judd .dd-sidebar .nav-pill {
+  border-radius: 0 !important;
+}
+body.dd-artist-theme-judd .c {
+  border-radius: 0 !important;
+  border: 1px solid #111 !important;
+  background: #f0f0ee !important;
+  box-shadow: none !important;
+}
+body.dd-artist-theme-judd .xvary-report-header--deep-dive-compact h1 {
+  font-weight: 600 !important;
+  letter-spacing: -0.03em !important;
+}
+
+/* ═══ Dan Flavin — fluorescent spill, colored air ═══ */
+html:has(body.dd-artist-theme-flavin) {
+  background: #030303 !important;
+}
+body.deep-dive-v2.dd-sidebar-demo.dd-sb-v28.dd-artist-theme-flavin {
+  --yel: #e8ff2a;
+  --dark: #f5ffd0;
+  --text: #e8f0c8;
+  --text2: rgba(232, 240, 200, 0.7);
+  --muted: rgba(232, 240, 200, 0.45);
+  --white: #0a0a08;
+  --blur-bg: rgba(10, 12, 6, 0.88);
+  --font-primary: "DM Mono", monospace;
+  --font-mono: "DM Mono", monospace;
+  background: #050504 !important;
+  box-shadow: inset 0 0 120px rgba(255, 249, 0, 0.08), inset 0 -80px 140px rgba(0, 255, 180, 0.06) !important;
+}
+body.dd-artist-theme-flavin .nvda-grain {
+  display: none !important;
+}
+body.dd-artist-theme-flavin .nav {
+  background: rgba(5, 5, 4, 0.9) !important;
+  border-bottom: 2px solid #e8ff2a !important;
+  box-shadow: 0 0 40px rgba(232, 255, 42, 0.25), inset 0 -3px 0 #00ffc8 !important;
+}
+body.dd-artist-theme-flavin .nav-brand {
+  color: #e8ff2a !important;
+  text-shadow: 0 0 20px rgba(232, 255, 42, 0.5);
+}
+body.dd-artist-theme-flavin .reading-guide-sticky-host {
+  background: #080807 !important;
+  border-left: 4px solid #e8ff2a !important;
+  box-shadow: 0 0 30px rgba(232, 255, 42, 0.12) !important;
+}
+body.dd-artist-theme-flavin .reading-guide-sticky-inner .reading-guide-pill.is-active {
+  background: rgba(232, 255, 42, 0.15) !important;
+  border-left-color: #e8ff2a !important;
+  color: #f5ffd0 !important;
+}
+body.dd-artist-theme-flavin .dd-sidebar {
+  background: #020202 !important;
+  border-right: 2px solid #00ffc8 !important;
+  box-shadow: 4px 0 40px rgba(0, 255, 200, 0.08) !important;
+}
+body.dd-artist-theme-flavin .dd-sidebar .nav-pill.active,
+body.dd-artist-theme-flavin .dd-sidebar .nav-pill.is-active {
+  background: #e8ff2a !important;
+  color: #000 !important;
+  box-shadow: 0 0 28px rgba(232, 255, 42, 0.45) !important;
+}
+body.dd-artist-theme-flavin .c {
+  background: rgba(12, 14, 10, 0.9) !important;
+  border: 1px solid rgba(232, 255, 42, 0.35) !important;
+  border-radius: 0 !important;
+  box-shadow: 0 0 24px rgba(232, 255, 42, 0.08) !important;
+}
+body.dd-artist-theme-flavin .xvary-report-header--deep-dive-compact h1 {
+  font-family: "DM Mono", monospace !important;
+  color: #e8ff2a !important;
+  text-shadow: 0 0 40px rgba(232, 255, 42, 0.35);
+}
+
+/* ═══ Warhol — silkscreen flat blocks, factory repetition ═══ */
+html:has(body.dd-artist-theme-warhol) {
+  background: repeating-linear-gradient(90deg, #ff69b4 0 80px, #ffe500 80px 160px, #00d4ff 160px 240px) fixed !important;
+}
+body.deep-dive-v2.dd-sidebar-demo.dd-sb-v28.dd-artist-theme-warhol {
+  --yel: #ffe500;
+  --dark: #000;
+  --white: #fff;
+  background: transparent !important;
+}
+body.dd-artist-theme-warhol .nvda-grain {
+  opacity: 0.03 !important;
+}
+body.dd-artist-theme-warhol .nav {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-bottom: 4px solid #000 !important;
+  box-shadow: 8px 8px 0 #000 !important;
+}
+body.dd-artist-theme-warhol .reading-guide-sticky-host {
+  background: #fff !important;
+  border-left: 6px solid #ff69b4 !important;
+  border-bottom: 3px solid #000 !important;
+}
+body.dd-artist-theme-warhol .dd-sidebar {
+  background: #000 !important;
+  border-right: 4px solid #ffe500 !important;
+}
+body.dd-artist-theme-warhol .c {
+  border: 3px solid #000 !important;
+  border-radius: 0 !important;
+  background: rgba(255, 255, 255, 0.95) !important;
+  box-shadow: 6px 6px 0 #ff69b4 !important;
+}
+body.dd-artist-theme-warhol .xvary-report-header--deep-dive-compact h1 {
+  font-family: "Archivo Black", sans-serif !important;
+  text-transform: uppercase !important;
+  letter-spacing: -0.02em !important;
+}
+
+/* ═══ Keith Haring — bold outline, subway poster energy ═══ */
+html:has(body.dd-artist-theme-haring) {
+  background: #fff !important;
+}
+body.deep-dive-v2.dd-sidebar-demo.dd-sb-v28.dd-artist-theme-haring {
+  --yel: #ffe500;
+  --dark: #000;
+  --white: #fff;
+  --font-primary: "Outfit", system-ui, sans-serif;
+  background: #fff !important;
+}
+body.dd-artist-theme-haring .nvda-grain {
+  display: none !important;
+}
+body.dd-artist-theme-haring .nav {
+  background: #ffe500 !important;
+  border-bottom: 4px solid #000 !important;
+  box-shadow: none !important;
+}
+body.dd-artist-theme-haring .nav-links a.nav-cta {
+  background: #000 !important;
+  color: #ffe500 !important;
+  border-radius: 100px !important;
+}
+body.dd-artist-theme-haring .reading-guide-sticky-host {
+  background: #fff !important;
+  border-left: 6px solid #000 !important;
+}
+body.dd-artist-theme-haring .reading-guide-sticky-inner .reading-guide-pill {
+  border: 3px solid #000 !important;
+  border-radius: 100px !important;
+}
+body.dd-artist-theme-haring .reading-guide-sticky-inner .reading-guide-pill.is-active {
+  background: #ff4500 !important;
+  color: #fff !important;
+  border-color: #000 !important;
+}
+body.dd-artist-theme-haring .dd-sidebar {
+  background: #89e219 !important;
+  border-right: 4px solid #000 !important;
+}
+body.dd-artist-theme-haring .dd-sidebar .nav-pill {
+  border: 3px solid #000 !important;
+  border-radius: 100px !important;
+}
+body.dd-artist-theme-haring .c {
+  border: 4px solid #000 !important;
+  border-radius: 20px !important;
+  background: #fff !important;
+  box-shadow: 6px 6px 0 #000 !important;
+}
+body.dd-artist-theme-haring .xvary-report-header--deep-dive-compact h1 {
+  font-family: "Outfit", sans-serif !important;
+  font-weight: 800 !important;
+  -webkit-text-stroke: 2px #000;
+  paint-order: stroke fill;
+}
+
+/* ═══ Lichtenstein — Benday, comic panel frames ═══ */
+html:has(body.dd-artist-theme-lichtenstein) {
+  background: #6eb5ff !important;
+}
+body.deep-dive-v2.dd-sidebar-demo.dd-sb-v28.dd-artist-theme-lichtenstein {
+  --yel: #ffe500;
+  --dark: #000;
+  --white: #fff;
+  --font-primary: "Space Grotesk", system-ui, sans-serif;
+  background: #6eb5ff !important;
+}
+body.dd-artist-theme-lichtenstein .nvda-grain {
+  opacity: 0.35 !important;
+  background-image: radial-gradient(circle, #000 0.65px, transparent 0.7px) !important;
+  background-size: 5px 5px !important;
+  mix-blend-mode: multiply !important;
+}
+body.dd-artist-theme-lichtenstein .nav {
+  background: #ffe500 !important;
+  border-bottom: 5px solid #000 !important;
+  box-shadow: 4px 4px 0 #000 !important;
+}
+body.dd-artist-theme-lichtenstein .reading-guide-sticky-host {
+  background: #fff !important;
+  border: 4px solid #000 !important;
+  border-left-width: 8px !important;
+}
+body.dd-artist-theme-lichtenstein .dd-sidebar {
+  background: #fff !important;
+  border-right: 5px solid #000 !important;
+}
+body.dd-artist-theme-lichtenstein .c {
+  border: 4px solid #000 !important;
+  border-radius: 4px !important;
+  background: #fff !important;
+  box-shadow: 6px 6px 0 rgba(0, 0, 0, 0.85) !important;
+}
+body.dd-artist-theme-lichtenstein .xvary-report-header--deep-dive-compact h1 {
+  font-family: "Bangers", cursive !important;
+  letter-spacing: 0.04em !important;
+  color: #000 !important;
+}
+
+/* ═══ Yayoi Kusama — obsessive dots, soft infinity ═══ */
+html:has(body.dd-artist-theme-kusama) {
+  background: #ffe500 !important;
+}
+body.deep-dive-v2.dd-sidebar-demo.dd-sb-v28.dd-artist-theme-kusama {
+  --yel: #ffe500;
+  --dark: #1a1a1a;
+  --white: #fff;
+  background-image: radial-gradient(circle at 50% 50%, #fff 2px, transparent 2.5px) !important;
+  background-size: 14px 14px !important;
+  background-color: #ffe500 !important;
+}
+body.dd-artist-theme-kusama .nvda-grain {
+  display: none !important;
+}
+body.dd-artist-theme-kusama .nav {
+  background: rgba(255, 255, 255, 0.92) !important;
+  border-bottom: 2px dotted #000 !important;
+  box-shadow: none !important;
+}
+body.dd-artist-theme-kusama .reading-guide-sticky-host {
+  background: rgba(255, 255, 255, 0.95) !important;
+  border-left: 6px dotted #000 !important;
+}
+body.dd-artist-theme-kusama .reading-guide-sticky-inner .reading-guide-pills {
+  border: 2px dotted #000 !important;
+  border-radius: 24px !important;
+  background: rgba(255, 255, 255, 0.8) !important;
+}
+body.dd-artist-theme-kusama .dd-sidebar {
+  background: #fff !important;
+  background-image: radial-gradient(#ff69b4 1.5px, transparent 2px) !important;
+  background-size: 10px 10px !important;
+  border-right: 3px solid #000 !important;
+}
+body.dd-artist-theme-kusama .c {
+  border-radius: 24px !important;
+  border: 3px dotted #000 !important;
+  background: rgba(255, 255, 255, 0.92) !important;
+}
+body.dd-artist-theme-kusama .xvary-report-header--deep-dive-compact h1 {
+  font-weight: 800 !important;
+  text-shadow: 3px 3px 0 #ff69b4, 6px 6px 0 rgba(0, 0, 0, 0.08) !important;
+}
+
+/* ═══ Olafur Eliasson — monofrequency yellow haze ═══ */
+html:has(body.dd-artist-theme-eliasson) {
+  background: #f5e6a8 !important;
+}
+body.deep-dive-v2.dd-sidebar-demo.dd-sb-v28.dd-artist-theme-eliasson {
+  --yel: #ffe500;
+  --dark: #2a2400;
+  --text: #2a2400;
+  --text2: #4a4420;
+  --white: #fffcef;
+  --blur-bg: rgba(255, 252, 220, 0.88);
+  background: radial-gradient(circle at 50% 20%, #fff9c4 0%, #f5e6a8 40%, #e8d060 100%) fixed !important;
+}
+body.dd-artist-theme-eliasson .nvda-grain {
+  opacity: 0.08 !important;
+}
+body.dd-artist-theme-eliasson .nav {
+  background: rgba(255, 252, 220, 0.75) !important;
+  backdrop-filter: blur(16px) saturate(1.4) !important;
+  border-bottom: 1px solid rgba(42, 36, 0, 0.1) !important;
+  box-shadow: none !important;
+}
+body.dd-artist-theme-eliasson .reading-guide-sticky-host {
+  background: rgba(255, 255, 255, 0.55) !important;
+  backdrop-filter: blur(12px) !important;
+  border-left: 4px solid #ffe500 !important;
+}
+body.dd-artist-theme-eliasson .dd-sidebar {
+  background: rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(20px) !important;
+  border-right: 1px solid rgba(42, 36, 0, 0.08) !important;
+}
+body.dd-artist-theme-eliasson .c {
+  background: rgba(255, 255, 255, 0.65) !important;
+  backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(42, 36, 0, 0.1) !important;
+}
+body.dd-artist-theme-eliasson .hero-watermark-report {
+  color: rgba(255, 229, 0, 0.2) !important;
+}
+
+/* ═══ James Turrell — ganzfeld gradient, horizon glow ═══ */
+html:has(body.dd-artist-theme-turrell) {
+  background: linear-gradient(185deg, #f9b4c9 0%, #ffd6a8 38%, #ffe566 62%, #7c5cbf 100%) fixed !important;
+}
+body.deep-dive-v2.dd-sidebar-demo.dd-sb-v28.dd-artist-theme-turrell {
+  --yel: #ffe566;
+  --dark: #1f1530;
+  --text: #1f1530;
+  --text2: rgba(31, 21, 48, 0.75);
+  --white: rgba(255, 255, 255, 0.72);
+  --blur-bg: rgba(255, 255, 255, 0.55);
+  background: transparent !important;
+}
+body.dd-artist-theme-turrell .nvda-grain {
+  display: none !important;
+}
+body.dd-artist-theme-turrell .nav {
+  background: rgba(255, 255, 255, 0.45) !important;
+  backdrop-filter: blur(24px) !important;
+  border-bottom: none !important;
+  box-shadow: none !important;
+}
+body.dd-artist-theme-turrell .reading-guide-sticky-host {
+  background: rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(16px) !important;
+  border-left: 3px solid rgba(255, 255, 255, 0.8) !important;
+}
+body.dd-artist-theme-turrell .dd-sidebar {
+  background: rgba(20, 12, 40, 0.35) !important;
+  backdrop-filter: blur(20px) !important;
+  border-right: 1px solid rgba(255, 255, 255, 0.25) !important;
+}
+body.dd-artist-theme-turrell .dd-sidebar .nav-label,
+body.dd-artist-theme-turrell .dd-sidebar .nav-pill {
+  color: rgba(255, 255, 255, 0.85) !important;
+}
+body.dd-artist-theme-turrell .dd-sidebar .nav-pill.active,
+body.dd-artist-theme-turrell .dd-sidebar .nav-pill.is-active {
+  background: #ffe566 !important;
+  color: #1f1530 !important;
+}
+body.dd-artist-theme-turrell .c {
+  background: rgba(255, 255, 255, 0.5) !important;
+  backdrop-filter: blur(12px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.55) !important;
+  border-radius: 20px !important;
+}
+body.dd-artist-theme-turrell .xvary-report-header--deep-dive-compact h1 {
+  font-weight: 600 !important;
+  color: #1f1530 !important;
+}
+
+/* ═══ Peter Halley — day-glo cells + conduit ═══ */
+html:has(body.dd-artist-theme-halley) {
+  background: #0f0f0f !important;
+}
+body.deep-dive-v2.dd-sidebar-demo.dd-sb-v28.dd-artist-theme-halley {
+  --yel: #d4ff00;
+  --dark: #e8e8e8;
+  --text: #e8e8e8;
+  --text2: rgba(232, 232, 232, 0.72);
+  --muted: rgba(232, 232, 232, 0.45);
+  --white: #141414;
+  --blur-bg: rgba(20, 20, 20, 0.92);
+  --font-primary: "Chakra Petch", system-ui, sans-serif;
+  background: #0a0a0a !important;
+  background-image: linear-gradient(#d4ff00 2px, transparent 2px),
+    linear-gradient(90deg, #d4ff00 2px, transparent 2px) !important;
+  background-size: 100% 8px, 8px 100% !important;
+  background-position: 0 64px, 64px 0 !important;
+}
+body.dd-artist-theme-halley .nvda-grain {
+  display: none !important;
+}
+body.dd-artist-theme-halley .nav {
+  background: #141414 !important;
+  border-bottom: 2px solid #d4ff00 !important;
+  box-shadow: none !important;
+}
+body.dd-artist-theme-halley .nav-brand {
+  color: #d4ff00 !important;
+}
+body.dd-artist-theme-halley .reading-guide-sticky-host {
+  background: #101010 !important;
+  border-left: 4px solid #00f5ff !important;
+}
+body.dd-artist-theme-halley .reading-guide-sticky-inner .reading-guide-pill.is-active {
+  background: rgba(212, 255, 0, 0.12) !important;
+  border-color: #d4ff00 !important;
+  color: #d4ff00 !important;
+}
+body.dd-artist-theme-halley .dd-sidebar {
+  background: #080808 !important;
+  border-right: 2px solid #00f5ff !important;
+}
+body.dd-artist-theme-halley .c {
+  background: #121212 !important;
+  border: 2px solid #d4ff00 !important;
+  border-radius: 0 !important;
+  box-shadow: 0 0 0 2px #00f5ff !important;
+}
+body.dd-artist-theme-halley .c-head h3 {
+  color: #d4ff00 !important;
+}
+body.dd-artist-theme-halley .ts-sm {
+  color: var(--text2) !important;
+}
+body.dd-artist-theme-halley .xvary-report-header--deep-dive-compact h1 {
+  font-family: "Chakra Petch", sans-serif !important;
+  color: #d4ff00 !important;
+}
+
+/* ═══ Anish Kapoor — saturated pigment, void + sun yellow ═══ */
+html:has(body.dd-artist-theme-kapoor) {
+  background: radial-gradient(circle at 30% 30%, #ffd700 0%, transparent 45%),
+    radial-gradient(circle at 80% 70%, #8b0000 0%, transparent 50%), #0d0806 fixed !important;
+}
+body.deep-dive-v2.dd-sidebar-demo.dd-sb-v28.dd-artist-theme-kapoor {
+  --yel: #ffe500;
+  --dark: #f5f0e6;
+  --text: #f0ebe3;
+  --text2: rgba(240, 235, 227, 0.75);
+  --white: #1a120e;
+  --blur-bg: rgba(26, 18, 14, 0.88);
+  --font-primary: "Syne", system-ui, sans-serif;
+  background: transparent !important;
+}
+body.dd-artist-theme-kapoor .nvda-grain {
+  opacity: 0.12 !important;
+  mix-blend-mode: overlay !important;
+}
+body.dd-artist-theme-kapoor .nav {
+  background: rgba(26, 18, 14, 0.85) !important;
+  border-bottom: 1px solid rgba(255, 215, 0, 0.25) !important;
+  box-shadow: inset 0 -1px 0 rgba(139, 0, 0, 0.4) !important;
+}
+body.dd-artist-theme-kapoor .nav-brand {
+  color: #ffd700 !important;
+}
+body.dd-artist-theme-kapoor .reading-guide-sticky-host {
+  background: rgba(26, 18, 14, 0.92) !important;
+  border-left: 4px solid #ffd700 !important;
+}
+body.dd-artist-theme-kapoor .dd-sidebar {
+  background: #080504 !important;
+  border-right: 1px solid rgba(255, 215, 0, 0.2) !important;
+}
+body.dd-artist-theme-kapoor .c {
+  background: rgba(40, 22, 18, 0.75) !important;
+  border: 1px solid rgba(255, 215, 0, 0.22) !important;
+  border-radius: 999px 16px 16px 999px !important;
+  box-shadow: inset 0 0 60px rgba(0, 0, 0, 0.5) !important;
+}
+body.dd-artist-theme-kapoor .hero-watermark-report {
+  color: rgba(255, 215, 0, 0.06) !important;
+}
+body.dd-artist-theme-kapoor .xvary-report-header--deep-dive-compact h1 {
+  font-family: "Syne", sans-serif !important;
+  font-weight: 800 !important;
+  background: linear-gradient(90deg, #ffd700, #fff8e1);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent !important;
+}
+
+/* Dark skins: table rules + callouts read on charcoal (brutalist-report --ink-line defaults to black tint) */
+body.dd-artist-theme-rothko,
+body.dd-artist-theme-halley,
+body.dd-artist-theme-kapoor,
+body.dd-artist-theme-flavin {
+  --ink-line: rgba(255, 255, 255, 0.1) !important;
+  --ink-rule: rgba(255, 255, 255, 0.14) !important;
+  --ink-bar: rgba(255, 255, 255, 0.16) !important;
+  --warm: rgba(255, 255, 255, 0.06) !important;
+  --attention-bg: rgba(255, 229, 0, 0.12) !important;
+}
+body.dd-artist-theme-rothko .n,
+body.dd-artist-theme-halley .n,
+body.dd-artist-theme-kapoor .n,
+body.dd-artist-theme-flavin .n {
+  background: rgba(255, 229, 0, 0.08) !important;
+}
+body.dd-artist-theme-rothko[data-xvary-ticker="nvda"] .pane > div:first-child .ts-xl::after,
+body.dd-artist-theme-halley[data-xvary-ticker="nvda"] .pane > div:first-child .ts-xl::after,
+body.dd-artist-theme-kapoor[data-xvary-ticker="nvda"] .pane > div:first-child .ts-xl::after,
+body.dd-artist-theme-flavin[data-xvary-ticker="nvda"] .pane > div:first-child .ts-xl::after {
+  background: rgba(255, 255, 255, 0.12) !important;
+}

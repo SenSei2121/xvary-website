@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<!--
+  Evergreen pulse page — momentum revive (card stack + period chips).
+  Layout matches demos/momentum-revive-layouts/03-card-stack.html (card-calendar nav).
+  Built by: evergreen/build_evergreen.py
+  Template: evergreen/templates/momentum-revive.html
+  Data:     evergreen/data/nvda.json
+  Ship:     4. Website/dist/pulse/momentum-revive-nvda/index.html
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Nvidia — momentum revive — xvary pulse</title>
+  <meta name="description" content="step through 3 years of company, industry, macro, and tape context for nvidia.">
+  <link rel="canonical" href="https://xvary.com/pulse/momentum-revive-nvda/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Nvidia — momentum revive · xvary">
+  <meta property="og:description" content="step through 3 years of company, industry, macro, and tape context for nvidia.">
+  <meta property="og:url" content="https://xvary.com/pulse/momentum-revive-nvda/">
+  <meta property="og:image" content="https://xvary.com/assets/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="XVARY">
+  <meta name="robots" content="index, follow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Nvidia — momentum revive · xvary">
+  <meta name="twitter:description" content="step through 3 years of company, industry, macro, and tape context for nvidia.">
+  <meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-article.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-evergreen.css?v=1776081807">
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    "headline": "Nvidia — momentum revive · xvary",
+    "description": "step through 3 years of company, industry, macro, and tape context for nvidia.",
+    "datePublished": "2026-03-25",
+    "dateModified": "2026-03-25",
+    "author": { "@type": "Organization", "name": "xvary" },
+    "publisher": {
+      "@type": "Organization",
+      "name": "xvary",
+      "url": "https://xvary.com",
+      "logo": { "@type": "ImageObject", "url": "https://xvary.com/assets/xvary-logo.svg" }
+    },
+    "image": ["https://xvary.com/assets/og-default.png"],
+    "speakable": { "@type": "SpeakableSpecification", "cssSelector": [".pa-headline", ".pa-body"] },
+    "mainEntityOfPage": { "@type": "WebPage", "@id": "https://xvary.com/pulse/momentum-revive-nvda/" },
+    "url": "https://xvary.com/pulse/momentum-revive-nvda/"
+  }
+  </script>
+
+<script type="application/ld+json" data-xvary="faq-seo">{"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [{"@type": "Question", "name": "What is the key argument in 'Nvidia — momentum revive'?", "acceptedAnswer": {"@type": "Answer", "text": "step through 3 years of company, industry, macro, and tape context for nvidia."}}, {"@type": "Question", "name": "How does XVARY analyze this?", "acceptedAnswer": {"@type": "Answer", "text": "XVARY uses a 25-module AI pipeline that evaluates growth trajectory, valuation attractiveness, risk assessment, and momentum signals. Each analysis includes explicit kill criteria and a composite score (0-100) to quantify conviction."}}, {"@type": "Question", "name": "Where can I read the full XVARY research?", "acceptedAnswer": {"@type": "Answer", "text": "Full stock research reports are available at xvary.com/stacks/. Each report includes 22 sections of analysis covering fundamentals, valuation, competitive positioning, and risk factors."}}]}</script>
+</head>
+<body>
+<a class="skip-link" href="#content">skip to content</a>
+
+<div class="grain"></div>
+
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="active nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content" class="mr-layout-card-stack">
+  <div class="mr-back mr-shell">
+    <a href="/pulse/">← back to the pulse</a>
+  </div>
+
+  <header class="mr-hero mr-shell" aria-labelledby="mr-title">
+    <p class="mr-kicker">evergreen · momentum revive</p>
+    <h1 id="mr-title">Nvidia</h1>
+    <p class="mr-lede">condensed history — what the company said, what the industry argued, what macro did, and how the tape behaved.</p>
+    <div class="mr-meta-row">
+      <span class="mr-ticker-pill">NVDA</span>
+      <span class="mr-window-pill" id="mr-window"></span>
+    </div>
+    <p class="mr-note">editorial summary only — for learning rhythm, not for trading. not investment advice.</p>
+  </header>
+
+  <div class="mr-shell">
+    <div class="mr-stack-narrow">
+      <div id="mr-period-mount" class="mr-period-mount"></div>
+      <section class="mr-cards" id="mr-cards" aria-label="chapters"></section>
+    </div>
+  </div>
+
+  <div class="mr-shell">
+    <div class="pa-cta-row">
+      <a href="/stacks/" class="pa-cta is-primary">the stacks · all tickers →</a>
+      <a href="/pulse/" class="pa-cta">back to the pulse →</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807"></script>
+<script src="/js/gate.js?v=1776081807" defer></script>
+<script>
+(function () {
+  'use strict';
+  var REVIVE = {
+  "ticker": "nvda",
+  "displayName": "nvidia",
+  "windowLabel": "mar 2023 → mar 2026 · condensed",
+  "chapters": [
+    {
+      "title": "datacenter digestion narrative",
+      "range": "early 2023",
+      "events": [
+        {
+          "tag": "company",
+          "text": "hyperscaler capex debate: digestion vs refresh cycle. gaming channel still noisy post-ether merge hangover."
+        },
+        {
+          "tag": "industry",
+          "text": "semis index chops after 2022 drawdown. investors argue whether ai revenue is \"incremental\" or a new spend bucket."
+        },
+        {
+          "tag": "macro",
+          "text": "rates still climbing; growth stocks rebound selectively. liquidity improves vs 2022 but skepticism on duration."
+        }
+      ],
+      "tape": {
+        "stock": "tape: base-building after a violent 2022 reset; rallies fade on macro headlines.",
+        "index": "sox / nasdaq: correlation high — semis trade as a levered bet on duration and growth.",
+        "rel": "relative: nvda re-rating starts to separate from \"old datacenter\" names as language shifts toward accelerated compute."
+      }
+    },
+    {
+      "title": "the chatgpt moment",
+      "range": "spring 2023",
+      "events": [
+        {
+          "tag": "company",
+          "text": "data center story re-anchored to training + inference demand; first language about \"sovereign ai\" and enterprise pilots."
+        },
+        {
+          "tag": "industry",
+          "text": "cloud providers race to announce ai skus; supply of hoppers becomes the storyline in every conference call."
+        },
+        {
+          "tag": "macro",
+          "text": "narrow market leadership: mega-cap tech carries indices while rest of market lags — painful if you're mean-reversion minded."
+        }
+      ],
+      "tape": {
+        "stock": "tape: gap-and-go behavior on ai headlines; intraday ranges widen.",
+        "index": "nasdaq leadership cluster: liquidity favors a handful of names.",
+        "rel": "relative: semiconductors become the public proxy for \"ai exposure.\""
+      }
+    },
+    {
+      "title": "guidance + supply rhetoric",
+      "range": "mid 2023",
+      "events": [
+        {
+          "tag": "company",
+          "text": "management emphasizes visibility vs prior cycles; supply constraints frame revenue as \"demand-limited\" not \"demand-uncertain.\""
+        },
+        {
+          "tag": "industry",
+          "text": "packaging, hbm, cowos-style supply — the bottleneck moves from die to system-level integration."
+        },
+        {
+          "tag": "macro",
+          "text": "soft landing vs recession debate peaks; equities grind higher on resilient labor data."
+        }
+      ],
+      "tape": {
+        "stock": "tape: pullbacks bought quickly; dips correlate with rate spikes, not company-specific shocks.",
+        "index": "volatility compressed vs 2022; crowding risk rises in the same seven names.",
+        "rel": "relative: high-multiple growers outperform value as rates stabilize from peak fear."
+      }
+    },
+    {
+      "title": "export control overhang",
+      "range": "late 2023",
+      "events": [
+        {
+          "tag": "company",
+          "text": "geopolitics enters the modeling: which skus can ship where; china revenue path becomes scenario analysis, not point estimate."
+        },
+        {
+          "tag": "industry",
+          "text": "foundry + equipment names re-rated on \"domestic supply chain\" thesis; regional diversification valued."
+        },
+        {
+          "tag": "macro",
+          "text": "dollar + yields volatile; election-year positioning begins. policy tail risk is a first-class input."
+        }
+      ],
+      "tape": {
+        "stock": "tape: gap risk on rule changes; headlines move the stock faster than quarterlies.",
+        "index": "defense + energy + mega-cap tech split the narrative; correlations unstable week-to-week.",
+        "rel": "relative: export-heavy semis trade on policy \"whisper\" flow — liquidity events around rule releases."
+      }
+    },
+    {
+      "title": "earnings beats as default",
+      "range": "early 2024",
+      "events": [
+        {
+          "tag": "company",
+          "text": "ai revenue line items start to feel \"normalized\" — beat-and-raise rhythm sets expectations for upside as baseline."
+        },
+        {
+          "tag": "industry",
+          "text": "competitors claim share in pockets; market still awards ecosystem leaders largest duration premium."
+        },
+        {
+          "tag": "macro",
+          "text": "disinflation narrative firms; cuts priced optimistically. growth scarcity supports thematic crowding."
+        }
+      ],
+      "tape": {
+        "stock": "tape: post-earnings drift remains bullish; options markets price upside skew.",
+        "index": "broadening debate begins but tech leadership persists.",
+        "rel": "relative: nvda multiples embed \"winner-take-most\" in accelerated compute."
+      }
+    },
+    {
+      "title": "split, ecosystem energy",
+      "range": "mid 2024",
+      "events": [
+        {
+          "tag": "company",
+          "text": "capital markets event cadence + platform story (cuda moat, software attach) reinforced in keynote moments."
+        },
+        {
+          "tag": "industry",
+          "text": "hyperscaler capex schedules become macro indicators; \"ai capex bubble?\" think pieces everywhere."
+        },
+        {
+          "tag": "macro",
+          "text": "election + fed path uncertainty; equities absorb macro churn via mega-cap balance sheets."
+        }
+      ],
+      "tape": {
+        "stock": "tape: retail attention rises; social volume spikes around keynotes.",
+        "index": "indices hug mega-cap anchors; breadth oscillates without breaking leadership.",
+        "rel": "relative: semis volatility clusters around sku transitions — delays become narrative, not footnotes."
+      }
+    },
+    {
+      "title": "execution scares & timing risk",
+      "range": "late 2024",
+      "events": [
+        {
+          "tag": "company",
+          "text": "new product ramp timing dissected daily; yield learning curves are the hidden swing factor in gross margin talk."
+        },
+        {
+          "tag": "industry",
+          "text": "supply chain stories migrate to power, cooling, and rack-scale deployment — the edge is \"physics + logistics.\""
+        },
+        {
+          "tag": "macro",
+          "text": "rates path re-opened; debate shifts from soft landing to re-acceleration risk in pockets."
+        }
+      ],
+      "tape": {
+        "stock": "tape: faster mean-reversion on bad headlines; crowding unwinds partially then reloads.",
+        "index": "leadership narrows further on macro scares; \"fear rallies\" in quality growth.",
+        "rel": "relative: idiosyncratic risk rises — export rules + ramp timing dominate index correlation episodically."
+      }
+    },
+    {
+      "title": "maturity of the ai capex trade",
+      "range": "early 2026 (illustrative forward beat)",
+      "events": [
+        {
+          "tag": "company",
+          "text": "investors ask: when does revenue growth decel vs an extraordinary base? capital returns and mix shift into the conversation."
+        },
+        {
+          "tag": "industry",
+          "text": "downstream: enterprise roi proof points, model economics, inference unit economics — narrative moves from \"gpu shortage\" to \"deployment yield.\""
+        },
+        {
+          "tag": "macro",
+          "text": "rates, credit, and labor costs re-enter as weights on discretionary capex — cyclicality vs structural ai spend is the fight."
+        }
+      ],
+      "tape": {
+        "stock": "tape: consensus tries to price a long plateau of strong cash flows vs the possibility of air-pocket growth.",
+        "index": "indices sensitive to guidance clusters across mega-cap capex — ai spend treated as semi-macroeconomic.",
+        "rel": "relative: stock picks up macro beta through custodian flows and futures — \"theme etf\" behavior on risk-off days."
+      }
+    }
+  ]
+};
+
+  function esc(s) {
+    var d = document.createElement('div');
+    d.textContent = s;
+    return d.innerHTML;
+  }
+
+  function jumpToChapter(n, e) {
+    var el = document.getElementById('ch-' + n);
+    if (el) {
+      if (e) e.preventDefault();
+      el.scrollIntoView({ behavior: 'smooth', block: 'start', inline: 'nearest' });
+      try {
+        history.replaceState(null, '', '#ch-' + n);
+      } catch (err) { /* ignore */ }
+    }
+  }
+
+  function pad2(i) {
+    var s = String(i);
+    return s.length < 2 ? '0' + s : s;
+  }
+
+  document.getElementById('mr-window').textContent = REVIVE.windowLabel;
+
+  /* Period chip nav (card-calendar) */
+  var periodMount = document.getElementById('mr-period-mount');
+  if (periodMount && REVIVE.chapters && REVIVE.chapters.length) {
+    var nav = document.createElement('nav');
+    nav.className = 'mr-cal-nav';
+    nav.setAttribute('aria-label', 'jump to period');
+    var row = document.createElement('div');
+    row.className = 'mr-cal-row';
+    REVIVE.chapters.forEach(function (ch, i) {
+      var n = i + 1;
+      var a = document.createElement('a');
+      a.className = 'mr-cal-chip';
+      a.href = '#ch-' + n;
+      a.setAttribute('title', ch.title);
+      a.textContent = ch.range;
+      a.addEventListener('click', function (ev) {
+        jumpToChapter(n, ev);
+      });
+      row.appendChild(a);
+      if (i < REVIVE.chapters.length - 1) {
+        var arr = document.createElement('span');
+        arr.className = 'mr-cal-arr';
+        arr.setAttribute('aria-hidden', 'true');
+        arr.textContent = '→';
+        row.appendChild(arr);
+      }
+    });
+    nav.appendChild(row);
+    periodMount.appendChild(nav);
+    var cap = document.createElement('div');
+    cap.className = 'mr-cal-cap';
+    cap.textContent = REVIVE.windowLabel || '';
+    periodMount.appendChild(cap);
+  }
+
+  var cardsRoot = document.getElementById('mr-cards');
+  var html = '';
+
+  REVIVE.chapters.forEach(function (ch, i) {
+    var events = ch.events.map(function (e) {
+      return '<li><span class="mr-tag">' + esc(e.tag) + '</span>' + esc(e.text) + '</li>';
+    }).join('');
+
+    var tape = '';
+    if (ch.tape) {
+      tape =
+        '<p><b>stock</b>' + esc(ch.tape.stock) + '</p>' +
+        '<p><b>indices / peers</b>' + esc(ch.tape.index) + '</p>' +
+        '<p><b>relative / flows</b>' + esc(ch.tape.rel) + '</p>';
+    }
+
+    html +=
+      '<article class="mr-card" id="ch-' + (i + 1) + '">' +
+        '<div class="mr-card-top">' +
+          '<h2>' + esc(ch.title) + '</h2>' +
+          '<span class="mr-card-num" aria-hidden="true">' + pad2(i + 1) + '</span>' +
+          '<span class="mr-card-range">' + esc(ch.range) + '</span>' +
+        '</div>' +
+        '<div class="mr-card-inner">' +
+          '<div class="mr-blk">' +
+            '<h3>what was moving</h3>' +
+            '<ul>' + events + '</ul>' +
+          '</div>' +
+          '<div class="mr-blk mr-tape-card">' +
+            '<h3>tape</h3>' +
+            tape +
+          '</div>' +
+        '</div>' +
+      '</article>';
+  });
+
+  html +=
+    '<p class="mr-cards-end" role="note">' +
+      REVIVE.chapters.length + ' chapters · ' + esc(REVIVE.windowLabel) +
+    '</p>';
+
+  cardsRoot.innerHTML = html;
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<!--
+  Evergreen pulse page — macro dissection.
+  Built by: evergreen/build_evergreen.py
+  Template: evergreen/templates/macro-dissection.html
+  Data:     evergreen/data/inflation.json
+  Ship:     4. Website/dist/pulse/macro-inflation/index.html
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Inflation anatomy — headline, core, supercore, and the Fed mandate — xvary pulse</title>
+  <meta name="description" content="CPI vs PCE, which slice drives policy, and how supply- versus demand-led inflation rewires sector leadership.">
+  <link rel="canonical" href="https://xvary.com/pulse/macro-inflation/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Inflation anatomy — macro dissection · xvary">
+  <meta property="og:description" content="CPI vs PCE, which slice drives policy, and how supply- versus demand-led inflation rewires sector leadership.">
+  <meta property="og:url" content="https://xvary.com/pulse/macro-inflation/">
+  <meta property="og:image" content="https://xvary.com/assets/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="XVARY">
+  <meta name="robots" content="index, follow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Inflation anatomy — macro dissection · xvary">
+  <meta name="twitter:description" content="CPI vs PCE, which slice drives policy, and how supply- versus demand-led inflation rewires sector leadership.">
+  <meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-article.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-evergreen.css?v=1776081807">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Inflation anatomy — macro dissection · xvary",
+  "description": "CPI vs PCE, which slice drives policy, and how supply- versus demand-led inflation rewires sector leadership.",
+  "datePublished": "2026-03-25",
+  "dateModified": "2026-03-25",
+  "author": {
+    "@type": "Organization",
+    "name": "xvary"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "xvary",
+    "url": "https://xvary.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://xvary.com/assets/xvary-logo.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://xvary.com/pulse/macro-inflation/"
+  },
+  "image": ["https://xvary.com/assets/og-default.png"],
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".pa-headline", ".pa-body"]
+  },
+  "url": "https://xvary.com/pulse/macro-inflation/"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://xvary.com/pulse/macro-inflation/#faq",
+  "url": "https://xvary.com/pulse/macro-inflation/",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "why does the fed focus on PCE instead of CPI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "PCE has different category weights and captures consumer substitution more flexibly. the fed's longer-run targets are framed in PCE terms, so markets watch core PCE as the policy thermometer even when headlines quote CPI."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "what is supercore inflation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "supercore usually trims food, energy, and shelter from services inflation to highlight labor-intensive categories. it is imperfect but useful when shelter data lag and confuse the near-term picture."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "can stocks rally during high inflation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "yes when nominal earnings rise faster than discount rates or when pricing power concentrates in a narrow group of companies. broad multiple expansion in sustained high inflation is historically rarer."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "why is shelter important in CPI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "housing costs are sticky and survey-based. they can keep core inflation elevated even when spot rents cool, creating policy headaches."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "how should i read month-over-month versus year-over-year?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "year-over-year shows persistence; month-over-month shows turning points but is noisy. markets often overreact to one warm print without checking the distribution of categories."
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body class="pa-article">
+<a class="skip-link" href="#content">skip to content</a>
+<div class="grain"></div>
+
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="active nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content" class="md-layout">
+  <div class="pa-wrap md-wrap">
+    <div class="pa-back"><a href="/pulse/">← back to the pulse</a></div>
+
+    <header class="pa-head md-head">
+      <div class="pa-kicker-row">
+        <span class="pa-type">evergreen · macro dissection</span>
+        <span class="pa-ticker-pill">US inflation (CPI and PCE)</span>
+      </div>
+      <h1>Inflation anatomy — headline, core, supercore, and the Fed mandate</h1>
+      <p class="pa-deck">headline versus core versus supercore: how inflation data actually maps to fed reaction functions, bond repricing, and the sectors that absorb price pressure first.</p>
+      <div class="pa-byline">xvary research desk · 2026-03-25 · 1990 to 2026</div>
+    </header>
+
+    <div class="pa-grid md-grid">
+      <article class="pa-body md-body">
+        <section class="md-definitions" aria-labelledby="md-definitions-h"><h2 class="pa-geo-h" id="md-definitions-h">key definitions</h2><dl class="md-definition-list"><div class="md-definition"><dt><dfn>headline cpi</dfn></dt><dd>headline consumer price index includes food and energy. it is volatile month to month but it is what households feel first.</dd></div><div class="md-definition"><dt><dfn>core cpi</dfn></dt><dd>core cpi strips food and energy to highlight stickier categories like shelter and services.</dd></div><div class="md-definition"><dt><dfn>pce deflator</dfn></dt><dd>the pce price index is the fed&#x27;s preferred gauge; weights differ from cpi, so the two can diverge meaningfully.</dd></div><div class="md-definition"><dt><dfn>supercore</dfn></dt><dd>supercore usually refers to services inflation excluding food, energy, and shelter — a rough read on labor-intensive price pressure.</dd></div></dl></section>
+        <p>investors love to argue about one inflation print. the institutions that matter for markets — the fed, Treasury borrowing, wage bargaining — use different slices. headline grabs cable news. core and supercore guide policy patience. pce frames the actual mandate tracker.</p><p>inflation shocks travel through equities unevenly. energy and materials can rally on supply-driven price spikes while consumers retrench. financials benefit from a steeper curve until credit breaks. high-multiple growth sells off hardest when real rates rise to meet the shock.</p>
+
+        <figure class="md-master-chart">
+          <figcaption>CPI inflation — annual average year-over-year (%)</figcaption>
+          <svg viewBox="0 0 760 280" role="img" aria-label="CPI inflation — annual average year-over-year (%)" xmlns="http://www.w3.org/2000/svg"><rect width="760" height="280" fill="#F4F4F2" rx="20" /><text x="10" y="25.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">8</text><line x1="46" y1="20.00" x2="742" y2="20.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><text x="10" y="232.62" font-family="DM Mono, monospace" font-size="16" fill="#666666">0</text><line x1="46" y1="227.62" x2="742" y2="227.62" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><text x="10" y="243.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">0</text><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><line x1="46" y1="227.62" x2="742" y2="227.62" stroke="#1A1A1A" stroke-width="1.75" stroke-dasharray="5 4" /><path d="M 46.00 87.48 L 65.33 139.38 L 84.67 152.36 L 104.00 157.55 L 123.33 157.55 L 142.67 154.95 L 162.00 149.76 L 181.33 167.93 L 200.67 186.10 L 220.00 170.52 L 239.33 139.38 L 258.67 154.95 L 278.00 186.10 L 297.33 167.93 L 316.67 157.55 L 336.00 139.38 L 355.33 144.57 L 374.67 152.36 L 394.00 129.00 L 413.33 238.00 L 432.67 186.10 L 452.00 144.57 L 471.33 173.12 L 490.67 188.69 L 510.00 186.10 L 529.33 180.90 L 548.67 173.12 L 568.00 173.12 L 587.33 165.33 L 606.67 165.33 L 626.00 191.29 L 645.33 45.95 L 664.67 20.00 L 684.00 121.21 L 703.33 139.38 L 722.67 152.36 L 742.00 162.74 L 742.00 227.62 L 46.00 227.62 Z" fill="rgba(245,225,0,0.55)" stroke="none" /><path d="M 46.00 87.48 L 65.33 139.38 L 84.67 152.36 L 104.00 157.55 L 123.33 157.55 L 142.67 154.95 L 162.00 149.76 L 181.33 167.93 L 200.67 186.10 L 220.00 170.52 L 239.33 139.38 L 258.67 154.95 L 278.00 186.10 L 297.33 167.93 L 316.67 157.55 L 336.00 139.38 L 355.33 144.57 L 374.67 152.36 L 394.00 129.00 L 413.33 238.00 L 432.67 186.10 L 452.00 144.57 L 471.33 173.12 L 490.67 188.69 L 510.00 186.10 L 529.33 180.90 L 548.67 173.12 L 568.00 173.12 L 587.33 165.33 L 606.67 165.33 L 626.00 191.29 L 645.33 45.95 L 664.67 20.00 L 684.00 121.21 L 703.33 139.38 L 722.67 152.36 L 742.00 162.74" fill="none" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /><circle cx="46.00" cy="87.48" r="2.6" fill="#1A1A1A" /><circle cx="65.33" cy="139.38" r="2.6" fill="#1A1A1A" /><circle cx="84.67" cy="152.36" r="2.6" fill="#1A1A1A" /><circle cx="104.00" cy="157.55" r="2.6" fill="#1A1A1A" /><circle cx="123.33" cy="157.55" r="2.6" fill="#1A1A1A" /><circle cx="142.67" cy="154.95" r="2.6" fill="#1A1A1A" /><circle cx="162.00" cy="149.76" r="2.6" fill="#1A1A1A" /><circle cx="181.33" cy="167.93" r="2.6" fill="#1A1A1A" /><circle cx="200.67" cy="186.10" r="2.6" fill="#1A1A1A" /><circle cx="220.00" cy="170.52" r="2.6" fill="#1A1A1A" /><circle cx="239.33" cy="139.38" r="2.6" fill="#1A1A1A" /><circle cx="258.67" cy="154.95" r="2.6" fill="#1A1A1A" /><circle cx="278.00" cy="186.10" r="2.6" fill="#1A1A1A" /><circle cx="297.33" cy="167.93" r="2.6" fill="#1A1A1A" /><circle cx="316.67" cy="157.55" r="2.6" fill="#1A1A1A" /><circle cx="336.00" cy="139.38" r="2.6" fill="#1A1A1A" /><circle cx="355.33" cy="144.57" r="2.6" fill="#1A1A1A" /><circle cx="374.67" cy="152.36" r="2.6" fill="#1A1A1A" /><circle cx="394.00" cy="129.00" r="2.6" fill="#1A1A1A" /><circle cx="413.33" cy="238.00" r="2.6" fill="#1A1A1A" /><circle cx="432.67" cy="186.10" r="2.6" fill="#1A1A1A" /><circle cx="452.00" cy="144.57" r="2.6" fill="#1A1A1A" /><circle cx="471.33" cy="173.12" r="2.6" fill="#1A1A1A" /><circle cx="490.67" cy="188.69" r="2.6" fill="#1A1A1A" /><circle cx="510.00" cy="186.10" r="2.6" fill="#1A1A1A" /><circle cx="529.33" cy="180.90" r="2.6" fill="#1A1A1A" /><circle cx="548.67" cy="173.12" r="2.6" fill="#1A1A1A" /><circle cx="568.00" cy="173.12" r="2.6" fill="#1A1A1A" /><circle cx="587.33" cy="165.33" r="2.6" fill="#1A1A1A" /><circle cx="606.67" cy="165.33" r="2.6" fill="#1A1A1A" /><circle cx="626.00" cy="191.29" r="2.6" fill="#1A1A1A" /><circle cx="645.33" cy="45.95" r="2.6" fill="#1A1A1A" /><circle cx="664.67" cy="20.00" r="2.6" fill="#1A1A1A" /><circle cx="684.00" cy="121.21" r="2.6" fill="#1A1A1A" /><circle cx="703.33" cy="139.38" r="2.6" fill="#1A1A1A" /><circle cx="722.67" cy="152.36" r="2.6" fill="#1A1A1A" /><circle cx="742.00" cy="162.74" r="2.6" fill="#1A1A1A" /><text x="46.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">1990</text><text x="220.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">1999</text><text x="394.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2008</text><text x="568.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2017</text><text x="742.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2026</text></svg>
+        </figure>
+
+        <div class="md-regime-nav-wrap"><nav class="md-regime-nav" aria-label="regime navigation"><a class="md-regime-chip" href="#regime-early-90s-oil"><span class="md-regime-chip-title">early-1990s supply and recession</span><span class="md-regime-chip-range">1990 to 1993</span></a><a class="md-regime-chip" href="#regime-great-moderation-96-07"><span class="md-regime-chip-title">great moderation</span><span class="md-regime-chip-range">1996 to 2007</span></a><a class="md-regime-chip" href="#regime-crisis-deflation-scare"><span class="md-regime-chip-title">crisis and deflation scare</span><span class="md-regime-chip-range">2008 to 2010</span></a><a class="md-regime-chip" href="#regime-lowflation-2011-2019"><span class="md-regime-chip-title">lowflation decade</span><span class="md-regime-chip-range">2011 to 2019</span></a><a class="md-regime-chip" href="#regime-pandemic-surge"><span class="md-regime-chip-title">pandemic goods inflation</span><span class="md-regime-chip-range">2020 to 2022</span></a><a class="md-regime-chip" href="#regime-disinflation-2023plus"><span class="md-regime-chip-title">disinflation</span><span class="md-regime-chip-range">2023 to 2026</span></a></nav></div>
+        <article class="md-regime-card" id="regime-early-90s-oil"><header class="md-regime-head"><div><h2 class="md-regime-title">early-1990s supply and recession</h2><div class="md-regime-range">1990 to 1993</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 100.00 31.00 L 192.00 37.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="31.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">inflation was elevated into the gulf shock, then eased as growth softened.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">5</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-5</text><rect x="73.67" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="46.00" width="103.33" height="51.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="53.50" width="103.33" height="43.50" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">5</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1990</text><text x="292.00" y="38.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">3</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1991</text><text x="458.67" y="45.50" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">2</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1992</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">economy</span>recession and job losses took pressure off overheating narratives.</li><li><span class="md-event-tag">fed</span>eased as unemployment rose, even with inflation still annoying.</li><li><span class="md-event-tag">market</span>cyclicals lagged until policy credibility returned.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>supply shocks can raise headline inflation just as demand collapses — equities need to know which force is dominant.</p></div><blockquote class="md-regime-quotable"><p>headline CPI inflation averaged above 5% in 1990 before stepping down through the recovery.</p><cite>BLS CPI; FRED CPIAUCSL</cite></blockquote></article><article class="md-regime-card" id="regime-great-moderation-96-07"><header class="md-regime-head"><div><h2 class="md-regime-title">great moderation</h2><div class="md-regime-range">1996 to 2007</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 37.00 L 69.33 37.00 L 130.67 11.62 L 192.00 7.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="69.33" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="130.67" cy="11.62" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">inflation oscillated in a band that made 2% feel like gravity existed.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">2</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-2</text><rect x="65.75" y="52.31" width="77.50" height="44.69" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="190.75" y="52.31" width="77.50" height="44.69" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="315.75" y="21.59" width="77.50" height="75.41" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="440.75" y="16.00" width="77.50" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="104.50" y="44.31" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">1</text><text x="104.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1998</text><text x="229.50" y="44.31" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">1</text><text x="229.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2002</text><text x="354.50" y="13.59" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">2</text><text x="354.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2004</text><text x="479.50" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">2</text><text x="479.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2007</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">fed</span>preemptive hiking and credible anchors kept expectations bounded.</li><li><span class="md-event-tag">economy</span>global labor supply and tech investment held unit costs in check.</li><li><span class="md-event-tag">market</span>multiple expansion flourished until housing credit cracked.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>low inflation volatility rewards duration until credit excess builds underneath.</p></div><blockquote class="md-regime-quotable"><p>annual CPI inflation spent much of the 2000s between roughly 2% and 3%.</p><cite>BLS CPI</cite></blockquote></article><article class="md-regime-card" id="regime-crisis-deflation-scare"><header class="md-regime-head"><div><h2 class="md-regime-title">crisis and deflation scare</h2><div class="md-regime-range">2008 to 2010</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><line x1="8" y1="34.14" x2="192" y2="34.14" stroke="#666666" stroke-width="1" stroke-dasharray="4 4" /><path d="M 8.00 7.00 L 100.00 37.00 L 192.00 22.71" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="22.71" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">demand collapsed; headline inflation briefly printed negative on an annual basis.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">3</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-3</text><rect x="73.67" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="97.00" width="103.33" height="8.53" fill="#1A1A1A" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="62.89" width="103.33" height="34.11" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">3</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2008</text><text x="292.00" y="121.53" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">0</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2009</text><text x="292.00" y="106.26" text-anchor="middle" font-family="DM Mono, monospace" font-size="13" fill="#FFFFFF">0</text><text x="458.67" y="54.89" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">1</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2010</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">economy</span>housing wealth imploded, credit spreads blew out.</li><li><span class="md-event-tag">fed</span>QE and zero rates to reflate demand.</li><li><span class="md-event-tag">market</span>quality and cash flow won; commodities and small caps cratered.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>when inflation collapses with demand, the risk is not &#x27;hot prices&#x27; — it is earnings and employment.</p></div><blockquote class="md-regime-quotable"><p>year-over-year CPI dipped negative in 2009 before rebounding into 2010.</p><cite>BLS CPI</cite></blockquote></article><article class="md-regime-card" id="regime-lowflation-2011-2019"><header class="md-regime-head"><div><h2 class="md-regime-title">lowflation decade</h2><div class="md-regime-range">2011 to 2019</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 69.33 37.00 L 130.67 31.71 L 192.00 21.12" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="69.33" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="130.67" cy="31.71" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="21.12" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">inflation rarely challenged the fed&#x27;s ceiling; curves flattened and equities climbed.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">3</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-3</text><rect x="65.75" y="16.00" width="77.50" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="190.75" y="59.03" width="77.50" height="37.97" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="315.75" y="51.44" width="77.50" height="45.56" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="440.75" y="36.25" width="77.50" height="60.75" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="104.50" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">3</text><text x="104.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2011</text><text x="229.50" y="51.03" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">1</text><text x="229.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2013</text><text x="354.50" y="43.44" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">1</text><text x="354.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2015</text><text x="479.50" y="28.25" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">2</text><text x="479.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2019</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">fed</span>stopped hiking once inflation consistently undershot in pockets.</li><li><span class="md-event-tag">economy</span>slow healing, weak capex, global goods disinflation.</li><li><span class="md-event-tag">market</span>growth stocks dominated as real yields stayed contained.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>persistent undershooting breeds dovish policy — until fiscal or supply shocks break the template.</p></div><blockquote class="md-regime-quotable"><p>core measures often ran close to but below the fed&#x27;s later 2% average target framework.</p><cite>FRED PCEPI</cite></blockquote></article><article class="md-regime-card" id="regime-pandemic-surge"><header class="md-regime-head"><div><h2 class="md-regime-title">pandemic goods inflation</h2><div class="md-regime-range">2020 to 2022</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 37.00 L 100.00 11.55 L 192.00 7.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="11.55" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">fiscal transfers plus supply bottlenecks drove the fastest goods inflation in a generation.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">8</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-8</text><rect x="73.67" y="82.83" width="103.33" height="14.17" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="26.12" width="103.33" height="70.88" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="74.83" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">1</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2020</text><text x="292.00" y="18.12" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">7</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2021</text><text x="458.67" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">8</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2022</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">economy</span>services collapsed, then reopened into shortages.</li><li><span class="md-event-tag">fed</span>called transitory, then chased with aggressive hikes.</li><li><span class="md-event-tag">market</span>value and energy led early; duration crashed in 2022.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>when inflation is supply-led and broad, margins and multiples both compress without help from policy.</p></div><blockquote class="md-regime-quotable"><p>year-over-year CPI climbed into the high single digits by 2022 before peaking.</p><cite>BLS CPI</cite></blockquote></article><article class="md-regime-card" id="regime-disinflation-2023plus"><header class="md-regime-head"><div><h2 class="md-regime-title">disinflation</h2><div class="md-regime-range">2023 to 2026</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 69.33 20.12 L 130.67 29.50 L 192.00 37.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="69.33" cy="20.12" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="130.67" cy="29.50" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">goods pressure faded; services and shelter became the debate.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">4</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-4</text><rect x="65.75" y="16.00" width="77.50" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="190.75" y="29.83" width="77.50" height="67.17" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="315.75" y="39.71" width="77.50" height="57.29" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="440.75" y="47.61" width="77.50" height="49.39" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="104.50" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">4</text><text x="104.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2023</text><text x="229.50" y="21.83" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">3</text><text x="229.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2024</text><text x="354.50" y="31.71" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">2</text><text x="354.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2025</text><text x="479.50" y="39.61" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">2</text><text x="479.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2026</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">fed</span>held higher for longer, then eased as data cooperated.</li><li><span class="md-event-tag">economy</span>labor market cooled without an immediate hard landing.</li><li><span class="md-event-tag">market</span>rates volatility fell; growth equities partially repaired.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>the last mile of disinflation is often the slowest — and the most important for cuts pricing.</p></div><blockquote class="md-regime-quotable"><p>headline CPI drifted back toward the low single digits by 2024–2026 in the baseline narrative.</p><cite>BLS CPI</cite></blockquote></article>
+        <p>treat inflation data as a regime signal, not a lottery ticket. persistent core pressure forces the fed to keep policy tight even when headline cools on base effects. disinflation without employment damage is the bullish Goldilocks path markets constantly price and rarely get.</p><p>when updating this page, ask: is the surprise in goods or services, domestic or global, wage-led or margin-led? the answers dictate whether margins compress at the index level or simply rotate between sectors.</p>
+      </article>
+
+      <aside class="pa-aside md-aside" aria-label="signal card">
+        <div class="pa-score pa-score--editorial md-score">
+          <div class="pa-score-label">price level dynamics</div>
+          <div class="pa-pulse-stat">US CPI inflation peaked near double digits in the early 1980s; in the modern sample, the 2022 surge was the largest sustained break above target since the 1990 Gulf oil shock era.</div>
+          <div class="pa-score-label pa-kill-heading">why it matters</div>
+          <p class="pa-verdict">inflation is not one number. it is a distribution of prices that hits households, wage setters, and Treasury markets differently. equities live in the gap between nominal growth and nominal discount rates.</p>
+          <div class="pa-score-label pa-verdict-heading">verdict</div>
+          <p class="pa-verdict">the investable question is whether inflation is noisy, persistent, or wage-backed — and whether the fed is credibly committed to the path priced into the front end.</p>
+          <a href="/pulse/" class="pa-score-cta">more pulse research →</a>
+        </div>
+      </aside>
+    </div>
+
+    <div class="pa-geo-wrap">
+      <section class="pa-geo-takeaways" aria-label="key takeaways"><h2 class="pa-geo-h" id="takeaways">key takeaways</h2><ul class="pa-geo-takeaways-list"><li>match the inflation print to the story: demand-led, supply-led, or wage-led.</li><li>core and supercore matter for the fed; headline matters for households and politics.</li><li>equity sectors do not respond uniformly — energy-heavy indices behave differently than tech-heavy indices in supply shocks.</li><li>when inflation falls only because of base effects, the fed may not celebrate.</li><li>pce versus cpi gaps can explain why &#x27;felt&#x27; inflation differs from the mandate tracker.</li></ul></section>
+      <section class="pa-geo-faq" aria-label="frequently asked questions"><h2 class="pa-geo-h" id="faq">faq</h2><div class="pa-geo-faq-items"><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">why does the fed focus on PCE instead of CPI?</h3><p class="pa-geo-faq-a">PCE has different category weights and captures consumer substitution more flexibly. the fed&#x27;s longer-run targets are framed in PCE terms, so markets watch core PCE as the policy thermometer even when headlines quote CPI.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">what is supercore inflation?</h3><p class="pa-geo-faq-a">supercore usually trims food, energy, and shelter from services inflation to highlight labor-intensive categories. it is imperfect but useful when shelter data lag and confuse the near-term picture.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">can stocks rally during high inflation?</h3><p class="pa-geo-faq-a">yes when nominal earnings rise faster than discount rates or when pricing power concentrates in a narrow group of companies. broad multiple expansion in sustained high inflation is historically rarer.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">why is shelter important in CPI?</h3><p class="pa-geo-faq-a">housing costs are sticky and survey-based. they can keep core inflation elevated even when spot rents cool, creating policy headaches.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">how should i read month-over-month versus year-over-year?</h3><p class="pa-geo-faq-a">year-over-year shows persistence; month-over-month shows turning points but is noisy. markets often overreact to one warm print without checking the distribution of categories.</p></div></div></section>
+      <section class="md-sources" aria-labelledby="md-sources-h"><h2 class="pa-geo-h" id="md-sources-h">sources</h2><ol class="md-sources-list"><li><a href="https://www.bls.gov/cpi/">BLS: Consumer Price Index</a></li><li><a href="https://fred.stlouisfed.org/series/CPIAUCSL">FRED: CPIAUCSL</a></li><li><a href="https://fred.stlouisfed.org/series/PCEPI">FRED: PCE price index</a></li></ol></section>
+    </div>
+
+    <div class="pa-cta-row">
+      <a href="/pulse/" class="pa-cta is-primary">back to the pulse →</a>
+      <a href="/stacks/" class="pa-cta">the stacks →</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807"></script>
+<script src="/js/gate.js?v=1776081807" defer></script>
+</body>
+</html>

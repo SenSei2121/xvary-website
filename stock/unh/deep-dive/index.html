@@ -1,0 +1,1129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNH - deep dive · xvary</title>
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+<link rel="apple-touch-icon" sizes="512x512" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=1776081807">
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Report styles scoped inside .report-container -->
+<style>
+/* Scope all report styles inside .report-container to avoid conflicts with site styles */
+.report-container { position: relative; }
+/* Push shared footer past the fixed sidebar on the report page */
+.report-container ~ #site-footer .site-footer { margin-left: 240px; }
+/* Mobile note override — only show on small screens */
+@media(min-width:769px){ .mobile-note { display:none !important; } }
+@media(max-width:768px){ .report-container ~ #site-footer .site-footer { margin-left: 0; } }
+</style>
+</head>
+<body>
+
+<!-- Shared Header -->
+<div id="site-header"></div>
+
+<!-- Mobile note -->
+<div class="mobile-note">
+  This report is best viewed on desktop for the full interactive experience.
+  <button aria-label="Dismiss">&times;</button>
+</div>
+
+<!-- Report Container -->
+<div class="report-container">
+<style>
+/* Scoped to .report-container so site header (outside) keeps style.css :root and matches front page */
+
+.report-container {
+      --yel:#ffe500;
+      --ink:#000;
+      --paper:#fffdf3;
+      --card:#fff;
+      --line:rgba(0,0,0,.12);
+      --text:#111;
+      --muted:#555;
+      --soft:#f3eed8;
+      --green:#1a7f5a;
+      --red:#c53030;
+      --amber:#b7791f;
+      --blue:#2251ff;
+      --shadow:0 18px 42px rgba(0,0,0,.10);
+      --radius:16px;
+      --radius-sm:12px;
+      --navw:240px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    html{background:var(--yel);scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h, 68px) + 24px)}
+    body{
+      background:var(--yel);
+      color:var(--text);
+      font:500 16px/1.65 "Space Grotesk",system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    a{color:inherit;text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:var(--ink);color:var(--yel)}
+    .skip-link{
+      position:absolute;left:12px;top:-40px;z-index:9999;
+      background:var(--ink);color:var(--yel);
+      padding:8px 14px;border-radius:999px;font:700 12px/1 "DM Mono",monospace;
+    }
+    .skip-link:focus{top:12px}
+
+    .layout{display:block}
+    .sidebar{
+      position:fixed;left:0;top:var(--nav-h, 68px);bottom:0;width:var(--navw);
+      overflow:auto;background:var(--ink);color:#fff;border-right:1px solid rgba(255,255,255,.08);
+      padding:18px 0 16px;scrollbar-width:none;
+    }
+    .sidebar::-webkit-scrollbar{display:none}
+    .nav-section{padding:0 0 8px}
+    .nav-label{
+      padding:0 18px 10px;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.12em;text-transform:lowercase;color:rgba(255,255,255,.46);
+    }
+    .nav-pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 18px 10px 16px;color:rgba(255,255,255,.78);
+      border-left:3px solid transparent;text-decoration:none;font-size:12px;font-weight:600;line-height:1.35;
+    }
+    .nav-pill:hover{background:rgba(255,255,255,.06);text-decoration:none}
+    .nav-pill.active{background:var(--yel);color:var(--ink);border-left-color:var(--ink)}
+    .nav-kbd{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:22px;height:22px;border-radius:6px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+      font:700 10px/1 "DM Mono",monospace;flex:0 0 auto;
+    }
+    .nav-pill.active .nav-kbd{background:var(--ink);color:var(--yel);border-color:var(--ink)}
+    .nav-txt{min-width:0}
+
+    .content{
+      margin-left:var(--navw);
+      padding:28px 26px 64px;
+      width:calc((100vw - var(--navw)) * 0.9);
+      max-width:none;
+    }
+
+    .hero{
+      display:block;
+      text-align:left;
+      border-bottom:3px solid rgba(0,0,0,.14);
+      padding:18px 0 26px;margin-bottom:18px;
+    }
+    .hero-top{
+      display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:24px;align-items:end;
+      padding-bottom:18px;
+    }
+    .hero .hero-ticker{
+      font-size:clamp(58px,10vw,92px);line-height:.88;font-weight:800;letter-spacing:-.05em;text-transform:lowercase;margin:0;
+      max-width:none;text-align:left;
+    }
+    .hero-co{margin-top:4px;font-size:14px;color:rgba(0,0,0,.64);text-transform:lowercase}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .pill{
+      display:inline-flex;align-items:center;padding:5px 12px;border-radius:999px;
+      font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.06em;
+      background:rgba(0,0,0,.08);color:#111;
+    }
+    .pill.dark{background:var(--ink);color:var(--yel)}
+    .hero .hero-hook{
+      font-size:clamp(19px,2.05vw,24px);line-height:1.35;font-weight:700;margin:0;color:#111;
+      max-width:none;text-align:left;
+    }
+    .hero .hero-sub{
+      margin:10px 0 0;color:rgba(0,0,0,.70);font-size:17px;line-height:1.68;max-width:none;text-align:left;
+    }
+    .hero-tape{
+      display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;padding-top:16px;
+      border-top:2px solid rgba(0,0,0,.10);font:600 11px/1.5 "DM Mono",monospace;color:rgba(0,0,0,.58)
+    }
+    .hero-tape strong{color:rgba(0,0,0,.92)}
+
+    .kpi-grid{display:grid;gap:10px}
+    .kpi-grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .kpi-grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .kpi-grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi{
+      background:rgba(255,255,255,.84);border:1px solid rgba(0,0,0,.08);border-radius:14px;
+      padding:14px 16px;box-shadow:0 8px 20px rgba(0,0,0,.04)
+    }
+    .kpi-label{font:700 10px/1.25 "DM Mono",monospace;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .kpi-value{font-size:clamp(24px,2.8vw,34px);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+    .kpi-sub{margin-top:4px;font-size:12px;line-height:1.45;color:rgba(0,0,0,.55)}
+    .value-gn{color:var(--green)}
+    .value-rd{color:var(--red)}
+    .value-am{color:var(--amber)}
+
+    .panel{
+      background:rgba(255,255,255,.92);border:2px solid rgba(0,0,0,.08);border-left:5px solid var(--yel);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin:18px 0
+    }
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      margin-bottom:12px;padding-bottom:12px;border-bottom:3px solid #000
+    }
+    .section-head h2{
+      margin:0;font-size:clamp(34px,3.9vw,50px);line-height:.98;font-weight:800;letter-spacing:-.045em;text-transform:none
+    }
+    .kicker{font:700 11px/1 "DM Mono",monospace;letter-spacing:.12em;text-transform:lowercase;color:rgba(0,0,0,.52)}
+    .lead{margin:0 0 16px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.72)}
+    .aggregate-sources-attribution{margin:0 0 14px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.76)}
+    .aggregate-sources-attribution p{margin:0}
+    .aggregate-methodology-link{margin:0;max-width:80ch;font-size:14.5px;line-height:1.6;color:rgba(0,0,0,.62)}
+    #appendix .lead,
+    #appendix .aggregate-sources-attribution,
+    #appendix .aggregate-methodology-link{max-width:none}
+    .quote,.note,.callout,.pillar,.scenario,.table-wrap,.chart-box{
+      background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:14px
+    }
+    .quote{padding:14px 16px;font-size:15px;line-height:1.68;color:rgba(0,0,0,.72)}
+    .note{padding:14px 16px;margin-top:10px;font-size:14.5px;line-height:1.64;color:rgba(0,0,0,.72)}
+    .note strong,.table-title .tag,.legend-label,.pillars .head h4{
+      font:700 11px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase
+    }
+    .note.green{border-left:4px solid var(--green);background:rgba(26,127,90,.06)}
+    .note.amber{border-left:4px solid var(--amber);background:rgba(183,121,31,.08)}
+    .note.red{border-left:4px solid var(--red);background:rgba(197,48,48,.06)}
+
+    .g2,.g3,.g4,.callout-row,.pillars,.scenario-grid{display:grid;gap:10px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .callout-row{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:12px;min-width:0}
+    .callout{padding:14px 16px;min-width:0;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+    .callout .label{font:700 10px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .callout .metric{font-size:clamp(24px,2.8vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;word-break:break-word}
+    #appendix .callout .metric{font-size:clamp(13px,1.35vw,16px);font-weight:700;letter-spacing:0;line-height:1.4}
+    .callout .desc{margin-top:6px;font-size:12.5px;line-height:1.5;color:rgba(0,0,0,.56)}
+
+    .pillars{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px}
+    .pillar{padding:14px 16px}
+    .pillar .head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+    .pillar .head h4{margin:0;font-size:14px;color:#111;letter-spacing:0;text-transform:none;font-family:"Space Grotesk",sans-serif}
+    .tag{
+      display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;border:1px solid rgba(0,0,0,.10);
+      background:rgba(255,255,255,.85);font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.04em;
+    }
+    .tag.green{color:var(--green);background:rgba(26,127,90,.08);border-color:rgba(26,127,90,.25)}
+    .tag.amber{color:var(--amber);background:rgba(183,121,31,.10);border-color:rgba(183,121,31,.25)}
+    .tag.red{color:var(--red);background:rgba(197,48,48,.08);border-color:rgba(197,48,48,.25)}
+    .tag.blue{color:#111;background:rgba(255,229,0,.18);border-color:rgba(0,0,0,.20)}
+    .tag.ink{color:rgba(0,0,0,.68)}
+
+    .table-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+    .table-title h3{margin:0;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-.02em;text-transform:none}
+    .table-wrap{overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+    table{width:100%;border-collapse:collapse;min-width:520px;font-variant-numeric:tabular-nums;background:#fff}
+    th,td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+    thead th{
+      position:sticky;top:0;background:#f0ece4;color:#111;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.08em;text-transform:lowercase;border-bottom:3px solid #000;text-align:left
+    }
+    tbody tr:nth-child(even) td{background:rgba(240,236,228,.36)}
+    tbody tr:hover td{background:rgba(255,229,0,.16)}
+    td.num,th.num{text-align:right}
+    td.b{font-weight:800;color:#111}
+    td.pos{color:var(--green);font-weight:700}
+    td.neg{color:var(--red);font-weight:700}
+    td.amb{color:var(--amber);font-weight:700}
+
+    .chart-box{padding:16px 18px 18px;box-shadow:0 12px 36px rgba(0,0,0,.06)}
+    .chart-head h3{margin:0 0 4px;font-size:16px;line-height:1.2;text-transform:none}
+    .chart-head .sub{font-size:11px;color:rgba(0,0,0,.52);font-style:italic}
+    /* TAM vs revenue: y-axis ticks + grid + split x-label row */
+    .chart-labeled{
+      --chart-h:min(52vw,240px);
+      --chart-h-min:200px;
+      --chart-h-max:260px;
+      display:grid;
+      grid-template-columns:3.35rem 1fr;
+      grid-template-rows:minmax(var(--chart-h-min),var(--chart-h-max)) auto;
+      gap:8px 12px;
+      align-items:stretch;
+      margin-top:6px;
+    }
+    .chart-y-title{
+      margin:8px 0 0;
+      font:700 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.5);
+    }
+    .chart-y-axis{
+      grid-column:1;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      padding-right:8px;
+      border-right:2px solid rgba(0,0,0,.2);
+      font:600 10px/1 "DM Mono",monospace;
+      color:rgba(0,0,0,.58);
+      box-sizing:border-box;
+    }
+    .chart-y-axis .yt{
+      position:absolute;right:8px;line-height:1;white-space:nowrap;
+      transform:translateY(-50%);
+    }
+    .chart-y-axis .yt.y-600{top:0;transform:translateY(0)}
+    .chart-y-axis .yt.y-500{top:16.6667%}
+    .chart-y-axis .yt.y-400{top:33.3333%}
+    .chart-y-axis .yt.y-300{top:50%}
+    .chart-y-axis .yt.y-200{top:66.6667%}
+    .chart-y-axis .yt.y-100{top:83.3333%}
+    .chart-y-axis .yt.y-0{bottom:0;top:auto;transform:translateY(0)}
+    .chart-plot-cell{
+      grid-column:2;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      border-bottom:2px solid rgba(0,0,0,.2);
+    }
+    .chart-grid-bg{
+      position:absolute;inset:0;
+      background:repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6)
+      );
+      pointer-events:none;
+    }
+    .chart{
+      position:relative;z-index:1;
+      display:flex;align-items:flex-end;justify-content:stretch;gap:6px;
+      width:100%;
+      height:100%;min-height:0;
+    }
+    .bar{
+      flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+      min-width:0;height:100%;
+    }
+    .bar-pair{
+      display:flex;flex-direction:row;align-items:flex-end;justify-content:center;
+      gap:5px;width:100%;height:100%;min-height:0;
+    }
+    .col{
+      flex:1 1 0;min-width:8px;border-radius:8px 8px 2px 2px;
+      min-height:2px;align-self:flex-end;
+      box-sizing:border-box;
+    }
+    .col.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .col.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .chart-x-foot{
+      grid-column:2;
+      grid-row:2;
+      display:flex;gap:6px;
+      margin-top:-2px;
+    }
+    .bar-foot{
+      flex:1 1 0;min-width:0;
+      text-align:center;padding-top:6px;
+    }
+    .chart-x-axis-cap{
+      margin:4px 0 0;
+      font:600 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.45);
+      text-align:center;
+    }
+    .chart-legend{
+      display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:12px;padding-top:10px;
+      border-top:1px solid rgba(0,0,0,.08);font-size:12px;color:rgba(0,0,0,.62)
+    }
+    .chart-legend span{display:inline-flex;align-items:center;gap:6px}
+    .chart-legend i{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+    .chart-legend i.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .chart-legend i.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .lab,.val{font-size:10px;line-height:1.25;text-align:center;color:rgba(0,0,0,.56)}
+    .val{font:700 10px/1 "DM Mono",monospace}
+    .lab{max-width:12em;margin:0 auto}
+
+    .scenario-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}
+    .scenario{padding:14px 16px;border-left:4px solid var(--blue)}
+    .scenario.bear{border-left-color:var(--red)}
+    .scenario.base{border-left-color:var(--amber)}
+    .scenario.bull{border-left-color:var(--green)}
+    .scenario .prob{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:8px}
+    .scenario h4{margin:0 0 6px;font-size:18px;line-height:1.1}
+    .scenario p{margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,.72)}
+
+    .legend{display:grid;gap:8px}
+    .legend .item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(0,0,0,.72)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)} .dot.blue{background:#2251ff}
+
+    .footer{
+      margin-top:28px;padding-top:22px;border-top:3px solid rgba(0,0,0,.12);
+      text-align:center;font-size:12px;line-height:1.65;color:rgba(0,0,0,.56)
+    }
+    .footer .links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+    .footer .links a{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.68)}
+    .footer .small{margin-top:12px;font-size:11px;color:rgba(0,0,0,.54)}
+
+    .reading-progress{
+      position:fixed;top:var(--nav-h, 68px);left:0;height:4px;width:0;z-index:101;
+      background:linear-gradient(90deg,var(--yel),#fff38c);box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 14px rgba(255,229,0,.45)
+    }
+    .watermark{
+      position:fixed;right:18px;bottom:14px;z-index:1;pointer-events:none;user-select:none;
+      font-size:clamp(68px,12vw,118px);font-weight:800;letter-spacing:-.06em;line-height:.8;color:rgba(0,0,0,.05)
+    }
+
+    @media (max-width:1024px){
+      .g2,.g3,.g4,.pillars,.scenario-grid{grid-template-columns:1fr}
+      .hero-top{grid-template-columns:1fr}
+      .content{padding:22px 18px 56px}
+    }
+    @media (max-width:900px){
+      .sidebar{display:none}
+      .content{
+        margin-left:auto;
+        margin-right:auto;
+        width:90vw;
+        max-width:none;
+      }
+    }
+    @media (max-width:760px){
+      .kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr 1fr}
+      .callout-row{grid-template-columns:1fr 1fr}
+      table{min-width:460px}
+    }
+    @media (max-width:560px){
+      .callout-row,.kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr}
+      .section-head h2{font-size:30px}
+      .hero .hero-hook{font-size:19px}
+      .hero .hero-sub{font-size:16px}
+      .panel{padding:20px}
+    }
+    .hero-snapshot-link {
+      display: inline-block;
+      margin-top: 4px;
+      font: 400 11px/1.4 "DM Mono", monospace;
+      color: rgba(0,0,0,.38);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .hero-snapshot-link:hover {
+      color: rgba(0,0,0,.68);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+  .aggregate-panel {
+    position: relative;
+    z-index: 1;
+  }
+  .aggregate-lead p {
+    margin: 0 0 16px;
+  }
+  .auto-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .aggregate-stack {
+    display: grid;
+    gap: 12px;
+  }
+  .aggregate-card {
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.05);
+  }
+  .aggregate-card.dark {
+    background: rgba(0,0,0,.92);
+    color: rgba(255,255,255,.92);
+    border-color: rgba(255,255,255,.08);
+  }
+  .aggregate-card.dark p,
+  .aggregate-card.dark li,
+  .aggregate-card.dark .aggregate-source {
+    color: rgba(255,255,255,.72);
+  }
+  .aggregate-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .aggregate-card-head h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    text-transform: lowercase;
+  }
+  .aggregate-card-body,
+  .aggregate-card-body p,
+  .aggregate-card-body li {
+    font-size: 15px;
+    line-height: 1.68;
+    color: rgba(0,0,0,.72);
+  }
+  .aggregate-card-body p {
+    margin: 0 0 12px;
+  }
+  .aggregate-card-body ul,
+  .aggregate-card-body ol {
+    margin: 0 0 12px 20px;
+    padding: 0;
+  }
+  .aggregate-card-body > *:last-child {
+    margin-bottom: 0;
+  }
+  .aggregate-source {
+    margin-top: 10px;
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .06em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.48);
+  }
+  .aggregate-substack {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .aggregate-chart-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .aggregate-chart-row {
+    display: grid;
+    grid-template-columns: minmax(80px, 140px) 1fr minmax(60px, 120px);
+    align-items: center;
+    gap: 10px;
+  }
+  .aggregate-chart-label,
+  .aggregate-chart-value {
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .04em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.62);
+  }
+  .aggregate-chart-track {
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .aggregate-chart-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+  }
+  .table-wrap table th.num,
+  .table-wrap table td.num {
+    text-align: right;
+  }
+  .table-wrap table td.pos { color: var(--green, #1a7f37); font-weight: 600; }
+  .table-wrap table td.neg { color: var(--red, #cf222e); font-weight: 600; }
+  .table-wrap table td.amb { color: var(--caution-text, #9a6700); font-weight: 600; }
+  .table-narrow {
+    max-width: 520px;
+  }
+  .table-narrow table {
+    min-width: 0;
+    width: 100%;
+  }
+  .g2 .table-narrow {
+    max-width: none;
+  }
+  .aggregate-mini-table {
+    margin-top: 8px;
+  }
+  .aggregate-mini-table table {
+    min-width: 0;
+  }
+  .aggregate-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .aggregate-list-item {
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    background: rgba(255,255,255,.72);
+  }
+  .aggregate-list-item strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .aggregate-audit {
+    margin-top: 8px;
+  }
+  @media (max-width: 1120px) {
+    .sidebar {
+      position: static;
+      width: auto;
+      top: auto;
+      padding: 12px 0;
+      border-right: 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: none;
+    }
+    .content {
+      margin-left: auto;
+      margin-right: auto;
+      width: 90vw;
+      max-width: none;
+      padding: 24px 18px 56px;
+    }
+    .watermark {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .hero-top {
+      grid-template-columns: 1fr;
+    }
+    .aggregate-chart-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+  .aggregate-pane-xref {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(0, 0, 0, 0.52);
+  }
+  .aggregate-pane-xref a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .aggregate-pane-xref a:hover {
+    color: rgba(0, 0, 0, 0.88);
+  }
+  .hero-snapshot-link {
+    display: inline-block;
+    margin-top: 4px;
+    font: 400 11px/1.4 "DM Mono", monospace;
+    color: rgba(0,0,0,.38);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .hero-snapshot-link:hover {
+    color: rgba(0,0,0,.68);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  
+</style>
+
+<a class="skip-link" href="#content">skip to content</a>
+  <div class="reading-progress" id="reading-progress"></div>
+  <div class="watermark" aria-hidden="true">UNH</div>
+
+  <nav class="nav nav--white" aria-label="main navigation" data-xvary-nav-static>
+    <a class="nav-brand" href="/">xvary</a>
+    <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" type="button" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+    <div class="nav-links">
+      <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/pricing/">pricing</a>
+      <a class="nav-cta" href="/pricing/">sign up</a>
+    </div>
+  </nav>
+
+  <div class="layout xvary-aggregate-deep-dive-body" data-template-id="aggregate-deep-dive-live-v1" lang="en">
+    <aside class="sidebar" aria-label="section navigation">
+      <div class="nav-section">
+        <div class="nav-label">quick navigation</div>
+        <a class="nav-pill active" href="#summary">
+          <span class="nav-kbd">0</span>
+          <span class="nav-txt">report snapshot</span>
+        </a>
+        <a class="nav-pill " href="#thesis">
+          <span class="nav-kbd">1</span>
+          <span class="nav-txt">variant perception &amp; thesis</span>
+        </a>
+        <a class="nav-pill " href="#financials">
+          <span class="nav-kbd">2</span>
+          <span class="nav-txt">financial analysis</span>
+        </a>
+        <a class="nav-pill " href="#valuation">
+          <span class="nav-kbd">3</span>
+          <span class="nav-txt">valuation</span>
+        </a>
+        <a class="nav-pill " href="#risk">
+          <span class="nav-kbd">4</span>
+          <span class="nav-txt">what breaks the thesis</span>
+        </a>
+        <a class="nav-pill " href="#ops">
+          <span class="nav-kbd">5</span>
+          <span class="nav-txt">fundamentals &amp; operations</span>
+        </a>
+        <a class="nav-pill " href="#competition">
+          <span class="nav-kbd">6</span>
+          <span class="nav-txt">competitive position</span>
+        </a>
+        <a class="nav-pill " href="#tam">
+          <span class="nav-kbd">7</span>
+          <span class="nav-txt">market size &amp; tam</span>
+        </a>
+        <a class="nav-pill " href="#product">
+          <span class="nav-kbd">8</span>
+          <span class="nav-txt">product &amp; technology</span>
+        </a>
+        <a class="nav-pill " href="#supply">
+          <span class="nav-kbd">9</span>
+          <span class="nav-txt">supply chain</span>
+        </a>
+        <a class="nav-pill " href="#catalysts">
+          <span class="nav-kbd">a</span>
+          <span class="nav-txt">catalyst map</span>
+        </a>
+        <a class="nav-pill " href="#street">
+          <span class="nav-kbd">b</span>
+          <span class="nav-txt">street expectations</span>
+        </a>
+        <a class="nav-pill " href="#scorecard">
+          <span class="nav-kbd">c</span>
+          <span class="nav-txt">earnings scorecard</span>
+        </a>
+        <a class="nav-pill " href="#signals">
+          <span class="nav-kbd">d</span>
+          <span class="nav-txt">alternative data</span>
+        </a>
+        <a class="nav-pill " href="#history">
+          <span class="nav-kbd">e</span>
+          <span class="nav-txt">historical analogies</span>
+        </a>
+        <a class="nav-pill " href="#management">
+          <span class="nav-kbd">f</span>
+          <span class="nav-txt">management &amp; leadership</span>
+        </a>
+        <a class="nav-pill " href="#macro">
+          <span class="nav-kbd">g</span>
+          <span class="nav-txt">macro sensitivity</span>
+        </a>
+        <a class="nav-pill " href="#quant">
+          <span class="nav-kbd">h</span>
+          <span class="nav-txt">quantitative profile</span>
+        </a>
+        <a class="nav-pill " href="#derivatives">
+          <span class="nav-kbd">i</span>
+          <span class="nav-txt">options &amp; derivatives</span>
+        </a>
+        <a class="nav-pill " href="#governance">
+          <span class="nav-kbd">j</span>
+          <span class="nav-txt">governance &amp; accounting</span>
+        </a>
+        <a class="nav-pill " href="#value">
+          <span class="nav-kbd">k</span>
+          <span class="nav-txt">value framework</span>
+        </a>
+        <a class="nav-pill " href="#appendix">
+          <span class="nav-kbd">l</span>
+          <span class="nav-txt">appendix &amp; sources</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="content" id="content">
+      <section class="hero" aria-label="report intro">
+        <div class="hero-top">
+          <div>
+            <h1 class="hero-ticker">unh</h1>
+            <div class="hero-co">unitedhealth group incorporated</div>
+            <a class="hero-snapshot-link" href="/stock/unh/snapshot/">snapshot page &rarr;</a>
+            <div class="hero-badges">
+              <span class="pill dark">deep dive</span>
+              <span class="pill ">hospital &amp; medical service plans</span>
+              <span class="pill ">mega cap</span>
+              <span class="pill ">apr 12, 2026</span>
+            </div>
+            <div class="hero-tape" aria-label="headline tape">
+              <span><strong>Position</strong> Long</span>
+              <span><strong>Price</strong> $425.50</span>
+              <span><strong>~$393.6B</strong> mcap</span>
+              <span><strong>apr 12, 2026</strong> as-of date</span>
+            </div>
+          </div>
+          <div>
+            <p class="hero-hook">Deep dive analysis of UnitedHealth Group Incorporated.</p>
+            <p class="hero-sub">That intrinsic line rolls up bear, base, and bull by assigned weights — not one cherry-picked case. <strong>Plain English:</strong> "intrinsic value" means what the model says the stock is worth if the growth narrative mostly holds — not a promise.</p>
+          </div>
+        </div>
+
+        <div class="kpi-grid cols-3">
+          <div class="kpi">
+            <div class="kpi-label">price</div>
+            <div class="kpi-value ">$425.50</div>
+            <div class="kpi-sub">Down ~35% from ATH $630.73</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">target</div>
+            <div class="kpi-value ">$485</div>
+            <div class="kpi-sub">14% upside from current</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">fcf yield</div>
+            <div class="kpi-value ">6.7%</div>
+            <div class="kpi-sub">$26B FCF on $394B market cap</div>
+          </div>
+        </div>
+
+        <div class="callout-row">
+          <div class="callout">
+            <div class="label">signal strength</div>
+            <div class="metric ">55/100</div>
+            <div class="desc">Regulatory binary risk weighs</div>
+          </div>
+          <div class="callout">
+            <div class="label">eps (fy2024)</div>
+            <div class="metric ">$25.22</div>
+            <div class="desc">Net income $23.4B</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>report snapshot</h2>
+          <div class="kicker">executive summary — unitedhealth group</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Long UNH at $425.50 with a $485 target (14% upside). Conviction 55/100. UNH is a structural compounder temporarily dislocated by headline risk — DOJ antitrust probe, CEO assassination fallout, and MLR fears. Optum&#x27;s vertical integration remains the widest moat in US healthcare. The stock trades at its cheapest valuation in a decade.</p></div>
+                <div class="g3"><div class="kpi"><div class="kpi-label">price</div><div class="kpi-value ">$425.50</div><div class="kpi-sub">Down ~35% from ATH $630.73</div></div><div class="kpi"><div class="kpi-label">target</div><div class="kpi-value ">$485</div><div class="kpi-sub">14% upside from current</div></div><div class="kpi"><div class="kpi-label">fcf yield</div><div class="kpi-value ">6.7%</div><div class="kpi-sub">$26B FCF on $394B market cap</div></div></div>
+        <div class="g2" style="margin-top:10px">
+          <div class="quote"><strong class="kicker">core debate</strong><br><p>Long UNH at $425.50 with a $485 target (14% upside). Conviction 55/100...</p></div>
+          <div class="quote"><strong class="kicker">headline tape</strong><br><p>$425.50 · ~$393.6B · as of apr 12, 2026.</p></div>
+        </div>
+        <div class="callout-row"><div class="callout"><div class="label">bull case</div><div class="metric value-gn">$580</div><div class="desc">DOJ settles with minimal remedies, MLR normalizes to 82.5%, Optum re-rated as standalone growth asset. Multiple expands to 20x forward.</div></div><div class="callout"><div class="label">base case</div><div class="metric ">$485</div><div class="desc">DOJ behavioral remedies, MLR settles at 83.0-83.5%, steady Optum margin expansion. Multiple recovers to 17-18x forward.</div></div><div class="callout"><div class="label">bear case</div><div class="metric value-rd">$340</div><div class="desc">DOJ forces partial Optum divestiture, MLR stays above 85%, Medicare Advantage headwinds persist. Multiple compresses to 12x forward.</div></div></div>
+        <div class="note green"><strong>top findings</strong><br><p>Review filings-backed metrics in the financials section for the strongest evidence lines.</p></div>
+        <div class="note amber"><strong>aggregate synthesis</strong><br><p>Numbers can look similar while narrative labels diverge — focus on which spreadsheet row the market is pricing.</p></div>
+
+      </section>
+      <section id="thesis" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>variant perception &amp; thesis</h2>
+          <div class="kicker">core facts & variant perception</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The consensus narrative: UNH is a broken healthcare conglomerate facing DOJ breakup risk, permanently elevated medical costs, and political headwinds. Our variant perception: the integrated model is precisely what makes UNH the lowest-cost operator, DOJ settles for behavioral remedies, and the market is mispricing a temporary MLR spike as structural.</p></div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>Variant Perception #1 — DOJ Outcome</h3></div><div class="aggregate-card-body"><p>Market assumption: DOJ forces divestiture of Optum or material structural separation. Our view: historical precedent in healthcare antitrust strongly favors behavioral remedies (consent decrees, pricing transparency requirements, data firewalls) over forced divestiture. The political cost of dismantling the largest employer-of-physicians in the US is prohibitive...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Variant Perception #2 — MLR Trajectory</h3></div><div class="aggregate-card-body"><p>Market assumption: MLR permanently impaired at 84%+ due to structural post-COVID utilization shift and GLP-1 drug costs. Our view: 70% of the MLR increase is cyclical — driven by care pattern normalization (deferred procedures returning) and a premium repricing lag of 12-18 months. The 30% structural component (GLP-1s, aging demographics) is offset by Optum&#x27;s ability to manage total cost of care...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Variant Perception #3 — Optum&#x27;s Hidden Value</h3></div><div class="aggregate-card-body"><p>Market treats Optum as a cost center or regulatory liability. Reality: Optum generates $22B+ revenue at 8-10% operating margins, growing 12-15% organically. As a standalone entity, Optum would command 20-25x earnings — comparable to Veeva, Evolent, or Agilon...</p></div></div><div class="table-title"><h3>Consensus vs. Our View</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Factor</th><th class="num">Consensus View</th><th>Our View</th><th>Impact if We&#x27;re Right</th></tr></thead><tbody><tr><td><p>DOJ Outcome</p></td><td class="num"><p>Forced divestiture likely</p></td><td><p>Behavioral remedies (75%)</p></td><td><p>+$40-60/share re-rating</p></td></tr><tr><td><p>MLR Trajectory</p></td><td class="num"><p>Permanently > 84%</p></td><td><p>Normalizes to 83.0-83.5%</p></td><td><p>+$3-5/share EPS uplift</p></td></tr><tr><td><p>Optum Valuation</p></td><td class="num"><p>Conglomerate discount warranted</p></td><td><p>42% discount is excessive</p></td><td><p>+$50-80/share SOTP gap</p></td></tr><tr><td><p>CEO Transition</p></td><td class="num"><p>Leadership vacuum</p></td><td><p>Witty stabilizes, succession planned</p></td><td><p>Neutral to slight positive</p></td></tr><tr><td><p>PBM Reform</p></td><td class="num"><p>Existential threat to OptumRx</p></td><td><p>Manageable — shifts to fee-based</p></td><td><p>-$1-2/share one-time reset</p></td></tr></tbody></table></div><div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">revenue (fy2024)</div><div class="kpi-value ">$400B</div><div class="kpi-sub">8% organic growth</div></div><div class="kpi"><div class="kpi-label">net income</div><div class="kpi-value ">$23.4B</div><div class="kpi-sub">5.9% net margin</div></div><div class="kpi"><div class="kpi-label">medical members</div><div class="kpi-value ">54M</div><div class="kpi-sub">+3% YoY</div></div><div class="kpi"><div class="kpi-label">optum served lives</div><div class="kpi-value ">103M+</div><div class="kpi-sub">Growing double-digits</div></div></div><div class="note"><p>Timeline check: DOJ probe resolution expected Q3-Q4 2026. MLR inflection point visible in Q2 2025 earnings. Optum margin expansion should accelerate through FY2025 as Change Healthcare integration completes...</p></div>
+      </section>
+      <section id="financials" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>financial analysis</h2>
+          <div class="kicker">elite economics</div>
+        </div>
+        <div class="lead aggregate-lead"><p>$400B in revenue growing 8% organic. Operating margin 8.1%. ROIC 15.4%. FCF conversion 112% of net income. UNH is a rare combination of scale and capital efficiency — a $400B revenue enterprise that converts more cash than it earns in GAAP net income.</p></div>
+                <div class="callout-row"><div class="callout"><div class="label">Revenue (FY2024)</div><div class="metric ">$400B</div><div class="desc">8% organic growth</div></div><div class="callout"><div class="label">Operating Income</div><div class="metric ">$32.4B</div><div class="desc">8.1% operating margin</div></div><div class="callout"><div class="label">Net Income</div><div class="metric ">$23.4B</div><div class="desc">5.9% net margin</div></div><div class="callout"><div class="label">EPS</div><div class="metric ">$25.22</div><div class="desc">10% YoY growth</div></div><div class="callout"><div class="label">FCF</div><div class="metric ">$26B</div><div class="desc">112% conversion ratio</div></div><div class="callout"><div class="label">ROIC</div><div class="metric ">15.4%</div><div class="desc">Well above 9% WACC</div></div></div>
+        <div class="g2" style="margin-top:10px"><div><div class="table-title"><h3>Income Statement Summary (FY2022-FY2026E)</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">FY2022</th><th class="num">FY2023</th><th class="num">FY2024</th><th class="num">FY2025E</th><th class="num">FY2026E</th></tr></thead><tbody><tr><td><p>Revenue ($B)</p></td><td class="num"><p>$324</p></td><td class="num"><p>$372</p></td><td class="num"><p>$400</p></td><td class="num"><p>$432</p></td><td class="num"><p>$466</p></td></tr><tr><td><p>Revenue Growth</p></td><td class="num"><p>13%</p></td><td class="num"><p>15%</p></td><td class="num"><p>8%</p></td><td class="num"><p>8%</p></td><td class="num"><p>8%</p></td></tr><tr><td><p>Gross Profit ($B)</p></td><td class="num"><p>$58.3</p></td><td class="num"><p>$62.4</p></td><td class="num"><p>$62.8</p></td><td class="num"><p>$71.3</p></td><td class="num"><p>$79.1</p></td></tr><tr><td><p>Operating Income ($B)</p></td><td class="num"><p>$28.4</p></td><td class="num"><p>$30.6</p></td><td class="num"><p>$32.4</p></td><td class="num"><p>$36.0</p></td><td class="num"><p>$40.1</p></td></tr><tr><td><p>Operating Margin</p></td><td class="num"><p>8.8%</p></td><td class="num"><p>8.2%</p></td><td class="num"><p>8.1%</p></td><td class="num"><p>8.3%</p></td><td class="num"><p>8.6%</p></td></tr><tr><td><p>Net Income ($B)</p></td><td class="num"><p>$20.1</p></td><td class="num"><p>$22.4</p></td><td class="num"><p>$23.4</p></td><td class="num"><p>$26.0</p></td><td class="num"><p>$29.2</p></td></tr></tbody></table></div></div><div><div class="table-title"><h3>Segment Breakdown (FY2024)</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Segment</th><th class="num">Revenue ($B)</th><th class="num">% of Total</th><th class="num">Op. Margin</th><th class="num">Growth</th></tr></thead><tbody><tr><td><p>UnitedHealthcare</p></td><td class="num"><p>$224</p></td><td class="num"><p>56%</p></td><td class="num"><p>5.2%</p></td><td class="num"><p>6%</p></td></tr><tr><td><p>OptumHealth</p></td><td class="num"><p>$102</p></td><td class="num"><p>26%</p></td><td class="num"><p>7.8%</p></td><td class="num"><p>12%</p></td></tr><tr><td><p>OptumRx</p></td><td class="num"><p>$48</p></td><td class="num"><p>12%</p></td><td class="num"><p>3.5%</p></td><td class="num"><p>8%</p></td></tr><tr><td><p>OptumInsight</p></td><td class="num"><p>$26</p></td><td class="num"><p>6%</p></td><td class="num"><p>22.4%</p></td><td class="num"><p>15%</p></td></tr><tr><td><p>Eliminations</p></td><td class="num"><p>($41)</p></td><td class="num"><p>—</p></td><td class="num"><p>—</p></td><td class="num"><p>—</p></td></tr></tbody></table></div></div></div>
+        <div class="note green"><strong>production-report readthrough</strong><br><p>These numbers ground the thesis in reported economics; the debate is durability and cycle, not obvious accounting gaps.</p></div>
+
+      </section>
+      <section id="valuation" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>valuation</h2>
+          <div class="kicker">probability-weighted fair value</div>
+        </div>
+        <div class="lead aggregate-lead"><p>At $425.50, UNH trades at 16.8x trailing PE and 15.2x forward — decade-low multiples for a company that has compounded EPS at 14% annually over 10 years. DCF intrinsic value: $485. Sum-of-parts analysis reveals a 42% holding company discount, implying the market assigns near-zero value to Optum&#x27;s growth optionality.</p></div>
+                <div class="g2"><div><div class="table-title"><h3>DCF Model — Base Case ($485)</h3><span class="tag blue">read first</span></div><div class="table-wrap table-narrow"><table><thead><tr><th>Assumption</th><th class="num">Value</th></tr></thead><tbody><tr><td><p>Revenue Growth (Y1-Y5)</p></td><td class="num"><p>7-8%</p></td></tr><tr><td><p>Terminal Growth</p></td><td class="num"><p>3.5%</p></td></tr><tr><td><p>Operating Margin (Y5)</p></td><td class="num"><p>8.8%</p></td></tr><tr><td><p>WACC</p></td><td class="num"><p>8.2%</p></td></tr><tr><td><p>Tax Rate</p></td><td class="num"><p>22%</p></td></tr><tr><td><p>FCF Growth (Y1-Y5)</p></td><td class="num"><p>10-12%</p></td></tr><tr><td><p>Terminal Multiple (cross-check)</p></td><td class="num"><p>14x EBITDA</p></td></tr><tr><td><p>Implied Equity Value</p></td><td class="num"><p>$485/share</p></td></tr></tbody></table></div></div><div><div class="scenario-grid"><div class="scenario bull"><div class="prob">full re-rating ($580)</div><h4>$580</h4><p>DOJ behavioral remedies, MLR normalizes to 82.5%, market re-rates to 20x forward on FY2026E EPS of $31.80...</p></div><div class="scenario base"><div class="prob">gradual recovery ($485)</div><h4>$485</h4><p>DOJ settlement with moderate restrictions, MLR at 83.0-83.5%, multiple recovers to 17.2x forward on FY2026E EPS of $28.15...</p></div><div class="scenario bear"><div class="prob">structural impairment ($340)</div><h4>$340</h4><p>DOJ forces partial divestiture, MLR stays above 85%, multiple compresses to 12x on reduced FY2026E EPS of $24.00...</p></div></div></div></div>
+        
+        <div style="margin-top:12px"><div class="table-title"><h3>Valuation vs. History</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">Current</th><th class="num">5Y Avg</th><th class="num">10Y Avg</th><th>Percentile</th></tr></thead><tbody><tr><td><p>Forward PE</p></td><td class="num"><p>15.2x</p></td><td class="num"><p>19.5x</p></td><td class="num"><p>20.8x</p></td><td><p>3rd</p></td></tr><tr><td><p>EV/EBITDA</p></td><td class="num"><p>11.5x</p></td><td class="num"><p>14.2x</p></td><td class="num"><p>14.8x</p></td><td><p>5th</p></td></tr><tr><td><p>P/FCF</p></td><td class="num"><p>15.2x</p></td><td class="num"><p>18.1x</p></td><td class="num"><p>19.5x</p></td><td><p>4th</p></td></tr><tr><td><p>Dividend Yield</p></td><td class="num"><p>2.0%</p></td><td class="num"><p>1.3%</p></td><td class="num"><p>1.4%</p></td><td><p>95th</p></td></tr><tr><td><p>FCF Yield</p></td><td class="num"><p>6.7%</p></td><td class="num"><p>5.1%</p></td><td class="num"><p>4.8%</p></td><td><p>97th</p></td></tr></tbody></table></div></div>
+
+      </section>
+      <section id="risk" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>what breaks the thesis</h2>
+          <div class="kicker">risk assessment & kill criteria</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Five kill criteria define the boundaries of this position. Any single trigger warrants immediate exit regardless of valuation. The position is sized at 55/100 conviction specifically because two risks (DOJ outcome, MLR trajectory) are binary and difficult to handicap with precision.</p></div>
+                <div class="note red"><strong>risk framing</strong><br><p>This is not generic macro risk language — it is a short list of observable thresholds that would force us to change the view.</p></div>
+        <div style="margin-top:10px"><div class="table-title"><h3>Risk Matrix</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Risk</th><th class="num">Probability</th><th>Impact</th><th class="num">Severity</th><th>Monitoring Frequency</th></tr></thead><tbody><tr><td><p>DOJ Forced Divestiture</p></td><td class="num"><p>5%</p></td><td><p>Extreme (-$80-100/sh)</p></td><td class="num"><p>Critical</p></td><td><p>Continuous</p></td></tr><tr><td><p>MLR > 86% Sustained</p></td><td class="num"><p>10%</p></td><td><p>High (-$40-60/sh)</p></td><td class="num"><p>Critical</p></td><td><p>Quarterly</p></td></tr><tr><td><p>MA Rate Cuts > 3% x2</p></td><td class="num"><p>8%</p></td><td><p>High (-$30-50/sh)</p></td><td class="num"><p>High</p></td><td><p>Annually (April)</p></td></tr><tr><td><p>PBM Spread Pricing Ban</p></td><td class="num"><p>12%</p></td><td><p>Medium (-$20-30/sh)</p></td><td class="num"><p>High</p></td><td><p>Continuous</p></td></tr><tr><td><p>Star Ratings Collapse</p></td><td class="num"><p>5%</p></td><td><p>Medium (-$15-25/sh)</p></td><td class="num"><p>Medium</p></td><td><p>Annually (October)</p></td></tr><tr><td><p>CEO Transition Disruption</p></td><td class="num"><p>15%</p></td><td><p>Low (-$10-15/sh)</p></td><td class="num"><p>Medium</p></td><td><p>Quarterly</p></td></tr></tbody></table></div></div>
+        
+        <div class="note amber"><strong>most dangerous zone</strong><br><p>Watch for drawdowns driven by fundamentals where funds de-risk faster than the business narrative updates.</p></div>
+
+      </section>
+      <section id="ops" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>fundamentals &amp; operations</h2>
+          <div class="kicker">operations deep dive</div>
+        </div>
+        <div class="lead aggregate-lead"><p>UNH operates the largest healthcare services infrastructure in the United States: 54M medical members, 7.7M claims processed daily, 1.6M physicians in network, 7,000 hospitals, and 103M+ Optum served lives. The operational scale creates compounding cost advantages that no single competitor can replicate.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">medical members</div><div class="kpi-value ">54M</div><div class="kpi-sub">+3% YoY</div></div><div class="kpi"><div class="kpi-label">claims/day</div><div class="kpi-value ">7.7M</div><div class="kpi-sub">Industry-leading throughput</div></div><div class="kpi"><div class="kpi-label">network physicians</div><div class="kpi-value ">1.6M</div><div class="kpi-sub">Broadest US network</div></div><div class="kpi"><div class="kpi-label">network hospitals</div><div class="kpi-value ">7,000</div><div class="kpi-sub">Nationwide coverage</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>UnitedHealthcare — Insurance Platform</h3></div><div class="aggregate-card-body"><p>54M medical members across three segments: Employer &amp; Individual (32M), Medicare Advantage (8.5M, #1 share), and Medicaid/CHIP (8.2M). Commercial membership growing 2-3% through employer wins; MA growing 8-10% on demographic tailwinds. Claims auto-adjudication rate: 87% (industry avg: 78%), enabling lower admin cost per claim...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>OptumHealth — Care Delivery</h3></div><div class="aggregate-card-body"><p>103M+ served lives through 90,000 affiliated physicians and 4,200 owned care delivery sites. Per-patient-per-month cost runs 15% below fee-for-service average — the core proof point for vertical integration&#x27;s value. Value-based care arrangements cover > 45% of served lives, with a target of 60% by 2027...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>OptumInsight — Technology &amp; Analytics</h3></div><div class="aggregate-card-body"><p>Serves 300+ health plans and 400,000+ physicians with technology, analytics, and managed services. Revenue retention rate: 95%+. Backlog: $33B+ (provides 3+ years of revenue visibility)...</p></div></div><div class="table-title"><h3>Operational Efficiency Metrics</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">UNH</th><th class="num">Industry Avg</th><th>Advantage</th></tr></thead><tbody><tr><td><p>Claims Auto-Adjudication</p></td><td class="num"><p>87%</p></td><td class="num"><p>78%</p></td><td><p>+9pp</p></td></tr><tr><td><p>Admin Cost Ratio</p></td><td class="num"><p>12.8%</p></td><td class="num"><p>14.5%</p></td><td><p>-170bp</p></td></tr><tr><td><p>Days in Claims Payable</p></td><td class="num"><p>50</p></td><td class="num"><p>45</p></td><td><p>+5 days (float advantage)</p></td></tr><tr><td><p>Care Cost per Member (VBC)</p></td><td class="num"><p>15% below FFS</p></td><td class="num"><p>At FFS</p></td><td><p>15% structural</p></td></tr><tr><td><p>Revenue Retention (OptumInsight)</p></td><td class="num"><p>95%+</p></td><td class="num"><p>88%</p></td><td><p>+7pp</p></td></tr><tr><td><p>Digital Engagement Rate</p></td><td class="num"><p>72%</p></td><td class="num"><p>55%</p></td><td><p>+17pp</p></td></tr></tbody></table></div><div class="note"><p>Operational risk watch: Change Healthcare breach (2022) exposed data for 100M+ individuals. Remediation costs: $2.5B+. Reputational damage ongoing...</p></div>
+      </section>
+      <section id="competition" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>competitive position</h2>
+          <div class="kicker">competitive landscape</div>
+        </div>
+        <div class="lead aggregate-lead"><p>UNH holds 15% commercial market share, 29% Medicare Advantage (#1), and 12% Medicaid. Its moat is unique: the only company operating at scale simultaneously across payer, provider, PBM, and data/analytics. Competitors excel in individual segments but none can replicate the integrated flywheel.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">commercial share</div><div class="kpi-value ">15%</div><div class="kpi-sub">#1 in employer-sponsored</div></div><div class="kpi"><div class="kpi-label">ma share</div><div class="kpi-value ">29%</div><div class="kpi-sub">#1 by wide margin</div></div><div class="kpi"><div class="kpi-label">medicaid share</div><div class="kpi-value ">12%</div><div class="kpi-sub">#3 behind CNC, MOH</div></div><div class="kpi"><div class="kpi-label">pbm rank</div><div class="kpi-value ">#3</div><div class="kpi-sub">Behind CVS Caremark, Express Scripts</div></div></div><div class="table-title"><h3>Peer Comparison</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">UNH</th><th class="num">ELV</th><th class="num">CVS/Aetna</th><th class="num">CI/Evernorth</th><th class="num">HUM</th></tr></thead><tbody><tr><td><p>Revenue ($B)</p></td><td class="num"><p>$400</p></td><td class="num"><p>$176</p></td><td class="num"><p>$357</p></td><td class="num"><p>$228</p></td><td class="num"><p>$112</p></td></tr><tr><td><p>Medical Members (M)</p></td><td class="num"><p>54</p></td><td class="num"><p>46</p></td><td class="num"><p>26</p></td><td class="num"><p>21</p></td><td class="num"><p>17</p></td></tr><tr><td><p>MA Members (M)</p></td><td class="num"><p>8.5</p></td><td class="num"><p>4.2</p></td><td class="num"><p>3.8</p></td><td class="num"><p>1.2</p></td><td class="num"><p>5.6</p></td></tr><tr><td><p>Operating Margin</p></td><td class="num"><p>8.1%</p></td><td class="num"><p>5.2%</p></td><td class="num"><p>4.1%</p></td><td class="num"><p>5.5%</p></td><td class="num"><p>3.8%</p></td></tr><tr><td><p>Forward PE</p></td><td class="num"><p>15.2x</p></td><td class="num"><p>12.8x</p></td><td class="num"><p>8.5x</p></td><td class="num"><p>11.2x</p></td><td class="num"><p>19.5x</p></td></tr><tr><td><p>Integrated Model</p></td><td class="num"><p>Full stack</p></td><td class="num"><p>Payer + Carelon</p></td><td class="num"><p>Payer + PBM + Retail</p></td><td class="num"><p>Payer + PBM</p></td><td class="num"><p>Payer + VBC</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Elevance Health (ELV) — Strongest Pure Payer</h3></div><div class="aggregate-card-body"><p>46M members, dominant Blue Cross Blue Shield franchise in 14 states. Carelon (formerly Diversified) is Elevance&#x27;s answer to Optum — behavioral health, pharmacy, and analytics. But Carelon is 5-7 years behind Optum in scale and integration...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>CVS Health / Aetna — Pharmacy-First Integration</h3></div><div class="aggregate-card-body"><p>CVS integrated Aetna (2018) to create a payer + PBM + retail pharmacy model. 9,000 retail locations provide physical touchpoints UNH lacks. But CVS&#x27;s integration has underperformed expectations — Aetna has lost commercial share since acquisition, retail pharmacy is in secular decline, and the company carries $50B+ debt...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Cigna / Evernorth — PBM Powerhouse</h3></div><div class="aggregate-card-body"><p>Express Scripts (Evernorth) is the #1 PBM by scripts processed. Cigna&#x27;s strategy: lean into PBM and specialty pharmacy, de-emphasize insurance. Sold individual Medicare business to HCSC (2024)...</p></div></div><div class="table-title"><h3>Moat Assessment by Segment</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Segment</th><th>UNH Position</th><th>Closest Competitor</th><th>Gap</th><th>Durability</th></tr></thead><tbody><tr><td><p>Commercial Insurance</p></td><td><p>#1 (15%)</p></td><td><p>ELV (14%)</p></td><td><p>Narrow</p></td><td><p>Medium</p></td></tr><tr><td><p>Medicare Advantage</p></td><td><p>#1 (29%)</p></td><td><p>HUM (19%)</p></td><td><p>Wide</p></td><td><p>High</p></td></tr><tr><td><p>Care Delivery</p></td><td><p>#1</p></td><td><p>HUM/CenterWell</p></td><td><p>Very Wide</p></td><td><p>Very High</p></td></tr><tr><td><p>PBM</p></td><td><p>#3</p></td><td><p>CVS Caremark (#1)</p></td><td><p>Behind</p></td><td><p>Medium</p></td></tr><tr><td><p>Health Tech/Analytics</p></td><td><p>#1</p></td><td><p>Veradigm/Inovalon</p></td><td><p>Dominant</p></td><td><p>Very High</p></td></tr><tr><td><p>Integrated Model</p></td><td><p>Only at scale</p></td><td><p>None comparable</p></td><td><p>Unique</p></td><td><p>Very High</p></td></tr></tbody></table></div><div class="note"><p>Emerging threat: Amazon Health is building pharmacy + primary care capabilities (One Medical acquisition, Amazon Pharmacy). While currently subscale (&lt;2M members), Amazon&#x27;s willingness to operate at zero margin and its consumer data advantage could disrupt primary care economics over 5-10 years. Not a near-term risk to UNH but worth monitoring.</p></div>
+      </section>
+      <section id="tam" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>market size &amp; tam</h2>
+          <div class="kicker">total addressable market</div>
+        </div>
+        <div class="lead aggregate-lead"><p>US healthcare spending is $4.5T (17.3% of GDP), growing 5-6% annually — making it one of the largest and most durable growth markets in the economy. UNH currently captures approximately 9% of total healthcare spend across insurance and services. Regulatory and antitrust dynamics create an effective penetration ceiling of 15-18% before political pressure becomes prohibitive.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">us healthcare spend</div><div class="kpi-value ">$4.5T</div><div class="kpi-sub">17.3% of GDP</div></div><div class="kpi"><div class="kpi-label">annual growth rate</div><div class="kpi-value ">5-6%</div><div class="kpi-sub">Exceeds GDP growth</div></div><div class="kpi"><div class="kpi-label">unh revenue</div><div class="kpi-value ">$400B</div><div class="kpi-sub">FY2024</div></div><div class="kpi"><div class="kpi-label">current penetration</div><div class="kpi-value ">~9%</div><div class="kpi-sub">Of total healthcare spend</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Insurance TAM — Commercial, Medicare, Medicaid</h3></div><div class="aggregate-card-body"><p>The US health insurance market totals approximately $2.9T in premiums. Commercial employer-sponsored: $1.1T (UNH share ~12%). Medicare (including MA): $1.0T (UNH share ~15% of MA)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Healthcare Services TAM — Optum&#x27;s Runway</h3></div><div class="aggregate-card-body"><p>The healthcare services market (physician services, ambulatory care, home health, analytics, revenue cycle management) exceeds $2.0T. Optum addresses approximately $600B of this through OptumHealth (care delivery), OptumInsight (analytics/managed services), and adjacent services. Current Optum revenue of ~$175B implies 29% penetration of the addressable services market — significant but with ample room for growth via organic expansion and M&A.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Growth Vectors</h3></div><div class="aggregate-card-body"><p>Three primary vectors for TAM expansion: (1) Medicare Advantage enrollment growth — 54% of eligible Medicare beneficiaries are now in MA plans, projected to reach 70% by 2035. (2) Value-based care adoption — OptumHealth&#x27;s value-based arrangements covering 4.3M patients today vs. 60M+ potential lives...</p></div></div><div class="table-title"><h3>TAM Summary by Segment</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Segment</th><th>TAM</th><th class="num">UNH Penetration</th><th class="num">Growth Rate</th><th class="num">Ceiling</th></tr></thead><tbody><tr><td><p>Commercial Insurance</p></td><td><p>$1.1T</p></td><td class="num"><p>~12%</p></td><td class="num"><p>4-5%</p></td><td class="num"><p>18-20%</p></td></tr><tr><td><p>Medicare Advantage</p></td><td><p>$0.5T (MA portion)</p></td><td class="num"><p>~29%</p></td><td class="num"><p>8-10%</p></td><td class="num"><p>35% (regulatory)</p></td></tr><tr><td><p>Medicaid Managed Care</p></td><td><p>$0.8T</p></td><td class="num"><p>~8%</p></td><td class="num"><p>3-4%</p></td><td class="num"><p>12-15%</p></td></tr><tr><td><p>Healthcare Services</p></td><td><p>$600B addressable</p></td><td class="num"><p>~29%</p></td><td class="num"><p>7-9%</p></td><td class="num"><p>40-45%</p></td></tr><tr><td><p>Healthcare IT/Data</p></td><td><p>$100B+</p></td><td class="num"><p>~15%</p></td><td class="num"><p>10-12%</p></td><td class="num"><p>25-30%</p></td></tr></tbody></table></div><div class="note"><p>The healthcare TAM is one of the few $4T+ markets that reliably grows above GDP. Demographics (aging population), technology adoption, and GLP-1/obesity treatment expansion could push US healthcare to $6T+ by 2035. UNH&#x27;s position at the center of this ecosystem is the fundamental long case.</p></div>
+      </section>
+      <section id="product" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>product &amp; technology</h2>
+          <div class="kicker">roadmap + software stack</div>
+        </div>
+        <div class="lead aggregate-lead"><p>UNH&#x27;s technology moat is Optum — a vertically integrated data and services platform covering 230M+ patient lives. The combination of the industry&#x27;s largest healthcare data lake, proprietary AI/ML models, and the Change Healthcare transaction platform creates switching costs and information advantages that competitors cannot replicate without similar vertical integration.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">data lake coverage</div><div class="kpi-value ">230M+ lives</div><div class="kpi-sub">Largest in US healthcare</div></div><div class="kpi"><div class="kpi-label">annual tech investment</div><div class="kpi-value ">$4.4B capex + $3B+ M&A</div><div class="kpi-sub">~2% of revenue</div></div><div class="kpi"><div class="kpi-label">change hc transactions</div><div class="kpi-value ">15B+/year</div><div class="kpi-sub">Claims, payments, eligibility</div></div><div class="kpi"><div class="kpi-label">optuminsight backlog</div><div class="kpi-value ">$33B</div><div class="kpi-sub">Multi-year managed services</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Optum Data Lake — The Core Asset</h3></div><div class="aggregate-card-body"><p>Optum&#x27;s clinical and claims data lake spans 230M+ de-identified patient lives with longitudinal records. This is the largest integrated healthcare dataset in the US. It feeds predictive models for clinical risk stratification, utilization forecasting, drug interaction detection, and population health management...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Change Healthcare Platform</h3></div><div class="aggregate-card-body"><p>Acquired in 2022 for $13B, Change Healthcare processes 15B+ transactions annually — claims submission, payment integrity, revenue cycle management, and eligibility verification. The platform connects 900K+ physicians, 6K+ hospitals, and 2.4K+ payers. It is critical healthcare infrastructure, which is why the February 2024 ransomware breach was so disruptive and why DOJ scrutiny intensified.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>AI &amp; Machine Learning Initiatives</h3></div><div class="aggregate-card-body"><p>UNH has 300+ AI/ML models in production across three domains: (1) Clinical — ambient clinical documentation (auto-generating visit notes), clinical decision support, care gap identification; (2) Operational — automated prior authorization (reducing turnaround from days to minutes), claims adjudication, fraud detection; (3) Predictive — patient risk scoring, utilization forecasting, drug adherence prediction. The company is investing heavily in generative AI for clinical documentation and member engagement.</p></div></div><div class="note"><p>The AI prior authorization capabilities are a double-edged sword. They drive efficiency and margin, but CMS and state regulators are increasingly targeting automated denial systems. A federal ban on AI-only prior auth decisions would require significant workflow restructuring and could add $1-2B in annual operating costs.</p></div>
+      </section>
+      <section id="supply" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>supply chain</h2>
+          <div class="kicker">single points of failure</div>
+        </div>
+        <div class="lead aggregate-lead"><p>UNH&#x27;s &#x27;supply chain&#x27; is not traditional — it is a vertically integrated healthcare ecosystem spanning insurance (UnitedHealthcare), physician practices (OptumHealth), pharmacy benefits (OptumRx), and data/technology services (OptumInsight). This integration is simultaneously UNH&#x27;s greatest competitive advantage and its largest regulatory vulnerability.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">network physicians</div><div class="kpi-value ">1.6M</div><div class="kpi-sub">Contracted across all plans</div></div><div class="kpi"><div class="kpi-label">network hospitals</div><div class="kpi-value ">7,000</div><div class="kpi-sub">Including 400+ owned/affiliated</div></div><div class="kpi"><div class="kpi-label">optum physicians</div><div class="kpi-value ">90,000+</div><div class="kpi-sub">Employed or closely affiliated</div></div><div class="kpi"><div class="kpi-label">optumrx scripts</div><div class="kpi-value ">1.4B/year</div><div class="kpi-sub">3rd largest US PBM</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Provider Network — Scale &amp; Breadth</h3></div><div class="aggregate-card-body"><p>UnitedHealthcare contracts with approximately 1.6 million physicians and 7,000 hospitals nationwide, giving it one of the broadest networks in the industry. Beyond contracted access, OptumHealth directly employs or closely affiliates with 90,000+ physicians across 2,000+ locations. This dual model — broad network for member access plus owned physician practices for care management — enables UNH to influence both the demand and supply side of healthcare delivery.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>OptumRx — PBM &amp; Pharmacy</h3></div><div class="aggregate-card-body"><p>OptumRx is the third-largest US PBM (after CVS Caremark and Express Scripts), managing 1.4B+ prescriptions annually. It has relationships with all major pharmaceutical manufacturers for rebate negotiations and operates specialty pharmacy capabilities handling complex, high-cost medications. Specialty pharmacy is the fastest-growing segment, driven by GLP-1 drugs, oncology biologics, and gene therapies.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The Vertical Integration Thesis</h3></div><div class="aggregate-card-body"><p>UNH owns the entire value chain: insurance underwriting (UnitedHealthcare) feeds patients to owned providers (OptumHealth), whose prescriptions flow through the owned PBM (OptumRx), all connected by the owned data layer (OptumInsight/Change Healthcare). This creates information advantages (seeing claims before competitors), cost advantages (eliminating intermediary margins), and switching costs (clients integrated across multiple Optum services rarely leave). It is the deepest moat in managed care.</p></div></div><div class="pillars"><div class="pillar"><div class="head"><h4>1. pillar</h4></div></div><div class="pillar"><div class="head"><h4>2. pillar</h4></div></div><div class="pillar"><div class="head"><h4>3. pillar</h4></div></div><div class="pillar"><div class="head"><h4>4. pillar</h4></div></div></div><div class="note"><p>If forced divestiture of any Optum segment results from the DOJ probe, the moat unravels. A standalone OptumRx or OptumHealth would be a strong business, but the integrated data advantages that drive superior underwriting and care management would be permanently impaired. This is the tail risk that justifies a lower conviction score.</p></div>
+      </section>
+      <section id="catalysts" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>catalyst map</h2>
+          <div class="kicker">forward calendar</div>
+        </div>
+        <div class="lead aggregate-lead"><p>UNH has seven identifiable catalysts spanning regulatory, operational, and corporate governance domains. The DOJ settlement outcome and MLR trajectory are the two highest-impact events, with combined potential to drive a 30%+ move in either direction.</p></div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>DOJ Antitrust Settlement</h3></div><div class="aggregate-card-body"><p>DOJ is investigating UNH/Optum vertical integration, particularly the payer-PBM-provider linkage. A negotiated settlement with behavioral remedies (most likely outcome) would remove the largest overhang. Full litigation or forced divestiture is tail risk.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Q2 2025 Earnings — MLR Inflection</h3></div><div class="aggregate-card-body"><p>The market is watching for evidence that the medical loss ratio has peaked. Q1 2025 guided 84.0% MLR; any print below 83.5% with stable forward guidance would be taken as confirmation that repricing actions and utilization management are working.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>2026 Medicare Advantage Final Rates</h3></div><div class="aggregate-card-body"><p>CMS publishes final MA rates in April 2026. The advance notice (Feb 2026) suggested a 3.7% aggregate increase — above medical trend expectations. Final rates above 4% would be a meaningful positive for margins.</p></div></div><div class="table-title"><h3>Catalyst Timeline Summary</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Catalyst</th><th>Window</th><th>Prob-Weighted Impact</th><th>Direction</th></tr></thead><tbody><tr><td><p>DOJ Settlement</p></td><td><p>H2 2025 - H1 2026</p></td><td><p>+$25/share prob-weighted</p></td><td><p>Positive skew</p></td></tr><tr><td><p>Q2 Earnings / MLR</p></td><td><p>Jul 2025</p></td><td><p>+/- $40 range</p></td><td><p>Binary</p></td></tr><tr><td><p>MA Final Rates 2026</p></td><td><p>Apr 2026</p></td><td><p>+$8/share prob-weighted</p></td><td><p>Slight positive</p></td></tr><tr><td><p>Amedisys Close</p></td><td><p>H2 2025</p></td><td><p>+$5/share prob-weighted</p></td><td><p>Positive</p></td></tr><tr><td><p>Star Ratings</p></td><td><p>Oct 2025</p></td><td><p>+$3/share prob-weighted</p></td><td><p>Slight positive</p></td></tr><tr><td><p>PBM Reform</p></td><td><p>2025-2026</p></td><td><p>-$6/share prob-weighted</p></td><td><p>Negative skew</p></td></tr></tbody></table></div><div class="note"><p>The DOJ and PBM reform catalysts are correlated — a hostile DOJ posture increases the probability that Congress also acts aggressively on PBM reform. Combined downside in a &#x27;regulatory winter&#x27; scenario exceeds $100/share from current levels.</p></div>
+      </section>
+      <section id="street" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>street expectations</h2>
+          <div class="kicker">wall street consensus</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The sell-side remains predominantly bullish on UNH — 71% Buy ratings with a median price target of $540, implying 27% upside from current levels. However, the consensus masks a widening debate: bulls view the MLR spike as cyclical and repricing-solvable, while bears argue utilization is structurally higher. XVARY diverges from consensus by assigning higher probability to adverse DOJ outcomes.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">total analysts</div><div class="kpi-value ">34</div><div class="kpi-sub">Covering UNH</div></div><div class="kpi"><div class="kpi-label">buy ratings</div><div class="kpi-value ">24 (71%)</div><div class="kpi-sub">vs 79% six months ago</div></div><div class="kpi"><div class="kpi-label">hold ratings</div><div class="kpi-value ">8 (24%)</div><div class="kpi-sub">Up from 18%</div></div><div class="kpi"><div class="kpi-label">sell ratings</div><div class="kpi-value ">2 (6%)</div><div class="kpi-sub">Added post-Q4 miss</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Consensus Earnings Estimates</h3></div><div class="aggregate-card-body"><p>Street consensus projects FY2025 EPS of $28.00 on revenue of $435B, reflecting 8.9% revenue growth and modest margin recovery. FY2026 estimates of $31.50 EPS assume MLR normalization to 83.0-83.5% and continued Optum services growth. The revision trend is negative — FY2025 EPS has been cut from $30.50 six months ago, with 28 of 34 analysts revising down.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The Bull Case — Cyclical MLR, Repricing Works</h3></div><div class="aggregate-card-body"><p>Bulls (JPMorgan, Goldman Sachs, Barclays) argue: (1) MLR spikes are a normal managed care cycle — repricing actions take 12-18 months to flow through. (2) Medicare Advantage rates are improving. (3) Optum&#x27;s services growth provides earnings diversification that peers lack...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The Bear Case — Structural Headwinds</h3></div><div class="aggregate-card-body"><p>Bears (Leerink, one Citi analyst) argue: (1) Post-COVID utilization is permanently higher — pent-up demand plus GLP-1 costs are not cyclical. (2) DOJ investigation is serious and could force Optum restructuring. (3) PBM reform is bipartisan and will compress OptumRx margins...</p></div></div><div class="table-title"><h3>Selected Analyst Views</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Firm</th><th>Rating</th><th class="num">PT</th><th>Key Thesis</th></tr></thead><tbody><tr><td><p>JPMorgan</p></td><td><p>Overweight</p></td><td class="num"><p>$600</p></td><td><p>Best-in-class operator, MLR cyclical</p></td></tr><tr><td><p>Goldman Sachs</p></td><td><p>Buy</p></td><td class="num"><p>$580</p></td><td><p>Optum undervalued, sum-of-parts $620</p></td></tr><tr><td><p>Morgan Stanley</p></td><td><p>Overweight</p></td><td class="num"><p>$545</p></td><td><p>MA rate tailwind, repricing works</p></td></tr><tr><td><p>Barclays</p></td><td><p>Overweight</p></td><td class="num"><p>$530</p></td><td><p>Discounting too much regulatory risk</p></td></tr><tr><td><p>UBS</p></td><td><p>Neutral</p></td><td class="num"><p>$480</p></td><td><p>Fair value until DOJ clarity</p></td></tr><tr><td><p>Citi</p></td><td><p>Neutral</p></td><td class="num"><p>$460</p></td><td><p>MLR recovery slower than consensus</p></td></tr></tbody></table></div><div class="note"><p>The sell-side PT range of $380-$650 (71% spread) is unusually wide for a mega-cap stock, reflecting genuine uncertainty about both the MLR trajectory and regulatory outcomes. This dispersion supports the view that UNH is a &#x27;show me&#x27; story where near-term earnings execution will drive significant re-rating.</p></div>
+      </section>
+      <section id="scorecard" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>earnings scorecard</h2>
+          <div class="kicker">earnings track record</div>
+        </div>
+        <div class="lead aggregate-lead"><p>UNH historically ran one of the most reliable earnings machines in the S&P 500 — consistent beats with tight guidance bands. That narrative broke in Q4 2024 with the first EPS miss in three years, driven by an 85.2% MLR print that shocked the market. The question now is whether this represents a one-time reset or the start of a new, less predictable earnings regime.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">eps beat rate (8q)</div><div class="kpi-value ">7 of 8</div><div class="kpi-sub">87.5%</div></div><div class="kpi"><div class="kpi-label">average eps beat</div><div class="kpi-value ">+3.2%</div><div class="kpi-sub">Declining trend</div></div><div class="kpi"><div class="kpi-label">revenue beat rate (8q)</div><div class="kpi-value ">6 of 8</div><div class="kpi-sub">75%</div></div><div class="kpi"><div class="kpi-label">q4 2024 eps</div><div class="kpi-value ">Miss</div><div class="kpi-sub">First miss in 3 years</div></div></div><div class="table-title"><h3>Quarterly Earnings History</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Quarter</th><th class="num">EPS Est</th><th class="num">EPS Actual</th><th class="num">Beat/Miss</th><th class="num">MLR</th><th class="num">Stock Reaction</th></tr></thead><tbody><tr><td><p>Q1 2023</p></td><td class="num"><p>$6.10</p></td><td class="num"><p>$6.26</p></td><td class="num"><p>+2.6%</p></td><td class="num"><p>82.2%</p></td><td class="num"><p>+2.4%</p></td></tr><tr><td><p>Q2 2023</p></td><td class="num"><p>$5.98</p></td><td class="num"><p>$6.14</p></td><td class="num"><p>+2.7%</p></td><td class="num"><p>82.8%</p></td><td class="num"><p>+3.1%</p></td></tr><tr><td><p>Q3 2023</p></td><td class="num"><p>$6.30</p></td><td class="num"><p>$6.56</p></td><td class="num"><p>+4.1%</p></td><td class="num"><p>82.3%</p></td><td class="num"><p>+4.8%</p></td></tr><tr><td><p>Q4 2023</p></td><td class="num"><p>$6.15</p></td><td class="num"><p>$6.34</p></td><td class="num"><p>+3.1%</p></td><td class="num"><p>83.1%</p></td><td class="num"><p>+1.9%</p></td></tr><tr><td><p>Q1 2024</p></td><td class="num"><p>$6.60</p></td><td class="num"><p>$6.91</p></td><td class="num"><p>+4.7%</p></td><td class="num"><p>84.3%</p></td><td class="num"><p>-5.2%</p></td></tr><tr><td><p>Q2 2024</p></td><td class="num"><p>$6.70</p></td><td class="num"><p>$6.80</p></td><td class="num"><p>+1.5%</p></td><td class="num"><p>84.3%</p></td><td class="num"><p>+0.8%</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The Q4 2024 Miss — Anatomy</h3></div><div class="aggregate-card-body"><p>Q4 2024 EPS of $6.42 missed consensus of $6.70 by 4.2%, the largest miss in UNH&#x27;s modern history. The driver was an 85.2% medical loss ratio, 70bps above guidance, caused by: (1) higher-than-expected flu/RSV season costs, (2) accelerating GLP-1 utilization, (3) catch-up costs from the Change Healthcare disruption backlog. Management guided Q1 2025 to 84.0% MLR, which the market viewed skeptically — the stock dropped 6% on the day.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Decelerating Beat Magnitude</h3></div><div class="aggregate-card-body"><p>Even before the Q4 miss, the beat pattern was deteriorating. Average beat declined from +3.6% in 2023 to +2.8% in the first three quarters of 2024. This deceleration reflected progressively higher MLR prints eating into the earnings buffer that management traditionally maintained...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Revenue vs. EPS Divergence</h3></div><div class="aggregate-card-body"><p>Revenue has consistently met or exceeded expectations — the top line is not the issue. UNH&#x27;s revenue growth of 10-12% has been durable, driven by Optum services expansion and membership growth. The EPS pressure is entirely a margin story: MLR compression consuming operating leverage...</p></div></div><div class="note"><p>The consensus FY2025 EPS of $28.00 is $1.75 above the midpoint of management guidance ($26.25). This gap is unusually wide and implies the Street believes management is sandbagging by approximately $1.75/share. If management is NOT sandbagging and the guide is real, there is significant downside risk to estimates.</p></div>
+      </section>
+      <section id="signals" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>alternative data</h2>
+          <div class="kicker">alternative signals</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The composite signal for UNH is slightly negative (-0.2), reflecting mixed inputs: low short interest (positive), stable institutional ownership (neutral), widening CDS spreads (negative), declining employee sentiment (negative), and increased lobbying spend (ambiguous — defensive). No single signal flashes red, but the aggregate lean is cautious.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">composite signal</div><div class="kpi-value ">-0.2</div><div class="kpi-sub">Slightly negative</div></div><div class="kpi"><div class="kpi-label">short interest</div><div class="kpi-value ">1.1%</div><div class="kpi-sub">Low, not a crowded short</div></div><div class="kpi"><div class="kpi-label">cds spread change</div><div class="kpi-value ">+15bp</div><div class="kpi-sub">Post-DOJ widening</div></div><div class="kpi"><div class="kpi-label">glassdoor rating</div><div class="kpi-value ">3.4/5</div><div class="kpi-sub">Declining from 3.8</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Insider Activity</h3></div><div class="aggregate-card-body"><p>CFO John Rex sold $8M in UNH shares in February 2025 under a pre-arranged 10b5-1 plan. While planned sales are routine, the timing — during a period of DOJ uncertainty and post the Q4 miss — has drawn attention. No other C-suite insiders have made open-market purchases in the past 12 months...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Institutional Ownership</h3></div><div class="aggregate-card-body"><p>Top institutional holders — Vanguard (8.4%), BlackRock (7.1%), State Street (4.3%) — have maintained positions with minimal changes. No major institutional exits in the most recent 13F filings. Wellington Management trimmed by 8%, and T...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Credit Market Signals</h3></div><div class="aggregate-card-body"><p>UNH&#x27;s 5-year CDS spread widened 15bp following the DOJ probe announcement, from 45bp to 60bp. This is a modest widening that reflects increased uncertainty rather than distress — UNH remains solidly investment-grade (A+/A1). Bond spreads on the company&#x27;s $40B+ debt are 85-120bp over Treasuries, up from 60-90bp pre-DOJ...</p></div></div><div class="table-title"><h3>Signal Dashboard</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Signal</th><th>Reading</th><th>Direction</th><th class="num">Weight</th></tr></thead><tbody><tr><td><p>Insider Activity</p></td><td><p>Net selling, no buys</p></td><td><p>Negative</p></td><td class="num"><p>15%</p></td></tr><tr><td><p>Institutional Flows</p></td><td><p>Stable, no major changes</p></td><td><p>Neutral</p></td><td class="num"><p>20%</p></td></tr><tr><td><p>Short Interest</p></td><td><p>1.1% (low)</p></td><td><p>Slightly positive</p></td><td class="num"><p>10%</p></td></tr><tr><td><p>CDS Spread</p></td><td><p>+15bp widening</p></td><td><p>Negative</p></td><td class="num"><p>15%</p></td></tr><tr><td><p>Employee Sentiment</p></td><td><p>3.4 Glassdoor, declining</p></td><td><p>Negative</p></td><td class="num"><p>15%</p></td></tr><tr><td><p>Lobbying Spend</p></td><td><p>+22% YoY</p></td><td><p>Negative (defensive)</p></td><td class="num"><p>10%</p></td></tr></tbody></table></div><div class="note"><p>The most informative signal absence: no insider buying. In prior drawdowns of this magnitude (2020, 2018), UNH insiders made open-market purchases within 60 days of the trough. The lack of buying this cycle may reflect blackout restrictions around the DOJ investigation rather than lack of confidence, but it prevents using insider activity as a contrarian bullish indicator.</p></div>
+      </section>
+      <section id="history" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>historical analogies</h2>
+          <div class="kicker">historical analogues & timeline</div>
+        </div>
+        <div class="lead aggregate-lead"><p>UNH has survived and thrived through every major healthcare regulatory cycle over the past 25 years. The consistent pattern: an initial shock drives a significant drawdown, followed by adaptation, and eventual emergence as a stronger, more dominant franchise. The current cycle — combining regulatory, operational, and leadership challenges — is the most complex test yet, but the historical base rate favors recovery.</p></div>
+        <div class="note amber">
+          <strong>render caveat</strong><br>2 placeholder-heavy block(s) remained in the source pane; inspect against the original json before publishing.
+        </div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>Analogue 1: 2018 DOJ/CVS-Aetna Merger Challenge</h3></div><div class="aggregate-card-body"><p>In 2018, the DOJ challenged the CVS-Aetna vertical merger on antitrust grounds — the closest precedent to the current UNH/Optum investigation. The case settled with behavioral remedies (Aetna divested its Medicare Part D business). The settlement took 14 months from initial challenge to resolution...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Analogue 2: 2010 ACA Passage</h3></div><div class="aggregate-card-body"><p>The Affordable Care Act passage in 2010 was widely expected to be devastating for managed care companies. UNH dropped 30% during the legislative debate period (2009-2010). However, the ACA ultimately expanded the addressable market: Medicaid expansion added millions of new members, and the insurance exchanges created new distribution channels...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Analogue 3: HMO Crisis of 1999-2001</h3></div><div class="aggregate-card-body"><p>In the late 1990s, managed care companies faced a public backlash over HMO practices — denials, restricted networks, and perceived rationing of care. MLR spiked industry-wide as companies loosened restrictions to reduce political pressure. Several smaller insurers were acquired or went bankrupt...</p></div></div><div class="scenario-grid"><div class="scenario bull"><div class="prob">bull — pattern repeats</div><h4>$580</h4><p>DOJ settles with behavioral remedies (like CVS-Aetna)...</p></div><div class="scenario base"><div class="prob">base — slower recovery</div><h4>$485</h4><p>DOJ resolution takes 12-18 months, creating ongoing uncertainty...</p></div><div class="scenario bear"><div class="prob">bear — pattern breaks</div><h4>$340</h4><p>DOJ forces meaningful Optum restructuring — the first time in UNH&#x27;s history that the adaptation playbook fails to preserve the integrated model...</p></div></div><div class="note"><p>The historical base rate strongly favors UNH recovery — the company has recovered from every prior drawdown and emerged stronger. However, survivor bias applies: we are analyzing UNH because it survived. The DOJ structural risk is qualitatively different from prior challenges, and assigning the historical base rate without adjustment would be overconfident.</p></div>
+      </section>
+      <section id="management" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>management &amp; leadership</h2>
+          <div class="kicker">management assessment</div>
+        </div>
+        <div class="lead aggregate-lead"><p>CEO Andrew Witty leads UNH following the December 2024 assassination of CEO Brian Thompson. Witty — former GSK CEO (2008-2017) and Optum CEO — stepped in from an interim role and has stabilized operations. CFO John Rex (since 2016) provides continuity and a strong capital allocation track record. The key question: is Witty permanent, or will UNH recruit externally?</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">ceo tenure</div><div class="kpi-value ">~15 months</div><div class="kpi-sub">Andrew Witty, since Feb 2024</div></div><div class="kpi"><div class="kpi-label">cfo tenure</div><div class="kpi-value ">10 years</div><div class="kpi-sub">John Rex, since 2016</div></div><div class="kpi"><div class="kpi-label">board size</div><div class="kpi-value ">13 members</div><div class="kpi-sub">Strong healthcare expertise</div></div><div class="kpi"><div class="kpi-label">ceo comp (fy2024)</div><div class="kpi-value ">$22M</div><div class="kpi-sub">65% equity-linked</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Andrew Witty — CEO Profile</h3></div><div class="aggregate-card-body"><p>Background: CEO of GlaxoSmithKline (2008-2017), where he oversaw a strategic pivot from blockbuster drugs to diversified healthcare. Joined UNH as Optum CEO in 2018, elevated to group CEO in February 2024 after Thompson&#x27;s assassination. Strengths: deep understanding of Optum (the growth engine), global healthcare perspective, crisis management capability...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>John Rex — CFO Profile</h3></div><div class="aggregate-card-body"><p>The continuity anchor. Rex has served as CFO since 2016 and overseen UNH&#x27;s capital allocation through the Change Healthcare acquisition ($13B), aggressive buyback program ($12.5B/year), and 15% annual dividend growth. He maintained investment-grade credit through the acquisition spree while keeping debt/equity below 0.8x...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Dirk McMahon — COO Profile</h3></div><div class="aggregate-card-body"><p>Dirk McMahon serves as COO, overseeing day-to-day operations across both UnitedHealthcare and Optum. Previously CEO of UnitedHealthcare, he brings deep payer-side expertise that complements Witty&#x27;s Optum background. McMahon is widely viewed as an internal CEO successor candidate if Witty steps down...</p></div></div><div class="table-title"><h3>Executive Team</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Name</th><th>Role</th><th class="num">Since</th><th>Background</th></tr></thead><tbody><tr><td><p>Andrew Witty</p></td><td><p>CEO</p></td><td class="num"><p>2024</p></td><td><p>Former GSK CEO, Optum CEO</p></td></tr><tr><td><p>John Rex</p></td><td><p>CFO</p></td><td class="num"><p>2016</p></td><td><p>Career healthcare finance</p></td></tr><tr><td><p>Dirk McMahon</p></td><td><p>COO</p></td><td class="num"><p>2024</p></td><td><p>Former UHC CEO</p></td></tr><tr><td><p>Tim Noel</p></td><td><p>CEO, UnitedHealthcare</p></td><td class="num"><p>2024</p></td><td><p>Internal promotion</p></td></tr><tr><td><p>Heather Cianfrocco</p></td><td><p>CEO, Optum</p></td><td class="num"><p>2024</p></td><td><p>Former OptumRx CEO</p></td></tr><tr><td><p>Patrick Conway, MD</p></td><td><p>CEO, OptumHealth</p></td><td class="num"><p>2022</p></td><td><p>Former CMS Chief Medical Officer</p></td></tr></tbody></table></div><div class="note"><p>The December 2024 assassination of CEO Brian Thompson was an unprecedented event in corporate America. Beyond the human tragedy, it created institutional trauma that affects employee morale, public perception, and executive recruiting. UNH has increased executive security spending significantly...</p></div>
+      </section>
+      <section id="macro" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>macro sensitivity</h2>
+          <div class="kicker">rates, fx, energy</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Healthcare is inherently defensive: UNH beta 0.72. People get sick in recessions. But UNH is not immune to macro — enrollment mix shifts in downturns, interest rates affect its $61B debt stack, medical cost inflation outruns CPI, and political cycles create regulatory risk. The net exposure is moderate and manageable.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">beta</div><div class="kpi-value ">0.72</div><div class="kpi-sub">Below-market volatility</div></div><div class="kpi"><div class="kpi-label">total debt</div><div class="kpi-value ">$61B</div><div class="kpi-sub">Rate-sensitive refinancing</div></div><div class="kpi"><div class="kpi-label">medical inflation</div><div class="kpi-value ">CPI + 2-3pp</div><div class="kpi-sub">Structural overshoot</div></div><div class="kpi"><div class="kpi-label">repricing lag</div><div class="kpi-value ">12-18 months</div><div class="kpi-sub">Premium catch-up cycle</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Recession Sensitivity</h3></div><div class="aggregate-card-body"><p>In a recession, UNH experiences enrollment mix shift rather than demand destruction. Commercial members lose employer coverage and shift to Medicaid (lower margin) or ACA exchanges (moderate margin). Historical pattern: in 2008-2009, UNH lost ~2M commercial members but gained ~1.5M Medicaid members...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Interest Rate Exposure</h3></div><div class="aggregate-card-body"><p>UNH carries $61B in total debt at an average cost of ~3.8%. With $15B in maturities through 2027, refinancing at current market rates (5.5-6.0% for investment-grade 10-year) increases annual interest expense by $400-600M. Each 100bp increase in refinancing rates adds ~$150M in annual interest expense (~$0.13/share after tax)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Medical Cost Inflation</h3></div><div class="aggregate-card-body"><p>Medical cost inflation consistently runs 2-3 percentage points above CPI. Drivers: technology adoption (higher-cost procedures), pharmaceutical pricing (especially specialty/GLP-1s), labor costs (nurse/physician wage inflation), and demographic aging. UNH offsets through: (1) premium repricing with a 12-18 month lag, (2) Optum&#x27;s cost management reducing total cost of care, (3) network negotiation leverage from 54M covered lives...</p></div></div><div class="table-title"><h3>Macro Scenario Impact on UNH EPS</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Scenario</th><th>GDP Impact</th><th class="num">UNH Revenue</th><th class="num">UNH EPS Impact</th><th>Duration</th></tr></thead><tbody><tr><td><p>Mild Recession</p></td><td><p>-1% to -2%</p></td><td class="num"><p>Flat to +2%</p></td><td class="num"><p>-5% to -8%</p></td><td><p>6-12 months</p></td></tr><tr><td><p>Severe Recession</p></td><td><p>-3% to -5%</p></td><td class="num"><p>-2% to flat</p></td><td class="num"><p>-10% to -15%</p></td><td><p>12-24 months</p></td></tr><tr><td><p>Rates +200bp</p></td><td><p>N/A</p></td><td class="num"><p>Neutral</p></td><td class="num"><p>-$0.25/share</p></td><td><p>Permanent until refi</p></td></tr><tr><td><p>Medical Inflation +2pp</p></td><td><p>N/A</p></td><td class="num"><p>+2-3%</p></td><td class="num"><p>-3% to -5% (temporary)</p></td><td><p>12-18 month lag</p></td></tr><tr><td><p>Medicare-for-All</p></td><td><p>N/A</p></td><td class="num"><p>-70%+</p></td><td class="num"><p>Existential</p></td><td><p>3-5 year transition</p></td></tr><tr><td><p>PBM Reform Passed</p></td><td><p>N/A</p></td><td class="num"><p>-2%</p></td><td class="num"><p>-$2-3/share</p></td><td><p>1-2 year adjustment</p></td></tr></tbody></table></div><div class="note"><p>GLP-1 drug costs are a unique macro-medical intersection. Ozempic/Wegovy utilization is growing 40%+ annually. If GLP-1 coverage mandates expand (several states considering), medical cost inflation could spike an additional 100-200bp above baseline...</p></div>
+      </section>
+      <section id="quant" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>quantitative profile</h2>
+          <div class="kicker">factor + mean reversion</div>
+        </div>
+        <div class="lead aggregate-lead"><p>UNH exhibits a defensive factor profile — low beta, high quality, low volatility — that has historically made it a core institutional holding. However, the current drawdown cycle has pushed momentum sharply negative, and elevated implied volatility signals the market is pricing a wider distribution of outcomes than typical for a mega-cap defensive name.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">beta (5y)</div><div class="kpi-value ">0.72</div><div class="kpi-sub">Defensive profile</div></div><div class="kpi"><div class="kpi-label">annualized vol</div><div class="kpi-value ">24%</div><div class="kpi-sub">Elevated vs 18% 5Y avg</div></div><div class="kpi"><div class="kpi-label">max drawdown</div><div class="kpi-value ">-38%</div><div class="kpi-sub">Current cycle from ATH $630.73</div></div><div class="kpi"><div class="kpi-label">sharpe ratio (5y)</div><div class="kpi-value ">0.92</div><div class="kpi-sub">Above S&P 500 at 0.81</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Factor Exposures</h3></div><div class="aggregate-card-body"><p>UNH loads positively on value (+0.4), quality (+0.6), and low volatility (+0.3), consistent with its profile as a profitable, low-beta mega-cap. The negative momentum loading (-0.5) is a recent development driven by the 35% drawdown from the all-time high. Historically, UNH had positive momentum exposure (+0.3 average over the prior 5 years)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Correlation Structure</h3></div><div class="aggregate-card-body"><p>UNH correlates 0.65 with the S&P 500 and 0.82 with XLV (Health Care Select ETF). The relatively lower S&P correlation provides portfolio diversification value, while the high XLV correlation means UNH moves largely with the healthcare sector. Cross-asset: negatively correlated with 10Y Treasury yields (-0.25), which is unusual for equities and reflects the rate sensitivity of insurance investment portfolios.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Volatility Regime</h3></div><div class="aggregate-card-body"><p>Realized 30-day volatility is 24%, well above the 5-year average of 18%. The volatility expansion began with the CEO assassination (December 2024) and was sustained by the Q4 earnings miss and DOJ news. The vol-of-vol is also elevated, meaning day-to-day volatility is itself unpredictable...</p></div></div><div class="table-title"><h3>Risk Metrics Summary</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">Current</th><th class="num">5Y Average</th><th>Assessment</th></tr></thead><tbody><tr><td><p>Beta</p></td><td class="num"><p>0.72</p></td><td class="num"><p>0.68</p></td><td><p>Slightly elevated</p></td></tr><tr><td><p>Annualized Vol</p></td><td class="num"><p>24%</p></td><td class="num"><p>18%</p></td><td><p>Elevated</p></td></tr><tr><td><p>Sharpe Ratio</p></td><td class="num"><p>0.92</p></td><td class="num"><p>1.05</p></td><td><p>Below average</p></td></tr><tr><td><p>Max Drawdown</p></td><td class="num"><p>-38%</p></td><td class="num"><p>-20% (avg cycle)</p></td><td><p>Severe</p></td></tr><tr><td><p>Sortino Ratio</p></td><td class="num"><p>1.10</p></td><td class="num"><p>1.35</p></td><td><p>Below average</p></td></tr><tr><td><p>VaR (95%, 1-day)</p></td><td class="num"><p>-3.2%</p></td><td class="num"><p>-2.1%</p></td><td><p>Elevated tail risk</p></td></tr></tbody></table></div><div class="note"><p>The negative momentum factor loading creates a mechanical headwind: systematic funds that screen for momentum (estimated $300B+ in AUM) are structurally underweight or short UNH. A momentum reversal — triggered by positive earnings surprise or DOJ resolution — would create a technical tailwind as these funds rebuild positions.</p></div>
+      </section>
+      <section id="derivatives" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>options &amp; derivatives</h2>
+          <div class="kicker">derivatives & options market</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The options market is pricing significantly elevated uncertainty for UNH. 30-day implied volatility at 32% is 45% above the 12-month average, put/call ratio is bearish at 1.15, and the volatility skew is steep — indicating strong demand for downside protection. Unusual activity in both June puts and December calls suggests institutional positioning for a binary outcome.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">30-day iv</div><div class="kpi-value ">32%</div><div class="kpi-sub">vs 22% 12mo avg</div></div><div class="kpi"><div class="kpi-label">iv rank</div><div class="kpi-value ">78th pctile</div><div class="kpi-sub">12-month lookback</div></div><div class="kpi"><div class="kpi-label">put/call ratio</div><div class="kpi-value ">1.15</div><div class="kpi-sub">Bearish skew</div></div><div class="kpi"><div class="kpi-label">25δ skew</div><div class="kpi-value ">+8%</div><div class="kpi-sub">Put IV over call IV</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Implied Volatility Regime</h3></div><div class="aggregate-card-body"><p>30-day IV at 32% is in the 78th percentile of the past 12 months. The IV term structure is in contango (longer-dated options are even more expensive), which is unusual and reflects the market pricing elevated uncertainty through year-end — specifically around DOJ resolution timing. The 90-day IV is 35% and 180-day IV is 33%, suggesting the market expects peak uncertainty in the 3-6 month window.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Volatility Skew Analysis</h3></div><div class="aggregate-card-body"><p>The 25-delta put implied volatility is 8% above the 25-delta call IV, indicating significant demand for downside protection relative to upside participation. This skew is ~2x the normal level for UNH and comparable to skews seen during acute regulatory events (e.g., ACA passage debates in 2009-2010). The steep skew suggests institutional hedging activity rather than speculative put buying.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Unusual Options Activity</h3></div><div class="aggregate-card-body"><p>Two clusters of unusual activity detected: (1) Large put spreads at $380/$350 strikes for June 2025 expiry — approximately $45M in notional, likely institutional hedges against a DOJ worst-case scenario. (2) Call buying at the $500 strike for December 2025 expiry — approximately $20M in notional, likely positioning for a DOJ resolution rally. The two-sided activity confirms the market is pricing a binary outcome.</p></div></div><div class="table-title"><h3>Key Options Levels</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th class="num">Strike</th><th>Type</th><th>Expiry</th><th class="num">Open Interest</th><th>Significance</th></tr></thead><tbody><tr><td class="num"><p>$350</p></td><td><p>Put</p></td><td><p>Jun 2025</p></td><td class="num"><p>18,500</p></td><td><p>DOJ worst-case hedge</p></td></tr><tr><td class="num"><p>$380</p></td><td><p>Put</p></td><td><p>Jun 2025</p></td><td class="num"><p>24,200</p></td><td><p>Bear scenario floor</p></td></tr><tr><td class="num"><p>$400</p></td><td><p>Put</p></td><td><p>Apr 2025</p></td><td class="num"><p>31,000</p></td><td><p>Psychological support</p></td></tr><tr><td class="num"><p>$440</p></td><td><p>Call/Put</p></td><td><p>Apr 2025</p></td><td class="num"><p>Max pain</p></td><td><p>Near-term magnet</p></td></tr><tr><td class="num"><p>$500</p></td><td><p>Call</p></td><td><p>Dec 2025</p></td><td class="num"><p>22,800</p></td><td><p>DOJ resolution rally</p></td></tr><tr><td class="num"><p>$550</p></td><td><p>Call</p></td><td><p>Dec 2025</p></td><td class="num"><p>12,400</p></td><td><p>Full recovery bet</p></td></tr></tbody></table></div><div class="note"><p>Elevated IV makes directional options expensive. At 32% IV, a 3-month at-the-money call costs ~$28 (6.6% of stock price). For long-biased expressions, selling puts or put spreads at the $380-400 level is more efficient than buying calls — you get paid for the elevated vol while defining downside...</p></div>
+      </section>
+      <section id="governance" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>governance &amp; accounting</h2>
+          <div class="kicker">corporate governance</div>
+        </div>
+        <div class="lead aggregate-lead"><p>UNH&#x27;s governance structure is institutionally sound — 12 of 13 directors are independent, committee structures are well-defined, and say-on-pay approval is strong at 89%. The primary governance concern is leadership continuity following the CEO assassination in December 2024 and the resulting board refresh.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">board size</div><div class="kpi-value ">13 directors</div><div class="kpi-sub">12 independent</div></div><div class="kpi"><div class="kpi-label">lead independent director</div><div class="kpi-value ">Gail Wilensky</div><div class="kpi-sub">Healthcare policy expert</div></div><div class="kpi"><div class="kpi-label">say-on-pay approval</div><div class="kpi-value ">89%</div><div class="kpi-sub">FY2024 proxy</div></div><div class="kpi"><div class="kpi-label">ceo total comp</div><div class="kpi-value ">$20.1M</div><div class="kpi-sub">Primarily equity-based</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Board Composition &amp; Independence</h3></div><div class="aggregate-card-body"><p>The board consists of 13 directors, 12 of whom qualify as independent under NYSE listing standards. Lead independent director Gail Wilensky brings deep healthcare policy expertise (former HCFA administrator). The board includes former executives from Dow, General Mills, and Microsoft, providing cross-industry strategic perspective...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Post-Assassination Board Changes</h3></div><div class="aggregate-card-body"><p>Following the December 2024 assassination of CEO Brian Thompson, the board undertook an accelerated refresh. Two new directors were added in Q1 2025 — one with healthcare operations background, one with cybersecurity expertise (relevant post-Change Healthcare breach). While the additions are sensible, the rapid turnover introduces a settling-in period during a critical juncture for the company.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Committee Structure</h3></div><div class="aggregate-card-body"><p>Four standing committees: Audit, Compensation, Nominating/Governance, and Public Policy. All chaired by long-tenured independent directors. The Public Policy Committee has taken on elevated importance given DOJ scrutiny and PBM reform debates...</p></div></div><div class="table-title"><h3>Governance Scorecard</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Dimension</th><th>Rating</th><th>Notes</th></tr></thead><tbody><tr><td><p>Board Independence</p></td><td><p>Strong</p></td><td><p>92% independent (12/13)</p></td></tr><tr><td><p>Committee Quality</p></td><td><p>Strong</p></td><td><p>All independent chairs, relevant expertise</p></td></tr><tr><td><p>Executive Comp Alignment</p></td><td><p>Adequate</p></td><td><p>Equity-heavy but interim CEO complicates</p></td></tr><tr><td><p>Leadership Continuity</p></td><td><p>Weak</p></td><td><p>No permanent CEO, 2 new board members</p></td></tr><tr><td><p>Audit &amp; Controls</p></td><td><p>Strong</p></td><td><p>Deloitte, no material weaknesses</p></td></tr><tr><td><p>Shareholder Rights</p></td><td><p>Adequate</p></td><td><p>No poison pill, annual elections, majority voting</p></td></tr></tbody></table></div><div class="note"><p>The 89% say-on-pay approval is solid but down from 94% the prior year, reflecting shareholder concern about compensation decisions during the leadership transition. A permanent CEO appointment would likely stabilize this metric.</p></div>
+      </section>
+      <section id="value" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>value framework</h2>
+          <div class="kicker">greenwald / qarp</div>
+        </div>
+        <div class="lead aggregate-lead"><p>UNH passes the major value investing frameworks: Graham (PE < 20, consistent earnings, manageable debt), Buffett (wide moat, predictable cash flows, competent management), Greenblatt Magic Formula (top decile ROIC + low EV/EBIT), and Lynch (stalwart with temporary trouble = classic GARP). Conviction held at 55/100 due to regulatory binary risk that no framework fully captures.</p></div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>Graham Analysis — Deep Value Characteristics</h3></div><div class="aggregate-card-body"><p>PE: 16.8x (threshold: 1.5) — FAIL, but insurance float dynamics make traditional liquidity metrics misleading. Earnings stability: positive EPS every year for 15+ years — PASS. Dividend record: 15 consecutive years of increases — PASS...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Buffett Analysis — Quality Compounder</h3></div><div class="aggregate-card-body"><p>Durable competitive advantage: YES — the only company with scale across payer + provider + PBM + analytics. No competitor can replicate the integrated model. Predictable earnings: YES — 14% EPS CAGR over 10 years with no negative-growth years...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Greenblatt Magic Formula — Quantitative Score</h3></div><div class="aggregate-card-body"><p>ROIC: 15.4% — top quartile of S&P 500 and top decile of healthcare sector. EV/EBIT: 14.1x — below sector median of 18x. Combined ranking places UNH in the top decile of the Magic Formula universe...</p></div></div><div class="table-title"><h3>Framework Scorecard</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Framework</th><th>Result</th><th>Key Metric</th><th class="num">Score</th><th>Notes</th></tr></thead><tbody><tr><td><p>Graham Value</p></td><td><p>PASS</p></td><td><p>PE 16.8x</p></td><td class="num"><p>7/10</p></td><td><p>Fails P/B and current ratio but passes on earnings/dividend</p></td></tr><tr><td><p>Buffett Quality</p></td><td><p>PASS</p></td><td><p>ROIC 15.4%</p></td><td class="num"><p>8/10</p></td><td><p>Moat + FCF + management (CEO uncertainty -1)</p></td></tr><tr><td><p>Greenblatt Quant</p></td><td><p>PASS</p></td><td><p>Top decile</p></td><td class="num"><p>9/10</p></td><td><p>High ROIC + low EV/EBIT = ideal combination</p></td></tr><tr><td><p>Lynch GARP</p></td><td><p>PASS</p></td><td><p>PEG 1.4x</p></td><td class="num"><p>8/10</p></td><td><p>Stalwart + temporary trouble = classic setup</p></td></tr><tr><td><p>Our Conviction</p></td><td><p>CONDITIONAL</p></td><td><p>55/100</p></td><td class="num"><p>5.5/10</p></td><td><p>Regulatory binary risk caps conviction</p></td></tr></tbody></table></div><div class="note"><p>Position management rule: size at 2-3% of portfolio at 55/100 conviction. Scale to 4-5% if conviction rises above 70 (DOJ resolution or MLR confirmation). Reduce to 1% if any kill criterion approaches trigger threshold...</p></div>
+      </section>
+      <section id="appendix" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>appendix &amp; sources</h2>
+          <div class="kicker">sources · methodology</div>
+        </div>
+        <div class="lead aggregate-lead"><p>How we source the tape, verify levels, and align this report with XVARY deep-dive standards.</p></div>
+        <div class="aggregate-sources-attribution"><p>Sources: SEC filings, company disclosures, market data vendors, and sources cited in the sections above. For investment presentation use only.</p></div><p class="aggregate-methodology-link">standards and pipeline: <a href="https://xvary.com/methodology/">xvary.com/methodology/</a></p>
+      </section>
+
+      <div class="footer">
+        xvary · 2026 · not investment advice
+        <div class="links">
+          <a href="https://xvary.com/pulse/">the pulse</a>
+          <a href="https://xvary.com/stacks/">the stacks</a>
+          <a href="https://xvary.com/discover/">discover</a>
+          <a href="https://xvary.com/collectibles/">collectibles</a>
+          <a href="https://xvary.com/pricing/">pricing</a>
+          <a href="https://xvary.com/methodology/">methodology</a>
+          <a href="https://xvary.com/newsletter/">newsletter</a>
+          <a href="https://xvary.com/legal/disclaimer/">disclaimer</a>
+          <a href="https://xvary.com/legal/privacy/">privacy</a>
+          <a href="https://xvary.com/legal/terms/">terms</a>
+        </div>
+        <div class="small">Sources: company filings and earnings, supplier disclosures, named sell-side notes where cited, alt-data where noted, and public flow/sentiment screens. Not investment advice — verify anything you trade on.</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const bar = document.getElementById("reading-progress");
+      const sections = [{"id": "summary", "hotkey": "0"}, {"id": "thesis", "hotkey": "1"}, {"id": "financials", "hotkey": "2"}, {"id": "valuation", "hotkey": "3"}, {"id": "risk", "hotkey": "4"}, {"id": "ops", "hotkey": "5"}, {"id": "competition", "hotkey": "6"}, {"id": "tam", "hotkey": "7"}, {"id": "product", "hotkey": "8"}, {"id": "supply", "hotkey": "9"}, {"id": "catalysts", "hotkey": "a"}, {"id": "street", "hotkey": "b"}, {"id": "scorecard", "hotkey": "c"}, {"id": "signals", "hotkey": "d"}, {"id": "history", "hotkey": "e"}, {"id": "management", "hotkey": "f"}, {"id": "macro", "hotkey": "g"}, {"id": "quant", "hotkey": "h"}, {"id": "derivatives", "hotkey": "i"}, {"id": "governance", "hotkey": "j"}, {"id": "value", "hotkey": "k"}, {"id": "appendix", "hotkey": "l"}];
+      const links = [...document.querySelectorAll(".sidebar a[href^='#']")];
+      const setActive = function (id) {
+        links.forEach(function (link) {
+          link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+        });
+      };
+
+      window.addEventListener("scroll", function () {
+        const root = document.documentElement;
+        const pct = (root.scrollTop / Math.max(root.scrollHeight - root.clientHeight, 1)) * 100;
+        if (bar) {
+          bar.style.width = Math.min(Math.max(pct, 0), 100) + "%";
+        }
+      }, { passive: true });
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(function (entries) {
+          entries.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+          const hit = entries.find(function (entry) {
+            return entry.isIntersecting && entry.intersectionRatio > 0.12;
+          });
+          if (hit) {
+            setActive(hit.target.id);
+          }
+        }, { rootMargin: "-40% 0px -40% 0px", threshold: [0, 0.12, 0.25, 0.45] });
+
+        sections.forEach(function (item) {
+          const node = document.getElementById(item.id);
+          if (node) {
+            observer.observe(node);
+          }
+        });
+      }
+
+      links.forEach(function (link) {
+        link.addEventListener("click", function () {
+          setActive(link.getAttribute("href").slice(1));
+        });
+      });
+
+      const hotkeys = {};
+      sections.forEach(function (item) {
+        hotkeys[item.hotkey] = item.id;
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.metaKey || event.ctrlKey) {
+          return;
+        }
+        const target = event.target;
+        if (target && target.closest && target.closest("input, textarea, select, [contenteditable='true']")) {
+          return;
+        }
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (!hotkeys[key]) {
+          return;
+        }
+        event.preventDefault();
+        const node = document.getElementById(hotkeys[key]);
+        if (node) {
+          node.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    })();
+  </script>
+  <footer class="footer" style="margin-left:var(--navw,0)">
+    xvary · 2026 · not investment advice
+    <div class="footer-links">
+      <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/methodology/">methodology</a>
+      <a href="/newsletter/">newsletter</a>
+      <a href="/pricing/">pricing</a>
+      <a href="/free/">free reports</a>
+      <a href="/legal/disclaimer/">disclaimer</a>
+      <a href="/legal/privacy/">privacy</a>
+      <a href="/legal/terms/">terms</a>
+    </div>
+    <div class="footer-logo">
+      <a href="/" aria-label="home">
+        <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+      </a>
+    </div>
+  </footer>
+  <script src="/js/site-chrome.js?v=1776081807" defer></script>
+
+</div>
+
+<!-- Sticky CTA bar -->
+<div class="sticky-cta">
+  <p>Want this analysis on any ticker?</p>
+  <a href="../../pricing.html#free-trial" class="btn-sticky">Request a Report &rarr;</a>
+</div>
+
+<!-- Shared Footer -->
+<div id="site-footer"></div>
+
+<script src="components.js?v=1776081807"></script>
+<script src="main.js?v=1776081807"></script>
+</body>
+</html>

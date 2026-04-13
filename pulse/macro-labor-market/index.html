@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<!--
+  Evergreen pulse page — macro dissection.
+  Built by: evergreen/build_evergreen.py
+  Template: evergreen/templates/macro-dissection.html
+  Data:     evergreen/data/labor-market.json
+  Ship:     4. Website/dist/pulse/macro-labor-market/index.html
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>The labor market — unemployment, payrolls, and regime breaks — xvary pulse</title>
+  <meta name="description" content="which labor series lead turns, which lag, and how employment cycles overlapped with equity drawdowns from 1990 to 2026.">
+  <link rel="canonical" href="https://xvary.com/pulse/macro-labor-market/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="The labor market — macro dissection · xvary">
+  <meta property="og:description" content="which labor series lead turns, which lag, and how employment cycles overlapped with equity drawdowns from 1990 to 2026.">
+  <meta property="og:url" content="https://xvary.com/pulse/macro-labor-market/">
+  <meta property="og:image" content="https://xvary.com/assets/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="XVARY">
+  <meta name="robots" content="index, follow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The labor market — macro dissection · xvary">
+  <meta name="twitter:description" content="which labor series lead turns, which lag, and how employment cycles overlapped with equity drawdowns from 1990 to 2026.">
+  <meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-article.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-evergreen.css?v=1776081807">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "The labor market — macro dissection · xvary",
+  "description": "which labor series lead turns, which lag, and how employment cycles overlapped with equity drawdowns from 1990 to 2026.",
+  "datePublished": "2026-03-25",
+  "dateModified": "2026-03-25",
+  "author": {
+    "@type": "Organization",
+    "name": "xvary"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "xvary",
+    "url": "https://xvary.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://xvary.com/assets/xvary-logo.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://xvary.com/pulse/macro-labor-market/"
+  },
+  "image": ["https://xvary.com/assets/og-default.png"],
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".pa-headline", ".pa-body"]
+  },
+  "url": "https://xvary.com/pulse/macro-labor-market/"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://xvary.com/pulse/macro-labor-market/#faq",
+  "url": "https://xvary.com/pulse/macro-labor-market/",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "why can payrolls and unemployment diverge?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "they are different surveys with different definitions. household versus establishment surveys can disagree when people take multiple jobs, when participation shifts, or when sampling noise hits one print."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "what does a rising unemployment rate usually mean for stocks?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "it often coincides with late-cycle earnings cuts and multiple compression — unless markets are already pricing recession and policy is pivoting."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "are initial claims still important?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "yes for sudden layoff waves. they are less useful in slow hiring freezes where companies attrition instead of firing in bulk."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "how should investors use jolts?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "treat openings as a demand thermometer with a lag. falling openings after rate hikes can signal cooling without immediate mass layoffs."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "does low unemployment guarantee wage inflation?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "no. immigration, demographics, remote work, and productivity can loosen effective supply. the wage question is empirical, not ideological."
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body class="pa-article">
+<a class="skip-link" href="#content">skip to content</a>
+<div class="grain"></div>
+
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="active nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content" class="md-layout">
+  <div class="pa-wrap md-wrap">
+    <div class="pa-back"><a href="/pulse/">← back to the pulse</a></div>
+
+    <header class="pa-head md-head">
+      <div class="pa-kicker-row">
+        <span class="pa-type">evergreen · macro dissection</span>
+        <span class="pa-ticker-pill">US labor market</span>
+      </div>
+      <h1>The labor market — unemployment, payrolls, and regime breaks</h1>
+      <p class="pa-deck">payrolls, unemployment, claims, and openings in one regime map — which series leads turns, which lags, and what equities typically discount first.</p>
+      <div class="pa-byline">xvary research desk · 2026-03-25 · 1990 to 2026</div>
+    </header>
+
+    <div class="pa-grid md-grid">
+      <article class="pa-body md-body">
+        <section class="md-definitions" aria-labelledby="md-definitions-h"><h2 class="pa-geo-h" id="md-definitions-h">key definitions</h2><dl class="md-definition-list"><div class="md-definition"><dt><dfn>nonfarm payrolls</dfn></dt><dd>monthly change in jobs outside farms — the headline labor market number markets trade instantly.</dd></div><div class="md-definition"><dt><dfn>unemployment rate</dfn></dt><dd>household survey measure of job seekers as a share of the labor force — can diverge from payrolls when participation moves.</dd></div><div class="md-definition"><dt><dfn>jolts</dfn></dt><dd>job openings and turnover survey — openings are a leading read on labor demand.</dd></div><div class="md-definition"><dt><dfn>initial claims</dfn></dt><dd>weekly filings for unemployment insurance — a high-frequency coincident indicator of layoffs.</dd></div></dl></section>
+        <p>no single labor series tells the whole story. payrolls are noisy. the unemployment rate lags turns. claims spike in sudden shocks. jolts openings peaked long after policy started tightening in the 2022 cycle — another reminder that openings are not a real-time fed thermostat.</p><p>equity investors often anchor on whether labor is &#x27;too hot&#x27; for the fed. the more precise question is whether wage growth is compatible with the inflation target without crushing margins. that is a productivity and pricing power question, not just a headcount question.</p>
+
+        <figure class="md-master-chart">
+          <figcaption>civilian unemployment rate — annual average (%)</figcaption>
+          <svg viewBox="0 0 760 280" role="img" aria-label="civilian unemployment rate — annual average (%)" xmlns="http://www.w3.org/2000/svg"><rect width="760" height="280" fill="#F4F4F2" rx="20" /><text x="10" y="25.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">9</text><line x1="46" y1="20.00" x2="742" y2="20.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><text x="10" y="243.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">0</text><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><text x="10" y="243.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">0</text><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="#1A1A1A" stroke-width="1.75" stroke-dasharray="5 4" /><path d="M 46.00 110.83 L 65.33 83.58 L 84.67 67.69 L 104.00 81.31 L 123.33 99.48 L 142.67 110.83 L 162.00 115.37 L 181.33 126.73 L 200.67 135.81 L 220.00 142.62 L 239.33 147.17 L 258.67 131.27 L 278.00 106.29 L 297.33 101.75 L 316.67 113.10 L 336.00 122.19 L 355.33 133.54 L 374.67 133.54 L 394.00 106.29 L 413.33 26.81 L 432.67 20.00 L 452.00 35.90 L 471.33 54.06 L 490.67 69.96 L 510.00 97.21 L 529.33 117.65 L 548.67 126.73 L 568.00 138.08 L 587.33 149.44 L 606.67 153.98 L 626.00 54.06 L 645.33 115.37 L 664.67 156.25 L 684.00 156.25 L 703.33 147.17 L 722.67 142.62 L 742.00 144.90 L 742.00 238.00 L 46.00 238.00 Z" fill="rgba(245,225,0,0.55)" stroke="none" /><path d="M 46.00 110.83 L 65.33 83.58 L 84.67 67.69 L 104.00 81.31 L 123.33 99.48 L 142.67 110.83 L 162.00 115.37 L 181.33 126.73 L 200.67 135.81 L 220.00 142.62 L 239.33 147.17 L 258.67 131.27 L 278.00 106.29 L 297.33 101.75 L 316.67 113.10 L 336.00 122.19 L 355.33 133.54 L 374.67 133.54 L 394.00 106.29 L 413.33 26.81 L 432.67 20.00 L 452.00 35.90 L 471.33 54.06 L 490.67 69.96 L 510.00 97.21 L 529.33 117.65 L 548.67 126.73 L 568.00 138.08 L 587.33 149.44 L 606.67 153.98 L 626.00 54.06 L 645.33 115.37 L 664.67 156.25 L 684.00 156.25 L 703.33 147.17 L 722.67 142.62 L 742.00 144.90" fill="none" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /><circle cx="46.00" cy="110.83" r="2.6" fill="#1A1A1A" /><circle cx="65.33" cy="83.58" r="2.6" fill="#1A1A1A" /><circle cx="84.67" cy="67.69" r="2.6" fill="#1A1A1A" /><circle cx="104.00" cy="81.31" r="2.6" fill="#1A1A1A" /><circle cx="123.33" cy="99.48" r="2.6" fill="#1A1A1A" /><circle cx="142.67" cy="110.83" r="2.6" fill="#1A1A1A" /><circle cx="162.00" cy="115.37" r="2.6" fill="#1A1A1A" /><circle cx="181.33" cy="126.73" r="2.6" fill="#1A1A1A" /><circle cx="200.67" cy="135.81" r="2.6" fill="#1A1A1A" /><circle cx="220.00" cy="142.62" r="2.6" fill="#1A1A1A" /><circle cx="239.33" cy="147.17" r="2.6" fill="#1A1A1A" /><circle cx="258.67" cy="131.27" r="2.6" fill="#1A1A1A" /><circle cx="278.00" cy="106.29" r="2.6" fill="#1A1A1A" /><circle cx="297.33" cy="101.75" r="2.6" fill="#1A1A1A" /><circle cx="316.67" cy="113.10" r="2.6" fill="#1A1A1A" /><circle cx="336.00" cy="122.19" r="2.6" fill="#1A1A1A" /><circle cx="355.33" cy="133.54" r="2.6" fill="#1A1A1A" /><circle cx="374.67" cy="133.54" r="2.6" fill="#1A1A1A" /><circle cx="394.00" cy="106.29" r="2.6" fill="#1A1A1A" /><circle cx="413.33" cy="26.81" r="2.6" fill="#1A1A1A" /><circle cx="432.67" cy="20.00" r="2.6" fill="#1A1A1A" /><circle cx="452.00" cy="35.90" r="2.6" fill="#1A1A1A" /><circle cx="471.33" cy="54.06" r="2.6" fill="#1A1A1A" /><circle cx="490.67" cy="69.96" r="2.6" fill="#1A1A1A" /><circle cx="510.00" cy="97.21" r="2.6" fill="#1A1A1A" /><circle cx="529.33" cy="117.65" r="2.6" fill="#1A1A1A" /><circle cx="548.67" cy="126.73" r="2.6" fill="#1A1A1A" /><circle cx="568.00" cy="138.08" r="2.6" fill="#1A1A1A" /><circle cx="587.33" cy="149.44" r="2.6" fill="#1A1A1A" /><circle cx="606.67" cy="153.98" r="2.6" fill="#1A1A1A" /><circle cx="626.00" cy="54.06" r="2.6" fill="#1A1A1A" /><circle cx="645.33" cy="115.37" r="2.6" fill="#1A1A1A" /><circle cx="664.67" cy="156.25" r="2.6" fill="#1A1A1A" /><circle cx="684.00" cy="156.25" r="2.6" fill="#1A1A1A" /><circle cx="703.33" cy="147.17" r="2.6" fill="#1A1A1A" /><circle cx="722.67" cy="142.62" r="2.6" fill="#1A1A1A" /><circle cx="742.00" cy="144.90" r="2.6" fill="#1A1A1A" /><text x="46.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">1990</text><text x="220.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">1999</text><text x="394.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2008</text><text x="568.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2017</text><text x="742.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2026</text></svg>
+        </figure>
+
+        <div class="md-regime-nav-wrap"><nav class="md-regime-nav" aria-label="regime navigation"><a class="md-regime-chip" href="#regime-early-90s-job-loss"><span class="md-regime-chip-title">early-1990s recession and repair</span><span class="md-regime-chip-range">1990 to 1993</span></a><a class="md-regime-chip" href="#regime-late-90s-tight"><span class="md-regime-chip-title">late-1990s tight labor</span><span class="md-regime-chip-range">1996 to 2000</span></a><a class="md-regime-chip" href="#regime-2001-2007-reset"><span class="md-regime-chip-title">post-dot-com repair to pre-crisis tightness</span><span class="md-regime-chip-range">2001 to 2007</span></a><a class="md-regime-chip" href="#regime-great-recession-jobs"><span class="md-regime-chip-title">great recession labor collapse</span><span class="md-regime-chip-range">2008 to 2010</span></a><a class="md-regime-chip" href="#regime-long-expansion"><span class="md-regime-chip-title">long expansion 2011 to 2019</span><span class="md-regime-chip-range">2011 to 2019</span></a><a class="md-regime-chip" href="#regime-pandemic-whiplash"><span class="md-regime-chip-title">pandemic whiplash</span><span class="md-regime-chip-range">2020 to 2026</span></a></nav></div>
+        <article class="md-regime-card" id="regime-early-90s-job-loss"><header class="md-regime-head"><div><h2 class="md-regime-title">early-1990s recession and repair</h2><div class="md-regime-range">1990 to 1993</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 37.00 L 100.00 18.05 L 192.00 7.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="18.05" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">job losses peaked after the recession ended — a classic lag that confused early recovery trades.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">7</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-7</text><rect x="73.67" y="36.52" width="103.33" height="60.48" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="23.56" width="103.33" height="73.44" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="28.52" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">5</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1990</text><text x="292.00" y="15.56" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">6</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1991</text><text x="458.67" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">7</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1992</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">economy</span>defense cuts and credit restraint compounded the cycle.</li><li><span class="md-event-tag">fed</span>easing into a shallow recovery.</li><li><span class="md-event-tag">market</span>cyclicals waited for confirmation that hiring stabilized.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>unemployment can keep rising while markets bottom — equities bottom on rate-of-change, not levels.</p></div><blockquote class="md-regime-quotable"><p>the unemployment rate rose from roughly 5.6% in 1990 toward the mid-7% range by 1992.</p><cite>BLS; FRED UNRATE</cite></blockquote></article><article class="md-regime-card" id="regime-late-90s-tight"><header class="md-regime-head"><div><h2 class="md-regime-title">late-1990s tight labor</h2><div class="md-regime-range">1996 to 2000</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 100.00 26.29 L 192.00 37.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="26.29" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">4% unemployment felt like full employment; wages stirred but productivity camouflaged inflation.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">5</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-5</text><rect x="73.67" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="29.50" width="103.33" height="67.50" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="37.00" width="103.33" height="60.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">5</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1996</text><text x="292.00" y="21.50" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">4</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1998</text><text x="458.67" y="29.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">4</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2000</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">economy</span>capital spending boom and tight hiring.</li><li><span class="md-event-tag">fed</span>hiked into euphoria.</li><li><span class="md-event-tag">market</span>speculative growth until the collapse.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>ultra-low unemployment plus asset bubbles is a policy accident waiting to happen.</p></div><blockquote class="md-regime-quotable"><p>unemployment fell below 4.5% for several years heading into 2000.</p><cite>BLS UNRATE</cite></blockquote></article><article class="md-regime-card" id="regime-2001-2007-reset"><header class="md-regime-head"><div><h2 class="md-regime-title">post-dot-com repair to pre-crisis tightness</h2><div class="md-regime-range">2001 to 2007</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 69.33 17.71 L 130.67 37.00 L 192.00 37.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="69.33" cy="17.71" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="130.67" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">job growth returned; unemployment drifted down into housing peak employment.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">6</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-6</text><rect x="65.75" y="16.00" width="77.50" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="190.75" y="22.75" width="77.50" height="74.25" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="315.75" y="34.90" width="77.50" height="62.10" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="440.75" y="34.90" width="77.50" height="62.10" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="104.50" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">6</text><text x="104.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2003</text><text x="229.50" y="14.75" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">5</text><text x="229.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2004</text><text x="354.50" y="26.90" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">4</text><text x="354.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2006</text><text x="479.50" y="26.90" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">4</text><text x="479.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2007</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">economy</span>housing and consumer credit filled the jobs hole left by tech capex.</li><li><span class="md-event-tag">fed</span>hiked into mid-2000s inflation worries.</li><li><span class="md-event-tag">market</span>financials and builders led until credit snapped.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>re-employment without productivity often hides fragility in household balance sheets.</p></div><blockquote class="md-regime-quotable"><p>unemployment fell from above 5.5% in 2003 toward the mid-4% range by 2006–2007.</p><cite>BLS UNRATE</cite></blockquote></article><article class="md-regime-card" id="regime-great-recession-jobs"><header class="md-regime-head"><div><h2 class="md-regime-title">great recession labor collapse</h2><div class="md-regime-range">2008 to 2010</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 37.00 L 100.00 9.37 L 192.00 7.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="9.37" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">payroll losses were enormous; unemployment spiked into double digits on monthly reads.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">9</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-9</text><rect x="73.67" y="48.06" width="103.33" height="48.94" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="18.53" width="103.33" height="78.47" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="40.06" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">5</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2008</text><text x="292.00" y="10.53" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">9</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2009</text><text x="458.67" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">9</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2010</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">economy</span>trade and finance shocks destroyed demand.</li><li><span class="md-event-tag">fed</span>emergency easing and credit backstops.</li><li><span class="md-event-tag">market</span>cyclicals and small caps were annihilated.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>when layoffs are nonlinear, earnings estimates miss in clusters — not smoothly.</p></div><blockquote class="md-regime-quotable"><p>annual average unemployment jumped from below 5% in 2007 to above 9% in 2009–2010.</p><cite>BLS UNRATE</cite></blockquote></article><article class="md-regime-card" id="regime-long-expansion"><header class="md-regime-head"><div><h2 class="md-regime-title">long expansion 2011 to 2019</h2><div class="md-regime-range">2011 to 2019</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 100.00 22.58 L 192.00 37.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="22.58" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">slow-but-steady hiring took unemployment to multi-decade lows.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">8</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-8</text><rect x="73.67" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="40.57" width="103.33" height="56.43" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="63.33" width="103.33" height="33.67" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">8</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2011</text><text x="292.00" y="32.57" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">6</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2014</text><text x="458.67" y="55.33" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">3</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2019</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">economy</span>services-led growth; manufacturing weakness later.</li><li><span class="md-event-tag">fed</span>tapering then gradual hikes.</li><li><span class="md-event-tag">market</span>mega-cap growth dominated.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>late-cycle tightness without wage breakout bought time for equities — until tariffs and policy error risk returned.</p></div><blockquote class="md-regime-quotable"><p>unemployment fell from roughly 9% in 2010 toward 3.7% by 2019.</p><cite>BLS UNRATE</cite></blockquote></article><article class="md-regime-card" id="regime-pandemic-whiplash"><header class="md-regime-head"><div><h2 class="md-regime-title">pandemic whiplash</h2><div class="md-regime-range">2020 to 2026</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 69.33 37.00 L 130.67 34.33 L 192.00 33.67" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="69.33" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="130.67" cy="34.33" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="33.67" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">violent collapse, reopening surge, then normalization with still-tight services hiring.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">8</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-8</text><rect x="65.75" y="16.00" width="77.50" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="190.75" y="61.00" width="77.50" height="36.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="315.75" y="57.00" width="77.50" height="40.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="440.75" y="56.00" width="77.50" height="41.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="104.50" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">8</text><text x="104.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2020</text><text x="229.50" y="53.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">3</text><text x="229.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2022</text><text x="354.50" y="49.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">4</text><text x="354.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2024</text><text x="479.50" y="48.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">4</text><text x="479.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2026</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">economy</span>fiscal transfers and sector rotation.</li><li><span class="md-event-tag">fed</span>zero then hikes then cuts.</li><li><span class="md-event-tag">market</span>labor data moved tech multiples more than NFP alone.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>post-pandemic, treat openings and quits as part of the signal — not just payrolls.</p></div><blockquote class="md-regime-quotable"><p>unemployment spiked in 2020 before falling back toward the low single digits by 2022–2024.</p><cite>BLS UNRATE; BLS JOLTS</cite></blockquote></article>
+        <p>when this page is updated, check participation and prime-age employment — not just the unemployment rate. demographic shifts can make the headline look peaceful while tightness remains real.</p><p>labor resilience in 2022–2024 stretched recession calls. history says patience with the data matters more than certainty on timing.</p>
+      </article>
+
+      <aside class="pa-aside md-aside" aria-label="signal card">
+        <div class="pa-score pa-score--editorial md-score">
+          <div class="pa-score-label">employment cycle</div>
+          <div class="pa-pulse-stat">the unemployment rate more than doubled from 2007 to 2009 during the financial crisis — one of the fastest labor market collapses in the postwar record.</div>
+          <div class="pa-score-label pa-kill-heading">why it matters</div>
+          <p class="pa-verdict">the labor market is the transmission belt between fed policy and household demand. soft landings live or die in hiring, hours, and wage growth — not in any single NFP surprise.</p>
+          <div class="pa-score-label pa-verdict-heading">verdict</div>
+          <p class="pa-verdict">for stocks, labor tightness matters twice: it drives consumption and it drives the fed's patience. strength can be bullish until it forces policy to break something.</p>
+          <a href="/pulse/" class="pa-score-cta">more pulse research →</a>
+        </div>
+      </aside>
+    </div>
+
+    <div class="pa-geo-wrap">
+      <section class="pa-geo-takeaways" aria-label="key takeaways"><h2 class="pa-geo-h" id="takeaways">key takeaways</h2><ul class="pa-geo-takeaways-list"><li>payrolls are volatile; unemployment lags; claims lead sudden shocks.</li><li>jolts openings are useful but slow — do not treat them as a real-time trigger.</li><li>wage growth plus productivity sets whether labor tightness is inflationary.</li><li>sector composition matters: goods versus services hiring diverged after 2020.</li><li>full employment is not automatically bearish — policy response is.</li></ul></section>
+      <section class="pa-geo-faq" aria-label="frequently asked questions"><h2 class="pa-geo-h" id="faq">faq</h2><div class="pa-geo-faq-items"><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">why can payrolls and unemployment diverge?</h3><p class="pa-geo-faq-a">they are different surveys with different definitions. household versus establishment surveys can disagree when people take multiple jobs, when participation shifts, or when sampling noise hits one print.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">what does a rising unemployment rate usually mean for stocks?</h3><p class="pa-geo-faq-a">it often coincides with late-cycle earnings cuts and multiple compression — unless markets are already pricing recession and policy is pivoting.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">are initial claims still important?</h3><p class="pa-geo-faq-a">yes for sudden layoff waves. they are less useful in slow hiring freezes where companies attrition instead of firing in bulk.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">how should investors use jolts?</h3><p class="pa-geo-faq-a">treat openings as a demand thermometer with a lag. falling openings after rate hikes can signal cooling without immediate mass layoffs.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">does low unemployment guarantee wage inflation?</h3><p class="pa-geo-faq-a">no. immigration, demographics, remote work, and productivity can loosen effective supply. the wage question is empirical, not ideological.</p></div></div></section>
+      <section class="md-sources" aria-labelledby="md-sources-h"><h2 class="pa-geo-h" id="md-sources-h">sources</h2><ol class="md-sources-list"><li><a href="https://www.bls.gov/news.release/empsit.toc.htm">BLS: Employment situation</a></li><li><a href="https://fred.stlouisfed.org/series/UNRATE">FRED: UNRATE</a></li><li><a href="https://www.bls.gov/jlt/">BLS: JOLTS overview</a></li></ol></section>
+    </div>
+
+    <div class="pa-cta-row">
+      <a href="/pulse/" class="pa-cta is-primary">back to the pulse →</a>
+      <a href="/stacks/" class="pa-cta">the stacks →</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807"></script>
+<script src="/js/gate.js?v=1776081807" defer></script>
+</body>
+</html>

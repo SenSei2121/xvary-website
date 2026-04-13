@@ -1,0 +1,739 @@
+
+
+
+<div id="p-val" class="pane">
+    <!-- ── section: section_title ── -->
+    <div class="dd-section">
+
+  <h2 class="sec-title">valuation</h2>
+
+
+
+    </div>
+    <!-- ── section: section_lead ── -->
+    <div class="dd-section">
+
+  <p class="sec-lead">A multi-method valuation combining DCF, relative multiples, and Monte Carlo simulation to derive a probability-weighted fair value estimate.</p>
+
+
+    </div>
+    <!-- ── section: kpi_grid ── -->
+    <div class="dd-section">
+
+  <div class="kpi-grid">
+  <div class="kpi bl">
+    <div class="kpi-lbl">dcf fair value</div>
+    <div class="kpi-val">$57.90</div>
+<div class="kpi-sub">5-year projection</div>  </div>
+  <div class="kpi tl">
+    <div class="kpi-lbl">enterprise value</div>
+    <div class="kpi-val">$211.6B</div>
+<div class="kpi-sub">dcf</div>  </div>
+  <div class="kpi pl">
+    <div class="kpi-lbl">wacc</div>
+    <div class="kpi-val">6.1%</div>
+<div class="kpi-sub">capm-derived</div>  </div>
+  <div class="kpi pl">
+    <div class="kpi-lbl">terminal growth</div>
+    <div class="kpi-val">3.0%</div>
+<div class="kpi-sub">assumption</div>  </div>
+  <div class="kpi gl">
+    <div class="kpi-lbl">dcf vs current</div>
+    <div class="kpi-val">$57.90</div>
+<div class="kpi-sub">+117.8% vs current</div>  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: note_box ── -->
+    <div class="dd-section">
+
+  <div class="n n-bl"><strong>The central valuation tension:</strong> DCF base case of $57.90 implies 118% upside, but Monte Carlo median of $16.30 suggests severe model uncertainty. The $26.97 market price sits between these extremes, pricing ~60% probability of successful Seagen integration and earnings recovery. The 37% probability of upside in 10,000 simulations falls below the 50% threshold for asymmetric opportunity, indicating balanced risk-reward rather than compelling value.</div>
+
+
+
+    </div>
+    <!-- ── section: chart ── -->
+    <div class="dd-section">
+
+  <div class="ch">
+<div class="chart-title">valuation range by method</div>  <canvas id="ch-d3-football-field"></canvas>
+</div>
+
+
+
+    </div>
+    <!-- ── section: kpi_grid ── -->
+    <div class="dd-section">
+
+  <div class="kpi-grid">
+  <div class="kpi gl">
+    <div class="kpi-lbl">dcf fair value</div>
+    <div class="kpi-val">$57.90</div>
+<div class="kpi-sub">base case, 6.1% wacc</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">prob-weighted value</div>
+    <div class="kpi-val">$30.89</div>
+<div class="kpi-sub">monte carlo mean</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">current price</div>
+    <div class="kpi-val">$26.97</div>
+<div class="kpi-sub">mar 20, 2026</div>  </div>
+  <div class="kpi gl">
+    <div class="kpi-lbl">upside/downside</div>
+    <div class="kpi-val">+118%</div>
+<div class="kpi-sub">to dcf base case</div>  </div>
+  <div class="kpi gl">
+    <div class="kpi-lbl">fcf yield</div>
+    <div class="kpi-val">6.0%</div>
+<div class="kpi-sub">vs 4.25% 10y treasury</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">p/e (trailing)</div>
+    <div class="kpi-val">19.5x</div>
+<div class="kpi-sub">on $1.36 eps</div>  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: card ── -->
+    <div class="dd-section">
+
+<div class="c">
+  <div class="c-head">
+    <h3>dcf model assumptions</h3>
+<span class="c-tag c-tag-bl">6.1% wacc | 3.0% terminal growth</span>  </div>
+      <p class="ts-sm"><strong>Base Free Cash Flow:</strong> $9.08B (FY2025) yielding $1.59 per share on 5.71B diluted shares. This represents a 14.5% FCF margin, down from COVID peaks but above pre-pandemic norms. The FCF conversion supports the going-concern assumption underlying terminal value.</p><p class="ts-sm"><strong>Growth Phases:</strong> Years 1-3 assume 8% revenue growth as Seagen integration delivers $3B+ incremental oncology revenue and COVID comparables ease. Years 4-7 taper to 4% as patent expirations (Eliquis 2027, Ibrance 2027) create headwinds. The 8% near-term assumption is aggressive versus -1.6% FY2025 revenue growth but supported by Q4 2025 implied revenue of $17.57B showing sequential stabilization.</p><p class="ts-sm"><strong>Terminal Growth Rate (3.0%):</strong> This assumes Pfizer maintains position-based competitive advantages—specifically economies of scale in oncology commercialization and customer captivity through prescriber relationships—that sustain excess returns above WACC in perpetuity. This is justified for a top-three global pharma with Seagen's ADC platform providing durable differentiation, though subject to mean-reversion risk if R&D productivity remains below industry norms.</p><p class="ts-sm"><strong>WACC Components:</strong> Cost of equity at 6.9% (4.25% risk-free + 0.48 beta × 5.5% equity risk premium) reflects Pfizer's defensive beta post-COVID normalization. After-tax cost of debt at ~4.5% and market-cap-based D/E of 0.41 yields blended WACC of 6.1%. The 0.48 beta is below sector average of ~0.65, capturing reduced earnings volatility but potentially understating pipeline binary risk.</p><p class="ts-sm"><strong>Margin Sustainability Assessment:</strong> Current 74.3% gross margin and 12.4% net margin are modeled to recover toward 76% and 15% respectively as oncology mix improves and SG&A scales from 22.0% toward 20%. This assumes successful capability-based competitive advantage from Seagen integration; failure to achieve $1B+ synergies would force mean-reversion to 70% gross, 10% net industry averages.</p>
+
+</div>
+
+
+    </div>
+    <!-- ── section: note_box ── -->
+    <div class="dd-section">
+
+  <div class="n n-bl"><strong>Peer positioning:</strong> Pfizer's 19.5x P/E sits between value trap BMY/GSK (~12-14x) and growth premium LLY (~35x), reflecting uncertainty about post-COVID earnings power. The 6.0% FCF yield is highest in peer group, providing income optionality. European pharma average of 24.1x suggests ~20% valuation discount for US regulatory risk (IRA pricing pressure).</div>
+
+
+
+    </div>
+    <!-- ── section: scenario_cards ── -->
+    <div class="dd-section">
+
+  <div class="sc-grid">
+  <div class="sc bear">
+    <div class="sc-hd">Bear Case</div>
+    <div class="sc-val">$26.59</div>
+    <div class="sc-body">Seagen integration disappoints with <$1B synergies; Eliquis/Ibrance patent cliffs erode $10B+ revenue by 2028; pipeline failures in obesity and immunology force $15B+ goodwill impairment. EPS stalls at $1.50-1.80. Market assigns 12x P/E on no-growth utility. Probability: 30%</div>
+  </div>
+  <div class="sc base">
+    <div class="sc-hd">Base Case</div>
+    <div class="sc-val">$34.00</div>
+    <div class="sc-body">Seagen delivers $1B+ synergies and $3B incremental revenue by 2027; pipeline produces 2-3 meaningful launches; COVID revenue stabilizes at $2-3B annual run-rate. EPS recovers to $2.40-2.50 by 2027. Stock re-rates to 14x forward P/E on demonstrated stabilization. Probability: 45%</div>
+  </div>
+  <div class="sc bull">
+    <div class="sc-hd">Bull Case</div>
+    <div class="sc-val">$45.00</div>
+    <div class="sc-body">Seagen exceeds synergy targets with $1.5B+ cost savings; oncology portfolio drives 10%+ revenue CAGR; pipeline delivers multiple blockbuster approvals across oncology and immunology. EPS reaches $4.00+ by 2028. Market awards 25x P/E on innovation premium. Probability: 20%</div>
+  </div>
+  <div class="sc super_bull">
+    <div class="sc-hd">Super-Bull Case</div>
+    <div class="sc-val">$139.38</div>
+    <div class="sc-body">Seagen transforms Pfizer into oncology leader with $10B+ incremental revenue; M&A optionality deploys $9.08B annual FCF at accretive 8%+ yields; IRA pricing pressure minimal; pipeline delivers 5+ blockbusters. EPS exceeds $5.00 by 2028. Market re-rates to 30x P/E comparable to LLY/NVO. Probability: 5%</div>
+  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: card ── -->
+    <div class="dd-section">
+
+<div class="c">
+  <div class="c-head">
+    <h3>reverse dcf: what the market implies</h3>
+<span class="c-tag c-tag-rd">implied growth: -12.3%</span>  </div>
+      <p class="ts-sm"><strong>Market-Implied Expectations:</strong> At $26.58, the market prices Pfizer for perpetual decline. The reverse DCF calculation yields an implied growth rate of <strong>-12.3%</strong> assuming 6.1% WACC, or alternatively an implied WACC of <strong>8.7%</strong> assuming 3.0% terminal growth. Both interpretations are inconsistent with observed fundamentals.</p><p class="ts-sm"><strong>The Disconnect:</strong> Quarterly revenue data shows stabilization—Q1-Q4 2025 progression of $13.71B → $14.65B → $16.65B → $17.57B (implied)—directly contradicting expectations of -12% annual decline. This suggests either: (a) market-implied WACC of 8.7% reflects appropriate risk premium for pipeline binary outcomes, or (b) market prices near-term earnings collapse that quarterly data has not yet captured.</p><p class="ts-sm"><strong>Implied FCF Margin:</strong> The current price implies terminal FCF margin of ~8% versus 14.5% realized in FY2025, suggesting market expects 550bps of permanent margin compression. This would require gross margin falling to 68% (from 74.3%) and net margin to 7% (from 12.4%), levels last seen during pre-COVID restructuring.</p><p class="ts-sm"><strong>Reasonableness Assessment:</strong> The -12.3% implied growth is unreasonable if Seagen integration proceeds as planned and COVID revenue has troughed. However, it becomes reasonable if: (a) Eliquis faces early generic entry in 2026, (b) Seagen pipeline disappoints, or (c) IRA pricing pressure exceeds 25% discounts. The 8.7% implied WACC is more defensible, reflecting 200bps premium to model WACC for execution risk on $71.26B goodwill-heavy balance sheet.</p><p class="ts-sm"><strong>Conclusion:</strong> The reverse DCF suggests market skepticism about management's execution capability rather than fundamental deterioration. The $26.58 price is consistent with fair value if WACC is 8.7% and growth is 0-1%, not the 6.1%/3.0% base case. This 200bps WACC differential explains the $30.89 gap between DCF fair value and market price.</p>
+
+</div>
+
+
+    </div>
+    <!-- ── section: kpi_grid ── -->
+    <div class="dd-section">
+
+  <div class="kpi-grid">
+  <div class="kpi bl">
+    <div class="kpi-lbl">price / earnings</div>
+    <div class="kpi-val">19.5x</div>
+<div class="kpi-sub">fy2025</div>  </div>
+  <div class="kpi tl">
+    <div class="kpi-lbl">price / book</div>
+    <div class="kpi-val">1.7x</div>
+<div class="kpi-sub">fy2025</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">price / sales</div>
+    <div class="kpi-val">2.4x</div>
+<div class="kpi-sub">fy2025</div>  </div>
+  <div class="kpi tl">
+    <div class="kpi-lbl">ev/rev</div>
+    <div class="kpi-val">3.4x</div>
+<div class="kpi-sub">fy2025</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">fcf yield</div>
+    <div class="kpi-val">6.0%</div>
+<div class="kpi-sub">fy2025</div>  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: scenario_cards ── -->
+    <div class="dd-section">
+
+  <div class="sc-grid">
+  <div class="sc bear">
+    <div class="sc-hd">Bear Case</div>
+    <div class="sc-val">$20.00</div>
+    <div class="sc-body">Growth -3pp, WACC +1.5pp, terminal growth -0.5pp; IRA pricing and Seagen disappointment compress earnings.</div>
+  </div>
+  <div class="sc base">
+    <div class="sc-hd">Base Case</div>
+    <div class="sc-val">$34.00</div>
+    <div class="sc-body">Current EDGAR-derived assumptions; Seagen on-track, cost restructuring delivers, non-COVID business stabilizes.</div>
+  </div>
+  <div class="sc bull">
+    <div class="sc-hd">Bull Case</div>
+    <div class="sc-val">$45.00</div>
+    <div class="sc-body">Growth +3pp, WACC -1pp, terminal growth +0.5pp; pipeline success and multiple expansion.</div>
+  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: kpi_grid ── -->
+    <div class="dd-section">
+
+  <div class="kpi-grid">
+  <div class="kpi bl">
+    <div class="kpi-lbl">mc median</div>
+    <div class="kpi-val">$16.30</div>
+<div class="kpi-sub">10,000 simulations</div>  </div>
+  <div class="kpi tl">
+    <div class="kpi-lbl">mc mean</div>
+    <div class="kpi-val">$30.89</div>
+  </div>
+  <div class="kpi al">
+    <div class="kpi-lbl">5th percentile</div>
+    <div class="kpi-val">-$14</div>
+<div class="kpi-sub">downside tail</div>  </div>
+  <div class="kpi gl">
+    <div class="kpi-lbl">95th percentile</div>
+    <div class="kpi-val">$124.88</div>
+<div class="kpi-sub">upside tail</div>  </div>
+  <div class="kpi al">
+    <div class="kpi-lbl">p(upside)</div>
+    <div class="kpi-val">37%</div>
+<div class="kpi-sub">vs $26.97</div>  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+<div class="exhibit-label">Exhibit 1: DCF Assumptions</div>
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>parameter</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>revenue (base)</td>
+      <td>$62.6b (usd)</td>
+    </tr>
+    <tr>
+      <td>fcf margin</td>
+      <td class="r ts-num">14.5%</td>
+    </tr>
+    <tr>
+      <td>wacc</td>
+      <td class="r ts-num">6.1%</td>
+    </tr>
+    <tr>
+      <td>terminal growth</td>
+      <td class="r ts-num">3.0%</td>
+    </tr>
+    <tr>
+      <td>growth path</td>
+      <td>-1.7% → 0.1% → 1.2% → 2.1% → 3.0%</td>
+    </tr>
+    <tr>
+      <td>template</td>
+      <td>general</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+<div class="exhibit-label">Exhibit 2: Intrinsic Value Methods Comparison</div>
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>method</th>
+      <th>fair value</th>
+      <th>vs current</th>
+      <th>key assumption</th>
+      <th>confidence</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>dcf base case</td>
+      <td class="gn r ts-num">$57.90</td>
+      <td class="gn r ts-num">+114.7%</td>
+      <td>3.0% terminal growth, 6.1% wacc</td>
+      <td><span class="badge">MEDIUM</span></td>
+    </tr>
+    <tr>
+      <td>dcf bull case</td>
+      <td class="gn r ts-num">$139.38</td>
+      <td class="gn r ts-num">+416.8%</td>
+      <td>seagen synergies + pipeline success</td>
+      <td><span class="badge">LOW</span></td>
+    </tr>
+    <tr>
+      <td>dcf bear case</td>
+      <td class="rd r ts-num">$26.59</td>
+      <td class="bl r ts-num">-1.4%</td>
+      <td>patent cliff + integration failure</td>
+      <td><span class="badge">MEDIUM</span></td>
+    </tr>
+    <tr>
+      <td>monte carlo median</td>
+      <td class="rd r ts-num">$16.30</td>
+      <td class="rd r ts-num">-39.6%</td>
+      <td>10,000 simulations, wide distribution</td>
+      <td><span class="badge">HIGH</span></td>
+    </tr>
+    <tr>
+      <td>monte carlo mean</td>
+      <td class="gn r ts-num">$30.89</td>
+      <td class="gn r ts-num">+14.5%</td>
+      <td>right-skewed distribution</td>
+      <td><span class="badge">HIGH</span></td>
+    </tr>
+    <tr>
+      <td>reverse dcf (implied)</td>
+      <td class="bl r ts-num">$26.97</td>
+      <td class="bl r ts-num">+0.0%</td>
+      <td class="rd">-12.3% implied growth, 8.7% wacc</td>
+      <td><span class="badge">HIGH</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+<div class="exhibit-label">Exhibit 3: Large-Cap Pharma Peer Valuation Comparison</div>
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>company</th>
+      <th>p/e</th>
+      <th>p/s</th>
+      <th>rev growth</th>
+      <th>net margin</th>
+      <th>fcf yield</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>pfizer (pfe)</td>
+      <td class="bl r ts-num">19.5x</td>
+      <td class="bl r ts-num">2.4x</td>
+      <td class="rd r ts-num">-1.6%</td>
+      <td class="bl r ts-num">12.4%</td>
+      <td class="gn r ts-num">6.0%</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: calculator ── -->
+    <div class="dd-section">
+
+  <div class="c calc-box" id="calc-calc-pfe-scenarios" data-calc-id="calc-pfe-scenarios" data-formula="weighted_average" data-shares="5.686">
+  <div class="c-head"><h3>Scenario Probability Calculator</h3>
+    <div><button class="calc-reset c-tag c-tag-bl" onclick="calcReset('calc-pfe-scenarios')">Reset</button></div>
+  </div>
+  <div class="calc-sliders">
+<div class="calc-row">
+      <label class="ts-sm" for="bear_prob">Bear Case (30% default)</label>
+      <input type="range" id="bear_prob" min="0" max="100" value="30" data-default="30" data-value-label="" data-scenario-value="26.59" oninput="calcUpdate('calc-pfe-scenarios')">
+      <span class="calc-val ts-md" id="bear_prob-val">30</span>
+    </div>
+<div class="calc-row">
+      <label class="ts-sm" for="base_prob">Base Case (45% default)</label>
+      <input type="range" id="base_prob" min="0" max="100" value="45" data-default="45" data-value-label="" data-scenario-value="57.9" oninput="calcUpdate('calc-pfe-scenarios')">
+      <span class="calc-val ts-md" id="base_prob-val">45</span>
+    </div>
+<div class="calc-row">
+      <label class="ts-sm" for="bull_prob">Bull Case (20% default)</label>
+      <input type="range" id="bull_prob" min="0" max="100" value="20" data-default="20" data-value-label="" data-scenario-value="85.0" oninput="calcUpdate('calc-pfe-scenarios')">
+      <span class="calc-val ts-md" id="bull_prob-val">20</span>
+    </div>
+<div class="calc-row">
+      <label class="ts-sm" for="super_prob">Super-Bull (5% default)</label>
+      <input type="range" id="super_prob" min="0" max="100" value="5" data-default="5" data-value-label="" data-scenario-value="139.38" oninput="calcUpdate('calc-pfe-scenarios')">
+      <span class="calc-val ts-md" id="super_prob-val">5</span>
+    </div>
+    <div class="calc-total ts-xs" id="calc-pfe-scenarios-total">Total: —</div>
+  </div>
+  <div class="calc-outputs">
+    <div class="kpi-grid">
+      <div class="kpi bl">
+        <div class="kpi-lbl">Probability-Weighted Fair Value</div>
+        <div class="kpi-val" id="weighted_fv" data-calc-output="true" data-format="dollar">—</div>
+      </div>
+      <div class="kpi bl">
+        <div class="kpi-lbl">Upside/Downside vs $26.97</div>
+        <div class="kpi-val" id="upside_downside" data-calc-output="true" data-format="percent">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+<div class="exhibit-label">Exhibit 4: Key Assumption Break Analysis</div>
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>assumption</th>
+      <th>base value</th>
+      <th>break value</th>
+      <th>price impact</th>
+      <th>break probability</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>seagen synergies</td>
+      <td>$1.0b+</td>
+      <td class="r ts-num">$0.5b</td>
+      <td class="rd r ts-num">-$12</td>
+      <td class="r ts-num"><span class="badge">MEDIUM</span> 25%</td>
+    </tr>
+    <tr>
+      <td>terminal growth rate</td>
+      <td class="r ts-num">3.0%</td>
+      <td class="r ts-num">1.5%</td>
+      <td class="rd r ts-num">-$18</td>
+      <td class="r ts-num"><span class="badge">MEDIUM</span> 30%</td>
+    </tr>
+    <tr>
+      <td>wacc</td>
+      <td class="r ts-num">6.1%</td>
+      <td class="r ts-num">8.0%</td>
+      <td class="rd r ts-num">-$22</td>
+      <td class="r ts-num"><span class="badge">MEDIUM</span> 20%</td>
+    </tr>
+    <tr>
+      <td>eliquis patent cliff</td>
+      <td>2027 expiration</td>
+      <td>2026 early entry</td>
+      <td class="rd r ts-num">-$8</td>
+      <td class="r ts-num"><span class="badge">LOW</span> 15%</td>
+    </tr>
+    <tr>
+      <td>goodwill impairment</td>
+      <td class="r ts-num">$0</td>
+      <td class="r ts-num">$10b</td>
+      <td class="rd r ts-num">-$15</td>
+      <td class="r ts-num"><span class="badge">MEDIUM</span> 20%</td>
+    </tr>
+    <tr>
+      <td>ira price negotiation</td>
+      <td>minimal impact</td>
+      <td class="rd">-15% on $15b</td>
+      <td class="rd r ts-num">-$10</td>
+      <td class="r ts-num"><span class="badge">MEDIUM</span> 35%</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+<div class="exhibit-label">Exhibit 5: Reverse DCF — What the Market Implies</div>
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>implied parameter</th>
+      <th>value to justify current price</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>implied growth rate</td>
+      <td class="r ts-num">-12.3%</td>
+    </tr>
+    <tr>
+      <td>implied wacc</td>
+      <td class="r ts-num">8.7%</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+<div class="exhibit-label">Exhibit 6: WACC Derivation (CAPM)</div>
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>component</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>beta</td>
+      <td>0.48 (raw: 0.41, vasicek-adjusted)</td>
+    </tr>
+    <tr>
+      <td>risk-free rate</td>
+      <td class="r ts-num">4.25%</td>
+    </tr>
+    <tr>
+      <td>equity risk premium</td>
+      <td class="r ts-num">5.5%</td>
+    </tr>
+    <tr>
+      <td>cost of equity</td>
+      <td class="r ts-num">6.9%</td>
+    </tr>
+    <tr>
+      <td>d/e ratio (market-cap)</td>
+      <td class="r ts-num">0.41</td>
+    </tr>
+    <tr>
+      <td>dynamic wacc</td>
+      <td class="r ts-num">6.1%</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+<div class="exhibit-label">Exhibit 7: Kalman Growth Estimator</div>
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>metric</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>current growth rate</td>
+      <td class="r ts-num">-6.5%</td>
+    </tr>
+    <tr>
+      <td>growth uncertainty</td>
+      <td>±28.1pp</td>
+    </tr>
+    <tr>
+      <td>observations</td>
+      <td class="r ts-num">5</td>
+    </tr>
+    <tr>
+      <td>year 1 projected</td>
+      <td class="r ts-num">-6.5%</td>
+    </tr>
+    <tr>
+      <td>year 2 projected</td>
+      <td class="r ts-num">-6.5%</td>
+    </tr>
+    <tr>
+      <td>year 3 projected</td>
+      <td class="r ts-num">-6.5%</td>
+    </tr>
+    <tr>
+      <td>year 4 projected</td>
+      <td class="r ts-num">-6.5%</td>
+    </tr>
+    <tr>
+      <td>year 5 projected</td>
+      <td class="r ts-num">-6.5%</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: chart ── -->
+    <div class="dd-section">
+
+  <div class="ch">
+<div class="chart-title">monte carlo fair value range</div>  <canvas id="ch-det-mc-range"></canvas>
+</div>
+
+
+
+    </div>
+    <!-- ── section: chart ── -->
+    <div class="dd-section">
+
+  <div class="ch">
+<div class="chart-title">valuation multiples</div>  <canvas id="ch-det-multiples"></canvas>
+</div>
+
+
+
+    </div>
+    <!-- ── section: waterfall_bars ── -->
+    <div class="dd-section">
+
+  <div class="c">
+  <div class="wf-stack">
+    <div class="wf-row">
+      <span class="wf-label">Current Price</span>
+      <div class="wf-bar" style="background:var(--accent);width:0%">
+        <span class="wf-bar-val">26.58</span>
+      </div>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label">DCF Adjustment ($58)</span>
+      <div class="wf-bar" style="background:var(--accent);width:100%">
+        <span class="wf-bar-val">31.32</span>
+      </div>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label">MC Median ($16)</span>
+      <div class="wf-bar" style="background:var(--accent);width:0%">
+        <span class="wf-bar-val">10.28</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: note_box ── -->
+    <div class="dd-section">
+
+  <div class="n n-rd"><strong>Critical Risk:</strong> Goodwill of $71.26B represents 82% of shareholders' equity ($86.48B), creating binary impairment risk. If Seagen integration fails or pipeline disappoints, $10B+ write-downs would wipe out 2-3 years of earnings and destroy the 3.0% terminal growth assumption. The low cash balance of $1.14B provides minimal cushion for operational setbacks.</div>
+
+
+
+    </div>
+    <!-- ── section: note_box ── -->
+    <div class="dd-section">
+
+  <div class="n n-am"><strong>Valuation Synthesis:</strong> Target price of $30.89 (Monte Carlo mean) versus DCF fair value of $57.90 reflects model uncertainty discount. The $26.97 current price offers 16% upside to probability-weighted value but 118% upside to DCF base case—a wide spread indicating wide conviction dispersion. Conviction level: 30/100. The gap exists because DCF assumes successful execution of multiple strategic initiatives (Seagen, pipeline, cost restructuring) while market prices partial failure. Position: Neutral with income optionality—6.0% FCF yield provides carry while waiting for Q1 2026 guidance to resolve uncertainty.</div>
+
+
+
+    </div>
+    <!-- ── section: note_box ── -->
+    <div class="dd-section">
+
+  <div class="n n-am">Low sample warning: fewer than 6 annual revenue observations. Growth estimates are less reliable.</div>
+
+
+
+    </div>
+    <!-- ── section: note_box ── -->
+    <div class="dd-section">
+
+  <div class="n n-view">Pfizer's $57.90 DCF fair value requires heroic assumptions that underestimate execution risk on $71.26B of goodwill. We assign 60% probability to the bear/base cases combined ($26-58 range) versus 25% to bull outcomes, yielding probability-weighted fair value of <strong>$42</strong>—58% above current price but 27% below DCF base case. This is <strong>bullish</strong> versus market pessimism but <strong>conservative</strong> versus sell-side DCFs. We would upgrade conviction score of 30/100 and increase target to $55 if: (a) Q1 2026 guidance confirms $65B+ revenue trajectory, (b) Seagen synergy tracking shows $800M+ annualized savings, or (c) pipeline delivers two phase 3 readouts with positive data. We would downgrade to 3/10 and cut target to $20 if: (a) goodwill impairment charges announced, (b) dividend coverage falls below 90%, or (c) Eliquis faces accelerated generic entry.</div>
+
+
+
+    </div>
+    <!-- ── section: cross_ref ── -->
+    <div class="dd-section">
+
+<div class="ts-xs mt8 xref" onclick="go('fin', this)">See financial analysis</div>
+
+
+    </div>
+    <!-- ── section: cross_ref ── -->
+    <div class="dd-section">
+
+<div class="ts-xs mt8 xref" onclick="go('compete', this)">See competitive position</div>
+
+
+    </div>
+    <!-- ── section: cross_ref ── -->
+    <div class="dd-section">
+
+<div class="ts-xs mt8 xref" onclick="go('risk', this)">See risk assessment</div>
+
+
+    </div>
+
+</div><!-- end p-val -->

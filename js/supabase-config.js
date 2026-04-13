@@ -1,0 +1,1 @@
+window.XVARY_SUPABASE={URL:"",ANON_KEY:""};

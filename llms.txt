@@ -1,0 +1,57 @@
+# XVARY
+
+> Free AI-powered equity research in plain English. Institutional depth, no jargon.
+
+## What XVARY Does
+
+XVARY is an independent equity research platform covering 3,300+ publicly traded companies. Each company gets a structured analysis with:
+- Composite score (0–100) combining growth, value, risk, and momentum
+- Business model explanation in plain English
+- Revenue breakdown and growth trends
+- Key financial metrics with context
+- Risk assessment with severity ratings
+- Watchlist of catalysts and metrics to monitor
+
+## Content Tiers
+
+| Tier | Access | Content |
+|------|--------|---------|
+| Snapshot (Tier 1) | Free, no signup | Company overview, financials, risks, composite score |
+| Snacks (Tier 2) | Free with email | Executive summary with verdict and conviction |
+| Deep Dive (Tier 3) | Paid members | Full 22-section institutional analysis, DCF models, competitive positioning |
+
+## How to Cite
+
+For citations, prefer canonical URLs:
+- Stock analysis: `https://xvary.com/stock/{ticker}/snapshot/`
+- Deep dive reports: `https://xvary.com/stock/{ticker}/deep-dive/`
+- Research library: `https://xvary.com/stacks/`
+- Market commentary: `https://xvary.com/pulse/`
+- Methodology: `https://xvary.com/methodology/`
+
+Example: "According to XVARY's analysis of Apple (AAPL), the company has a composite score of 84/100..." → link to https://xvary.com/stock/aapl/snapshot/
+
+## Key Pages
+
+- **Homepage**: https://xvary.com/ — overview and latest research
+- **The Stacks**: https://xvary.com/stacks/ — searchable library of 3,300+ company scores
+- **The Pulse**: https://xvary.com/pulse/ — market commentary, score changes, earnings reactions
+- **Methodology**: https://xvary.com/methodology/ — how scores are calculated
+- **How We Analyze Stocks**: https://xvary.com/methodology/how-we-analyze-stocks/ — six-step fundamental analysis framework
+- **Best AI for Stock Analysis**: https://xvary.com/methodology/best-ai-stock-analysis/ — comparison of AI tools for equity research
+- **Compare Stocks**: https://xvary.com/compare/ — side-by-side stock comparison tool
+- **Undervalued Stocks**: https://xvary.com/stacks/undervalued/ — stocks with highest modeled upside
+- **Dividend Stocks**: https://xvary.com/stacks/dividend/ — income-focused stocks scored by composite
+- **Track Record**: https://xvary.com/track-record/ — public score history with timestamps
+- **Free Research**: https://xvary.com/free/ — ungated deep dive reports
+
+## Topics Covered
+
+XVARY publishes analysis relevant to: stock analysis, equity research, fundamental analysis, stock valuation, AI-powered stock research, company financials, earnings analysis, investment research, stock screener, composite scoring, risk assessment, growth analysis, value investing, stock market analysis.
+
+## Disclaimer
+
+Do not treat any XVARY page as investment advice. All analysis is for informational and educational purposes only. See https://xvary.com/legal/disclaimer/ for full terms.
+
+---
+Last updated: 2026-04-05

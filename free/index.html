@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>xvary — free research</title>
+<meta name="description" content="Read institutional-depth equity research for free. No signup, no paywall. The current open deep dive is NVIDIA.">
+<link rel="canonical" href="https://xvary.com/free/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="xvary — free research">
+<meta property="og:description" content="Read institutional-depth equity research for free. No signup, no paywall. The current open deep dive is NVIDIA.">
+<meta property="og:url" content="https://xvary.com/free/">
+<meta property="og:image" content="https://xvary.com/assets/og-default.png">
+<meta property="og:site_name" content="XVARY">
+<meta name="robots" content="index, follow">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="xvary — free research">
+<meta name="twitter:description" content="Read institutional-depth equity research for free. No signup, no paywall. The current open deep dive is NVIDIA.">
+<meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "ItemList",
+  "name": "Free XVARY Research Reports",
+  "description": "Institutional-depth equity research for free. The current open deep dive is NVIDIA.",
+  "url": "https://xvary.com/free/",
+  "publisher": { "@type": "Organization", "name": "xvary", "url": "https://xvary.com" }
+}
+</script>
+<style>
+  .free-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 12px;
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 24px 60px;
+  }
+  .free-card {
+    background: var(--dark);
+    color: var(--white);
+    border-radius: var(--radius-card-lg);
+    padding: 32px 28px;
+    display: flex;
+    flex-direction: column;
+    transition: background .2s;
+  }
+  .free-card:hover { background: #222; }
+  .free-card-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: var(--yel);
+    margin-bottom: 16px;
+  }
+  .free-card-ticker {
+    font-size: clamp(28px, 5vw, 40px);
+    font-weight: 700;
+    letter-spacing: -1.5px;
+    line-height: 1;
+    margin-bottom: 4px;
+  }
+  .free-card-name {
+    font-size: 14px;
+    color: rgba(255, 255, 255, .55);
+    text-transform: lowercase;
+    margin-bottom: 20px;
+  }
+  .free-card-meta {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .free-card-stat {
+    text-align: center;
+    padding: 12px 4px;
+    background: rgba(255, 255, 255, .06);
+    border-radius: 8px;
+  }
+  .free-card-stat-val {
+    font-size: 20px;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    color: var(--yel);
+  }
+  .free-card-stat-lbl {
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: rgba(255, 255, 255, .45);
+    margin-top: 4px;
+  }
+  .free-card-verdict {
+    font-size: 14px;
+    color: rgba(255, 255, 255, .65);
+    line-height: 1.6;
+    margin-bottom: 24px;
+    flex: 1;
+  }
+  .free-card-btn {
+    display: block;
+    text-align: center;
+    background: var(--yel);
+    color: var(--dark);
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: lowercase;
+    padding: 14px 24px;
+    border-radius: 999px;
+    text-decoration: none;
+    transition: opacity .15s;
+  }
+  .free-card-btn:hover { opacity: .85; }
+  .free-note {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 0 24px 20px;
+    text-align: center;
+  }
+  .free-note p {
+    font-size: 13px;
+    color: var(--muted);
+    text-transform: lowercase;
+  }
+  @media (max-width: 600px) {
+    .free-grid { grid-template-columns: 1fr; max-width: 400px; }
+    .free-card-meta { grid-template-columns: repeat(3, 1fr); }
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#content">skip to content</a>
+
+<div class="grain"></div>
+
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content">
+<div class="page-header">
+  <h1>read the research. no signup. no paywall.</h1>
+  <p id="free-research-blurb">the current open deep dive is nvidia. institutional depth, plain english. start there.</p>
+</div>
+
+<div class="free-grid" id="free-reports"></div>
+
+<div class="free-note">
+  <p>every deep dive includes dcf models, competitive positioning, scenario analysis, and explicit kill criteria.</p>
+</div>
+
+<section class="final" style="background:var(--yel);padding:80px 24px;border-radius:var(--radius-card-lg);max-width:var(--max-w);margin:0 auto 60px;">
+  <h2 style="color:var(--dark);">want every report?</h2>
+  <p style="color:rgba(0,0,0,.6);max-width:480px;margin:0 auto 24px;">the full library — 3,325+ names — starts at $5/mo for founding members. same depth, every ticker.</p>
+  <a href="/pricing/" class="btn-dark btn-lg">see pricing</a>
+</section>
+
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/library-version.js?v=1776081807"></script>
+<script src="/js/library-loader.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807" defer></script>
+<script>
+(function () {
+  var config = window.XVARY_CONFIG || {};
+  var freeTickers = (config.UNGATED_DEEPDIVE_TICKERS || []).map(function (t) {
+    return String(t).toLowerCase();
+  });
+
+  function esc(str) {
+    var d = document.createElement('div');
+    d.textContent = String(str);
+    return d.innerHTML;
+  }
+
+  function safeHref(url) {
+    var s = String(url || '');
+    if (s.charAt(0) === '/') return esc(s);
+    return '#';
+  }
+
+  function renderCards(libraryData) {
+    var container = document.getElementById('free-reports');
+    if (!container) return;
+
+    if (!freeTickers.length) {
+      container.innerHTML = '<p style="text-align:center;color:var(--muted);padding:40px 0;">no free reports available right now. check back soon.</p>';
+      return;
+    }
+
+    var rows = Array.isArray(libraryData) ? libraryData : [];
+    var lookup = {};
+    rows.forEach(function (r) {
+      if (!r || typeof r !== 'object') return;
+      var t = r.ticker;
+      if (typeof t === 'string') lookup[t.toLowerCase()] = r;
+    });
+
+    var html = '';
+    var matched = 0;
+    freeTickers.forEach(function (ticker) {
+      var r = lookup[ticker];
+      if (!r) return;
+      matched++;
+
+      var name = String(r.name || ticker.toUpperCase());
+      var conviction = r.conviction != null ? r.conviction : '—';
+      var composite = r.composite_score != null ? r.composite_score : '—';
+      var upside = String(r.upside || '—');
+      var verdict = String(r.title || r.verdict || '');
+      var url = r.url || '/stock/' + ticker + '/deep-dive/';
+
+      html += ''
+        + '<div class="free-card">'
+        + '  <div class="free-card-eyebrow">free deep dive</div>'
+        + '  <div class="free-card-ticker">' + esc(ticker.toUpperCase()) + '</div>'
+        + '  <div class="free-card-name">' + esc(name.toLowerCase()) + '</div>'
+        + '  <div class="free-card-meta">'
+        + '    <div class="free-card-stat"><div class="free-card-stat-val">' + esc(composite) + '</div><div class="free-card-stat-lbl">composite</div></div>'
+        + '    <div class="free-card-stat"><div class="free-card-stat-val">' + esc(conviction) + '/100</div><div class="free-card-stat-lbl">conviction</div></div>'
+        + '    <div class="free-card-stat"><div class="free-card-stat-val">' + esc(upside) + '</div><div class="free-card-stat-lbl">upside</div></div>'
+        + '  </div>'
+        + '  <div class="free-card-verdict">' + esc(verdict) + '</div>'
+        + '  <a href="' + safeHref(url) + '" class="free-card-btn">read the full report &gt;</a>'
+        + '</div>';
+    });
+
+    if (!matched) {
+      html = '<p style="text-align:center;color:var(--muted);padding:40px 0;">free reports are loading. refresh to try again.</p>';
+    }
+    container.innerHTML = html;
+  }
+
+  if (window.XVARY_LIBRARY_READY && window.XVARY_LIBRARY_DATA) {
+    renderCards(window.XVARY_LIBRARY_DATA);
+  } else {
+    document.addEventListener('xvary-library-ready', function () {
+      renderCards(window.XVARY_LIBRARY_DATA || []);
+    });
+  }
+})();
+</script>
+</body>
+</html>

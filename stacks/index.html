@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>xvary — stock screener & research library · 3,300+ companies</title>
+<meta name="description" content="Free stock screener & comparison tool with AI-powered composite scores, valuations, and risk ratings across 3,300+ companies. Filter by sector, score, and modeled upside.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://xvary.com/stacks/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="xvary — stock screener & research library · 3,300+ companies">
+<meta property="og:description" content="Free stock screener with AI-powered composite scores across 3,300+ companies.">
+<meta property="og:url" content="https://xvary.com/stacks/">
+<meta property="og:image" content="https://xvary.com/assets/og-default.png">
+<meta property="og:site_name" content="XVARY">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="xvary — stock screener & research library · 3,300+ companies">
+<meta name="twitter:description" content="Free stock screener with AI composite scores across 3,300+ companies. Filter by sector, score, and upside.">
+<meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+<link rel="stylesheet" href="/css/stacks-page.css?v=1776081807">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "XVARY The Stacks",
+  "description": "Browse the XVARY stacks with composite scores, positions, sectors, and verdicts.",
+  "url": "https://xvary.com/stacks/"
+}
+</script>
+
+</head>
+<body>
+
+<a class="skip-link" href="#content">skip to content</a>
+
+
+<div class="grain"></div>
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+    <a href="/stacks/" class="active">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content">
+<section class="archive-hero" aria-labelledby="archive-hero-title">
+  <div class="archive-hero-shell">
+    <div class="archive-hero-copy">
+      <div class="sec-label">xvary research stacks</div>
+      <div class="archive-kicker">live coverage board</div>
+      <h1 id="archive-hero-title">the stacks</h1>
+      <p>every name we cover, ranked by composite. filter by position, sort by what matters, and open any snapshot in one click.</p>
+      <div class="archive-hero-notes">
+        <span class="archive-hero-note">some deep dives are free · no signup needed</span>
+        <span class="archive-hero-note" id="hero-note-latest">freshest update loading</span>
+        <span class="archive-hero-note" id="hero-note-sectors">sector map loading</span>
+        <span class="archive-hero-note">searchable by ticker, company, and sector</span>
+      </div>
+    </div>
+    <aside class="archive-hero-panel" aria-label="stacks summary">
+      <div class="archive-panel-topline">
+        <strong>market tape</strong>
+        <span id="archive-panel-latest">awaiting data</span>
+      </div>
+      <div class="archive-panel-focus" id="archive-panel-focus">all coverage</div>
+      <p class="archive-panel-copy" id="archive-panel-copy">curated deep dives and snapshots ranked by composite.</p>
+      <div class="archive-stats">
+        <div class="archive-stat">
+          <span class="archive-stat-value" id="hero-stat-total">0</span>
+          <span class="archive-stat-label">names in view</span>
+        </div>
+        <div class="archive-stat">
+          <span class="archive-stat-value" id="hero-stat-reports">0</span>
+          <span class="archive-stat-label">deep dives</span>
+        </div>
+        <div class="archive-stat">
+          <span class="archive-stat-value" id="hero-stat-upside">n/a</span>
+          <span class="archive-stat-label">best modeled move</span>
+        </div>
+      </div>
+      <div class="archive-panel-footer" id="archive-panel-footer">sorted by composite</div>
+    </aside>
+  </div>
+</section>
+
+<section id="featured-research" class="featured-research--hero">
+  <div class="featured-research-shell">
+    <div class="featured-research-head">
+      <div class="sec-label" id="latest-label">featured deep dive</div>
+      <div class="featured-research-copy">deep dives with full thesis, valuation, and kill criteria.</div>
+    </div>
+    <div class="book-row" id="book-row"></div>
+  </div>
+</section>
+
+<section class="library-controls" id="library-controls" aria-label="library controls">
+  <div class="library-controls-inner">
+    <div class="library-meta">
+      <div class="library-pill" id="lib-count">0 names in view</div>
+      <div class="library-pill" id="sector-pill">0 sectors covered</div>
+      <div class="library-pill" id="sort-pill">sorted by composite</div>
+      <div class="library-pill">score and modeled move on every card</div>
+    </div>
+    <div class="library-search-wrap">
+      <label class="sr-only" for="lib-search">search the stacks</label>
+      <input type="text" id="lib-search" class="library-search" placeholder="search by ticker, company, or sector...">
+    </div>
+    <div class="library-toolbar">
+      <div class="filters" id="filters" role="group" aria-label="filter the stacks"></div>
+      <div class="library-toolbar-right">
+        <label class="sr-only" for="lib-sort">sort the stacks</label>
+        <select id="lib-sort" class="library-select">
+          <option value="composite">composite</option>
+          <option value="upside">upside</option>
+          <option value="alphabetical">alphabetical</option>
+          <option value="sector">sector</option>
+          <option value="health">health score</option>
+          <option value="updated">recently updated</option>
+          <option value="marketCap">market cap</option>
+          <option value="position">position</option>
+        </select>
+        <div class="library-view-toggle" aria-label="view mode">
+          <button type="button" class="library-toggle-btn active" data-view-toggle="cards" aria-pressed="true">cards</button>
+          <button type="button" class="library-toggle-btn" data-view-toggle="table" aria-pressed="false">table</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="library-empty" id="library-empty" hidden></div>
+<div class="grid" id="library-grid"></div>
+
+<div class="library-table-wrap" id="library-table-wrap" hidden>
+  <table class="library-table">
+    <thead id="library-table-head"></thead>
+    <tbody id="library-table-body"></tbody>
+  </table>
+</div>
+
+<div class="library-load-more-wrap" id="library-load-more-wrap" hidden>
+  <button type="button" class="library-load-more" id="library-load-more">show more</button>
+</div>
+
+<div class="library-hover-preview" id="library-hover-preview" hidden></div>
+
+<section style="max-width:var(--max-w-wide);margin:0 auto;padding:40px 24px 48px">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px">
+    <a href="/compare/" style="text-decoration:none;color:inherit;background:rgba(255,255,255,.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:var(--radius-card);padding:24px;display:block">
+      <div style="font-size:16px;font-weight:700;margin-bottom:8px;text-transform:lowercase">compare stocks</div>
+      <div style="font-size:13px;line-height:1.6;color:var(--text2);text-transform:lowercase">put any two names side by side — composite, upside, sector, and verdict in one view.</div>
+    </a>
+    <a href="/stacks/undervalued/" style="text-decoration:none;color:inherit;background:rgba(255,255,255,.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:var(--radius-card);padding:24px;display:block">
+      <div style="font-size:16px;font-weight:700;margin-bottom:8px;text-transform:lowercase">undervalued stocks</div>
+      <div style="font-size:13px;line-height:1.6;color:var(--text2);text-transform:lowercase">stocks where our models show the most upside, ranked by modeled move.</div>
+    </a>
+    <a href="/stacks/dividend/" style="text-decoration:none;color:inherit;background:rgba(255,255,255,.65);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border-radius:var(--radius-card);padding:24px;display:block">
+      <div style="font-size:16px;font-weight:700;margin-bottom:8px;text-transform:lowercase">dividend stocks</div>
+      <div style="font-size:13px;line-height:1.6;color:var(--text2);text-transform:lowercase">income-focused names scored by composite — banking, utilities, reits, and staples.</div>
+    </a>
+  </div>
+</section>
+
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/vendor/pretext.js?v=1776081807"></script>
+<script src="/js/pretext-utils.js?v=1776081807"></script>
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/library-version.js?v=1776081807"></script>
+<script src="/js/library-summary.js?v=1776081807"></script>
+<script src="/js/library-loader.js?v=1776081807"></script>
+<script src="/js/library-page.js?v=1776081807"></script>
+<script src="/js/library-virtual.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807" defer></script>
+</body>
+</html>

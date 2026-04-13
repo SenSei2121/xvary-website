@@ -1,0 +1,15 @@
+Options -MultiViews
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Legacy URL redirects to new unified /stock/{ticker}/ structure
+  RewriteRule ^snapshot/(.*)$ /stock/$1/snapshot/ [R=301,L,NE]
+  RewriteRule ^stocks/([^/]+)/?.*$ /stock/$1/snapshot/ [R=301,L,NE]
+  RewriteRule ^stocks/?$ /stacks/ [R=301,L]
+  RewriteRule ^deepdive/(.*)$ /stock/$1/deep-dive/ [R=301,L,NE]
+  RewriteRule ^reports/(.*)$ /stock/$1/deep-dive/ [R=301,L,NE]
+</IfModule>
+
+# Serve branded not-found page while preserving the 404 status code.
+ErrorDocument 404 /404.html

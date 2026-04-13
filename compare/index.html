@@ -1,0 +1,1062 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>compare stocks side by side — free stock comparison tool · xvary</title>
+<meta name="description" content="Compare any two stocks side by side. Free AI-powered stock comparison tool with composite scores, valuations, financials, and risk ratings across 3,300+ companies.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://xvary.com/compare/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="compare stocks side by side — free stock comparison tool · xvary">
+<meta property="og:description" content="Compare any two stocks side by side. Free AI-powered stock comparison tool with composite scores, valuations, and risk ratings across 3,300+ companies.">
+<meta property="og:url" content="https://xvary.com/compare/">
+<meta property="og:image" content="https://xvary.com/assets/og-default.png">
+<meta property="og:site_name" content="XVARY">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="compare stocks side by side — free stock comparison tool · xvary">
+<meta name="twitter:description" content="Compare any two stocks side by side. Free AI-powered stock comparison tool across 3,300+ companies.">
+<meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  "name": "XVARY Stock Comparison Tool",
+  "description": "Compare any two stocks side by side with AI-powered composite scores, valuations, financials, and risk ratings across 3,300+ companies.",
+  "url": "https://xvary.com/compare/",
+  "applicationCategory": "FinanceApplication",
+  "operatingSystem": "All",
+  "offers": {
+    "@type": "Offer",
+    "price": "0",
+    "priceCurrency": "USD"
+  },
+  "creator": {
+    "@type": "Organization",
+    "name": "XVARY"
+  }
+}
+</script>
+<style>
+  /* ── Compare Page ── */
+  .compare-hero {
+    min-height: 40vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 60px 24px 40px;
+  }
+  .compare-hero h1 {
+    font-size: clamp(36px, 8vw, 72px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -2px;
+    text-transform: lowercase;
+    margin-bottom: 16px;
+  }
+  .compare-hero p {
+    font-size: clamp(15px, 2vw, 18px);
+    color: var(--text2);
+    max-width: 560px;
+    margin: 0 auto 0;
+    line-height: 1.6;
+    text-transform: lowercase;
+  }
+
+  /* ── Picker Section ── */
+  .compare-pickers {
+    max-width: 760px;
+    margin: 40px auto 0;
+    padding: 0 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    justify-content: center;
+  }
+  .picker-wrap {
+    flex: 1;
+    max-width: 320px;
+    position: relative;
+  }
+  .picker-input {
+    width: 100%;
+    font-family: 'DM Mono', monospace;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 16px 20px;
+    border: 2px solid rgba(0,0,0,.12);
+    border-radius: var(--radius-card);
+    background: rgba(255,255,255,.65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    outline: none;
+    text-transform: uppercase;
+    transition: border-color .2s, box-shadow .2s;
+    box-sizing: border-box;
+  }
+  .picker-input::placeholder {
+    text-transform: lowercase;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 400;
+    color: rgba(0,0,0,.35);
+  }
+  .picker-input:focus {
+    border-color: var(--yel);
+    box-shadow: 0 0 0 4px rgba(255,229,0,.2);
+  }
+  .picker-label {
+    display: block;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    color: var(--text2);
+    margin-bottom: 8px;
+    font-family: 'DM Mono', monospace;
+  }
+  .picker-vs {
+    font-size: clamp(20px, 4vw, 28px);
+    font-weight: 700;
+    color: var(--yel);
+    text-transform: lowercase;
+    padding-top: 30px;
+    flex-shrink: 0;
+  }
+
+  /* ── Autocomplete Dropdown ── */
+  .ac-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: rgba(255,255,255,.95);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1.5px solid rgba(0,0,0,.1);
+    border-radius: var(--radius-card);
+    margin-top: 4px;
+    max-height: 260px;
+    overflow-y: auto;
+    z-index: 100;
+    display: none;
+    box-shadow: 0 12px 40px rgba(0,0,0,.12);
+  }
+  .ac-dropdown.open { display: block; }
+  .ac-item {
+    padding: 12px 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    transition: background .15s;
+    text-transform: lowercase;
+  }
+  .ac-item:hover, .ac-item.highlighted {
+    background: rgba(255,229,0,.15);
+  }
+  .ac-item-ticker {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    min-width: 60px;
+  }
+  .ac-item-name {
+    font-size: 13px;
+    color: var(--text2);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  /* ── Comparison Result ── */
+  .compare-result {
+    max-width: 860px;
+    margin: 48px auto 0;
+    padding: 0 24px;
+    display: none;
+  }
+  .compare-result.visible { display: block; }
+
+  .compare-grid {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    gap: 0;
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    border: 1.5px solid rgba(0,0,0,.08);
+  }
+
+  /* Header row */
+  .cg-header {
+    display: contents;
+  }
+  .cg-header-cell {
+    padding: 24px 28px 20px;
+    background: rgba(0,0,0,.85);
+    color: var(--white);
+    text-align: center;
+  }
+  .cg-header-cell:first-child { text-align: left; }
+  .cg-header-cell:last-child { text-align: right; }
+  .cg-header-ticker {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(20px, 4vw, 28px);
+    font-weight: 600;
+    color: var(--yel);
+    letter-spacing: -1px;
+  }
+  .cg-header-name {
+    font-size: 13px;
+    color: rgba(255,255,255,.6);
+    text-transform: lowercase;
+    margin-top: 4px;
+  }
+  .cg-header-vs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 700;
+    color: rgba(255,255,255,.35);
+    text-transform: lowercase;
+    padding: 0 8px;
+    background: rgba(0,0,0,.85);
+  }
+
+  /* Data rows */
+  .cg-row {
+    display: contents;
+  }
+  .cg-cell {
+    padding: 16px 28px;
+    border-top: 1px solid rgba(0,0,0,.06);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .cg-cell:nth-child(3n+1) { text-align: left; }
+  .cg-cell:nth-child(3n+2) {
+    text-align: center;
+    justify-content: center;
+    align-items: center;
+  }
+  .cg-cell:nth-child(3n) { text-align: right; align-items: flex-end; }
+  .cg-cell-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text2);
+    text-transform: lowercase;
+    letter-spacing: .5px;
+    padding: 16px 12px;
+    background: rgba(0,0,0,.03);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-top: 1px solid rgba(0,0,0,.06);
+  }
+  .cg-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+  }
+  .cg-value-sub {
+    font-size: 12px;
+    color: var(--text2);
+    text-transform: lowercase;
+    margin-top: 2px;
+  }
+  .cg-value--winner {
+    color: var(--dark);
+    position: relative;
+  }
+  .cg-value--winner::after {
+    content: '';
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    background: var(--yel);
+    border-radius: 50%;
+    margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* Verdict row */
+  .cg-verdict {
+    padding: 20px 28px;
+    font-size: 14px;
+    line-height: 1.6;
+    color: var(--text2);
+    text-transform: lowercase;
+    border-top: 1px solid rgba(0,0,0,.06);
+  }
+
+  /* Position pill */
+  .cg-position {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 4px 14px;
+    border-radius: var(--radius-pill);
+    text-transform: lowercase;
+    letter-spacing: .5px;
+  }
+  .cg-position--long {
+    background: rgba(137,226,25,.15);
+    color: var(--green);
+  }
+  .cg-position--short {
+    background: rgba(255,69,0,.15);
+    color: var(--red);
+  }
+  .cg-position--neutral {
+    background: rgba(0,0,0,.06);
+    color: var(--text2);
+  }
+
+  /* ── CTA row ── */
+  .cg-cta-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+    margin-top: 16px;
+  }
+  .cg-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    background: var(--dark);
+    color: var(--yel);
+    font-size: 14px;
+    font-weight: 700;
+    padding: 14px 24px;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    text-transform: lowercase;
+    transition: background .2s, transform .2s;
+  }
+  .cg-cta:hover {
+    background: #222;
+    transform: translateY(-2px);
+  }
+  .cg-cta svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  /* ── Popular Comparisons ── */
+  .popular-section {
+    max-width: 760px;
+    margin: 72px auto 0;
+    padding: 0 24px;
+  }
+  .popular-section h2 {
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 700;
+    text-transform: lowercase;
+    margin-bottom: 8px;
+  }
+  .popular-section p {
+    font-size: 15px;
+    color: var(--text2);
+    text-transform: lowercase;
+    margin-bottom: 24px;
+    line-height: 1.6;
+  }
+  .popular-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .popular-chip {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 12px 20px;
+    border-radius: var(--radius-pill);
+    background: rgba(0,0,0,.04);
+    border: 1.5px solid rgba(0,0,0,.1);
+    text-decoration: none;
+    color: var(--text);
+    text-transform: lowercase;
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .popular-chip:hover {
+    background: var(--dark);
+    color: var(--yel);
+    border-color: var(--dark);
+    transform: translateY(-2px);
+  }
+
+  /* ── Explore links ── */
+  .compare-explore {
+    max-width: 760px;
+    margin: 64px auto 80px;
+    padding: 0 24px;
+    text-align: center;
+  }
+  .compare-explore p {
+    font-size: 15px;
+    color: var(--text2);
+    text-transform: lowercase;
+    line-height: 1.7;
+  }
+  .compare-explore a {
+    color: var(--text);
+    font-weight: 600;
+    text-decoration: underline;
+    text-decoration-color: var(--yel);
+    text-underline-offset: 3px;
+    text-decoration-thickness: 2px;
+    transition: color .2s;
+  }
+  .compare-explore a:hover {
+    color: var(--dark);
+  }
+
+  /* ── Empty state ── */
+  .compare-empty {
+    max-width: 760px;
+    margin: 48px auto 0;
+    padding: 0 24px;
+    text-align: center;
+    display: none;
+  }
+  .compare-empty.visible { display: block; }
+  .compare-empty-box {
+    background: rgba(0,0,0,.85);
+    border-radius: var(--radius-card);
+    padding: 48px 32px;
+    color: rgba(255,255,255,.5);
+    font-size: 15px;
+    text-transform: lowercase;
+    line-height: 1.7;
+  }
+  .compare-empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+    opacity: .4;
+  }
+
+  /* ── Loading state ── */
+  .compare-loading {
+    text-align: center;
+    padding: 40px 24px;
+    font-size: 14px;
+    color: var(--text2);
+    text-transform: lowercase;
+    font-family: 'DM Mono', monospace;
+  }
+
+  /* ── Responsive ── */
+  @media (max-width: 640px) {
+    .compare-pickers {
+      flex-direction: column;
+      align-items: center;
+    }
+    .picker-wrap {
+      max-width: 100%;
+      width: 100%;
+    }
+    .picker-vs {
+      padding-top: 0;
+      font-size: 20px;
+    }
+    .compare-grid {
+      grid-template-columns: 1fr;
+    }
+    .cg-header {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+      width: 100%;
+    }
+    .cg-header-cell, .cg-header-vs {
+      padding: 16px 16px 14px;
+    }
+    .cg-row {
+      display: grid;
+      grid-template-columns: 1fr auto 1fr;
+    }
+    .cg-cell {
+      padding: 14px 16px;
+    }
+    .cg-cell:nth-child(3n) { text-align: right; }
+    .cg-cell-label {
+      padding: 14px 8px;
+      font-size: 10px;
+    }
+    .cg-verdict {
+      padding: 16px;
+      font-size: 13px;
+    }
+    .cg-cta-row {
+      grid-template-columns: 1fr;
+    }
+    .popular-chip {
+      font-size: 13px;
+      padding: 10px 16px;
+    }
+  }
+</style>
+<script>document.documentElement.classList.add('has-js')</script>
+</head>
+<body>
+
+<a class="skip-link" href="#content">skip to content</a>
+
+<div class="grain"></div>
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content">
+
+<section class="compare-hero">
+  <h1>compare stocks</h1>
+  <p>pick any two names from our 3,300+ stock universe. see composite scores, positions, modeled upside, and verdict summaries side by side — free, no signup.</p>
+</section>
+
+<section class="compare-pickers" aria-label="stock comparison picker">
+  <div class="picker-wrap">
+    <label class="picker-label" for="picker-a">stock a</label>
+    <input type="text" id="picker-a" class="picker-input" placeholder="ticker or company..." autocomplete="off" spellcheck="false">
+    <div class="ac-dropdown" id="ac-a" role="listbox" aria-label="stock a suggestions"></div>
+  </div>
+  <div class="picker-vs" aria-hidden="true">vs</div>
+  <div class="picker-wrap">
+    <label class="picker-label" for="picker-b">stock b</label>
+    <input type="text" id="picker-b" class="picker-input" placeholder="ticker or company..." autocomplete="off" spellcheck="false">
+    <div class="ac-dropdown" id="ac-b" role="listbox" aria-label="stock b suggestions"></div>
+  </div>
+</section>
+
+<div class="compare-loading" id="compare-loading">loading library data...</div>
+
+<div class="compare-empty" id="compare-empty">
+  <div class="compare-empty-box">
+    <div class="compare-empty-icon">&harr;</div>
+    select two stocks above to see them compared side by side.<br>
+    type a ticker symbol or company name to get started.
+  </div>
+</div>
+
+<section class="compare-result" id="compare-result" aria-label="comparison results">
+  <div class="compare-grid" id="compare-grid"></div>
+  <div class="cg-cta-row" id="cg-cta-row"></div>
+</section>
+
+<section class="popular-section">
+  <h2>popular comparisons</h2>
+  <p>start with one of these head-to-head matchups — or type your own above.</p>
+  <div class="popular-grid" id="popular-grid">
+    <a class="popular-chip" href="#aapl-vs-msft" data-compare="aapl-vs-msft">aapl vs msft</a>
+    <a class="popular-chip" href="#nvda-vs-amd" data-compare="nvda-vs-amd">nvda vs amd</a>
+    <a class="popular-chip" href="#googl-vs-meta" data-compare="googl-vs-meta">googl vs meta</a>
+    <a class="popular-chip" href="#amzn-vs-wmt" data-compare="amzn-vs-wmt">amzn vs wmt</a>
+    <a class="popular-chip" href="#tsla-vs-f" data-compare="tsla-vs-f">tsla vs f</a>
+    <a class="popular-chip" href="#jpm-vs-gs" data-compare="jpm-vs-gs">jpm vs gs</a>
+    <a class="popular-chip" href="#crm-vs-now" data-compare="crm-vs-now">crm vs now</a>
+    <a class="popular-chip" href="#ko-vs-pep" data-compare="ko-vs-pep">ko vs pep</a>
+    <a class="popular-chip" href="#v-vs-ma" data-compare="v-vs-ma">v vs ma</a>
+    <a class="popular-chip" href="#dis-vs-nflx" data-compare="dis-vs-nflx">dis vs nflx</a>
+  </div>
+</section>
+
+<section class="compare-explore">
+  <p>
+    explore the full library in <a href="/stacks/">the stacks</a>
+    or learn how we score every name in our <a href="/methodology/how-we-analyze-stocks/">methodology</a>.
+  </p>
+</section>
+
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/library-version.js?v=1776081807"></script>
+<script src="/js/library-loader.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807" defer></script>
+<script>
+(function() {
+  'use strict';
+
+  var allStocks = [];
+  var selectedA = null;
+  var selectedB = null;
+  var highlightIndex = { a: -1, b: -1 };
+
+  var pickerA = document.getElementById('picker-a');
+  var pickerB = document.getElementById('picker-b');
+  var acA = document.getElementById('ac-a');
+  var acB = document.getElementById('ac-b');
+  var resultSection = document.getElementById('compare-result');
+  var emptyState = document.getElementById('compare-empty');
+  var loadingEl = document.getElementById('compare-loading');
+  var compareGrid = document.getElementById('compare-grid');
+  var ctaRow = document.getElementById('cg-cta-row');
+
+  /* ── Helpers ── */
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function rowComposite(row) {
+    if (!row) return NaN;
+    var s = row.composite_score;
+    if (s != null && s !== '') {
+      var n = Number(s);
+      if (Number.isFinite(n) && n >= 0) return n;
+    }
+    var c = row.conviction;
+    if (c != null && c !== '') {
+      var cn = Number(c);
+      if (Number.isFinite(cn) && cn >= 0) return cn * 10;
+    }
+    return NaN;
+  }
+
+  function fmtComposite(score) {
+    return Number.isFinite(score) ? String(Math.round(score)) : '\u2014';
+  }
+
+  function parseUpside(str) {
+    if (!str) return NaN;
+    var n = parseFloat(String(str).replace(/[%+]/g, ''));
+    return Number.isFinite(n) ? n : NaN;
+  }
+
+  function normalize(row) {
+    return {
+      ticker: (row.ticker || '').toUpperCase(),
+      tickerLower: (row.ticker || '').toLowerCase(),
+      name: row.name || '',
+      nameLower: (row.name || '').toLowerCase(),
+      sector: row.sector || '',
+      position: row.position || '',
+      upside: row.upside || '',
+      verdict: row.verdict || row.summary || '',
+      url: row.url || '',
+      updated: row.updated || row.publishedAt || '',
+      composite: rowComposite(row)
+    };
+  }
+
+  /* ── Autocomplete ── */
+  function filterStocks(query) {
+    if (!query) return [];
+    var q = query.toLowerCase().trim();
+    if (!q) return [];
+    var exact = [];
+    var startsWith = [];
+    var contains = [];
+    for (var i = 0; i < allStocks.length; i++) {
+      var s = allStocks[i];
+      if (s.tickerLower === q) {
+        exact.push(s);
+      } else if (s.tickerLower.indexOf(q) === 0) {
+        startsWith.push(s);
+      } else if (s.nameLower.indexOf(q) !== -1) {
+        contains.push(s);
+      }
+    }
+    return exact.concat(startsWith, contains).slice(0, 12);
+  }
+
+  function renderDropdown(dropdown, results, side) {
+    dropdown.textContent = '';
+    if (results.length === 0) {
+      dropdown.classList.remove('open');
+      highlightIndex[side] = -1;
+      return;
+    }
+    highlightIndex[side] = -1;
+    results.forEach(function(stock, idx) {
+      var item = document.createElement('div');
+      item.className = 'ac-item';
+      item.setAttribute('role', 'option');
+      item.dataset.idx = idx;
+      item.innerHTML = '<span class="ac-item-ticker">' + escapeHtml(stock.tickerLower) + '</span>'
+        + '<span class="ac-item-name">' + escapeHtml(stock.nameLower) + '</span>';
+      item.addEventListener('mousedown', function(e) {
+        e.preventDefault();
+        selectStock(side, stock);
+      });
+      dropdown.appendChild(item);
+    });
+    dropdown.classList.add('open');
+  }
+
+  function selectStock(side, stock) {
+    var input = side === 'a' ? pickerA : pickerB;
+    var dropdown = side === 'a' ? acA : acB;
+    input.value = stock.ticker;
+    dropdown.classList.remove('open');
+    if (side === 'a') selectedA = stock;
+    else selectedB = stock;
+    tryCompare();
+  }
+
+  function findByTicker(ticker) {
+    var t = ticker.toLowerCase();
+    for (var i = 0; i < allStocks.length; i++) {
+      if (allStocks[i].tickerLower === t) return allStocks[i];
+    }
+    return null;
+  }
+
+  function setupPicker(input, dropdown, side) {
+    var currentResults = [];
+
+    input.addEventListener('input', function() {
+      var q = input.value;
+      currentResults = filterStocks(q);
+      renderDropdown(dropdown, currentResults, side);
+      // Clear selection if user edits
+      if (side === 'a') selectedA = null;
+      else selectedB = null;
+    });
+
+    input.addEventListener('focus', function() {
+      if (input.value) {
+        currentResults = filterStocks(input.value);
+        renderDropdown(dropdown, currentResults, side);
+      }
+    });
+
+    input.addEventListener('blur', function() {
+      // Delay to allow mousedown on dropdown
+      setTimeout(function() { dropdown.classList.remove('open'); }, 200);
+    });
+
+    input.addEventListener('keydown', function(e) {
+      var items = dropdown.querySelectorAll('.ac-item');
+      if (!dropdown.classList.contains('open') || items.length === 0) {
+        if (e.key === 'Enter') {
+          // Try to match what's typed
+          var match = findByTicker(input.value);
+          if (match) selectStock(side, match);
+        }
+        return;
+      }
+
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        highlightIndex[side] = Math.min(highlightIndex[side] + 1, items.length - 1);
+        updateHighlight(items, highlightIndex[side]);
+      } else if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        highlightIndex[side] = Math.max(highlightIndex[side] - 1, 0);
+        updateHighlight(items, highlightIndex[side]);
+      } else if (e.key === 'Enter') {
+        e.preventDefault();
+        if (highlightIndex[side] >= 0 && highlightIndex[side] < currentResults.length) {
+          selectStock(side, currentResults[highlightIndex[side]]);
+        } else if (currentResults.length > 0) {
+          selectStock(side, currentResults[0]);
+        }
+      } else if (e.key === 'Escape') {
+        dropdown.classList.remove('open');
+      }
+    });
+  }
+
+  function updateHighlight(items, idx) {
+    for (var i = 0; i < items.length; i++) {
+      items[i].classList.toggle('highlighted', i === idx);
+    }
+    if (items[idx]) items[idx].scrollIntoView({ block: 'nearest' });
+  }
+
+  /* ── Comparison Renderer ── */
+  function tryCompare() {
+    if (!selectedA || !selectedB) {
+      resultSection.classList.remove('visible');
+      if (allStocks.length > 0) emptyState.classList.add('visible');
+      return;
+    }
+    emptyState.classList.remove('visible');
+    renderComparison(selectedA, selectedB);
+    resultSection.classList.add('visible');
+    // Update URL hash
+    var hash = selectedA.tickerLower + '-vs-' + selectedB.tickerLower;
+    if (window.location.hash !== '#' + hash) {
+      history.replaceState(null, '', '#' + hash);
+    }
+    // Scroll result into view
+    resultSection.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    // Track
+    if (window.plausible) {
+      plausible('Compare', { props: { pair: selectedA.ticker + ' vs ' + selectedB.ticker } });
+    }
+  }
+
+  function renderComparison(a, b) {
+    compareGrid.textContent = '';
+    ctaRow.textContent = '';
+
+    var compA = a.composite;
+    var compB = b.composite;
+    var upA = parseUpside(a.upside);
+    var upB = parseUpside(b.upside);
+
+    // Header
+    var header = document.createElement('div');
+    header.className = 'cg-header';
+    header.innerHTML =
+      '<div class="cg-header-cell"><div class="cg-header-ticker">' + escapeHtml(a.tickerLower) + '</div><div class="cg-header-name">' + escapeHtml(a.name.toLowerCase()) + '</div></div>' +
+      '<div class="cg-header-vs">vs</div>' +
+      '<div class="cg-header-cell"><div class="cg-header-ticker">' + escapeHtml(b.tickerLower) + '</div><div class="cg-header-name">' + escapeHtml(b.name.toLowerCase()) + '</div></div>';
+    compareGrid.appendChild(header);
+
+    // Rows
+    var rows = [
+      {
+        label: 'composite',
+        valA: fmtComposite(compA),
+        valB: fmtComposite(compB),
+        winA: Number.isFinite(compA) && Number.isFinite(compB) && compA > compB,
+        winB: Number.isFinite(compA) && Number.isFinite(compB) && compB > compA
+      },
+      {
+        label: 'position',
+        valA: a.position.toLowerCase(),
+        valB: b.position.toLowerCase(),
+        isPosition: true
+      },
+      {
+        label: 'modeled upside',
+        valA: a.upside || '\u2014',
+        valB: b.upside || '\u2014',
+        winA: Number.isFinite(upA) && Number.isFinite(upB) && upA > upB,
+        winB: Number.isFinite(upA) && Number.isFinite(upB) && upB > upA
+      },
+      {
+        label: 'sector',
+        valA: a.sector.toLowerCase(),
+        valB: b.sector.toLowerCase()
+      },
+      {
+        label: 'last updated',
+        valA: a.updated || '\u2014',
+        valB: b.updated || '\u2014'
+      }
+    ];
+
+    rows.forEach(function(r) {
+      var row = document.createElement('div');
+      row.className = 'cg-row';
+
+      var cellA = document.createElement('div');
+      cellA.className = 'cg-cell';
+      var cellLabel = document.createElement('div');
+      cellLabel.className = 'cg-cell-label';
+      cellLabel.textContent = r.label;
+      var cellB = document.createElement('div');
+      cellB.className = 'cg-cell';
+
+      if (r.isPosition) {
+        var posClassA = (a.position || '').toLowerCase();
+        cellA.innerHTML = '<span class="cg-position cg-position--' + escapeHtml(posClassA) + '">' + escapeHtml(r.valA) + '</span>';
+        var posClassB = (b.position || '').toLowerCase();
+        cellB.innerHTML = '<span class="cg-position cg-position--' + escapeHtml(posClassB) + '">' + escapeHtml(r.valB) + '</span>';
+      } else {
+        var valDivA = document.createElement('div');
+        valDivA.className = 'cg-value' + (r.winA ? ' cg-value--winner' : '');
+        valDivA.textContent = r.valA;
+        cellA.appendChild(valDivA);
+
+        var valDivB = document.createElement('div');
+        valDivB.className = 'cg-value' + (r.winB ? ' cg-value--winner' : '');
+        valDivB.textContent = r.valB;
+        cellB.appendChild(valDivB);
+      }
+
+      row.appendChild(cellA);
+      row.appendChild(cellLabel);
+      row.appendChild(cellB);
+      compareGrid.appendChild(row);
+    });
+
+    // Verdict rows
+    var verdictRow = document.createElement('div');
+    verdictRow.className = 'cg-row';
+    var verdA = document.createElement('div');
+    verdA.className = 'cg-verdict';
+    var verdictTextA = a.verdict.toLowerCase();
+    if (verdictTextA.length > 180) verdictTextA = verdictTextA.substring(0, 180) + '...';
+    verdA.textContent = verdictTextA || '\u2014';
+    var verdLabel = document.createElement('div');
+    verdLabel.className = 'cg-cell-label';
+    verdLabel.textContent = 'verdict';
+    var verdB = document.createElement('div');
+    verdB.className = 'cg-verdict';
+    var verdictTextB = b.verdict.toLowerCase();
+    if (verdictTextB.length > 180) verdictTextB = verdictTextB.substring(0, 180) + '...';
+    verdB.textContent = verdictTextB || '\u2014';
+    verdictRow.appendChild(verdA);
+    verdictRow.appendChild(verdLabel);
+    verdictRow.appendChild(verdB);
+    compareGrid.appendChild(verdictRow);
+
+    // CTAs
+    var ctaA = document.createElement('a');
+    ctaA.href = a.url;
+    ctaA.className = 'cg-cta';
+    ctaA.innerHTML = 'read ' + escapeHtml(a.tickerLower) + ' analysis <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    ctaRow.appendChild(ctaA);
+
+    var ctaB = document.createElement('a');
+    ctaB.href = b.url;
+    ctaB.className = 'cg-cta';
+    ctaB.innerHTML = 'read ' + escapeHtml(b.tickerLower) + ' analysis <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    ctaRow.appendChild(ctaB);
+  }
+
+  /* ── Hash parsing ── */
+  function parseHash() {
+    var hash = window.location.hash.replace('#', '').toLowerCase().trim();
+    if (!hash) return null;
+    var parts = hash.split('-vs-');
+    if (parts.length !== 2) return null;
+    return { a: parts[0].trim(), b: parts[1].trim() };
+  }
+
+  function loadFromHash() {
+    var pair = parseHash();
+    if (!pair) {
+      emptyState.classList.add('visible');
+      return;
+    }
+    var stockA = findByTicker(pair.a);
+    var stockB = findByTicker(pair.b);
+    if (stockA && stockB) {
+      pickerA.value = stockA.ticker;
+      pickerB.value = stockB.ticker;
+      selectedA = stockA;
+      selectedB = stockB;
+      tryCompare();
+    } else {
+      emptyState.classList.add('visible');
+    }
+  }
+
+  /* ── Popular comparison clicks ── */
+  function setupPopularLinks() {
+    var chips = document.querySelectorAll('.popular-chip');
+    chips.forEach(function(chip) {
+      chip.addEventListener('click', function(e) {
+        e.preventDefault();
+        var compare = chip.dataset.compare;
+        window.location.hash = compare;
+        loadFromHash();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+    });
+  }
+
+  /* ── Boot ── */
+  function boot() {
+    var rawLib = [];
+    if (Array.isArray(window.XVARY_LIBRARY_DATA)) {
+      rawLib = window.XVARY_LIBRARY_DATA;
+    } else if (window.XVARY_LIBRARY_DATA && Array.isArray(window.XVARY_LIBRARY_DATA.rows)) {
+      rawLib = window.XVARY_LIBRARY_DATA.rows;
+    }
+
+    // Deduplicate by ticker (keep first occurrence)
+    var seen = {};
+    for (var i = 0; i < rawLib.length; i++) {
+      var t = (rawLib[i].ticker || '').toUpperCase();
+      if (!t || seen[t]) continue;
+      seen[t] = true;
+      allStocks.push(normalize(rawLib[i]));
+    }
+
+    loadingEl.style.display = 'none';
+    setupPicker(pickerA, acA, 'a');
+    setupPicker(pickerB, acB, 'b');
+    setupPopularLinks();
+    loadFromHash();
+
+    window.addEventListener('hashchange', loadFromHash);
+  }
+
+  // Wait for library-loader to fire
+  if (window.XVARY_LIBRARY_READY || window.XVARY_LIBRARY_DATA) {
+    boot();
+  } else {
+    var started = false;
+    var onReady = function() {
+      if (started) return;
+      started = true;
+      document.removeEventListener('xvary-library-ready', onReady);
+      window.removeEventListener('xvary-library-ready', onReady);
+      boot();
+    };
+    document.addEventListener('xvary-library-ready', onReady);
+    window.addEventListener('xvary-library-ready', onReady);
+    // Fallback: fetch directly if loader doesn't fire
+    setTimeout(function() {
+      if (started) return;
+      fetch('/js/library-data.json')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (Array.isArray(data)) window.XVARY_LIBRARY_DATA = data;
+          else if (data && Array.isArray(data.rows)) window.XVARY_LIBRARY_DATA = data.rows;
+          else window.XVARY_LIBRARY_DATA = [];
+          boot();
+        })
+        .catch(function() {
+          loadingEl.textContent = 'failed to load library data. please refresh.';
+        });
+    }, 3000);
+  }
+})();
+</script>
+</body>
+</html>

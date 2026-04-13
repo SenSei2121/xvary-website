@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<!--
+  Evergreen pulse page — macro dissection.
+  Built by: evergreen/build_evergreen.py
+  Template: evergreen/templates/macro-dissection.html
+  Data:     evergreen/data/credit-spreads.json
+  Ship:     4. Website/dist/pulse/macro-credit-spreads/index.html
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Credit spreads — IG, HY, and when equities are forced to care — xvary pulse</title>
+  <meta name="description" content="regime history of HY and IG risk premia: complacency, blowouts, fed backstops, and what widening spreads implied for stocks.">
+  <link rel="canonical" href="https://xvary.com/pulse/macro-credit-spreads/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Credit spreads — macro dissection · xvary">
+  <meta property="og:description" content="regime history of HY and IG risk premia: complacency, blowouts, fed backstops, and what widening spreads implied for stocks.">
+  <meta property="og:url" content="https://xvary.com/pulse/macro-credit-spreads/">
+  <meta property="og:image" content="https://xvary.com/assets/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="XVARY">
+  <meta name="robots" content="index, follow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Credit spreads — macro dissection · xvary">
+  <meta name="twitter:description" content="regime history of HY and IG risk premia: complacency, blowouts, fed backstops, and what widening spreads implied for stocks.">
+  <meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-article.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-evergreen.css?v=1776081807">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Credit spreads — macro dissection · xvary",
+  "description": "regime history of HY and IG risk premia: complacency, blowouts, fed backstops, and what widening spreads implied for stocks.",
+  "datePublished": "2026-03-25",
+  "dateModified": "2026-03-25",
+  "author": {
+    "@type": "Organization",
+    "name": "xvary"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "xvary",
+    "url": "https://xvary.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://xvary.com/assets/xvary-logo.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://xvary.com/pulse/macro-credit-spreads/"
+  },
+  "image": ["https://xvary.com/assets/og-default.png"],
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".pa-headline", ".pa-body"]
+  },
+  "url": "https://xvary.com/pulse/macro-credit-spreads/"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://xvary.com/pulse/macro-credit-spreads/#faq",
+  "url": "https://xvary.com/pulse/macro-credit-spreads/",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "do tight spreads mean stocks are safe?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "no — they can mean complacency. context is growth, leverage, and policy."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "IG vs HY for macro?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "HY is more equity-like; IG flags systemic funding when it widens fast."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "why did 2020 widen so fast?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "forced deleveraging and illiquidity — partly reversed by policy."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "what about CLOs and private credit?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "they changed the plumbing — hides some stress until marks catch up."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "EU vs US spreads?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "different banking systems and sovereign backstops — compare carefully."
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body class="pa-article">
+<a class="skip-link" href="#content">skip to content</a>
+<div class="grain"></div>
+
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="active nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content" class="md-layout">
+  <div class="pa-wrap md-wrap">
+    <div class="pa-back"><a href="/pulse/">← back to the pulse</a></div>
+
+    <header class="pa-head md-head">
+      <div class="pa-kicker-row">
+        <span class="pa-type">evergreen · macro dissection</span>
+        <span class="pa-ticker-pill">investment grade and high yield spreads</span>
+      </div>
+      <h1>Credit spreads — IG, HY, and when equities are forced to care</h1>
+      <p class="pa-deck">when IG and HY spreads widen, equity risk premia usually reprice too — the question is whether the move is macro, idiosyncratic, or a funding accident.</p>
+      <div class="pa-byline">xvary research desk · 2026-03-25 · 1990 to 2026</div>
+    </header>
+
+    <div class="pa-grid md-grid">
+      <article class="pa-body md-body">
+        <section class="md-definitions" aria-labelledby="md-definitions-h"><h2 class="pa-geo-h" id="md-definitions-h">key definitions</h2><dl class="md-definition-list"><div class="md-definition"><dt><dfn>IG spread</dfn></dt><dd>extra yield on investment-grade corporates versus comparable Treasuries — a baseline for investment-grade funding stress.</dd></div><div class="md-definition"><dt><dfn>HY OAS</dfn></dt><dd>option-adjusted spread on high yield — sensitive to defaults, recovery assumptions, and liquidity.</dd></div><div class="md-definition"><dt><dfn>beta to equities</dfn></dt><dd>HY often correlates with small caps and cyclicals because balance-sheet leverage overlaps.</dd></div><div class="md-definition"><dt><dfn>default cycle</dfn></dt><dd>the lag from spread widening to realized defaults — often quarters, sometimes years.</dd></div></dl></section>
+        <p>tight spreads can coexist with complacency; wide spreads can coexist with capitulation lows. the trick is pairing spreads with earnings revision breadth and lending standards.</p><p>policy matters: fed backstops can compress spreads without fixing medium-term default math.</p>
+
+        <figure class="md-master-chart">
+          <figcaption>HY OAS proxy — stylized (bps)</figcaption>
+          <svg viewBox="0 0 760 280" role="img" aria-label="HY OAS proxy — stylized (bps)" xmlns="http://www.w3.org/2000/svg"><rect width="760" height="280" fill="#F4F4F2" rx="20" /><text x="10" y="25.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">820</text><line x1="46" y1="20.00" x2="742" y2="20.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><text x="10" y="243.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">0</text><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><text x="10" y="243.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">0</text><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="#1A1A1A" stroke-width="1.75" stroke-dasharray="5 4" /><path d="M 46.00 126.34 L 65.33 136.98 L 84.67 144.95 L 104.00 152.93 L 123.33 158.24 L 142.67 163.56 L 162.00 168.88 L 181.33 171.54 L 200.67 158.24 L 220.00 144.95 L 239.33 131.66 L 258.67 99.76 L 278.00 110.39 L 297.33 136.98 L 316.67 152.93 L 336.00 158.24 L 355.33 163.56 L 374.67 168.88 L 394.00 99.76 L 413.33 20.00 L 432.67 67.85 L 452.00 136.98 L 471.33 147.61 L 490.67 152.93 L 510.00 155.59 L 529.33 158.24 L 548.67 160.90 L 568.00 163.56 L 587.33 152.93 L 606.67 150.27 L 626.00 136.98 L 645.33 126.34 L 664.67 142.29 L 684.00 147.61 L 703.33 150.27 L 722.67 152.93 L 742.00 155.59 L 742.00 238.00 L 46.00 238.00 Z" fill="rgba(245,225,0,0.55)" stroke="none" /><path d="M 46.00 126.34 L 65.33 136.98 L 84.67 144.95 L 104.00 152.93 L 123.33 158.24 L 142.67 163.56 L 162.00 168.88 L 181.33 171.54 L 200.67 158.24 L 220.00 144.95 L 239.33 131.66 L 258.67 99.76 L 278.00 110.39 L 297.33 136.98 L 316.67 152.93 L 336.00 158.24 L 355.33 163.56 L 374.67 168.88 L 394.00 99.76 L 413.33 20.00 L 432.67 67.85 L 452.00 136.98 L 471.33 147.61 L 490.67 152.93 L 510.00 155.59 L 529.33 158.24 L 548.67 160.90 L 568.00 163.56 L 587.33 152.93 L 606.67 150.27 L 626.00 136.98 L 645.33 126.34 L 664.67 142.29 L 684.00 147.61 L 703.33 150.27 L 722.67 152.93 L 742.00 155.59" fill="none" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /><circle cx="46.00" cy="126.34" r="2.6" fill="#1A1A1A" /><circle cx="65.33" cy="136.98" r="2.6" fill="#1A1A1A" /><circle cx="84.67" cy="144.95" r="2.6" fill="#1A1A1A" /><circle cx="104.00" cy="152.93" r="2.6" fill="#1A1A1A" /><circle cx="123.33" cy="158.24" r="2.6" fill="#1A1A1A" /><circle cx="142.67" cy="163.56" r="2.6" fill="#1A1A1A" /><circle cx="162.00" cy="168.88" r="2.6" fill="#1A1A1A" /><circle cx="181.33" cy="171.54" r="2.6" fill="#1A1A1A" /><circle cx="200.67" cy="158.24" r="2.6" fill="#1A1A1A" /><circle cx="220.00" cy="144.95" r="2.6" fill="#1A1A1A" /><circle cx="239.33" cy="131.66" r="2.6" fill="#1A1A1A" /><circle cx="258.67" cy="99.76" r="2.6" fill="#1A1A1A" /><circle cx="278.00" cy="110.39" r="2.6" fill="#1A1A1A" /><circle cx="297.33" cy="136.98" r="2.6" fill="#1A1A1A" /><circle cx="316.67" cy="152.93" r="2.6" fill="#1A1A1A" /><circle cx="336.00" cy="158.24" r="2.6" fill="#1A1A1A" /><circle cx="355.33" cy="163.56" r="2.6" fill="#1A1A1A" /><circle cx="374.67" cy="168.88" r="2.6" fill="#1A1A1A" /><circle cx="394.00" cy="99.76" r="2.6" fill="#1A1A1A" /><circle cx="413.33" cy="20.00" r="2.6" fill="#1A1A1A" /><circle cx="432.67" cy="67.85" r="2.6" fill="#1A1A1A" /><circle cx="452.00" cy="136.98" r="2.6" fill="#1A1A1A" /><circle cx="471.33" cy="147.61" r="2.6" fill="#1A1A1A" /><circle cx="490.67" cy="152.93" r="2.6" fill="#1A1A1A" /><circle cx="510.00" cy="155.59" r="2.6" fill="#1A1A1A" /><circle cx="529.33" cy="158.24" r="2.6" fill="#1A1A1A" /><circle cx="548.67" cy="160.90" r="2.6" fill="#1A1A1A" /><circle cx="568.00" cy="163.56" r="2.6" fill="#1A1A1A" /><circle cx="587.33" cy="152.93" r="2.6" fill="#1A1A1A" /><circle cx="606.67" cy="150.27" r="2.6" fill="#1A1A1A" /><circle cx="626.00" cy="136.98" r="2.6" fill="#1A1A1A" /><circle cx="645.33" cy="126.34" r="2.6" fill="#1A1A1A" /><circle cx="664.67" cy="142.29" r="2.6" fill="#1A1A1A" /><circle cx="684.00" cy="147.61" r="2.6" fill="#1A1A1A" /><circle cx="703.33" cy="150.27" r="2.6" fill="#1A1A1A" /><circle cx="722.67" cy="152.93" r="2.6" fill="#1A1A1A" /><circle cx="742.00" cy="155.59" r="2.6" fill="#1A1A1A" /><text x="46.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">1990</text><text x="220.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">1999</text><text x="394.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2008</text><text x="568.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2017</text><text x="742.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2026</text></svg>
+        </figure>
+
+        <div class="md-regime-nav-wrap"><nav class="md-regime-nav" aria-label="regime navigation"><a class="md-regime-chip" href="#regime-early-90s-wide"><span class="md-regime-chip-title">early-1990s wide spreads</span><span class="md-regime-chip-range">1990 to 1993</span></a><a class="md-regime-chip" href="#regime-late-90s-compression"><span class="md-regime-chip-title">late-1990s compression</span><span class="md-regime-chip-range">1996 to 2000</span></a><a class="md-regime-chip" href="#regime-2001-2007-mid"><span class="md-regime-chip-title">2001 to 2007 mid-cycle</span><span class="md-regime-chip-range">2001 to 2007</span></a><a class="md-regime-chip" href="#regime-2008-2009-blowout"><span class="md-regime-chip-title">2008 to 2009 blowout</span><span class="md-regime-chip-range">2008 to 2009</span></a><a class="md-regime-chip" href="#regime-2010-2019-grind"><span class="md-regime-chip-title">2010 to 2019 grind tighter</span><span class="md-regime-chip-range">2010 to 2019</span></a><a class="md-regime-chip" href="#regime-2020-2026-shocks"><span class="md-regime-chip-title">2020 to 2026 shocks and normalisation</span><span class="md-regime-chip-range">2020 to 2026</span></a></nav></div>
+        <article class="md-regime-card" id="regime-early-90s-wide"><header class="md-regime-head"><div><h2 class="md-regime-title">early-1990s wide spreads</h2><div class="md-regime-range">1990 to 1993</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 100.00 28.00 L 192.00 37.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="28.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">recession legacy left credit expensive until policy and growth stabilized.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">420</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-420</text><rect x="73.67" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="29.50" width="103.33" height="67.50" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="35.29" width="103.33" height="61.71" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">420</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1990</text><text x="292.00" y="21.50" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">350</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1992</text><text x="458.67" y="27.29" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">320</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1993</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">credit</span>IG and HY remained cautious.</li><li><span class="md-event-tag">fed</span>easing helped.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>equities can rally while spreads are only slowly tightening.</p></div><blockquote class="md-regime-quotable"><p>HY OAS proxy stayed elevated versus mid-cycle norms.</p><cite>FRED; ICE</cite></blockquote></article><article class="md-regime-card" id="regime-late-90s-compression"><header class="md-regime-head"><div><h2 class="md-regime-title">late-1990s compression</h2><div class="md-regime-range">1996 to 2000</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 37.00 L 100.00 28.43 L 192.00 7.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="28.43" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">reach for yield narrowed spreads until equity risk unwound.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">400</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-400</text><rect x="73.67" y="44.35" width="103.33" height="52.65" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="36.25" width="103.33" height="60.75" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="36.35" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">260</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1996</text><text x="292.00" y="28.25" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">300</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1998</text><text x="458.67" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">400</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2000</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">credit</span>tight spreads masked equity concentration.</li><li><span class="md-event-tag">liquidity</span>flows overwhelmed defaults.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>skinny spreads plus equity euphoria is a fragile pair.</p></div><blockquote class="md-regime-quotable"><p>HY OAS fell toward cycle tights into 2000.</p><cite>Fed</cite></blockquote></article><article class="md-regime-card" id="regime-2001-2007-mid"><header class="md-regime-head"><div><h2 class="md-regime-title">2001 to 2007 mid-cycle</h2><div class="md-regime-range">2001 to 2007</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 100.00 27.00 L 192.00 37.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="27.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">slow repair then benign default cycle — until housing credit cracked.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">380</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-380</text><rect x="73.67" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="33.05" width="103.33" height="63.95" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="41.58" width="103.33" height="55.42" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">380</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2003</text><text x="292.00" y="25.05" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">300</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2005</text><text x="458.67" y="33.58" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">260</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2007</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">credit</span>HY carried a carry trade bid.</li><li><span class="md-event-tag">housing</span>subprime build.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>HY calm can extend late into housing imbalances.</p></div><blockquote class="md-regime-quotable"><p>spreads ground tighter mid-decade.</p><cite>BIS</cite></blockquote></article><article class="md-regime-card" id="regime-2008-2009-blowout"><header class="md-regime-head"><div><h2 class="md-regime-title">2008 to 2009 blowout</h2><div class="md-regime-range">2008 to 2009</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 37.00 L 192.00 7.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">funding froze; spreads priced depression-like outcomes.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">820</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-820</text><rect x="89.50" y="45.63" width="155.00" height="51.37" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="339.50" y="16.00" width="155.00" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="167.00" y="37.63" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">520</text><text x="167.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2008</text><text x="417.00" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">820</text><text x="417.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2009</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">credit</span>illiquidity premiums exploded.</li><li><span class="md-event-tag">policy</span>guarantees and QE.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>when spreads gap faster than earnings models update, price discovery is violent.</p></div><blockquote class="md-regime-quotable"><p>HY OAS proxy spiked toward crisis wides.</p><cite>Fed; Treasury</cite></blockquote></article><article class="md-regime-card" id="regime-2010-2019-grind"><header class="md-regime-head"><div><h2 class="md-regime-title">2010 to 2019 grind tighter</h2><div class="md-regime-range">2010 to 2019</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 100.00 37.00 L 192.00 34.35" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="34.35" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">long cycle with episodic scares — energy 2015–2016, china 2015.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">640</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-640</text><rect x="73.67" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="59.03" width="103.33" height="37.97" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="55.23" width="103.33" height="41.77" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">640</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2010</text><text x="292.00" y="51.03" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">300</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2015</text><text x="458.67" y="47.23" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">330</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2019</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">credit</span>search for yield dominated.</li><li><span class="md-event-tag">vol</span>suppressed until late 2018.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>mid-cycle spread calm encourages equity leverage until rates bite.</p></div><blockquote class="md-regime-quotable"><p>HY OAS oscillated lower on average.</p><cite>ICE</cite></blockquote></article><article class="md-regime-card" id="regime-2020-2026-shocks"><header class="md-regime-head"><div><h2 class="md-regime-title">2020 to 2026 shocks and normalisation</h2><div class="md-regime-range">2020 to 2026</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 69.33 15.57 L 130.67 28.43 L 192.00 37.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="69.33" cy="15.57" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="130.67" cy="28.43" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">pandemic spike, policy backstop, then inflation–rates–QT chapters.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">380</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-380</text><rect x="65.75" y="16.00" width="77.50" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="190.75" y="20.26" width="77.50" height="76.74" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="315.75" y="26.66" width="77.50" height="70.34" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="440.75" y="30.92" width="77.50" height="66.08" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="104.50" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">380</text><text x="104.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2020</text><text x="229.50" y="12.26" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">360</text><text x="229.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2022</text><text x="354.50" y="18.66" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">330</text><text x="354.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2024</text><text x="479.50" y="22.92" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">310</text><text x="479.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2026</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">credit</span>2020 liquidity event then repair.</li><li><span class="md-event-tag">rates</span>2022 hikes tested corporates.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>spread cycles now intersect with Treasury volatility — hedging costs matter.</p></div><blockquote class="md-regime-quotable"><p>HY OAS whipped in 2020 then eased before a higher-rate regime.</p><cite>FRED</cite></blockquote></article>
+        <p>refresh from ICE/BofAML or similar for live series — this page uses stylized levels for pedagogy.</p><p>when IG widens first, think refinancing wall; when HY leads, think cash burn and covenant stress.</p>
+      </article>
+
+      <aside class="pa-aside md-aside" aria-label="signal card">
+        <div class="pa-score pa-score--editorial md-score">
+          <div class="pa-score-label">risk premium</div>
+          <div class="pa-pulse-stat">HY spreads blew out to crisis-era wides in 2008–2009 — the cleanest high-beta signal that earnings quality and refinancing mattered more than multiples.</div>
+          <div class="pa-score-label pa-kill-heading">why it matters</div>
+          <p class="pa-verdict">spreads are where credit investors charge for default and illiquidity. equities free-ride that information until a growth shock makes cash flows fragile.</p>
+          <div class="pa-score-label pa-verdict-heading">verdict</div>
+          <p class="pa-verdict">treat spread widening as a tax on levered business models — not just a bond trade.</p>
+          <a href="/pulse/" class="pa-score-cta">more pulse research →</a>
+        </div>
+      </aside>
+    </div>
+
+    <div class="pa-geo-wrap">
+      <section class="pa-geo-takeaways" aria-label="key takeaways"><h2 class="pa-geo-h" id="takeaways">key takeaways</h2><ul class="pa-geo-takeaways-list"><li>HY leads equities on down legs when leverage is the problem.</li><li>IG stress flags refinancing cliffs for mature industries.</li><li>fed facilities can truncate spread spikes — fundamentals decide the sequel.</li><li>pair spreads with loan officer surveys for cause.</li><li>defaults lag spreads — do not confuse price with outcome.</li></ul></section>
+      <section class="pa-geo-faq" aria-label="frequently asked questions"><h2 class="pa-geo-h" id="faq">faq</h2><div class="pa-geo-faq-items"><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">do tight spreads mean stocks are safe?</h3><p class="pa-geo-faq-a">no — they can mean complacency. context is growth, leverage, and policy.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">IG vs HY for macro?</h3><p class="pa-geo-faq-a">HY is more equity-like; IG flags systemic funding when it widens fast.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">why did 2020 widen so fast?</h3><p class="pa-geo-faq-a">forced deleveraging and illiquidity — partly reversed by policy.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">what about CLOs and private credit?</h3><p class="pa-geo-faq-a">they changed the plumbing — hides some stress until marks catch up.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">EU vs US spreads?</h3><p class="pa-geo-faq-a">different banking systems and sovereign backstops — compare carefully.</p></div></div></section>
+      <section class="md-sources" aria-labelledby="md-sources-h"><h2 class="pa-geo-h" id="md-sources-h">sources</h2><ol class="md-sources-list"><li><a href="https://fred.stlouisfed.org/series/BAMLH0A0HYM2">FRED: BAML HY OAS</a></li><li><a href="https://www.federalreserve.gov/publications/fsr-report.htm">Fed: Financial stability</a></li><li><a href="https://www.ice.com/data">ICE: Indices</a></li></ol></section>
+    </div>
+
+    <div class="pa-cta-row">
+      <a href="/pulse/" class="pa-cta is-primary">back to the pulse →</a>
+      <a href="/stacks/" class="pa-cta">the stacks →</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807"></script>
+<script src="/js/gate.js?v=1776081807" defer></script>
+</body>
+</html>

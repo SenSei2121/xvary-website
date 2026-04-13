@@ -1,0 +1,1141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AMZN - deep dive · xvary</title>
+<link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="assets/favicon-16.png">
+<link rel="apple-touch-icon" sizes="512x512" href="assets/apple-touch-icon.png">
+<link rel="stylesheet" href="style.css?v=1776081807">
+<link rel="preconnect" href="https://fonts.googleapis.com/">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<!-- Report styles scoped inside .report-container -->
+<style>
+/* Scope all report styles inside .report-container to avoid conflicts with site styles */
+.report-container { position: relative; }
+/* Push shared footer past the fixed sidebar on the report page */
+.report-container ~ #site-footer .site-footer { margin-left: 240px; }
+/* Mobile note override — only show on small screens */
+@media(min-width:769px){ .mobile-note { display:none !important; } }
+@media(max-width:768px){ .report-container ~ #site-footer .site-footer { margin-left: 0; } }
+</style>
+</head>
+<body>
+
+<!-- Shared Header -->
+<div id="site-header"></div>
+
+<!-- Mobile note -->
+<div class="mobile-note">
+  This report is best viewed on desktop for the full interactive experience.
+  <button aria-label="Dismiss">&times;</button>
+</div>
+
+<!-- Report Container -->
+<div class="report-container">
+<style>
+/* Scoped to .report-container so site header (outside) keeps style.css :root and matches front page */
+
+.report-container {
+      --yel:#ffe500;
+      --ink:#000;
+      --paper:#fffdf3;
+      --card:#fff;
+      --line:rgba(0,0,0,.12);
+      --text:#111;
+      --muted:#555;
+      --soft:#f3eed8;
+      --green:#1a7f5a;
+      --red:#c53030;
+      --amber:#b7791f;
+      --blue:#2251ff;
+      --shadow:0 18px 42px rgba(0,0,0,.10);
+      --radius:16px;
+      --radius-sm:12px;
+      --navw:240px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    html{background:var(--yel);scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h, 68px) + 24px)}
+    body{
+      background:var(--yel);
+      color:var(--text);
+      font:500 16px/1.65 "Space Grotesk",system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    a{color:inherit;text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:var(--ink);color:var(--yel)}
+    .skip-link{
+      position:absolute;left:12px;top:-40px;z-index:9999;
+      background:var(--ink);color:var(--yel);
+      padding:8px 14px;border-radius:999px;font:700 12px/1 "DM Mono",monospace;
+    }
+    .skip-link:focus{top:12px}
+
+    .layout{display:block}
+    .sidebar{
+      position:fixed;left:0;top:var(--nav-h, 68px);bottom:0;width:var(--navw);
+      overflow:auto;background:var(--ink);color:#fff;border-right:1px solid rgba(255,255,255,.08);
+      padding:18px 0 16px;scrollbar-width:none;
+    }
+    .sidebar::-webkit-scrollbar{display:none}
+    .nav-section{padding:0 0 8px}
+    .nav-label{
+      padding:0 18px 10px;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.12em;text-transform:lowercase;color:rgba(255,255,255,.46);
+    }
+    .nav-pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 18px 10px 16px;color:rgba(255,255,255,.78);
+      border-left:3px solid transparent;text-decoration:none;font-size:12px;font-weight:600;line-height:1.35;
+    }
+    .nav-pill:hover{background:rgba(255,255,255,.06);text-decoration:none}
+    .nav-pill.active{background:var(--yel);color:var(--ink);border-left-color:var(--ink)}
+    .nav-kbd{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:22px;height:22px;border-radius:6px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+      font:700 10px/1 "DM Mono",monospace;flex:0 0 auto;
+    }
+    .nav-pill.active .nav-kbd{background:var(--ink);color:var(--yel);border-color:var(--ink)}
+    .nav-txt{min-width:0}
+
+    .content{
+      margin-left:var(--navw);
+      padding:28px 26px 64px;
+      width:calc((100vw - var(--navw)) * 0.9);
+      max-width:none;
+    }
+
+    .hero{
+      display:block;
+      text-align:left;
+      border-bottom:3px solid rgba(0,0,0,.14);
+      padding:18px 0 26px;margin-bottom:18px;
+    }
+    .hero-top{
+      display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:24px;align-items:end;
+      padding-bottom:18px;
+    }
+    .hero .hero-ticker{
+      font-size:clamp(58px,10vw,92px);line-height:.88;font-weight:800;letter-spacing:-.05em;text-transform:lowercase;margin:0;
+      max-width:none;text-align:left;
+    }
+    .hero-co{margin-top:4px;font-size:14px;color:rgba(0,0,0,.64);text-transform:lowercase}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .pill{
+      display:inline-flex;align-items:center;padding:5px 12px;border-radius:999px;
+      font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.06em;
+      background:rgba(0,0,0,.08);color:#111;
+    }
+    .pill.dark{background:var(--ink);color:var(--yel)}
+    .hero .hero-hook{
+      font-size:clamp(19px,2.05vw,24px);line-height:1.35;font-weight:700;margin:0;color:#111;
+      max-width:none;text-align:left;
+    }
+    .hero .hero-sub{
+      margin:10px 0 0;color:rgba(0,0,0,.70);font-size:17px;line-height:1.68;max-width:none;text-align:left;
+    }
+    .hero-tape{
+      display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;padding-top:16px;
+      border-top:2px solid rgba(0,0,0,.10);font:600 11px/1.5 "DM Mono",monospace;color:rgba(0,0,0,.58)
+    }
+    .hero-tape strong{color:rgba(0,0,0,.92)}
+
+    .kpi-grid{display:grid;gap:10px}
+    .kpi-grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .kpi-grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .kpi-grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi{
+      background:rgba(255,255,255,.84);border:1px solid rgba(0,0,0,.08);border-radius:14px;
+      padding:14px 16px;box-shadow:0 8px 20px rgba(0,0,0,.04)
+    }
+    .kpi-label{font:700 10px/1.25 "DM Mono",monospace;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .kpi-value{font-size:clamp(24px,2.8vw,34px);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+    .kpi-sub{margin-top:4px;font-size:12px;line-height:1.45;color:rgba(0,0,0,.55)}
+    .value-gn{color:var(--green)}
+    .value-rd{color:var(--red)}
+    .value-am{color:var(--amber)}
+
+    .panel{
+      background:rgba(255,255,255,.92);border:2px solid rgba(0,0,0,.08);border-left:5px solid var(--yel);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin:18px 0
+    }
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      margin-bottom:12px;padding-bottom:12px;border-bottom:3px solid #000
+    }
+    .section-head h2{
+      margin:0;font-size:clamp(34px,3.9vw,50px);line-height:.98;font-weight:800;letter-spacing:-.045em;text-transform:none
+    }
+    .kicker{font:700 11px/1 "DM Mono",monospace;letter-spacing:.12em;text-transform:lowercase;color:rgba(0,0,0,.52)}
+    .lead{margin:0 0 16px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.72)}
+    .aggregate-sources-attribution{margin:0 0 14px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.76)}
+    .aggregate-sources-attribution p{margin:0}
+    .aggregate-methodology-link{margin:0;max-width:80ch;font-size:14.5px;line-height:1.6;color:rgba(0,0,0,.62)}
+    #appendix .lead,
+    #appendix .aggregate-sources-attribution,
+    #appendix .aggregate-methodology-link{max-width:none}
+    .quote,.note,.callout,.pillar,.scenario,.table-wrap,.chart-box{
+      background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:14px
+    }
+    .quote{padding:14px 16px;font-size:15px;line-height:1.68;color:rgba(0,0,0,.72)}
+    .note{padding:14px 16px;margin-top:10px;font-size:14.5px;line-height:1.64;color:rgba(0,0,0,.72)}
+    .note strong,.table-title .tag,.legend-label,.pillars .head h4{
+      font:700 11px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase
+    }
+    .note.green{border-left:4px solid var(--green);background:rgba(26,127,90,.06)}
+    .note.amber{border-left:4px solid var(--amber);background:rgba(183,121,31,.08)}
+    .note.red{border-left:4px solid var(--red);background:rgba(197,48,48,.06)}
+
+    .g2,.g3,.g4,.callout-row,.pillars,.scenario-grid{display:grid;gap:10px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .callout-row{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:12px;min-width:0}
+    .callout{padding:14px 16px;min-width:0;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+    .callout .label{font:700 10px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .callout .metric{font-size:clamp(24px,2.8vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;word-break:break-word}
+    #appendix .callout .metric{font-size:clamp(13px,1.35vw,16px);font-weight:700;letter-spacing:0;line-height:1.4}
+    .callout .desc{margin-top:6px;font-size:12.5px;line-height:1.5;color:rgba(0,0,0,.56)}
+
+    .pillars{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px}
+    .pillar{padding:14px 16px}
+    .pillar .head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+    .pillar .head h4{margin:0;font-size:14px;color:#111;letter-spacing:0;text-transform:none;font-family:"Space Grotesk",sans-serif}
+    .tag{
+      display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;border:1px solid rgba(0,0,0,.10);
+      background:rgba(255,255,255,.85);font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.04em;
+    }
+    .tag.green{color:var(--green);background:rgba(26,127,90,.08);border-color:rgba(26,127,90,.25)}
+    .tag.amber{color:var(--amber);background:rgba(183,121,31,.10);border-color:rgba(183,121,31,.25)}
+    .tag.red{color:var(--red);background:rgba(197,48,48,.08);border-color:rgba(197,48,48,.25)}
+    .tag.blue{color:#111;background:rgba(255,229,0,.18);border-color:rgba(0,0,0,.20)}
+    .tag.ink{color:rgba(0,0,0,.68)}
+
+    .table-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+    .table-title h3{margin:0;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-.02em;text-transform:none}
+    .table-wrap{overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+    table{width:100%;border-collapse:collapse;min-width:520px;font-variant-numeric:tabular-nums;background:#fff}
+    th,td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+    thead th{
+      position:sticky;top:0;background:#f0ece4;color:#111;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.08em;text-transform:lowercase;border-bottom:3px solid #000;text-align:left
+    }
+    tbody tr:nth-child(even) td{background:rgba(240,236,228,.36)}
+    tbody tr:hover td{background:rgba(255,229,0,.16)}
+    td.num,th.num{text-align:right}
+    td.b{font-weight:800;color:#111}
+    td.pos{color:var(--green);font-weight:700}
+    td.neg{color:var(--red);font-weight:700}
+    td.amb{color:var(--amber);font-weight:700}
+
+    .chart-box{padding:16px 18px 18px;box-shadow:0 12px 36px rgba(0,0,0,.06)}
+    .chart-head h3{margin:0 0 4px;font-size:16px;line-height:1.2;text-transform:none}
+    .chart-head .sub{font-size:11px;color:rgba(0,0,0,.52);font-style:italic}
+    /* TAM vs revenue: y-axis ticks + grid + split x-label row */
+    .chart-labeled{
+      --chart-h:min(52vw,240px);
+      --chart-h-min:200px;
+      --chart-h-max:260px;
+      display:grid;
+      grid-template-columns:3.35rem 1fr;
+      grid-template-rows:minmax(var(--chart-h-min),var(--chart-h-max)) auto;
+      gap:8px 12px;
+      align-items:stretch;
+      margin-top:6px;
+    }
+    .chart-y-title{
+      margin:8px 0 0;
+      font:700 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.5);
+    }
+    .chart-y-axis{
+      grid-column:1;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      padding-right:8px;
+      border-right:2px solid rgba(0,0,0,.2);
+      font:600 10px/1 "DM Mono",monospace;
+      color:rgba(0,0,0,.58);
+      box-sizing:border-box;
+    }
+    .chart-y-axis .yt{
+      position:absolute;right:8px;line-height:1;white-space:nowrap;
+      transform:translateY(-50%);
+    }
+    .chart-y-axis .yt.y-600{top:0;transform:translateY(0)}
+    .chart-y-axis .yt.y-500{top:16.6667%}
+    .chart-y-axis .yt.y-400{top:33.3333%}
+    .chart-y-axis .yt.y-300{top:50%}
+    .chart-y-axis .yt.y-200{top:66.6667%}
+    .chart-y-axis .yt.y-100{top:83.3333%}
+    .chart-y-axis .yt.y-0{bottom:0;top:auto;transform:translateY(0)}
+    .chart-plot-cell{
+      grid-column:2;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      border-bottom:2px solid rgba(0,0,0,.2);
+    }
+    .chart-grid-bg{
+      position:absolute;inset:0;
+      background:repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6)
+      );
+      pointer-events:none;
+    }
+    .chart{
+      position:relative;z-index:1;
+      display:flex;align-items:flex-end;justify-content:stretch;gap:6px;
+      width:100%;
+      height:100%;min-height:0;
+    }
+    .bar{
+      flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+      min-width:0;height:100%;
+    }
+    .bar-pair{
+      display:flex;flex-direction:row;align-items:flex-end;justify-content:center;
+      gap:5px;width:100%;height:100%;min-height:0;
+    }
+    .col{
+      flex:1 1 0;min-width:8px;border-radius:8px 8px 2px 2px;
+      min-height:2px;align-self:flex-end;
+      box-sizing:border-box;
+    }
+    .col.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .col.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .chart-x-foot{
+      grid-column:2;
+      grid-row:2;
+      display:flex;gap:6px;
+      margin-top:-2px;
+    }
+    .bar-foot{
+      flex:1 1 0;min-width:0;
+      text-align:center;padding-top:6px;
+    }
+    .chart-x-axis-cap{
+      margin:4px 0 0;
+      font:600 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.45);
+      text-align:center;
+    }
+    .chart-legend{
+      display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:12px;padding-top:10px;
+      border-top:1px solid rgba(0,0,0,.08);font-size:12px;color:rgba(0,0,0,.62)
+    }
+    .chart-legend span{display:inline-flex;align-items:center;gap:6px}
+    .chart-legend i{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+    .chart-legend i.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .chart-legend i.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .lab,.val{font-size:10px;line-height:1.25;text-align:center;color:rgba(0,0,0,.56)}
+    .val{font:700 10px/1 "DM Mono",monospace}
+    .lab{max-width:12em;margin:0 auto}
+
+    .scenario-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}
+    .scenario{padding:14px 16px;border-left:4px solid var(--blue)}
+    .scenario.bear{border-left-color:var(--red)}
+    .scenario.base{border-left-color:var(--amber)}
+    .scenario.bull{border-left-color:var(--green)}
+    .scenario .prob{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:8px}
+    .scenario h4{margin:0 0 6px;font-size:18px;line-height:1.1}
+    .scenario p{margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,.72)}
+
+    .legend{display:grid;gap:8px}
+    .legend .item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(0,0,0,.72)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)} .dot.blue{background:#2251ff}
+
+    .footer{
+      margin-top:28px;padding-top:22px;border-top:3px solid rgba(0,0,0,.12);
+      text-align:center;font-size:12px;line-height:1.65;color:rgba(0,0,0,.56)
+    }
+    .footer .links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+    .footer .links a{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.68)}
+    .footer .small{margin-top:12px;font-size:11px;color:rgba(0,0,0,.54)}
+
+    .reading-progress{
+      position:fixed;top:var(--nav-h, 68px);left:0;height:4px;width:0;z-index:101;
+      background:linear-gradient(90deg,var(--yel),#fff38c);box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 14px rgba(255,229,0,.45)
+    }
+    .watermark{
+      position:fixed;right:18px;bottom:14px;z-index:1;pointer-events:none;user-select:none;
+      font-size:clamp(68px,12vw,118px);font-weight:800;letter-spacing:-.06em;line-height:.8;color:rgba(0,0,0,.05)
+    }
+
+    @media (max-width:1024px){
+      .g2,.g3,.g4,.pillars,.scenario-grid{grid-template-columns:1fr}
+      .hero-top{grid-template-columns:1fr}
+      .content{padding:22px 18px 56px}
+    }
+    @media (max-width:900px){
+      .sidebar{display:none}
+      .content{
+        margin-left:auto;
+        margin-right:auto;
+        width:90vw;
+        max-width:none;
+      }
+    }
+    @media (max-width:760px){
+      .kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr 1fr}
+      .callout-row{grid-template-columns:1fr 1fr}
+      table{min-width:460px}
+    }
+    @media (max-width:560px){
+      .callout-row,.kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr}
+      .section-head h2{font-size:30px}
+      .hero .hero-hook{font-size:19px}
+      .hero .hero-sub{font-size:16px}
+      .panel{padding:20px}
+    }
+    .hero-snapshot-link {
+      display: inline-block;
+      margin-top: 4px;
+      font: 400 11px/1.4 "DM Mono", monospace;
+      color: rgba(0,0,0,.38);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .hero-snapshot-link:hover {
+      color: rgba(0,0,0,.68);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+  .aggregate-panel {
+    position: relative;
+    z-index: 1;
+  }
+  .aggregate-lead p {
+    margin: 0 0 16px;
+  }
+  .auto-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .aggregate-stack {
+    display: grid;
+    gap: 12px;
+  }
+  .aggregate-card {
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.05);
+  }
+  .aggregate-card.dark {
+    background: rgba(0,0,0,.92);
+    color: rgba(255,255,255,.92);
+    border-color: rgba(255,255,255,.08);
+  }
+  .aggregate-card.dark p,
+  .aggregate-card.dark li,
+  .aggregate-card.dark .aggregate-source {
+    color: rgba(255,255,255,.72);
+  }
+  .aggregate-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .aggregate-card-head h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    text-transform: lowercase;
+  }
+  .aggregate-card-body,
+  .aggregate-card-body p,
+  .aggregate-card-body li {
+    font-size: 15px;
+    line-height: 1.68;
+    color: rgba(0,0,0,.72);
+  }
+  .aggregate-card-body p {
+    margin: 0 0 12px;
+  }
+  .aggregate-card-body ul,
+  .aggregate-card-body ol {
+    margin: 0 0 12px 20px;
+    padding: 0;
+  }
+  .aggregate-card-body > *:last-child {
+    margin-bottom: 0;
+  }
+  .aggregate-source {
+    margin-top: 10px;
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .06em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.48);
+  }
+  .aggregate-substack {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .aggregate-chart-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .aggregate-chart-row {
+    display: grid;
+    grid-template-columns: minmax(80px, 140px) 1fr minmax(60px, 120px);
+    align-items: center;
+    gap: 10px;
+  }
+  .aggregate-chart-label,
+  .aggregate-chart-value {
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .04em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.62);
+  }
+  .aggregate-chart-track {
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .aggregate-chart-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+  }
+  .table-wrap table th.num,
+  .table-wrap table td.num {
+    text-align: right;
+  }
+  .table-wrap table td.pos { color: var(--green, #1a7f37); font-weight: 600; }
+  .table-wrap table td.neg { color: var(--red, #cf222e); font-weight: 600; }
+  .table-wrap table td.amb { color: var(--caution-text, #9a6700); font-weight: 600; }
+  .table-narrow {
+    max-width: 520px;
+  }
+  .table-narrow table {
+    min-width: 0;
+    width: 100%;
+  }
+  .g2 .table-narrow {
+    max-width: none;
+  }
+  .aggregate-mini-table {
+    margin-top: 8px;
+  }
+  .aggregate-mini-table table {
+    min-width: 0;
+  }
+  .aggregate-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .aggregate-list-item {
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    background: rgba(255,255,255,.72);
+  }
+  .aggregate-list-item strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .aggregate-audit {
+    margin-top: 8px;
+  }
+  @media (max-width: 1120px) {
+    .sidebar {
+      position: static;
+      width: auto;
+      top: auto;
+      padding: 12px 0;
+      border-right: 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: none;
+    }
+    .content {
+      margin-left: auto;
+      margin-right: auto;
+      width: 90vw;
+      max-width: none;
+      padding: 24px 18px 56px;
+    }
+    .watermark {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .hero-top {
+      grid-template-columns: 1fr;
+    }
+    .aggregate-chart-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+  .aggregate-pane-xref {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(0, 0, 0, 0.52);
+  }
+  .aggregate-pane-xref a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .aggregate-pane-xref a:hover {
+    color: rgba(0, 0, 0, 0.88);
+  }
+  .hero-snapshot-link {
+    display: inline-block;
+    margin-top: 4px;
+    font: 400 11px/1.4 "DM Mono", monospace;
+    color: rgba(0,0,0,.38);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .hero-snapshot-link:hover {
+    color: rgba(0,0,0,.68);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  
+</style>
+
+<a class="skip-link" href="#content">skip to content</a>
+  <div class="reading-progress" id="reading-progress"></div>
+  <div class="watermark" aria-hidden="true">AMZN</div>
+
+  <nav class="nav nav--white" aria-label="main navigation" data-xvary-nav-static>
+    <a class="nav-brand" href="/">xvary</a>
+    <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" type="button" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+    <div class="nav-links">
+      <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/pricing/">pricing</a>
+      <a class="nav-cta" href="/pricing/">sign up</a>
+    </div>
+  </nav>
+
+  <div class="layout xvary-aggregate-deep-dive-body" data-template-id="aggregate-deep-dive-live-v1" lang="en">
+    <aside class="sidebar" aria-label="section navigation">
+      <div class="nav-section">
+        <div class="nav-label">quick navigation</div>
+        <a class="nav-pill active" href="#summary">
+          <span class="nav-kbd">0</span>
+          <span class="nav-txt">report snapshot</span>
+        </a>
+        <a class="nav-pill " href="#thesis">
+          <span class="nav-kbd">1</span>
+          <span class="nav-txt">variant perception &amp; thesis</span>
+        </a>
+        <a class="nav-pill " href="#financials">
+          <span class="nav-kbd">2</span>
+          <span class="nav-txt">financial analysis</span>
+        </a>
+        <a class="nav-pill " href="#valuation">
+          <span class="nav-kbd">3</span>
+          <span class="nav-txt">valuation</span>
+        </a>
+        <a class="nav-pill " href="#risk">
+          <span class="nav-kbd">4</span>
+          <span class="nav-txt">what breaks the thesis</span>
+        </a>
+        <a class="nav-pill " href="#ops">
+          <span class="nav-kbd">5</span>
+          <span class="nav-txt">fundamentals &amp; operations</span>
+        </a>
+        <a class="nav-pill " href="#competition">
+          <span class="nav-kbd">6</span>
+          <span class="nav-txt">competitive position</span>
+        </a>
+        <a class="nav-pill " href="#tam">
+          <span class="nav-kbd">7</span>
+          <span class="nav-txt">market size &amp; tam</span>
+        </a>
+        <a class="nav-pill " href="#product">
+          <span class="nav-kbd">8</span>
+          <span class="nav-txt">product &amp; technology</span>
+        </a>
+        <a class="nav-pill " href="#supply">
+          <span class="nav-kbd">9</span>
+          <span class="nav-txt">supply chain</span>
+        </a>
+        <a class="nav-pill " href="#catalysts">
+          <span class="nav-kbd">a</span>
+          <span class="nav-txt">catalyst map</span>
+        </a>
+        <a class="nav-pill " href="#street">
+          <span class="nav-kbd">b</span>
+          <span class="nav-txt">street expectations</span>
+        </a>
+        <a class="nav-pill " href="#scorecard">
+          <span class="nav-kbd">c</span>
+          <span class="nav-txt">earnings scorecard</span>
+        </a>
+        <a class="nav-pill " href="#signals">
+          <span class="nav-kbd">d</span>
+          <span class="nav-txt">alternative data</span>
+        </a>
+        <a class="nav-pill " href="#history">
+          <span class="nav-kbd">e</span>
+          <span class="nav-txt">historical analogies</span>
+        </a>
+        <a class="nav-pill " href="#management">
+          <span class="nav-kbd">f</span>
+          <span class="nav-txt">management &amp; leadership</span>
+        </a>
+        <a class="nav-pill " href="#macro">
+          <span class="nav-kbd">g</span>
+          <span class="nav-txt">macro sensitivity</span>
+        </a>
+        <a class="nav-pill " href="#quant">
+          <span class="nav-kbd">h</span>
+          <span class="nav-txt">quantitative profile</span>
+        </a>
+        <a class="nav-pill " href="#derivatives">
+          <span class="nav-kbd">i</span>
+          <span class="nav-txt">options &amp; derivatives</span>
+        </a>
+        <a class="nav-pill " href="#governance">
+          <span class="nav-kbd">j</span>
+          <span class="nav-txt">governance &amp; accounting</span>
+        </a>
+        <a class="nav-pill " href="#value">
+          <span class="nav-kbd">k</span>
+          <span class="nav-txt">value framework</span>
+        </a>
+        <a class="nav-pill " href="#appendix">
+          <span class="nav-kbd">l</span>
+          <span class="nav-txt">appendix &amp; sources</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="content" id="content">
+      <section class="hero" aria-label="report intro">
+        <div class="hero-top">
+          <div>
+            <h1 class="hero-ticker">amzn</h1>
+            <div class="hero-co">amazon com inc</div>
+            <a class="hero-snapshot-link" href="/stock/amzn/snapshot/">snapshot page &rarr;</a>
+            <div class="hero-badges">
+              <span class="pill dark">deep dive</span>
+              <span class="pill ">catalog &amp; mail-order houses</span>
+              <span class="pill ">mega cap</span>
+              <span class="pill ">apr 12, 2026</span>
+            </div>
+            <div class="hero-tape" aria-label="headline tape">
+              <span><strong>Position</strong> Long</span>
+              <span><strong>Price</strong> $183.66</span>
+              <span><strong>~$1.93T</strong> mcap</span>
+              <span><strong>apr 12, 2026</strong> as-of date</span>
+            </div>
+          </div>
+          <div>
+            <p class="hero-hook">Deep dive analysis of AMAZON COM INC.</p>
+            <p class="hero-sub">That intrinsic line rolls up bear, base, and bull by assigned weights — not one cherry-picked case. <strong>Plain English:</strong> "intrinsic value" means what the model says the stock is worth if the growth narrative mostly holds — not a promise.</p>
+          </div>
+        </div>
+
+        <div class="kpi-grid cols-3">
+          <div class="kpi">
+            <div class="kpi-label">recommendation</div>
+            <div class="kpi-value ">Long</div>
+            <div class="kpi-sub">portfolio stance</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">12m price target</div>
+            <div class="kpi-value ">$195</div>
+            <div class="kpi-sub">+6% from $183.66</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">intrinsic value</div>
+            <div class="kpi-value ">$195</div>
+            <div class="kpi-sub">+6.2%</div>
+          </div>
+        </div>
+
+        <div class="callout-row">
+          <div class="callout">
+            <div class="label">market cap</div>
+            <div class="metric ">$1.93T</div>
+            <div class="desc"></div>
+          </div>
+          <div class="callout">
+            <div class="label">fy24 revenue</div>
+            <div class="metric ">$638.0B</div>
+            <div class="desc">+11% YoY</div>
+          </div>
+          <div class="callout">
+            <div class="label">fy24 op income</div>
+            <div class="metric ">$68.6B</div>
+            <div class="desc">+86% YoY</div>
+          </div>
+          <div class="callout">
+            <div class="label">fy24 eps</div>
+            <div class="metric ">$5.53</div>
+            <div class="desc">+91% YoY</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>report snapshot</h2>
+          <div class="kicker">executive summary</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Intrinsic value of $195 implies 6.2% upside from the current $183.66 share price. The single most important non-obvious takeaway is that Amazon&#x27;s margin expansion from 2.4% to 10.8% operating margin over two years is structural — driven by fulfillment regionalization, advertising mix shift, and AWS operating leverage — not a cyclical bounce that will mean-revert.</p></div>
+                <div class="g3"><div class="kpi"><div class="kpi-label">recommendation</div><div class="kpi-value ">Long</div><div class="kpi-sub">portfolio stance</div></div><div class="kpi"><div class="kpi-label">12m price target</div><div class="kpi-value ">$195</div><div class="kpi-sub">+6% from $183.66</div></div><div class="kpi"><div class="kpi-label">intrinsic value</div><div class="kpi-value ">$195</div><div class="kpi-sub">+6.2%</div></div></div>
+        <div class="g2" style="margin-top:10px">
+          <div class="quote"><strong class="kicker">core debate</strong><br><p>Intrinsic value of $195 implies 6.2% upside from the current $183.66 share price...</p></div>
+          <div class="quote"><strong class="kicker">headline tape</strong><br><p>$183.66 · ~$1.93T · as of apr 12, 2026.</p></div>
+        </div>
+        <div class="callout-row"><div class="callout"><div class="label">bull case</div><div class="metric value-gn">$248</div><div class="desc">AWS sustains 25%+ growth with AI driving incremental $30B+ revenue. Advertising reaches $80B+...</div></div><div class="callout"><div class="label">base case</div><div class="metric ">$195</div><div class="desc">AWS grows 17-19%, advertising 15-18%. Retail margins stable at 6-7%...</div></div><div class="callout"><div class="label">bear case</div><div class="metric value-rd">$130</div><div class="desc">AWS growth decelerates to 12% as Azure gains share. Antitrust remedies restrict marketplace...</div></div></div>
+        <div class="note green"><strong>top findings</strong><br><p>Review filings-backed metrics in the financials section for the strongest evidence lines.</p></div>
+        <div class="note amber"><strong>aggregate synthesis</strong><br><p>Numbers can look similar while narrative labels diverge — focus on which spreadsheet row the market is pricing.</p></div>
+
+      </section>
+      <section id="thesis" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>variant perception &amp; thesis</h2>
+          <div class="kicker">pm brief</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The market prices Amazon as a high-growth compounder trading at 33x forward earnings. Our variant perception is that the market underestimates the structural permanence of Amazon&#x27;s margin expansion — this is not a cyclical recovery but a one-time step-change driven by fulfillment regionalization, advertising mix shift, and AWS operating leverage that won&#x27;t reverse.</p></div>
+                <div class="pillars"><div class="pillar"><div class="head"><h4>1. aws margin leverage + ai</h4><span class="tag green">9/10</span></div><p>$116B at 34% margin, AI workloads accelerating. Incremental margins above 50%...</p></div><div class="pillar"><div class="head"><h4>2. advertising flywheel</h4><span class="tag green">8/10</span></div><p>$56B growing 20%, nearly pure margin. Structural advantage: Amazon owns purchase intent data...</p></div><div class="pillar"><div class="head"><h4>3. retail margin normalization</h4><span class="tag green">7/10</span></div><p>NA margins from -0.2% to 6.4%. International turned profitable...</p></div><div class="pillar"><div class="head"><h4>4. prime ecosystem lock in</h4><span class="tag green">8/10</span></div><p>200M+ members, $139/year, churn structurally low. The bundle (shipping+video+music+grocery+pharmacy) has no single competitor equivalent.</p></div></div>
+        <div class="note"><strong>the 60-second pitch</strong><br><p>Read the pillar scores as conviction on each leg of the variant view; low scores are where consensus could be right.</p></div>
+
+      </section>
+      <section id="financials" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>financial analysis</h2>
+          <div class="kicker">elite economics</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Amazon&#x27;s FY2024 financials tell a turnaround story: operating income nearly doubled to $68.6B from $36.9B, net income hit $59.2B ($5.53 EPS) versus a $2.7B loss just two years prior, and operating cash flow surged to $115.9B. The gross margin expansion to 48.4% reflects a structural shift toward higher-margin revenue streams — AWS, advertising, and 3P services — rather than a one-time cost cut.</p></div>
+                <div class="callout-row"><div class="callout"><div class="label">Gross Margin</div><div class="metric ">48.4%</div><div class="desc">Up from ~44% FY2022</div></div><div class="callout"><div class="label">Operating Margin</div><div class="metric ">10.8%</div><div class="desc">FY2022: 2.4%</div></div><div class="callout"><div class="label">Net Margin</div><div class="metric ">9.3%</div><div class="desc">FY2022: -0.5%</div></div><div class="callout"><div class="label">Operating Cash Flow</div><div class="metric ">$115.9B</div><div class="desc">18.2% of revenue</div></div><div class="callout"><div class="label">Free Cash Flow</div><div class="metric value-am">~$32.9B</div><div class="desc">After $83B capex</div></div><div class="callout"><div class="label">R&D Spend</div><div class="metric ">$85.6B</div><div class="desc">13.4% of revenue</div></div></div>
+        <div class="g2" style="margin-top:10px"><div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">FY2021</th><th class="num">FY2022</th><th class="num">FY2023</th><th class="num">FY2024</th></tr></thead><tbody><tr><td><p>Revenue</p></td><td class="num"><p>$469.8B</p></td><td class="num"><p>$514.0B</p></td><td class="num"><p>$574.8B</p></td><td class="num"><p>$638.0B</p></td></tr><tr><td><p>Operating Income</p></td><td class="num"><p>$24.9B</p></td><td class="num"><p>$12.2B</p></td><td class="num"><p>$36.9B</p></td><td class="num"><p>$68.6B</p></td></tr><tr><td><p>Net Income</p></td><td class="num"><p>$33.4B</p></td><td class="num"><p>-$2.7B</p></td><td class="num"><p>$30.4B</p></td><td class="num"><p>$59.2B</p></td></tr><tr><td><p>EPS</p></td><td class="num"><p>$3.24</p></td><td class="num"><p>-$0.27</p></td><td class="num"><p>$2.90</p></td><td class="num"><p>$5.53</p></td></tr><tr><td><p>Op Margin</p></td><td class="num"><p>5.3%</p></td><td class="num"><p>2.4%</p></td><td class="num"><p>6.4%</p></td><td class="num"><p>10.8%</p></td></tr><tr><td><p>OCF</p></td><td class="num"><p>$46.3B</p></td><td class="num"><p>$46.8B</p></td><td class="num"><p>$84.9B</p></td><td class="num"><p>$115.9B</p></td></tr></tbody></table></div></div><div><div class="table-wrap table-narrow"><table><thead><tr><th>Balance Sheet Item</th><th class="num">FY2024</th></tr></thead><tbody><tr><td><p>Cash &amp; Equivalents</p></td><td class="num"><p>$78.7B</p></td></tr><tr><td><p>Long-term Debt</p></td><td class="num"><p>$52.6B</p></td></tr><tr><td><p>Net Cash</p></td><td class="num"><p>~$26.1B</p></td></tr><tr><td><p>Total Assets</p></td><td class="num"><p>$624.9B</p></td></tr><tr><td><p>Shareholders&#x27; Equity</p></td><td class="num"><p>$286.0B</p></td></tr><tr><td><p>Debt/Equity</p></td><td class="num"><p>0.18x</p></td></tr></tbody></table></div></div></div>
+        <div class="note green"><strong>production-report readthrough</strong><br><p>These numbers ground the thesis in reported economics; the debate is durability and cycle, not obvious accounting gaps.</p></div>
+
+      </section>
+      <section id="valuation" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>valuation</h2>
+          <div class="kicker">probability-weighted fair value</div>
+        </div>
+        <div class="lead aggregate-lead"><p>At ~$184/share and a $1.93T market cap, Amazon trades at 33x forward earnings and ~59x trailing FCF. The stock is priced for continued margin expansion and sustained AWS growth — the bull case requires both to play out. A 10-year DCF using 9.5% WACC and conservative assumptions yields a base case fair value of $195, suggesting the stock is roughly fairly valued with upside skewed toward AI monetization and margin normalization.</p></div>
+                <div class="g2"><div><div class="table-wrap"><table><thead><tr><th>Peer</th><th class="num">Market Cap</th><th class="num">Fwd P/E</th><th class="num">EV/Revenue</th><th class="num">Rev Growth</th><th class="num">Op Margin</th></tr></thead><tbody><tr><td><p>Amazon (AMZN)</p></td><td class="num"><p>$1.93T</p></td><td class="num"><p>33x</p></td><td class="num"><p>3.1x</p></td><td class="num"><p>11%</p></td><td class="num"><p>10.8%</p></td></tr><tr><td><p>Microsoft (MSFT)</p></td><td class="num"><p>$3.0T</p></td><td class="num"><p>32x</p></td><td class="num"><p>12.5x</p></td><td class="num"><p>16%</p></td><td class="num"><p>44%</p></td></tr><tr><td><p>Alphabet (GOOG)</p></td><td class="num"><p>$2.1T</p></td><td class="num"><p>22x</p></td><td class="num"><p>6.5x</p></td><td class="num"><p>14%</p></td><td class="num"><p>32%</p></td></tr><tr><td><p>Meta (META)</p></td><td class="num"><p>$1.4T</p></td><td class="num"><p>24x</p></td><td class="num"><p>9.0x</p></td><td class="num"><p>22%</p></td><td class="num"><p>41%</p></td></tr><tr><td><p>Walmart (WMT)</p></td><td class="num"><p>$0.7T</p></td><td class="num"><p>35x</p></td><td class="num"><p>1.1x</p></td><td class="num"><p>5%</p></td><td class="num"><p>4.2%</p></td></tr></tbody></table></div></div><div><div class="scenario-grid"><div class="scenario bull"><div class="prob">bull case — $248</div><h4>$248</h4><p>AWS grows 25%+ through 2027 on AI demand...</p></div><div class="scenario base"><div class="prob">steady execution</div><h4>$195</h4><p>Revenue grows 10% CAGR...</p></div><div class="scenario bear"><div class="prob">capex overinvestment + regulation</div><h4>$130</h4><p>AI capex ROI disappoints — $100B+ annual spend with decelerating AWS growth...</p></div></div></div></div>
+        <div class="g2" style="margin-top:10px"><div class="note amber"><p>Amazon&#x27;s valuation hinges on one question: will the $83B+ annual capex cycle generate AWS/AI returns similar to the 2006-2015 AWS buildout? If yes, today&#x27;s price is cheap. If AI capex ROI disappoints, the stock is 20-30% overvalued on a normalized FCF basis...</p></div></div>
+        <div style="margin-top:12px"><div class="table-wrap"><table><thead><tr><th class="num">WACC \ Terminal Growth</th><th class="num">2.5%</th><th class="num">3.0%</th><th class="num">3.5%</th><th class="num">4.0%</th></tr></thead><tbody><tr><td class="num"><p>8.5%</p></td><td class="num"><p>$235</p></td><td class="num"><p>$250</p></td><td class="num"><p>$270</p></td><td class="num"><p>$295</p></td></tr><tr><td class="num"><p>9.0%</p></td><td class="num"><p>$210</p></td><td class="num"><p>$222</p></td><td class="num"><p>$237</p></td><td class="num"><p>$256</p></td></tr><tr><td class="num"><p>9.5%</p></td><td class="num"><p>$188</p></td><td class="num"><p>$198</p></td><td class="num"><p>$210</p></td><td class="num"><p>$225</p></td></tr><tr><td class="num"><p>10.0%</p></td><td class="num"><p>$170</p></td><td class="num"><p>$178</p></td><td class="num"><p>$188</p></td><td class="num"><p>$200</p></td></tr><tr><td class="num"><p>10.5%</p></td><td class="num"><p>$154</p></td><td class="num"><p>$161</p></td><td class="num"><p>$169</p></td><td class="num"><p>$179</p></td></tr></tbody></table></div></div>
+
+      </section>
+      <section id="risk" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>what breaks the thesis</h2>
+          <div class="kicker">risk assessment & kill criteria</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Amazon&#x27;s risk profile is dominated by three categories: regulatory/antitrust (existential), capex cycle ROI (thesis-breaking), and competitive erosion (gradual). The FTC lawsuit, EU DMA compliance, and potential AWS separation are the highest-impact risks. The $83B capex spend in FY2024 — mostly AI infrastructure — is a massive bet that must generate visible ROI within 2-3 years or the margin story collapses. Each risk below includes a specific kill criterion: a measurable threshold that, if breached, invalidates the bull case.</p></div>
+        <div class="note amber">
+          <strong>render caveat</strong><br>1 placeholder-heavy block(s) remained in the source pane; inspect against the original json before publishing.
+        </div>
+                <div class="note red"><strong>risk framing</strong><br><p>Contradiction watch: Amazon&#x27;s bull case requires both aggressive capex spending (AI infrastructure) AND expanding margins. In FY2024, they pulled off both ($83B capex + 10.8% op margin). But this balance is unstable — if AI revenue growth disappoints, one of these must give...</p></div>
+        <div style="margin-top:10px"><div class="table-wrap"><table><thead><tr><th>Risk</th><th class="num">Probability</th><th>Impact</th><th class="num">Timeline</th><th>Kill Threshold</th></tr></thead><tbody><tr><td><p>FTC forced separation</p></td><td class="num"><p>10-15%</p></td><td><p>Extreme</p></td><td class="num"><p>2025-2030</p></td><td><p>Structural remedy upheld on appeal</p></td></tr><tr><td><p>Capex ROI failure</p></td><td class="num"><p>20-25%</p></td><td><p>High</p></td><td class="num"><p>2025-2027</p></td><td>AWS growth <15% + capex >$80B</td></tr><tr><td><p>EU DMA fines</p></td><td class="num"><p>30-40%</p></td><td><p>Medium-High</p></td><td class="num"><p>2025-2026</p></td><td><p>Cumulative fines &gt;$20B / 3yr</p></td></tr><tr><td><p>Union wave</p></td><td class="num"><p>15-20%</p></td><td><p>Medium</p></td><td class="num"><p>2025-2028</p></td><td><p>&gt;30% facilities unionized + $25/hr</p></td></tr><tr><td><p>Key person departure</p></td><td class="num"><p>10%</p></td><td><p>Medium</p></td><td class="num"><p>Any time</p></td><td><p>Bezos < 5% or Jassy exits</p></td></tr><tr><td><p>Cloud share collapse</p></td><td class="num"><p>15-20%</p></td><td><p>High</p></td><td class="num"><p>2025-2028</p></td><td><p>AWS < 25% share</p></td></tr></tbody></table></div></div>
+        <div class="callout-row"><div class="callout"><div class="label">Capex / Revenue</div><div class="metric value-rd">13.0%</div><div class="desc">$83B of $638B — highest ever</div></div><div class="callout"><div class="label">SBC / Op Income</div><div class="metric value-rd">35%</div><div class="desc">$24.2B dilution vs. $68.6B OI</div></div><div class="callout"><div class="label">FTC Lawsuit Status</div><div class="metric value-rd">Active</div><div class="desc">Filed Sep 2023, trial TBD</div></div></div>
+        <div class="note amber"><strong>most dangerous zone</strong><br><p>SBC reality check: Amazon&#x27;s $24.2B in stock-based compensation represents 35% of operating income. GAAP net income was $59.2B, but if you treat SBC as a real cash expense (it dilutes shareholders), adjusted earnings are closer to $40-45B...</p></div>
+
+      </section>
+      <section id="ops" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>fundamentals &amp; operations</h2>
+          <div class="kicker">operations & business segments</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Amazon generated $638.0B in FY2024 revenue, up 11% YoY from $574.8B, powered by three reportable segments: North America ($387.7B), International ($134.7B), and AWS ($115.5B). The real story is the margin expansion — operating income nearly doubled to $68.6B as all three segments swung to meaningful profitability after the 2022 trough.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">total revenue</div><div class="kpi-value ">$638.0B</div><div class="kpi-sub">+11% YoY</div></div><div class="kpi"><div class="kpi-label">operating income</div><div class="kpi-value ">$68.6B</div><div class="kpi-sub">+86% YoY</div></div><div class="kpi"><div class="kpi-label">aws revenue</div><div class="kpi-value ">$115.5B</div><div class="kpi-sub">34.1% op margin</div></div><div class="kpi"><div class="kpi-label">advertising</div><div class="kpi-value ">$56.2B</div><div class="kpi-sub">+20% YoY</div></div></div><div class="table-wrap"><table><thead><tr><th>Segment</th><th class="num">FY2024 Rev</th><th class="num">FY2023 Rev</th><th class="num">YoY Growth</th><th class="num">FY2024 Op Income</th><th class="num">Op Margin</th></tr></thead><tbody><tr><td><p>North America</p></td><td class="num"><p>$387.7B</p></td><td class="num"><p>$352.8B</p></td><td class="num"><p>+9.9%</p></td><td class="num"><p>$24.8B</p></td><td class="num"><p>6.4%</p></td></tr><tr><td><p>International</p></td><td class="num"><p>$134.7B</p></td><td class="num"><p>$131.2B</p></td><td class="num"><p>+2.7%</p></td><td class="num"><p>$4.4B</p></td><td class="num"><p>3.3%</p></td></tr><tr><td><p>AWS</p></td><td class="num"><p>$115.5B</p></td><td class="num"><p>$90.8B</p></td><td class="num"><p>+27.2%</p></td><td class="num"><p>$39.4B</p></td><td class="num"><p>34.1%</p></td></tr><tr><td><p>Consolidated</p></td><td class="num"><p>$638.0B</p></td><td class="num"><p>$574.8B</p></td><td class="num"><p>+11.0%</p></td><td class="num"><p>$68.6B</p></td><td class="num"><p>10.8%</p></td></tr></tbody></table></div><div class="chart-box"><div class="chart-head"><h3>Amazon Revenue by Year ($B)</h3><div class="sub">bar</div></div><div class="aggregate-chart-grid"><div class="aggregate-chart-row"><div class="aggregate-chart-label">FY2021</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:73.64%;background:#111111"></span></div><div class="aggregate-chart-value">469.8</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">FY2022</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:80.56%;background:#111111"></span></div><div class="aggregate-chart-value">514</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">FY2023</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:90.09%;background:#111111"></span></div><div class="aggregate-chart-value">574.8</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">FY2024</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:100.00%;background:#111111"></span></div><div class="aggregate-chart-value">638</div></div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>AWS: The Profit Engine</h3><span class="tag blue">CORE DRIVER</span></div><div class="aggregate-card-body"><p>AWS contributed $39.4B in operating income on $115.5B revenue — that&#x27;s 57% of total operating profit from 18% of revenue. Margins expanded from 27.1% to 34.1% YoY as AI workload demand accelerated and prior infrastructure investments scaled. Q1 2025 saw AWS hit a $29.3B quarterly run-rate, implying ~$117B annualized...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Advertising: The Silent Margin Machine</h3><span class="tag blue">HIGH MARGIN</span></div><div class="aggregate-card-body"><p>Advertising revenue hit $56.2B in FY2024, up 20% from $46.9B. This is almost pure profit layered on top of existing e-commerce traffic. Amazon doesn&#x27;t break out ad margins, but industry estimates peg it at 50-70% operating margin...</p></div></div><div class="pillars"><div class="pillar"><div class="head"><h4>1. e commerce moat</h4><span class="tag green">9/10</span></div><p>200M+ Prime members create massive switching costs. 2M+ 3P sellers locked into FBA...</p></div><div class="pillar"><div class="head"><h4>2. aws moat</h4><span class="tag green">9/10</span></div><p>First-mover advantage in cloud with deepest service catalog (200+ services). Enterprise migration costs are enormous...</p></div><div class="pillar"><div class="head"><h4>3. advertising moat</h4><span class="tag green">8/10</span></div><p>Unique closed-loop attribution — Amazon knows what ads you saw AND what you bought. No other ad platform has this...</p></div><div class="pillar"><div class="head"><h4>4. logistics moat</h4><span class="tag green">8/10</span></div><p>400+ fulfillment centers, 1,000+ delivery stations, 100+ air cargo planes. Regionalized network cuts delivery time and cost...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Unit Economics: FBA vs. Advertising vs. AWS</h3><span class="tag blue">DEEP DIVE</span></div><div class="aggregate-card-body"><p>FBA: Amazon takes ~15% referral fee + ~30% FBA fee on average 3P sale. Blended take rate is ~45-50% of GMV for fulfilled orders. 3P is higher margin than 1P because Amazon avoids inventory risk...</p></div></div><p class="aggregate-pane-xref"><a href="#financials">See detailed financial analysis for margin waterfall and cash flow quality</a></p>
+      </section>
+      <section id="competition" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>competitive position</h2>
+          <div class="kicker">competitive landscape</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Amazon operates in three mega-arenas — cloud, e-commerce, and advertising — and holds top-two positions in all three. AWS is the cloud market leader at 31% share but losing ground to Azure (25%) on enterprise AI workloads. In US e-commerce, Amazon commands ~38% share vs. Walmart at ~6% and Shopify merchants collectively at ~10%. The advertising business ($56.2B) is now the third-largest digital ad platform globally behind Google and Meta. The competitive picture is not &#x27;can anyone beat Amazon&#x27; — it&#x27;s &#x27;can anyone erode Amazon&#x27;s structural advantages faster than Amazon can compound them.&#x27;</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">us e-commerce share</div><div class="kpi-value ">~38%</div><div class="kpi-sub">2024, ex-travel</div></div><div class="kpi"><div class="kpi-label">aws cloud share</div><div class="kpi-value value-am">31%</div><div class="kpi-sub">IaaS/PaaS, declining from 34%</div></div><div class="kpi"><div class="kpi-label">ad revenue rank</div><div class="kpi-value ">#3 Global</div><div class="kpi-sub">$56.2B, behind Google &amp; Meta</div></div><div class="kpi"><div class="kpi-label">prime members</div><div class="kpi-value ">200M+</div><div class="kpi-sub">Global, highest retention moat</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Cloud Wars: AWS vs. Azure vs. GCP</h3><span class="tag blue">CORE BATTLEFIELD</span></div><div class="aggregate-card-body"><p>AWS ($115.5B, 31% share, 34.1% margin): Broadest service catalog (200+ services), deepest enterprise install base, strongest developer ecosystem. Custom silicon (Graviton, Trainium) is a real cost advantage. Weakness: losing enterprise AI workloads to Azure&#x27;s OpenAI integration...</p></div></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Amazon</th><th>Walmart</th><th>Shopify</th><th>Alibaba</th></tr></thead><tbody><tr><td><p>E-commerce GMV</p></td><td><p>~$700B</p></td><td><p>~$100B</p></td><td><p>~$250B (merchant)</p></td><td><p>~$900B (China)</p></td></tr><tr><td><p>US Online Share</p></td><td><p>~38%</p></td><td><p>~6%</p></td><td><p>~10% (aggregate)</p></td><td><p>&lt;2%</p></td></tr><tr><td><p>Fulfillment Capability</p></td><td><p>Same/next-day (70%+)</p></td><td><p>Same-day expanding</p></td><td><p>3P dependent</p></td><td><p>Cainiao network</p></td></tr><tr><td><p>Ad Revenue</p></td><td><p>$56.2B</p></td><td><p>~$3.4B</p></td><td><p>Nascent</p></td><td><p>~$35B</p></td></tr><tr><td><p>Membership/Lock-in</p></td><td><p>200M+ Prime</p></td><td><p>Walmart+ (~30M)</p></td><td><p>None (B2B)</p></td><td><p>88VIP (~40M)</p></td></tr><tr><td><p>Rev Growth (FY24)</p></td><td><p>+11%</p></td><td><p>+5%</p></td><td><p>+26%</p></td><td><p>+8%</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Switching Costs &amp; Lock-in</h3><span class="tag blue">MOAT FACTOR</span></div><div class="aggregate-card-body"><p>AWS: Extremely high. Migrating workloads off AWS requires 12-24 months and millions in re-architecture. Proprietary services (Lambda, DynamoDB, SageMaker) create deep dependency...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Network Effects</h3><span class="tag blue">MOAT FACTOR</span></div><div class="aggregate-card-body"><p>Marketplace flywheel (strong): More sellers -&gt; more selection -&gt; more buyers -&gt; more sellers. Amazon&#x27;s 3P marketplace now accounts for 61% of units sold. This flywheel took 20 years to build and generates powerful data advantages — Amazon knows what sells, at what price, and can launch private label or negotiate better terms...</p></div></div><div class="pillars"><div class="pillar"><div class="head"><h4>1. pricing power</h4><span class="tag green">7/10</span></div><p>Moderate in e-commerce — Amazon competes aggressively on price and uses its ad business to subsidize consumer prices. Strong in AWS — annual price cuts are smaller now and enterprise contracts are sticky...</p></div><div class="pillar"><div class="head"><h4>2. economies of scale</h4><span class="tag green">9/10</span></div><p>Amazon&#x27;s scale advantages are nearly unmatched. Fulfillment: regionalization cut cost-to-serve by 20%+...</p></div><div class="pillar"><div class="head"><h4>3. competitive position durability</h4><span class="tag green">8/10</span></div><p>Amazon&#x27;s competitive position is durable but not invulnerable. Cloud: Azure is a credible threat, especially in AI workloads...</p></div></div><div class="chart-box"><div class="chart-head"><h3>Cloud IaaS/PaaS Market Share (2024)</h3><div class="sub">bar</div></div><div class="aggregate-chart-grid"><div class="aggregate-chart-row"><div class="aggregate-chart-label">AWS</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:93.94%;background:#111111"></span></div><div class="aggregate-chart-value">31</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">Azure</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:75.76%;background:#111111"></span></div><div class="aggregate-chart-value">25</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">GCP</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:33.33%;background:#111111"></span></div><div class="aggregate-chart-value">11</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">Others</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:100.00%;background:#111111"></span></div><div class="aggregate-chart-value">33</div></div></div></div>
+      </section>
+      <section id="tam" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>market size &amp; tam</h2>
+          <div class="kicker">total addressable market</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Amazon competes across markets totaling roughly $8–10 trillion in combined TAM: global retail ($6T e-commerce), cloud infrastructure ($680B by 2028), digital advertising ($740B by 2027), logistics ($4.6T global), streaming ($130B), and healthcare ($4.5T US). Current penetration ranges from dominant (31% of cloud IaaS) to negligible (healthcare). The interesting question isn&#x27;t how big the TAM is — it&#x27;s Amazon&#x27;s realistic addressable share within each segment given competitive dynamics and regulatory constraints.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Market</th><th class="num">Global TAM (2027E)</th><th class="num">Amazon Revenue</th><th class="num">Current Penetration</th><th>Realistic Share (2028E)</th></tr></thead><tbody><tr><td><p>Global E-commerce</p></td><td class="num"><p>$6.0T</p></td><td class="num"><p>~$350B GMV</p></td><td class="num"><p>~6%</p></td><td><p>7–8%</p></td></tr><tr><td><p>Cloud Infrastructure (IaaS/PaaS)</p></td><td class="num"><p>$680B</p></td><td class="num"><p>$115.5B</p></td><td class="num"><p>~31%</p></td><td><p>28–30%</p></td></tr><tr><td><p>Digital Advertising</p></td><td class="num"><p>$740B</p></td><td class="num"><p>$56.2B</p></td><td class="num"><p>~8%</p></td><td><p>10–12%</p></td></tr><tr><td><p>Global Logistics</p></td><td class="num"><p>$4.6T</p></td><td class="num"><p>Cost center + nascent 3P</p></td><td class="num"><p>&lt;1%</p></td><td><p>1–2%</p></td></tr><tr><td><p>Streaming / Entertainment</p></td><td class="num"><p>$130B</p></td><td class="num"><p>~$12B</p></td><td class="num"><p>~9%</p></td><td><p>10–12%</p></td></tr><tr><td><p>US Healthcare</p></td><td class="num"><p>$4.5T</p></td><td class="num"><p>~$4B</p></td><td class="num"><p>&lt;0.1%</p></td><td><p>0.2–0.5%</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Cloud Infrastructure — Bottom-Up Sizing</h3><span class="tag blue">CORE MARKET</span></div><div class="aggregate-card-body"><p>Global cloud infrastructure spend was ~$350B in 2024 (Gartner), growing 20%+ annually driven by AI workload migration. AWS&#x27;s $115.5B represents ~31% share, but share has been gradually declining (was 34% in 2020) as Azure and GCP grow faster. Bottom-up: Enterprise cloud migration is ~30% complete...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Advertising — The Underappreciated TAM</h3><span class="tag blue">EXPANDING</span></div><div class="aggregate-card-body"><p>Amazon&#x27;s advertising business ($56.2B, +24% YoY) is growing faster than any other segment and has the most underappreciated TAM expansion. Three vectors: (1) Retail media — Amazon pioneered sponsored product ads; now expanding to display, video, and off-Amazon demand-side platform. (2) Prime Video ads — 200M+ viewers now defaulted into ad-supported tier...</p></div></div><div class="chart-box"><div class="chart-head"><h3>Amazon Revenue vs TAM by Segment ($B)</h3><div class="sub">bar</div></div><div class="aggregate-mini-table table-wrap"><table><thead><tr><th>period</th><th class="num">Amazon Revenue</th><th class="num">Total Addressable Market</th></tr></thead><tbody><tr><td class="b">Cloud</td><td class="num">115.5</td><td class="num">680</td></tr><tr><td class="b">E-commerce</td><td class="num">350</td><td class="num">6000</td></tr><tr><td class="b">Advertising</td><td class="num">56.2</td><td class="num">740</td></tr><tr><td class="b">Streaming</td><td class="num">12</td><td class="num">130</td></tr><tr><td class="b">Grocery</td><td class="num">25</td><td class="num">1100</td></tr><tr><td class="b">Healthcare</td><td class="num">4</td><td class="num">4500</td></tr></tbody></table></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Logistics as a Platform — Hidden TAM</h3><span class="tag amber">EMERGING</span></div><div class="aggregate-card-body"><p>Amazon&#x27;s logistics network (1,000+ facilities, 62% self-delivery) was built as a cost center. It&#x27;s becoming a profit center. Buy with Prime lets external merchants use Amazon fulfillment — early traction with Shopify integration...</p></div></div><div class="note"><p>TAM scenario analysis is embedded in the section above.</p></div><div class="note"><p>TAM analysis for conglomerates like Amazon is inherently squishy — the markets overlap and the company creates new categories. The useful frame: Amazon has $638B in revenue competing in $8–10T of markets. Even modest share gains across multiple vectors can compound to 12–15% annual revenue growth for the next 3–5 years without needing any single market to have a breakout.</p></div><p class="aggregate-pane-xref"><a href="#valuation">See competitive positioning within each market in the Competition tab</a></p>
+      </section>
+      <section id="product" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>product &amp; technology</h2>
+          <div class="kicker">roadmap + software stack</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Amazon operates the most diversified technology portfolio of any company on earth — spanning cloud infrastructure (AWS, 200+ services), e-commerce (1P/3P marketplace, $350B+ GMV), AI/ML (Bedrock, Trainium, Alexa LLM), advertising ($56.2B), logistics (last-mile delivery for 60%+ of own packages), content (Prime Video, MGM, Twitch), and frontier bets (Kuiper satellite, healthcare, robotics). R&D spend hit $85.6B in FY2024 (13.4% of revenue), making Amazon the #1 R&D spender globally by a wide margin.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">r&amp;d spend (fy2024)</div><div class="kpi-value ">$85.6B</div><div class="kpi-sub">13.4% of revenue, #1 globally</div></div><div class="kpi"><div class="kpi-label">aws services</div><div class="kpi-value ">200+</div><div class="kpi-sub">Broadest cloud portfolio</div></div><div class="kpi"><div class="kpi-label">active patents</div><div class="kpi-value ">~25,000</div><div class="kpi-sub">Logistics, cloud, AI, devices</div></div><div class="kpi"><div class="kpi-label">custom silicon chips</div><div class="kpi-value ">3 families</div><div class="kpi-sub">Graviton, Trainium, Inferentia</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>AWS Technology Moat</h3><span class="tag blue">DEEP</span></div><div class="aggregate-card-body"><p>AWS&#x27;s competitive advantage is architectural: 200+ integrated services with 7–10 year head start on data gravity. Key differentiators: Custom silicon — Graviton4 (compute, 30% better price-performance vs. x86), Trainium2 (AI training, 4x better than Trainium1), Inferentia2 (AI inference)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>AI/ML Pipeline</h3><span class="tag amber">CRITICAL BET</span></div><div class="aggregate-card-body"><p>Trainium2: Custom AI training chip launching at scale in 2025. Amazon claims 4x training performance vs. Trainium1...</p></div></div><div class="table-wrap"><table><thead><tr><th>Product/Tech</th><th class="num">Revenue Contribution</th><th class="num">Growth Rate</th><th>Competitive Position</th><th>Moat Depth</th></tr></thead><tbody><tr><td><p>AWS Core Cloud</p></td><td class="num"><p>$115.5B</p></td><td class="num"><p>+13% YoY</p></td><td><p>#1 (31% share)</p></td><td><p>Deep</p></td></tr><tr><td><p>E-commerce Marketplace</p></td><td class="num"><p>~$350B GMV</p></td><td class="num"><p>+9% YoY</p></td><td><p>#1 US, #1 Global</p></td><td><p>Deep</p></td></tr><tr><td><p>Advertising</p></td><td class="num"><p>$56.2B</p></td><td class="num"><p>+24% YoY</p></td><td><p>#3 (behind Google, Meta)</p></td><td><p>Medium</p></td></tr><tr><td><p>Prime Video / Studios</p></td><td class="num"><p>~$12B (est.)</p></td><td class="num"><p>+15% YoY</p></td><td><p>#3–4 streaming</p></td><td><p>Shallow</p></td></tr><tr><td><p>Logistics / Delivery</p></td><td class="num"><p>Cost center + 3P</p></td><td class="num"><p>N/A</p></td><td><p>Building to rival UPS/FedEx</p></td><td><p>Medium</p></td></tr><tr><td><p>Devices (Echo, Ring, Fire)</p></td><td class="num"><p>~$8B (est.)</p></td><td class="num"><p>Flat</p></td><td><p>Declining relevance</p></td><td><p>Shallow</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Logistics &amp; Robotics Stack</h3><span class="tag blue">SCALE MOAT</span></div><div class="aggregate-card-body"><p>Amazon now delivers 60%+ of its own US packages through its delivery network — up from ~50% two years ago. The logistics stack includes 750,000+ warehouse robots (Sparrow for item picking, Proteus for autonomous movement, Sequoia for inventory processing). The regionalization strategy (splitting the US into 8 regions) cut delivery costs 15–20% and improved same-day/next-day delivery to 60%+ of orders...</p></div></div><div class="pillars"><div class="pillar"><div class="head"><h4>1. cloud/ai tech</h4><span class="tag green">9/10</span></div><p>Custom silicon, 200+ services, Bedrock AI platform, Anthropic partnership. AWS is the most complete cloud stack in existence.</p></div><div class="pillar"><div class="head"><h4>2. e commerce platform</h4><span class="tag green">8/10</span></div><p>Marketplace flywheel with 60%+ 3P mix. Advertising overlay monetizes intent data...</p></div><div class="pillar"><div class="head"><h4>3. logistics tech</h4><span class="tag green">8/10</span></div><p>750K robots, 60%+ self-delivery, regionalization savings. Approaching UPS/FedEx capability as a platform.</p></div><div class="pillar"><div class="head"><h4>4. frontier bets</h4><span class="tag amber">5/10</span></div><p>Kuiper is years behind Starlink. Healthcare is promising but unproven...</p></div></div><div class="note"><p>The $85.6B R&D spend is misleading — Amazon capitalizes much of this as &quot;technology and content&quot; and it includes content production, not just engineering. Apples-to-apples R&D is probably $50–60B, still #1 globally but not as extreme as the headline number suggests.</p></div><p class="aggregate-pane-xref"><a href="#valuation">See AWS revenue trajectory and margin impact in the Financials tab</a></p>
+      </section>
+      <section id="supply" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>supply chain</h2>
+          <div class="kicker">single points of failure</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Amazon operates the most complex supply chain in retail history — 1,000+ fulfillment and delivery facilities across 20+ countries, processing an estimated 8+ billion packages annually in the US alone. FY2024 cost of sales was $374.2B (58.6% of revenue) with fulfillment costs at $90.1B (14.1%). The 2023–24 regionalization overhaul cut last-mile delivery costs by ~15–20%, but the supply chain now faces new pressure from potential tariff increases on Chinese imports (Amazon&#x27;s 3P marketplace has significant China-origin seller exposure).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">cost of sales</div><div class="kpi-value ">$374.2B</div><div class="kpi-sub">58.6% of revenue</div></div><div class="kpi"><div class="kpi-label">fulfillment costs</div><div class="kpi-value value-am">$90.1B</div><div class="kpi-sub">14.1% of revenue, improving</div></div><div class="kpi"><div class="kpi-label">delivery stations</div><div class="kpi-value ">1,000+</div><div class="kpi-sub">US fulfillment network</div></div><div class="kpi"><div class="kpi-label">self-delivery %</div><div class="kpi-value ">~62%</div><div class="kpi-sub">Up from ~50% in 2022</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Supplier Concentration Assessment</h3><span class="tag blue">LOW RISK</span></div><div class="aggregate-card-body"><p>Amazon&#x27;s 1P retail operation sources from thousands of brands/suppliers with no single vendor exceeding 2% of COGS. The real concentration risk is different: AWS infrastructure — NVIDIA GPUs are the bottleneck for AI workloads (estimated 70%+ of AWS AI compute runs on NVIDIA silicon until Trainium2 scales). Delivery partners: USPS, UPS, and FedEx still handle ~38% of last-mile delivery...</p></div></div><div class="table-wrap"><table><thead><tr><th>Cost Category</th><th class="num">FY2024 ($B)</th><th class="num">% of Revenue</th><th class="num">YoY Change</th><th>Trend</th></tr></thead><tbody><tr><td><p>Cost of Sales (ex-fulfillment)</p></td><td class="num"><p>$374.2</p></td><td class="num"><p>58.6%</p></td><td class="num"><p>+10%</p></td><td><p>Stable</p></td></tr><tr><td><p>Fulfillment</p></td><td class="num"><p>$90.1</p></td><td class="num"><p>14.1%</p></td><td class="num"><p>+8%</p></td><td><p>Improving (was 15.6% in FY2022)</p></td></tr><tr><td><p>Technology &amp; Content</p></td><td class="num"><p>$85.6</p></td><td class="num"><p>13.4%</p></td><td class="num"><p>+15%</p></td><td><p>Rising (AI/infra investment)</p></td></tr><tr><td><p>Sales &amp; Marketing</p></td><td class="num"><p>$25.0</p></td><td class="num"><p>3.9%</p></td><td class="num"><p>+5%</p></td><td><p>Stable</p></td></tr><tr><td><p>General &amp; Administrative</p></td><td class="num"><p>$8.8</p></td><td class="num"><p>1.4%</p></td><td class="num"><p>+3%</p></td><td><p>Stable</p></td></tr><tr><td><p>Total Operating Expenses</p></td><td class="num"><p>$569.4</p></td><td class="num"><p>89.2%</p></td><td class="num"><p>+9%</p></td><td><p>Op margin expanding</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Geographic Supply Chain Risk</h3><span class="tag amber">MODERATE</span></div><div class="aggregate-card-body"><p>China exposure: An estimated 50%+ of Amazon&#x27;s 3P marketplace sellers are China-based. The de minimis exemption ($800 threshold) allows direct-to-consumer shipments to avoid tariffs — any change to this threshold directly impacts Amazon&#x27;s marketplace economics. India: Growing fulfillment footprint but regulatory restrictions limit FDI in multi-brand retail...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Regionalization Impact</h3><span class="tag blue">WIN</span></div><div class="aggregate-card-body"><p>Amazon&#x27;s 2023 reorganization of its US fulfillment network into 8 distinct regions was the single biggest cost efficiency initiative in the company&#x27;s history. Results: (1) Average delivery distance shortened 15–20%, cutting per-package shipping cost. (2) Same-day/next-day delivery hit 60%+ of Prime orders vs...</p></div></div><div class="chart-box"><div class="chart-head"><h3>Fulfillment Cost as % of Revenue</h3><div class="sub">line</div></div><div class="aggregate-chart-grid"><div class="aggregate-chart-row"><div class="aggregate-chart-label">FY2020</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:91.03%;background:#111111"></span></div><div class="aggregate-chart-value">14.2</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">FY2021</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:98.72%;background:#111111"></span></div><div class="aggregate-chart-value">15.4</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">FY2022</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:100.00%;background:#111111"></span></div><div class="aggregate-chart-value">15.6</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">FY2023</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:94.23%;background:#111111"></span></div><div class="aggregate-chart-value">14.7</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">FY2024</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:90.38%;background:#111111"></span></div><div class="aggregate-chart-value">14.1</div></div></div></div><div class="pillars"><div class="pillar"><div class="head"><h4>1. supplier diversification</h4><span class="tag green">8/10</span></div><p>Thousands of retail suppliers, no single vendor > 2% of COGS. NVIDIA GPU dependency for AWS AI is the one concentration risk worth monitoring.</p></div><div class="pillar"><div class="head"><h4>2. logistics efficiency</h4><span class="tag green">9/10</span></div><p>Regionalization saved 150bps of revenue in fulfillment costs. 62% self-delivery...</p></div><div class="pillar"><div class="head"><h4>3. geographic resilience</h4><span class="tag amber">6/10</span></div><p>Heavy China seller exposure on marketplace. India regulatory headwinds...</p></div><div class="pillar"><div class="head"><h4>4. cost structure trend</h4><span class="tag green">7/10</span></div><p>Operating margins expanding from 2.4% (FY2022) to 10.7% (FY2024). Fulfillment and shipping are the key drivers...</p></div></div><p class="aggregate-pane-xref"><a href="#macro">See tariff and trade policy analysis in the Macro Sensitivity tab</a></p>
+      </section>
+      <section id="catalysts" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>catalyst map</h2>
+          <div class="kicker">catalysts & event calendar</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Amazon has five identifiable catalysts in the next 12 months that could move the stock 5%+ in either direction. The highest-impact catalyst is AWS AI revenue acceleration — if management provides a breakout of AI-specific revenue (currently embedded in the $115.5B AWS run rate), the market could reprice the stock aggressively. On the risk side, the FTC antitrust case (trial expected late 2025) and potential tariff escalation on Chinese imports represent the two biggest downside catalysts.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Catalyst</th><th>Expected Timing</th><th class="num">Probability</th><th>Impact</th><th>Direction</th></tr></thead><tbody><tr><td><p>AWS AI revenue breakout disclosure</p></td><td><p>Q1 2025 earnings (Apr)</p></td><td class="num"><p>40%</p></td><td><p>HIGH (+8–12%)</p></td><td><p>Bullish</p></td></tr><tr><td><p>FTC antitrust trial outcome</p></td><td><p>Late 2025</p></td><td class="num"><p>70% goes to trial</p></td><td><p>HIGH (±10%)</p></td><td><p>Mixed</p></td></tr><tr><td><p>Prime Video ad tier scale-up</p></td><td><p>Q2–Q3 2025</p></td><td class="num"><p>85%</p></td><td><p>MEDIUM (+3–5%)</p></td><td><p>Bullish</p></td></tr><tr><td><p>Tariff escalation (China imports)</p></td><td><p>Ongoing 2025</p></td><td class="num"><p>50%</p></td><td><p>MEDIUM (-5–8%)</p></td><td><p>Bearish</p></td></tr><tr><td><p>AWS margin inflection from AI mix</p></td><td><p>2H 2025</p></td><td class="num"><p>55%</p></td><td><p>HIGH (+5–10%)</p></td><td><p>Bullish</p></td></tr><tr><td><p>Kuiper satellite internet launch</p></td><td><p>Late 2025</p></td><td class="num"><p>60%</p></td><td><p>LOW (+1–2%)</p></td><td><p>Bullish</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>#1: AWS AI Revenue Breakout</h3><span class="tag blue">HIGH IMPACT</span></div><div class="aggregate-card-body"><p>AWS AI annualized revenue run rate is estimated at $15–20B (embedded in the $115.5B total). If Amazon discloses this figure and it shows triple-digit growth, the market will treat AWS as an AI-native business rather than a maturing cloud utility. The math: AI workloads at 30%+ gross margins flowing through existing infrastructure = massive operating leverage...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>#2: FTC Antitrust Case</h3><span class="tag red">RISK EVENT</span></div><div class="aggregate-card-body"><p>The FTC&#x27;s September 2023 lawsuit alleges Amazon uses monopoly power to inflate prices and stifle competition on its marketplace. Key risk: forced structural separation of marketplace and retail, or mandatory interoperability requirements. Likely outcome: settlement with behavioral remedies (consent decree restricting seller policies)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>#3: Prime Video Ad Tier Monetization</h3><span class="tag blue">UPSIDE</span></div><div class="aggregate-card-body"><p>Amazon defaulted all 200M+ Prime members into ad-supported streaming in January 2024. Early ad load is light (~2–3 min/hour vs. Hulu&#x27;s 7–9 min)...</p></div></div><div class="scenario-grid"><div class="scenario bull"><div class="prob">all catalysts fire</div><h4>$248</h4><p>AWS AI revenue disclosed at $20B+ run rate with 50%+ growth...</p></div><div class="scenario base"><div class="prob">mixed execution</div><h4>$195</h4><p>AWS AI growth strong but undisclosed...</p></div><div class="scenario bear"><div class="prob">catalysts reverse</div><h4>$130</h4><p>AWS AI spending doesn&#x27;t convert to revenue fast enough — cloud growth decelerates to sub-15%...</p></div></div><div class="note amber"><p>Asymmetric setup: The bull catalysts (AI breakout, ad monetization) are incremental and gradual. The bear catalysts (FTC, tariffs) are event-driven and sudden. This creates a grind-up / gap-down risk profile...</p></div><p class="aggregate-pane-xref"><a href="#macro">See tariff and trade policy exposure in the Macro Sensitivity tab</a></p>
+      </section>
+      <section id="street" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>street expectations</h2>
+          <div class="kicker">wall street consensus & estimate analysis</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The Street loves Amazon. Consensus price target is ~$245, implying 33% upside from ~$184. 56 of 62 analysts rate it Buy or Strong Buy. The bull case is AI-driven AWS reacceleration plus margin expansion to 12-14%. The bear case barely exists on Wall Street — the few Hold ratings cite valuation (33x P/E) and capex risk. Estimate revisions have been consistently upward for 18 months. The question isn&#x27;t whether the Street is bullish — it&#x27;s whether unanimous consensus means the upside is already priced.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">consensus target</div><div class="kpi-value ">$245</div><div class="kpi-sub">+33% upside from $184</div></div><div class="kpi"><div class="kpi-label">buy ratings</div><div class="kpi-value ">56 / 62</div><div class="kpi-sub">90% Strong Buy / Buy</div></div><div class="kpi"><div class="kpi-label">hold ratings</div><div class="kpi-value value-am">6 / 62</div><div class="kpi-sub">No Sell ratings</div></div><div class="kpi"><div class="kpi-label">fy25e revenue</div><div class="kpi-value ">$700B</div><div class="kpi-sub">+9.7% YoY consensus</div></div></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">FY2024A</th><th class="num">FY2025E</th><th class="num">FY2026E</th><th class="num">FY2027E</th></tr></thead><tbody><tr><td><p>Revenue ($B)</p></td><td class="num"><p>$638.0</p></td><td class="num"><p>$700.0</p></td><td class="num"><p>$772.0</p></td><td class="num"><p>$850.0</p></td></tr><tr><td><p>Revenue Growth</p></td><td class="num"><p>11.0%</p></td><td class="num"><p>9.7%</p></td><td class="num"><p>10.3%</p></td><td class="num"><p>10.1%</p></td></tr><tr><td><p>Operating Income ($B)</p></td><td class="num"><p>$68.6</p></td><td class="num"><p>$82.0</p></td><td class="num"><p>$98.0</p></td><td class="num"><p>$114.0</p></td></tr><tr><td><p>Op Margin</p></td><td class="num"><p>10.8%</p></td><td class="num"><p>11.7%</p></td><td class="num"><p>12.7%</p></td><td class="num"><p>13.4%</p></td></tr><tr><td><p>EPS</p></td><td class="num"><p>$5.53</p></td><td class="num"><p>$6.25</p></td><td class="num"><p>$7.50</p></td><td class="num"><p>$8.90</p></td></tr><tr><td><p>AWS Revenue ($B)</p></td><td class="num"><p>$115.5</p></td><td class="num"><p>$138.0</p></td><td class="num"><p>$165.0</p></td><td class="num"><p>$196.0</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Bull Case (Consensus View) — $280-320 Target</h3><span class="tag blue">BULL</span></div><div class="aggregate-card-body"><p>AWS reaccelerates to 22-25% growth as AI workloads drive incremental demand beyond the cloud migration baseline. AWS margins expand to 36-38% as custom silicon (Graviton, Trainium) reduces per-unit costs. Retail margins expand to 8-9% as advertising revenue scales (near-100% margin) and fulfillment optimization continues...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Bear Case (Minority View) — $140-160 Target</h3><span class="tag red">BEAR</span></div><div class="aggregate-card-body"><p>The few bearish voices point to: Capex overshoot — $83-90B annual spend destroys FCF if AI demand disappoints. Valuation stretch — at 33x trailing P/E and ~30x forward, Amazon prices in significant execution on both growth and margins. Regulatory overhang — FTC lawsuit and EU DMA create permanent uncertainty...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Consensus vs. Our Thesis</h3><span class="tag blue">VARIANT VIEW</span></div><div class="aggregate-card-body"><p>Where we agree with the Street: AWS is a generational asset, advertising is undervalued, operational discipline under Jassy is real. Amazon deserves a premium multiple. Where we differ: (1) The Street underweights SBC dilution — consensus EPS ignores the ~2% annual share dilution from SBC...</p></div></div><div class="chart-box"><div class="chart-head"><h3>EPS: Actual vs. Consensus Estimates</h3><div class="sub">bar</div></div><div class="aggregate-chart-grid"><div class="aggregate-chart-row"><div class="aggregate-chart-label">FY2022</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:3.60%;background:#111111"></span></div><div class="aggregate-chart-value">-0.27</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">FY2023</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:38.67%;background:#111111"></span></div><div class="aggregate-chart-value">2.9</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">FY2024</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:73.73%;background:#111111"></span></div><div class="aggregate-chart-value">5.53</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">FY2025E</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:83.33%;background:#111111"></span></div><div class="aggregate-chart-value">6.25</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">FY2026E</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:100.00%;background:#111111"></span></div><div class="aggregate-chart-value">7.5</div></div></div></div><div class="note amber"><p>Crowded trade alert: With 90% Buy ratings and zero Sell ratings, Amazon is the definition of consensus long. When everyone agrees, the risk is asymmetric — upside surprises are partially priced, but downside surprises cause violent de-ratings because there are no bears left to buy. The last time consensus was this bullish (late 2021), the stock dropped 50% in 2022.</p></div>
+      </section>
+      <section id="scorecard" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>earnings scorecard</h2>
+          <div class="kicker">earnings track record & quality</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Amazon has beaten EPS estimates in 8 of the last 8 quarters, with an average beat magnitude of ~20%. Revenue has beaten in 7 of 8 quarters. The beat streak is impressive but partly mechanical — Amazon guides conservatively and the Street anchors to guidance, creating a reliable beat-and-raise cycle. Earnings quality is muddied by $24.2B in SBC — strip that out and the &#x27;real&#x27; earnings power is 30-35% lower than GAAP suggests. The upcoming Q2 2025 report will be the first test of whether $90B+ capex can coexist with continued margin expansion.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">eps beat streak</div><div class="kpi-value ">8 / 8</div><div class="kpi-sub">Last 8 quarters</div></div><div class="kpi"><div class="kpi-label">avg eps beat</div><div class="kpi-value ">~20%</div><div class="kpi-sub">Magnitude above consensus</div></div><div class="kpi"><div class="kpi-label">revenue beat rate</div><div class="kpi-value ">7 / 8</div><div class="kpi-sub">Last 8 quarters</div></div><div class="kpi"><div class="kpi-label">sbc / net income</div><div class="kpi-value value-rd">41%</div><div class="kpi-sub">$24.2B / $59.2B — quality drag</div></div></div><div class="table-wrap"><table><thead><tr><th>Quarter</th><th class="num">EPS Est</th><th class="num">EPS Actual</th><th>Beat/Miss</th><th class="num">Revenue ($B)</th><th class="num">Rev Beat</th><th class="num">Stock Move</th></tr></thead><tbody><tr><td><p>Q4 2024</p></td><td class="num"><p>$1.49</p></td><td class="num"><p>$1.86</p></td><td><p>+25% Beat</p></td><td class="num"><p>$187.8</p></td><td class="num"><p>+1.2%</p></td><td class="num"><p>+2.4%</p></td></tr><tr><td><p>Q3 2024</p></td><td class="num"><p>$1.14</p></td><td class="num"><p>$1.43</p></td><td><p>+25% Beat</p></td><td class="num"><p>$158.9</p></td><td class="num"><p>+1.0%</p></td><td class="num"><p>-3.3%</p></td></tr><tr><td><p>Q2 2024</p></td><td class="num"><p>$1.03</p></td><td class="num"><p>$1.26</p></td><td><p>+22% Beat</p></td><td class="num"><p>$148.0</p></td><td class="num"><p>-0.5%</p></td><td class="num"><p>-8.8%</p></td></tr><tr><td><p>Q1 2024</p></td><td class="num"><p>$0.83</p></td><td class="num"><p>$0.98</p></td><td><p>+18% Beat</p></td><td class="num"><p>$143.3</p></td><td class="num"><p>+1.5%</p></td><td class="num"><p>+3.2%</p></td></tr><tr><td><p>Q4 2023</p></td><td class="num"><p>$0.80</p></td><td class="num"><p>$1.00</p></td><td><p>+25% Beat</p></td><td class="num"><p>$170.0</p></td><td class="num"><p>+2.1%</p></td><td class="num"><p>+7.9%</p></td></tr><tr><td><p>Q3 2023</p></td><td class="num"><p>$0.58</p></td><td class="num"><p>$0.94</p></td><td><p>+62% Beat</p></td><td class="num"><p>$143.1</p></td><td class="num"><p>+1.6%</p></td><td class="num"><p>-3.6%</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Earnings Quality Assessment</h3><span class="tag amber">MIXED QUALITY</span></div><div class="aggregate-card-body"><p>The SBC problem: Amazon reported $59.2B in GAAP net income (FY2024), but $24.2B of this is after adding back stock-based compensation that was treated as a non-cash expense. SBC is a real cost — it dilutes shareholders at ~2% per year. Adjusting for SBC as a cash expense, &#x27;economic&#x27; net income is ~$40-42B, putting the SBC-adjusted P/E at ~46x vs...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The Guidance Game</h3><span class="tag blue">PATTERN</span></div><div class="aggregate-card-body"><p>Amazon&#x27;s earnings beat streak is partly manufactured by conservative guidance. The pattern: (1) Amazon guides operating income to a wide range (e.g., Q1 2025 guidance: $14.0-18.0B, a $4B spread). (2) The Street anchors to the midpoint...</p></div></div><div class="pillars"><div class="pillar"><div class="head"><h4>1. beat consistency</h4><span class="tag green">9/10</span></div><p>8 of 8 EPS beats with 20%+ average magnitude. Revenue beat rate of 87.5%...</p></div><div class="pillar"><div class="head"><h4>2. earnings quality</h4><span class="tag amber">6/10</span></div><p>SBC at 41% of net income is a significant quality drag. FCF-to-earnings conversion of 56% is weak due to massive capex...</p></div><div class="pillar"><div class="head"><h4>3. guidance reliability</h4><span class="tag green">8/10</span></div><p>Amazon&#x27;s wide guidance ranges are conservative by design. Management has consistently delivered at or above the high end of operating income guidance...</p></div><div class="pillar"><div class="head"><h4>4. forward visibility</h4><span class="tag green">7/10</span></div><p>AWS backlog provides 12-18 month revenue visibility. E-commerce has seasonal predictability...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Q2 2025 Earnings Preview</h3><span class="tag blue">UPCOMING</span></div><div class="aggregate-card-body"><p>Expected report date: Late July / early August 2025. Consensus estimates: Revenue ~$176B (+10% YoY), EPS ~$1.55, AWS revenue ~$34B (+19% YoY). Key items to watch: (1) AWS growth rate: Can it sustain 19%+ or does it decelerate toward 15%?...</p></div></div><div class="chart-box"><div class="chart-head"><h3>Quarterly EPS: Estimate vs. Actual ($)</h3><div class="sub">bar</div></div><div class="aggregate-chart-grid"><div class="aggregate-chart-row"><div class="aggregate-chart-label">Q1&#x27;23</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:16.67%;background:#111111"></span></div><div class="aggregate-chart-value">0.31</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">Q2&#x27;23</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:34.95%;background:#111111"></span></div><div class="aggregate-chart-value">0.65</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">Q3&#x27;23</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:50.54%;background:#111111"></span></div><div class="aggregate-chart-value">0.94</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">Q4&#x27;23</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:53.76%;background:#111111"></span></div><div class="aggregate-chart-value">1</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">Q1&#x27;24</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:52.69%;background:#111111"></span></div><div class="aggregate-chart-value">0.98</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">Q2&#x27;24</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:67.74%;background:#111111"></span></div><div class="aggregate-chart-value">1.26</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">Q3&#x27;24</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:76.88%;background:#111111"></span></div><div class="aggregate-chart-value">1.43</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">Q4&#x27;24</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:100.00%;background:#111111"></span></div><div class="aggregate-chart-value">1.86</div></div></div></div>
+      </section>
+      <section id="signals" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>alternative data</h2>
+          <div class="kicker">outside-in confirmation</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Alternative data signals for Amazon paint a picture of steady operational execution with notable strength in AWS hiring and cloud infrastructure buildout. Insider transactions show systematic selling (Bezos&#x27;s planned dispositions), not conviction-driven sales. Institutional flows are net positive with the largest additions from passive/index rebalancing. Web traffic and app engagement metrics remain stable-to-growing, consistent with continued e-commerce share gains.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">insider net transactions (12mo)</div><div class="kpi-value value-am">Net Seller</div><div class="kpi-sub">Bezos sold ~$8.5B in planned sales</div></div><div class="kpi"><div class="kpi-label">institutional ownership</div><div class="kpi-value ">~63%</div><div class="kpi-sub">Vanguard, BlackRock top holders</div></div><div class="kpi"><div class="kpi-label">open job postings</div><div class="kpi-value ">~12,000</div><div class="kpi-sub">AWS/AI roles dominate new listings</div></div><div class="kpi"><div class="kpi-label">amazon.com us traffic</div><div class="kpi-value ">~2.7B visits/mo</div><div class="kpi-sub">Steady, slight seasonal variance</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Insider Transaction Analysis</h3><span class="tag amber">NEUTRAL</span></div><div class="aggregate-card-body"><p>Jeff Bezos: Sold approximately $8.5B in AMZN shares over the past 12 months via 10b5-1 pre-planned sales. This is estate planning and diversification — Bezos has sold systematically since 2020 and still holds ~9% ($174B). Not a bearish signal...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Institutional Flow Tracking</h3><span class="tag blue">NET POSITIVE</span></div><div class="aggregate-card-body"><p>Top holders (13F data): Vanguard (~7.5%), BlackRock (~6.5%), State Street (~3.5%). Passive/index ownership accounts for ~35% of float — Amazon is a top-3 weight in the S&P 500 and Nasdaq 100, ensuring persistent passive buying on any index inflows. Active manager positioning: Slight net additions over the past 2 quarters...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Web Traffic &amp; App Engagement</h3><span class="tag blue">STABLE</span></div><div class="aggregate-card-body"><p>Amazon.com (SimilarWeb): ~2.7B monthly visits in the US, stable YoY with normal seasonal patterns (Prime Day spike in July, holiday spike in Q4). Mobile share of traffic continues increasing (~72% of visits). Time-on-site and pages/visit are stable, suggesting no engagement degradation...</p></div></div><div class="table-wrap"><table><thead><tr><th>Signal</th><th class="num">Current Reading</th><th>Trend</th><th>Implication</th></tr></thead><tbody><tr><td><p>Insider transactions</p></td><td class="num"><p>Net seller (planned)</p></td><td><p>Stable</p></td><td><p>Neutral — Bezos planned sales</p></td></tr><tr><td><p>Institutional 13F</p></td><td class="num"><p>Net additions</p></td><td><p>Positive</p></td><td><p>Moderate bullish</p></td></tr><tr><td><p>Web traffic</p></td><td class="num"><p>2.7B visits/mo</p></td><td><p>Stable</p></td><td><p>No share loss visible</p></td></tr><tr><td><p>App ranking</p></td><td class="num"><p>#1-2 Shopping</p></td><td><p>Stable</p></td><td><p>Temu not displacing Amazon</p></td></tr><tr><td><p>Job postings (AI)</p></td><td class="num"><p>1,800+ AI roles</p></td><td><p>Accelerating</p></td><td><p>Strong bullish — confirms AI investment</p></td></tr><tr><td><p>Data center permits</p></td><td class="num"><p>Accelerating</p></td><td><p>Up</p></td><td><p>Confirms capex deployment</p></td></tr></tbody></table></div><div class="note"><p>Composite signal: 5 of 7 tracked signals are balanced-to-positive, with AI hiring and data center buildout as the strongest bullish reads. No signal is flashing warning. The most informative signal is the AI hiring acceleration — when companies hire 3x more AI engineers, they&#x27;re building product, not posturing...</p></div>
+      </section>
+      <section id="history" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>historical analogies</h2>
+          <div class="kicker">corporate history & key inflections</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Amazon&#x27;s 30-year history is a masterclass in sacrificing near-term profitability for long-term dominance. From a Bellevue garage in 1994 to a $1.93T market cap, the company has survived a 95% stock crash, reinvented itself as a cloud infrastructure company, built the world&#x27;s most valuable membership program, and navigated a post-COVID margin collapse to emerge with record profitability. Every major strategic bet — AWS, Prime, FBA, advertising, AI — looked insane at announcement and obvious in retrospect.</p></div>
+        <div class="table-wrap"><table><thead><tr><th class="num">Year</th><th class="num">Event</th><th>Significance</th><th>Stock Impact</th></tr></thead><tbody><tr><td class="num"><p>1994</p></td><td class="num"><p>Founded in Bellevue, WA</p></td><td><p>Bezos quits D.E. Shaw, starts online bookstore in garage</p></td><td><p>N/A</p></td></tr><tr><td class="num"><p>1997</p></td><td class="num"><p>IPO at $18/share ($1.5 split-adj)</p></td><td><p>Raised $54M at $438M valuation. Bezos&#x27;s first shareholder letter: &#x27;It&#x27;s all about the long term&#x27;</p></td><td><p>+1,400% in 2 years</p></td></tr><tr><td class="num"><p>1999-2001</p></td><td class="num"><p>Dot-com crash</p></td><td><p>Stock fell 95% from $113 to $5.51. Bezos: &#x27;The stock is not the company.&#x27; Survived by cutting costs and focusing on free cash flow.</p></td><td><p>-95% peak to trough</p></td></tr><tr><td class="num"><p>2005</p></td><td class="num"><p>Amazon Prime launched</p></td><td><p>$79/yr for free 2-day shipping. Wall Street hated it. Created the most powerful consumer lock-in mechanism in retail history.</p></td><td><p>Slow burn positive</p></td></tr><tr><td class="num"><p>2006</p></td><td class="num"><p>AWS launched (S3 + EC2)</p></td><td><p>Started as internal infrastructure sold externally. Most consequential business decision in tech history? Now a $115.5B business.</p></td><td><p>Not priced for years</p></td></tr><tr><td class="num"><p>2007</p></td><td class="num"><p>Kindle launched</p></td><td><p>First hardware bet. Won the e-reader market. Established Amazon&#x27;s &#x27;sell hardware at cost, monetize via content&#x27; model.</p></td><td><p>Modest positive</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The 1999-2001 Near-Death Experience</h3><span class="tag blue">FORMATIVE</span></div><div class="aggregate-card-body"><p>Amazon&#x27;s stock fell 95% from $113 to $5.51 during the dot-com bust. The company was burning cash, Wall Street declared it dead, and Lehman Brothers analyst Ravi Suria published a famous note predicting bankruptcy. Bezos survived by: (1) securing a $672M convertible bond deal weeks before credit markets froze, (2) cutting costs ruthlessly while competitors died, and (3) focusing relentlessly on free cash flow over earnings...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The 2022 Margin Collapse and Recovery</h3><span class="tag amber">RECENT CRITICAL</span></div><div class="aggregate-card-body"><p>During COVID, Amazon doubled fulfillment capacity and hired 400K+ workers to meet surging demand. When demand normalized in 2022, Amazon was left with massive overcapacity. Operating margin cratered from 5.3% (2021) to 2.4% (2022)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Acquisition Track Record</h3><span class="tag amber">MIXED</span></div><div class="aggregate-card-body"><p>Home runs: Zappos ($1.2B, 2009) — integrated well, strengthened apparel. Ring ($1.0B, 2018) — dominant smart home entry point. Twitch ($970M, 2014) — gaming community moat, now a significant ad revenue contributor...</p></div></div><div class="chart-box"><div class="chart-head"><h3>Amazon Revenue Growth (Selected Years, $B)</h3><div class="sub">bar</div></div><div class="aggregate-chart-grid"><div class="aggregate-chart-row"><div class="aggregate-chart-label">2006</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:3.00%;background:#111111"></span></div><div class="aggregate-chart-value">10.7</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2010</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:5.36%;background:#111111"></span></div><div class="aggregate-chart-value">34.2</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2014</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:13.95%;background:#111111"></span></div><div class="aggregate-chart-value">89</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2018</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:36.50%;background:#111111"></span></div><div class="aggregate-chart-value">232.9</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2020</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:60.52%;background:#111111"></span></div><div class="aggregate-chart-value">386.1</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2022</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:80.56%;background:#111111"></span></div><div class="aggregate-chart-value">514</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2024</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:100.00%;background:#111111"></span></div><div class="aggregate-chart-value">638</div></div></div></div><div class="chart-box"><div class="chart-head"><h3>Operating Margin % (2019-2024)</h3><div class="sub">bar</div></div><div class="aggregate-chart-grid"><div class="aggregate-chart-row"><div class="aggregate-chart-label">2019</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:48.15%;background:#111111"></span></div><div class="aggregate-chart-value">5.2</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2020</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:54.63%;background:#111111"></span></div><div class="aggregate-chart-value">5.9</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2021</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:49.07%;background:#111111"></span></div><div class="aggregate-chart-value">5.3</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2022</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:22.22%;background:#111111"></span></div><div class="aggregate-chart-value">2.4</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2023</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:59.26%;background:#111111"></span></div><div class="aggregate-chart-value">6.4</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2024</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:100.00%;background:#111111"></span></div><div class="aggregate-chart-value">10.8</div></div></div></div><div class="note"><p>Pattern recognition: Amazon has made exactly one type of bet for 30 years — invest heavily in infrastructure (physical or digital) ahead of demand, endure years of losses and skepticism, then harvest the returns as scale economics kick in. Books to e-commerce to FBA to AWS to Prime to advertising to AI. The bet always looks irresponsible when made and inevitable in retrospect...</p></div>
+      </section>
+      <section id="management" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>management &amp; leadership</h2>
+          <div class="kicker">management & governance</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Andy Jassy took over as CEO in July 2021 and inherited a bloated cost structure — he responded with 27,000+ layoffs, fulfillment network rationalization, and a relentless focus on AWS and AI. Operating margins went from 2.4% to 10.8% on his watch. Jeff Bezos retains ~9% ownership (~$174B at current prices) and serves as Executive Chairman, providing strategic continuity while Jassy runs day-to-day operations.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">ceo tenure</div><div class="kpi-value ">3.7 yrs</div><div class="kpi-sub">Andy Jassy, since Jul 2021</div></div><div class="kpi"><div class="kpi-label">ceo total comp</div><div class="kpi-value value-am">$29.2M</div><div class="kpi-sub">FY2024</div></div><div class="kpi"><div class="kpi-label">bezos ownership</div><div class="kpi-value ">~9%</div><div class="kpi-sub">~$174B value</div></div><div class="kpi"><div class="kpi-label">employees</div><div class="kpi-value ">1.55M</div><div class="kpi-sub">Down from 1.54M peak</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Andy Jassy: The Builder CEO</h3><span class="tag blue">CEO ASSESSMENT</span></div><div class="aggregate-card-body"><p>Jassy built AWS from scratch starting in 2003 and ran it for 18 years before becoming CEO. His DNA is infrastructure and long-term bets. Strengths: Deep technical understanding, proven ability to build $100B+ businesses, decisive cost-cutting when needed (2022-2023 layoffs), strong AI positioning with Bedrock/Trainium/custom chips...</p></div></div><div class="pillars"><div class="pillar"><div class="head"><h4>1. strategic vision</h4><span class="tag green">8/10</span></div><p>Jassy&#x27;s all-in bet on AI infrastructure mirrors the original AWS bet. Custom silicon (Graviton, Trainium, Inferentia), Bedrock platform, and $83B capex show conviction...</p></div><div class="pillar"><div class="head"><h4>2. capital allocation</h4><span class="tag green">7/10</span></div><p>Reinvestment-heavy with limited shareholder returns. No dividend, slow buyback execution...</p></div><div class="pillar"><div class="head"><h4>3. operational execution</h4><span class="tag green">9/10</span></div><p>Took operating margin from 2.4% to 10.8% in two years while maintaining revenue growth. Regionalized fulfillment network, cut headcount by 27K+, and improved delivery speeds...</p></div><div class="pillar"><div class="head"><h4>4. insider alignment</h4><span class="tag green">9/10</span></div><p>Bezos at ~9% ($174B) is the ultimate skin in the game. Jassy&#x27;s comp is heavily stock-based...</p></div></div><div class="table-wrap"><table><thead><tr><th>Executive</th><th>Role</th><th>Since</th><th>Background</th></tr></thead><tbody><tr><td><p>Andy Jassy</p></td><td><p>CEO</p></td><td><p>Jul 2021</p></td><td><p>Built and led AWS for 18 years</p></td></tr><tr><td><p>Jeff Bezos</p></td><td><p>Exec Chairman</p></td><td><p>Jul 2021</p></td><td><p>Founder, ~9% ownership</p></td></tr><tr><td><p>Brian Olsavsky</p></td><td><p>CFO</p></td><td><p>2015</p></td><td><p>25+ years at Amazon</p></td></tr><tr><td><p>Matt Garman</p></td><td><p>CEO, AWS</p></td><td><p>Jun 2024</p></td><td><p>VP Sales/Marketing at AWS since 2006</p></td></tr><tr><td><p>Doug Herrington</p></td><td><p>CEO, Worldwide Stores</p></td><td><p>2022</p></td><td><p>20+ years at Amazon, ran NA consumer</p></td></tr><tr><td><p>David Zapolsky</p></td><td><p>SVP, General Counsel</p></td><td><p>2012</p></td><td><p>Navigating FTC/EU regulatory gauntlet</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Compensation Analysis</h3><span class="tag amber">PAY FOR PERFORMANCE</span></div><div class="aggregate-card-body"><p>Jassy&#x27;s FY2024 total comp was $29.2M, dominated by stock awards. His base salary is relatively modest at $175K — the signal is that his wealth creation is tied to stock performance. For context, $29.2M is reasonable for a $1.93T company CEO (Tim Cook: ~$63M, Satya Nadella: ~$49M)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Governance Quality</h3><span class="tag blue">ABOVE AVERAGE</span></div><div class="aggregate-card-body"><p>11-member board with 10 independent directors. No dual-class share structure — one share, one vote. Bezos&#x27;s 9% stake gives him influence but not control...</p></div></div><div class="note amber"><p>Key person risk is moderate. Bezos is no longer day-to-day but remains culturally central. The real question is whether Jassy can replicate Bezos&#x27;s ability to identify the next S-curve (like AWS in 2006)...</p></div><p class="aggregate-pane-xref"><a href="#risk">See risk module for key person risk analysis and departure scenarios</a></p>
+      </section>
+      <section id="macro" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>macro sensitivity</h2>
+          <div class="kicker">rates, fx, energy</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Amazon has a split macro personality. AWS is a secular growth business with moderate rate sensitivity (enterprise IT budgets tighten in recessions but cloud migration continues). E-commerce is directly tied to consumer spending — but Amazon gains share in downturns as consumers trade down to value. International revenue ($134.7B, 21% of total) creates meaningful FX exposure: a 10% USD strengthening knocks ~$6-7B off reported international revenue. The tariff environment is the newest variable — Amazon&#x27;s 3P marketplace has heavy exposure to Chinese sellers (~50% of 3P), making it a direct target.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">international revenue</div><div class="kpi-value value-am">$134.7B</div><div class="kpi-sub">21.1% of total — FX exposed</div></div><div class="kpi"><div class="kpi-label">fx impact (10% usd move)</div><div class="kpi-value value-am">~$6-7B</div><div class="kpi-sub">Revenue headwind/tailwind</div></div><div class="kpi"><div class="kpi-label">consumer discretionary mix</div><div class="kpi-value ">~45%</div><div class="kpi-sub">Of NA e-commerce GMV</div></div><div class="kpi"><div class="kpi-label">china 3p seller %</div><div class="kpi-value value-rd">~50%</div><div class="kpi-sub">Of 3P marketplace, tariff exposed</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Interest Rate Sensitivity</h3><span class="tag amber">MODERATE</span></div><div class="aggregate-card-body"><p>Direct balance sheet impact: Low. Amazon has $52.6B in debt but $78.7B in cash — net cash positive. Most debt is fixed-rate, long-duration...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>FX Exposure — The 21% Problem</h3><span class="tag amber">STRUCTURAL</span></div><div class="aggregate-card-body"><p>International segment revenue ($134.7B) is reported in USD but earned primarily in EUR, GBP, JPY, and INR. Key exposures: Europe (~60% of international): EUR/USD is the dominant pair. A 10% EUR depreciation reduces international revenue by ~$8B...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Tariff Risk — The China Seller Exposure</h3><span class="tag red">ELEVATED</span></div><div class="aggregate-card-body"><p>~50% of Amazon&#x27;s third-party sellers are China-based, making the marketplace heavily exposed to US-China tariffs. Current tariff regime: 10-25% on most Chinese goods, with potential escalation to 60%+ under proposed policies. Impact scenarios: (1) Moderate tariffs (25-35%): Chinese seller prices rise 10-15%, some volume shifts to domestic sellers, Amazon takes rate slightly reduced...</p></div></div><div class="note amber"><p>Counter-intuitive macro fact: Amazon has historically outperformed during recessions on a relative basis. In 2008-2009, the stock fell 45% (vs. S&P -55%) and then recovered faster...</p></div>
+      </section>
+      <section id="quant" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>quantitative profile</h2>
+          <div class="kicker">factor + mean reversion</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Amazon&#x27;s quantitative profile shows a high-beta mega-cap with significant momentum, elevated but not extreme volatility, and strong correlation to both the Nasdaq and cloud/AI thematic baskets. The stock&#x27;s -56% drawdown in 2022 was its worst since the dot-com bust and revealed that even $1T+ market caps can have growth-stock volatility. Current technicals show the stock consolidating after a +44% 2024 rally, with support at $165-170 and resistance at $200.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">beta (5yr)</div><div class="kpi-value ">1.15</div><div class="kpi-sub">vs. S&P 500</div></div><div class="kpi"><div class="kpi-label">30-day realized vol</div><div class="kpi-value value-am">~32%</div><div class="kpi-sub">Annualized</div></div><div class="kpi"><div class="kpi-label">max drawdown (2022)</div><div class="kpi-value value-rd">-56%</div><div class="kpi-sub">Jul 2021 to Jan 2023</div></div><div class="kpi"><div class="kpi-label">sharpe ratio (3yr)</div><div class="kpi-value ">0.65</div><div class="kpi-sub">Decent risk-adjusted return</div></div></div><div class="table-wrap"><table><thead><tr><th>Factor</th><th>Exposure</th><th>Percentile</th><th>Interpretation</th></tr></thead><tbody><tr><td><p>Momentum (12-1mo)</p></td><td><p>Positive</p></td><td><p>72nd</p></td><td><p>Strong price momentum, fading slightly from 2024 highs</p></td></tr><tr><td><p>Growth (rev)</p></td><td><p>High</p></td><td><p>85th</p></td><td><p>11% growth at $638B revenue is exceptional for this scale</p></td></tr><tr><td><p>Value (P/E)</p></td><td><p>Expensive</p></td><td><p>15th</p></td><td><p>33x trailing P/E — bottom quintile on value</p></td></tr><tr><td><p>Quality (ROIC)</p></td><td><p>High</p></td><td><p>78th</p></td><td><p>Improving ROIC as margins expand from 2022 trough</p></td></tr><tr><td><p>Size</p></td><td><p>Mega-cap</p></td><td><p>99th</p></td><td><p>$1.93T — top 5 globally</p></td></tr><tr><td><p>Volatility</p></td><td><p>Above avg</p></td><td><p>65th</p></td><td><p>Higher vol than typical mega-cap due to growth multiple</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Drawdown Analysis</h3><span class="tag red">RISK METRIC</span></div><div class="aggregate-card-body"><p>Amazon has experienced five major drawdowns exceeding 25%: 2000-2001: -95% (dot-com bust). Recovery time: 10 years to prior highs. 2008: -56% (financial crisis)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Correlation Matrix</h3><span class="tag blue">PORTFOLIO CONTEXT</span></div><div class="aggregate-card-body"><p>S&P 500: 0.82 — high but not extreme; Amazon has meaningful idiosyncratic risk. Nasdaq 100: 0.88 — higher correlation to growth/tech basket. MSFT: 0.72 — both are cloud plays, but Amazon&#x27;s e-commerce exposure creates divergence...</p></div></div><div class="chart-box"><div class="chart-head"><h3>AMZN Annual Returns (%)</h3><div class="sub">bar</div></div><div class="aggregate-chart-grid"><div class="aggregate-chart-row"><div class="aggregate-chart-label">2019</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:28.43%;background:#111111"></span></div><div class="aggregate-chart-value">23</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2020</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:94.31%;background:#111111"></span></div><div class="aggregate-chart-value">76.3</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2021</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:3.00%;background:#111111"></span></div><div class="aggregate-chart-value">2.4</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2022</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:61.31%;background:#111111"></span></div><div class="aggregate-chart-value">-49.6</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2023</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:100.00%;background:#111111"></span></div><div class="aggregate-chart-value">80.9</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">2024</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:54.88%;background:#111111"></span></div><div class="aggregate-chart-value">44.4</div></div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Technical Levels &amp; Structure</h3><span class="tag blue">TECHNICALS</span></div><div class="aggregate-card-body"><p>Current price: ~$184 (mid-range of 52-week $151-$233). Support levels: $170 (200-day MA), $165 (Q4 2024 breakout level), $151 (52-week low / long-term uptrend line). Resistance levels: $200 (psychological + prior consolidation), $215 (November 2024 high), $233 (52-week high / all-time high area)...</p></div></div><div class="note"><p>Liquidity note: AMZN trades ~55M shares/day ($10B+ notional), making it one of the most liquid stocks globally. Institutional investors can build or exit multi-billion dollar positions over days without meaningful market impact. This liquidity premium partially explains the valuation — large allocators have few alternatives at this market cap and liquidity level.</p></div>
+      </section>
+      <section id="derivatives" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>options &amp; derivatives</h2>
+          <div class="kicker">derivatives & positioning analysis</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Amazon&#x27;s options market reflects moderate bullish positioning with low near-term interest and an implied vol surface that prices in ~35% annualized moves. The put/call ratio sits below 1.0, consistent with structural overwriting by institutional holders and speculative call buying from retail. near-term interest at 0.7% of float is negligible — there is no meaningful bearish bet against Amazon in the derivatives market. The options market is pricing earnings moves of ~6% per quarter, roughly consistent with recent realized moves.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">30-day implied vol</div><div class="kpi-value ">~35%</div><div class="kpi-sub">Annualized, at-the-money</div></div><div class="kpi"><div class="kpi-label">put/call ratio</div><div class="kpi-value ">0.75</div><div class="kpi-sub">Open interest, bullish skew</div></div><div class="kpi"><div class="kpi-label">short interest</div><div class="kpi-value ">0.7%</div><div class="kpi-sub">Of float — negligible</div></div><div class="kpi"><div class="kpi-label">days to cover</div><div class="kpi-value ">0.8</div><div class="kpi-sub">Short squeeze risk: zero</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Implied Volatility Surface</h3><span class="tag blue">VOL ANALYSIS</span></div><div class="aggregate-card-body"><p>Term structure: Slightly upward-sloping. Front-month IV (~33%) is lower than 6-month IV (~37%), reflecting normal carry and upcoming earnings uncertainty. No inversion — the market is not pricing in near-term event risk beyond standard earnings...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Options Flow &amp; Unusual Activity</h3><span class="tag blue">FLOW</span></div><div class="aggregate-card-body"><p>Recent large trades (past 30 days): - Bullish: Large call spread buying in Sep 2025 $200/$230 strikes. Multiple blocks of 5,000+ contracts. Premium spent: ~$15M+...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Short Interest Deep Dive</h3><span class="tag blue">NON-ISSUE</span></div><div class="aggregate-card-body"><p>near-term interest: 0.7% of float (~73M shares). This is one of the lowest near-term interest readings among mega-cap tech. For comparison: TSLA sits at ~3%, NVDA at ~1.2%, META at ~0.9%...</p></div></div><div class="table-wrap"><table><thead><tr><th>Strike / Expiry</th><th>Type</th><th class="num">Open Interest</th><th>Implied Signal</th></tr></thead><tbody><tr><td><p>$200 / Jun 2025</p></td><td><p>Call</p></td><td class="num"><p>125K+</p></td><td><p>Largest OI cluster — magnet level</p></td></tr><tr><td><p>$170 / Jun 2025</p></td><td><p>Put</p></td><td class="num"><p>95K+</p></td><td><p>Downside hedge level, support floor</p></td></tr><tr><td><p>$220 / Sep 2025</p></td><td><p>Call</p></td><td class="num"><p>80K+</p></td><td><p>Bullish upside target</p></td></tr><tr><td><p>$150 / Sep 2025</p></td><td><p>Put</p></td><td class="num"><p>70K+</p></td><td><p>Tail risk hedge, crash protection</p></td></tr><tr><td><p>$250 / Dec 2025</p></td><td><p>Call</p></td><td class="num"><p>55K+</p></td><td><p>Year-end lottery ticket / bull case</p></td></tr></tbody></table></div><div class="note"><p>Positioning summary: The derivatives market is complacent on Amazon. Low near-term interest, moderate IV, bullish options flow, no unusual hedging activity. This is consistent with the 90% Buy consensus — everyone is long and nobody is hedging aggressively...</p></div>
+      </section>
+      <section id="governance" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>governance &amp; accounting</h2>
+          <div class="kicker">governance & management quality</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Amazon&#x27;s governance structure is founder-influenced but professionally managed under CEO Andy Jassy (since July 2021). Jeff Bezos retains ~9% ownership (~$170B) and an Executive Chair title but is operationally hands-off. The board has 10 members with strong independence (9/10 independent), though dual-class-like influence persists through Bezos&#x27;s stake. Compensation is heavily equity-weighted, aligning management with long-term shareholders.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">board independence</div><div class="kpi-value ">90%</div><div class="kpi-sub">9 of 10 directors independent</div></div><div class="kpi"><div class="kpi-label">ceo tenure</div><div class="kpi-value ">3.7 yrs</div><div class="kpi-sub">Andy Jassy, since Jul 2021</div></div><div class="kpi"><div class="kpi-label">founder stake</div><div class="kpi-value ">~9%</div><div class="kpi-sub">Bezos, ~$170B value</div></div><div class="kpi"><div class="kpi-label">ceo total comp (fy2024)</div><div class="kpi-value ">$29.2M</div><div class="kpi-sub">98% equity-based</div></div></div><div class="table-wrap"><table><thead><tr><th>Board Member</th><th>Role</th><th>Tenure</th><th>Key Expertise</th><th>Independent</th></tr></thead><tbody><tr><td><p>Andy Jassy</p></td><td><p>CEO</p></td><td><p>3.7 yrs as CEO</p></td><td><p>Cloud/Tech Operations</p></td><td><p>No</p></td></tr><tr><td><p>Jeff Bezos</p></td><td><p>Executive Chair</p></td><td><p>30 yrs</p></td><td><p>Founder, Strategy</p></td><td><p>No</p></td></tr><tr><td><p>Keith Alexander</p></td><td><p>Director</p></td><td><p>4 yrs</p></td><td><p>Cybersecurity, Former NSA Dir.</p></td><td><p>Yes</p></td></tr><tr><td><p>Edith Cooper</p></td><td><p>Director</p></td><td><p>3 yrs</p></td><td><p>Finance, Former Goldman Sachs</p></td><td><p>Yes</p></td></tr><tr><td><p>Jamie Gorelick</p></td><td><p>Director</p></td><td><p>3 yrs</p></td><td><p>Legal/Regulatory</p></td><td><p>Yes</p></td></tr><tr><td><p>Daniel Huttenlocher</p></td><td><p>Lead Ind. Director</p></td><td><p>8 yrs</p></td><td><p>AI/Tech, MIT Schwarzman</p></td><td><p>Yes</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Executive Compensation Analysis</h3><span class="tag blue">ALIGNED</span></div><div class="aggregate-card-body"><p>Andy Jassy&#x27;s FY2024 total compensation of $29.2M is 98% equity (RSUs vesting over 4 years). Base salary is a token $175K. This is the right structure — management eats what they kill...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Shareholder Rights Assessment</h3><span class="tag amber">AVERAGE</span></div><div class="aggregate-card-body"><p>No dual-class shares — Amazon has a single class of common stock, which is better than Alphabet/Meta. No poison pill currently in effect. Annual director elections with majority voting standard...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Accounting Quality Check</h3><span class="tag blue">CLEAN</span></div><div class="aggregate-card-body"><p>Ernst &amp; Young has been Amazon&#x27;s auditor since 1996 — a 28-year relationship that&#x27;s worth flagging but not alarming given mandatory partner rotations. No material weaknesses or restatements in the past 5 years. Key accounting judgment areas: (1) AWS useful life assumptions for servers/networking — extended from 5 to 6 years in 2024, adding ~$1.5B to operating income, (2) content amortization for Prime Video — accelerated vs...</p></div></div><div class="pillars"><div class="pillar"><div class="head"><h4>1. board quality</h4><span class="tag green">8/10</span></div><p>Strong independence (90%), relevant expertise across AI, finance, consumer, and regulatory. Lead independent director is the MIT Schwarzman College dean — perfect for an AI-first company.</p></div><div class="pillar"><div class="head"><h4>2. compensation alignment</h4><span class="tag green">7/10</span></div><p>98% equity comp is great structure. Ding for time-vested (not performance-vested) RSUs and declining Say-on-Pay support.</p></div><div class="pillar"><div class="head"><h4>3. shareholder rights</h4><span class="tag amber">6/10</span></div><p>Single-class shares and annual elections are positives. No proxy access and no special meeting rights are negatives...</p></div><div class="pillar"><div class="head"><h4>4. accounting transparency</h4><span class="tag green">7/10</span></div><p>Clean audits, no restatements. Server useful life extension and $24B SBC are areas to monitor...</p></div></div><div class="note amber"><p>Watch for: Say-on-Pay approval trend. If it drops below 70% at the 2025 proxy, expect activist pressure on compensation structure. Also monitor whether Bezos continues to sell down his stake — he&#x27;s sold ~$20B in 2024 alone.</p></div><p class="aggregate-pane-xref"><a href="#capalloc">See management&#x27;s capital deployment decisions in the Capital Allocation tab</a></p>
+      </section>
+      <section id="value" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>value framework</h2>
+          <div class="kicker">greenwald / qarp</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Amazon fails most traditional value screens — 33x P/E, zero dividend, $83B annual capex — but passes the quality-at-a-reasonable-price test when you model the embedded earnings power of AWS and advertising. Graham would reject it; Buffett would recognize the moat.</p></div>
+        <div class="pillars"><div class="pillar"><div class="head"><h4>1. adequate size</h4><span class="tag green">10/10</span></div><p>$638B revenue, $1.93T market cap. Among the 5 largest companies on Earth...</p></div><div class="pillar"><div class="head"><h4>2. strong financial condition</h4><span class="tag green">8/10</span></div><p>Net cash of $26B. Current ratio 1.07 (low for Graham but acceptable for subscription/retail)...</p></div><div class="pillar"><div class="head"><h4>3. earnings stability</h4><span class="tag amber">6/10</span></div><p>Profitable in 9 of last 10 years, but massive volatility (FY2022 was a loss year). Earnings growth highly non-linear...</p></div><div class="pillar"><div class="head"><h4>4. dividend record</h4><span class="tag red">0/10</span></div><p>No dividend. No plans for a dividend...</p></div></div><div class="pillars"><div class="pillar"><div class="head"><h4>1. understandable business</h4><span class="tag green">9/10</span></div><p>Everyone understands Amazon&#x27;s retail business. AWS is more complex but fundamentally: renting computing power...</p></div><div class="pillar"><div class="head"><h4>2. durable competitive advantage</h4><span class="tag green">10/10</span></div><p>Arguably the widest moat in technology. Prime ecosystem lock-in, AWS developer stickiness, marketplace two-sided network effects, fulfillment infrastructure that cost $100B+ to build...</p></div><div class="pillar"><div class="head"><h4>3. able &amp; honest management</h4><span class="tag green">8/10</span></div><p>Jassy has proven himself by executing the margin turnaround. Bezos aligned as 9% owner and executive chairman...</p></div><div class="pillar"><div class="head"><h4>4. available at sensible price</h4><span class="tag amber">6/10</span></div><p>At 33x forward P/E, Amazon isn&#x27;t cheap. But it&#x27;s cheaper than it&#x27;s been (5yr avg ~60x P/E)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Investment Decision Framework</h3><span class="tag blue">FRAMEWORK</span></div><div class="aggregate-card-body"><p>This is a quality-compounder position, not a value position. You own Amazon because you believe the three-engine model (AWS + ads + retail margin) will compound earnings at 15-20% annually for the next 5 years, and the moat ensures those earnings are durable. The right mental model is: would I buy this entire business for $1.93 trillion?...</p></div></div><div class="table-wrap"><table><thead><tr><th>Factor</th><th class="num">Score</th><th class="num">Weight</th><th class="num">Weighted</th></tr></thead><tbody><tr><td><p>Business Quality</p></td><td class="num"><p>9/10</p></td><td class="num"><p>25%</p></td><td class="num"><p>2.25</p></td></tr><tr><td><p>Management Quality</p></td><td class="num"><p>8/10</p></td><td class="num"><p>15%</p></td><td class="num"><p>1.20</p></td></tr><tr><td><p>Financial Strength</p></td><td class="num"><p>8/10</p></td><td class="num"><p>15%</p></td><td class="num"><p>1.20</p></td></tr><tr><td><p>Growth Trajectory</p></td><td class="num"><p>8/10</p></td><td class="num"><p>15%</p></td><td class="num"><p>1.20</p></td></tr><tr><td><p>Valuation Attractiveness</p></td><td class="num"><p>5/10</p></td><td class="num"><p>20%</p></td><td class="num"><p>1.00</p></td></tr><tr><td><p>Catalyst Clarity</p></td><td class="num"><p>6/10</p></td><td class="num"><p>10%</p></td><td class="num"><p>0.60</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Bias Checklist</h3><span class="tag amber">SELF-AUDIT</span></div><div class="aggregate-card-body"><p>Anchoring: Are we anchored to the 2024 margin expansion continuing? Partially. We assume margins stabilize, not expand further...</p></div></div>
+      </section>
+      <section id="appendix" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>appendix &amp; sources</h2>
+          <div class="kicker">sources · methodology</div>
+        </div>
+        <div class="lead aggregate-lead"><p>How we source the tape, verify levels, and align this report with XVARY deep-dive standards.</p></div>
+        <div class="aggregate-sources-attribution"><p>Sources: SEC filings, company disclosures, market data vendors, and sources cited in the sections above. For investment presentation use only.</p></div><p class="aggregate-methodology-link">standards and pipeline: <a href="https://xvary.com/methodology/">xvary.com/methodology/</a></p>
+      </section>
+
+      <div class="footer">
+        xvary · 2026 · not investment advice
+        <div class="links">
+          <a href="https://xvary.com/pulse/">the pulse</a>
+          <a href="https://xvary.com/stacks/">the stacks</a>
+          <a href="https://xvary.com/discover/">discover</a>
+          <a href="https://xvary.com/collectibles/">collectibles</a>
+          <a href="https://xvary.com/pricing/">pricing</a>
+          <a href="https://xvary.com/methodology/">methodology</a>
+          <a href="https://xvary.com/newsletter/">newsletter</a>
+          <a href="https://xvary.com/legal/disclaimer/">disclaimer</a>
+          <a href="https://xvary.com/legal/privacy/">privacy</a>
+          <a href="https://xvary.com/legal/terms/">terms</a>
+        </div>
+        <div class="small">Sources: company filings and earnings, supplier disclosures, named sell-side notes where cited, alt-data where noted, and public flow/sentiment screens. Not investment advice — verify anything you trade on.</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const bar = document.getElementById("reading-progress");
+      const sections = [{"id": "summary", "hotkey": "0"}, {"id": "thesis", "hotkey": "1"}, {"id": "financials", "hotkey": "2"}, {"id": "valuation", "hotkey": "3"}, {"id": "risk", "hotkey": "4"}, {"id": "ops", "hotkey": "5"}, {"id": "competition", "hotkey": "6"}, {"id": "tam", "hotkey": "7"}, {"id": "product", "hotkey": "8"}, {"id": "supply", "hotkey": "9"}, {"id": "catalysts", "hotkey": "a"}, {"id": "street", "hotkey": "b"}, {"id": "scorecard", "hotkey": "c"}, {"id": "signals", "hotkey": "d"}, {"id": "history", "hotkey": "e"}, {"id": "management", "hotkey": "f"}, {"id": "macro", "hotkey": "g"}, {"id": "quant", "hotkey": "h"}, {"id": "derivatives", "hotkey": "i"}, {"id": "governance", "hotkey": "j"}, {"id": "value", "hotkey": "k"}, {"id": "appendix", "hotkey": "l"}];
+      const links = [...document.querySelectorAll(".sidebar a[href^='#']")];
+      const setActive = function (id) {
+        links.forEach(function (link) {
+          link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+        });
+      };
+
+      window.addEventListener("scroll", function () {
+        const root = document.documentElement;
+        const pct = (root.scrollTop / Math.max(root.scrollHeight - root.clientHeight, 1)) * 100;
+        if (bar) {
+          bar.style.width = Math.min(Math.max(pct, 0), 100) + "%";
+        }
+      }, { passive: true });
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(function (entries) {
+          entries.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+          const hit = entries.find(function (entry) {
+            return entry.isIntersecting && entry.intersectionRatio > 0.12;
+          });
+          if (hit) {
+            setActive(hit.target.id);
+          }
+        }, { rootMargin: "-40% 0px -40% 0px", threshold: [0, 0.12, 0.25, 0.45] });
+
+        sections.forEach(function (item) {
+          const node = document.getElementById(item.id);
+          if (node) {
+            observer.observe(node);
+          }
+        });
+      }
+
+      links.forEach(function (link) {
+        link.addEventListener("click", function () {
+          setActive(link.getAttribute("href").slice(1));
+        });
+      });
+
+      const hotkeys = {};
+      sections.forEach(function (item) {
+        hotkeys[item.hotkey] = item.id;
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.metaKey || event.ctrlKey) {
+          return;
+        }
+        const target = event.target;
+        if (target && target.closest && target.closest("input, textarea, select, [contenteditable='true']")) {
+          return;
+        }
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (!hotkeys[key]) {
+          return;
+        }
+        event.preventDefault();
+        const node = document.getElementById(hotkeys[key]);
+        if (node) {
+          node.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    })();
+  </script>
+  <footer class="footer" style="margin-left:var(--navw,0)">
+    xvary · 2026 · not investment advice
+    <div class="footer-links">
+      <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/methodology/">methodology</a>
+      <a href="/newsletter/">newsletter</a>
+      <a href="/pricing/">pricing</a>
+      <a href="/free/">free reports</a>
+      <a href="/legal/disclaimer/">disclaimer</a>
+      <a href="/legal/privacy/">privacy</a>
+      <a href="/legal/terms/">terms</a>
+    </div>
+    <div class="footer-logo">
+      <a href="/" aria-label="home">
+        <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+      </a>
+    </div>
+  </footer>
+  <script src="/js/site-chrome.js?v=1776081807" defer></script>
+
+</div>
+
+<!-- Sticky CTA bar -->
+<div class="sticky-cta">
+  <p>Want this analysis on any ticker?</p>
+  <a href="../../pricing.html#free-trial" class="btn-sticky">Request a Report &rarr;</a>
+</div>
+
+<!-- Shared Footer -->
+<div id="site-footer"></div>
+
+<script src="components.js?v=1776081807"></script>
+<script src="main.js?v=1776081807"></script>
+</body>
+</html>

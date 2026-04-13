@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>05 dark terminal — momentum revive demo</title>
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+  <link rel="stylesheet" href="demo-timeline.css?v=1776081807">
+  <style>
+    body { background: #0a0a0a; color: #e8e8e6; }
+    .wrap { max-width: 880px; margin: 0 auto; padding: 24px clamp(16px,3vw,32px) 80px; }
+    .hub { font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; text-transform: lowercase; margin-bottom: 24px; }
+    .hub a { color: var(--yel); }
+    h1 { font-family: var(--font-mono); font-size: clamp(14px,2.5vw,18px); font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--yel); margin: 0 0 8px; }
+    .prompt { font-family: var(--font-mono); font-size: 14px; color: #6a6a68; margin-bottom: 32px; line-height: 1.5; }
+    .prompt span { color: #4ade80; }
+    .block { border: 1px solid #333; border-radius: 8px; margin-bottom: 16px; overflow: hidden; }
+    .block-h { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; padding: 12px 16px; background: #141414; color: var(--yel); border-bottom: 1px solid #333; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .block-h strong { color: #fff; font-weight: 600; }
+    .block-b { padding: 16px 18px; display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    @media (max-width: 700px) { .block-b { grid-template-columns: 1fr; } }
+    .block-b h3 { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: .1em; color: #9a9a98; margin: 0 0 14px; text-transform: uppercase; }
+    ul { margin: 0; padding: 0; list-style: none; }
+    li { font-family: var(--font-primary); font-size: 16px; line-height: 1.65; padding: 12px 0; border-top: 1px solid #2a2a2a; color: #e0e0de; text-transform: lowercase; }
+    li:first-child { border-top: none; padding-top: 0; }
+    .tag { color: var(--yel); font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: .05em; margin-right: 8px; }
+    .tape p { font-family: var(--font-primary); font-size: 16px; line-height: 1.6; margin: 0 0 12px; color: #c8c8c4; text-transform: lowercase; }
+    .tape p:last-child { margin-bottom: 0; }
+    .tape b { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: .06em; color: #888; display: block; margin-bottom: 6px; }
+  </style>
+</head>
+<body class="demo-timeline--dark">
+  <div class="wrap">
+    <p class="hub"><a href="index.html">← all layouts</a></p>
+    <h1 id="hero-title">momentum_revive · nvda</h1>
+    <p class="prompt" id="hero-prompt"><span>$</span> cat timeline.log <span id="window"></span></p>
+    <div id="demo-timeline-mount" class="demo-timeline-mount" data-variant="terminal-trace"></div>
+    <div id="root"></div>
+  </div>
+  <script src="data.js?v=1776081807"></script>
+  <script src="demo-timeline.js?v=1776081807"></script>
+  <script>
+(function () {
+  var R = window.MR_DEMO_DATA;
+  function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  document.getElementById('window').textContent = '— ' + R.windowLabel;
+  var html = '';
+  R.chapters.forEach(function (ch, i) {
+    var ev = ch.events.map(function (e) {
+      return '<li><span class="tag">' + esc(e.tag) + '</span>' + esc(e.text) + '</li>';
+    }).join('');
+    var tp = '';
+    if (ch.tape) {
+      tp = '<div class="tape"><p><b>stock</b>' + esc(ch.tape.stock) + '</p><p><b>indices</b>' + esc(ch.tape.index) + '</p><p><b>relative</b>' + esc(ch.tape.rel) + '</p></div>';
+    }
+    html += '<div class="block" id="ch-' + (i + 1) + '"><div class="block-h"><strong>segment ' + String(i + 1).padStart(2, '0') + '</strong> <span>' + esc(ch.range) + '</span></div>' +
+      '<div class="block-b"><div><h3>' + esc(ch.title) + '</h3><ul>' + ev + '</ul></div><div><h3>tape</h3>' + tp + '</div></div></div>';
+  });
+  document.getElementById('root').innerHTML = html;
+  window.initDemoTimeline();
+})();
+  </script>
+</body>
+</html>

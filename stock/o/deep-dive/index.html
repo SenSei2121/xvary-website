@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>O - deep dive · xvary</title>
+  <meta name="description" content="This company pays a dividend every single month and has raised it 134 times in a row." />
+  <meta name="robots" content="index, follow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807" />
+  <style>
+:root{
+      --yel:#ffe500;
+      --ink:#000;
+      --paper:#fffdf3;
+      --card:#fff;
+      --line:rgba(0,0,0,.12);
+      --text:#111;
+      --muted:#555;
+      --soft:#f3eed8;
+      --green:#1a7f5a;
+      --red:#c53030;
+      --amber:#b7791f;
+      --blue:#2251ff;
+      --shadow:0 18px 42px rgba(0,0,0,.10);
+      --radius:16px;
+      --radius-sm:12px;
+      --navw:240px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    html{background:var(--yel);scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h, 68px) + 24px)}
+    body{
+      background:var(--yel);
+      color:var(--text);
+      font:500 16px/1.65 "Space Grotesk",system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    a{color:inherit;text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:var(--ink);color:var(--yel)}
+    .skip-link{
+      position:absolute;left:12px;top:-40px;z-index:9999;
+      background:var(--ink);color:var(--yel);
+      padding:8px 14px;border-radius:999px;font:700 12px/1 "DM Mono",monospace;
+    }
+    .skip-link:focus{top:12px}
+
+    .layout{display:block}
+    .sidebar{
+      position:fixed;left:0;top:var(--nav-h, 68px);bottom:0;width:var(--navw);
+      overflow:auto;background:var(--ink);color:#fff;border-right:1px solid rgba(255,255,255,.08);
+      padding:18px 0 16px;scrollbar-width:none;
+    }
+    .sidebar::-webkit-scrollbar{display:none}
+    .nav-section{padding:0 0 8px}
+    .nav-label{
+      padding:0 18px 10px;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.12em;text-transform:lowercase;color:rgba(255,255,255,.46);
+    }
+    .nav-pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 18px 10px 16px;color:rgba(255,255,255,.78);
+      border-left:3px solid transparent;text-decoration:none;font-size:12px;font-weight:600;line-height:1.35;
+    }
+    .nav-pill:hover{background:rgba(255,255,255,.06);text-decoration:none}
+    .nav-pill.active{background:var(--yel);color:var(--ink);border-left-color:var(--ink)}
+    .nav-kbd{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:22px;height:22px;border-radius:6px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+      font:700 10px/1 "DM Mono",monospace;flex:0 0 auto;
+    }
+    .nav-pill.active .nav-kbd{background:var(--ink);color:var(--yel);border-color:var(--ink)}
+    .nav-txt{min-width:0}
+
+    .content{
+      margin-left:var(--navw);
+      padding:28px 26px 64px;
+      width:calc((100vw - var(--navw)) * 0.9);
+      max-width:none;
+    }
+
+    .hero{
+      display:block;
+      text-align:left;
+      border-bottom:3px solid rgba(0,0,0,.14);
+      padding:18px 0 26px;margin-bottom:18px;
+    }
+    .hero-top{
+      display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:24px;align-items:end;
+      padding-bottom:18px;
+    }
+    .hero .hero-ticker{
+      font-size:clamp(58px,10vw,92px);line-height:.88;font-weight:800;letter-spacing:-.05em;text-transform:lowercase;margin:0;
+      max-width:none;text-align:left;
+    }
+    .hero-co{margin-top:4px;font-size:14px;color:rgba(0,0,0,.64);text-transform:lowercase}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .pill{
+      display:inline-flex;align-items:center;padding:5px 12px;border-radius:999px;
+      font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.06em;
+      background:rgba(0,0,0,.08);color:#111;
+    }
+    .pill.dark{background:var(--ink);color:var(--yel)}
+    .hero .hero-hook{
+      font-size:clamp(19px,2.05vw,24px);line-height:1.35;font-weight:700;margin:0;color:#111;
+      max-width:none;text-align:left;
+    }
+    .hero .hero-sub{
+      margin:10px 0 0;color:rgba(0,0,0,.70);font-size:17px;line-height:1.68;max-width:none;text-align:left;
+    }
+    .hero-tape{
+      display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;padding-top:16px;
+      border-top:2px solid rgba(0,0,0,.10);font:600 11px/1.5 "DM Mono",monospace;color:rgba(0,0,0,.58)
+    }
+    .hero-tape strong{color:rgba(0,0,0,.92)}
+
+    .kpi-grid{display:grid;gap:10px}
+    .kpi-grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .kpi-grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .kpi-grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi{
+      background:rgba(255,255,255,.84);border:1px solid rgba(0,0,0,.08);border-radius:14px;
+      padding:14px 16px;box-shadow:0 8px 20px rgba(0,0,0,.04)
+    }
+    .kpi-label{font:700 10px/1.25 "DM Mono",monospace;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .kpi-value{font-size:clamp(24px,2.8vw,34px);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+    .kpi-sub{margin-top:4px;font-size:12px;line-height:1.45;color:rgba(0,0,0,.55)}
+    .value-gn{color:var(--green)}
+    .value-rd{color:var(--red)}
+    .value-am{color:var(--amber)}
+
+    .panel{
+      background:rgba(255,255,255,.92);border:2px solid rgba(0,0,0,.08);border-left:5px solid var(--yel);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin:18px 0
+    }
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      margin-bottom:12px;padding-bottom:12px;border-bottom:3px solid #000
+    }
+    .section-head h2{
+      margin:0;font-size:clamp(34px,3.9vw,50px);line-height:.98;font-weight:800;letter-spacing:-.045em;text-transform:none
+    }
+    .kicker{font:700 11px/1 "DM Mono",monospace;letter-spacing:.12em;text-transform:lowercase;color:rgba(0,0,0,.52)}
+    .lead{margin:0 0 16px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.72)}
+    .aggregate-sources-attribution{margin:0 0 14px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.76)}
+    .aggregate-sources-attribution p{margin:0}
+    .aggregate-methodology-link{margin:0;max-width:80ch;font-size:14.5px;line-height:1.6;color:rgba(0,0,0,.62)}
+    #appendix .lead,
+    #appendix .aggregate-sources-attribution,
+    #appendix .aggregate-methodology-link{max-width:none}
+    .quote,.note,.callout,.pillar,.scenario,.table-wrap,.chart-box{
+      background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:14px
+    }
+    .quote{padding:14px 16px;font-size:15px;line-height:1.68;color:rgba(0,0,0,.72)}
+    .note{padding:14px 16px;margin-top:10px;font-size:14.5px;line-height:1.64;color:rgba(0,0,0,.72)}
+    .note strong,.table-title .tag,.legend-label,.pillars .head h4{
+      font:700 11px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase
+    }
+    .note.green{border-left:4px solid var(--green);background:rgba(26,127,90,.06)}
+    .note.amber{border-left:4px solid var(--amber);background:rgba(183,121,31,.08)}
+    .note.red{border-left:4px solid var(--red);background:rgba(197,48,48,.06)}
+
+    .g2,.g3,.g4,.callout-row,.pillars,.scenario-grid{display:grid;gap:10px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .callout-row{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:12px;min-width:0}
+    .callout{padding:14px 16px;min-width:0;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+    .callout .label{font:700 10px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .callout .metric{font-size:clamp(24px,2.8vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;word-break:break-word}
+    #appendix .callout .metric{font-size:clamp(13px,1.35vw,16px);font-weight:700;letter-spacing:0;line-height:1.4}
+    .callout .desc{margin-top:6px;font-size:12.5px;line-height:1.5;color:rgba(0,0,0,.56)}
+
+    .pillars{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px}
+    .pillar{padding:14px 16px}
+    .pillar .head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+    .pillar .head h4{margin:0;font-size:14px;color:#111;letter-spacing:0;text-transform:none;font-family:"Space Grotesk",sans-serif}
+    .tag{
+      display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;border:1px solid rgba(0,0,0,.10);
+      background:rgba(255,255,255,.85);font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.04em;
+    }
+    .tag.green{color:var(--green);background:rgba(26,127,90,.08);border-color:rgba(26,127,90,.25)}
+    .tag.amber{color:var(--amber);background:rgba(183,121,31,.10);border-color:rgba(183,121,31,.25)}
+    .tag.red{color:var(--red);background:rgba(197,48,48,.08);border-color:rgba(197,48,48,.25)}
+    .tag.blue{color:#111;background:rgba(255,229,0,.18);border-color:rgba(0,0,0,.20)}
+    .tag.ink{color:rgba(0,0,0,.68)}
+
+    .table-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+    .table-title h3{margin:0;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-.02em;text-transform:none}
+    .table-wrap{overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+    table{width:100%;border-collapse:collapse;min-width:520px;font-variant-numeric:tabular-nums;background:#fff}
+    th,td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+    thead th{
+      position:sticky;top:0;background:#f0ece4;color:#111;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.08em;text-transform:lowercase;border-bottom:3px solid #000;text-align:left
+    }
+    tbody tr:nth-child(even) td{background:rgba(240,236,228,.36)}
+    tbody tr:hover td{background:rgba(255,229,0,.16)}
+    td.num,th.num{text-align:right}
+    td.b{font-weight:800;color:#111}
+    td.pos{color:var(--green);font-weight:700}
+    td.neg{color:var(--red);font-weight:700}
+    td.amb{color:var(--amber);font-weight:700}
+
+    .chart-box{padding:16px 18px 18px;box-shadow:0 12px 36px rgba(0,0,0,.06)}
+    .chart-head h3{margin:0 0 4px;font-size:16px;line-height:1.2;text-transform:none}
+    .chart-head .sub{font-size:11px;color:rgba(0,0,0,.52);font-style:italic}
+    /* TAM vs revenue: y-axis ticks + grid + split x-label row */
+    .chart-labeled{
+      --chart-h:min(52vw,240px);
+      --chart-h-min:200px;
+      --chart-h-max:260px;
+      display:grid;
+      grid-template-columns:3.35rem 1fr;
+      grid-template-rows:minmax(var(--chart-h-min),var(--chart-h-max)) auto;
+      gap:8px 12px;
+      align-items:stretch;
+      margin-top:6px;
+    }
+    .chart-y-title{
+      margin:8px 0 0;
+      font:700 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.5);
+    }
+    .chart-y-axis{
+      grid-column:1;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      padding-right:8px;
+      border-right:2px solid rgba(0,0,0,.2);
+      font:600 10px/1 "DM Mono",monospace;
+      color:rgba(0,0,0,.58);
+      box-sizing:border-box;
+    }
+    .chart-y-axis .yt{
+      position:absolute;right:8px;line-height:1;white-space:nowrap;
+      transform:translateY(-50%);
+    }
+    .chart-y-axis .yt.y-600{top:0;transform:translateY(0)}
+    .chart-y-axis .yt.y-500{top:16.6667%}
+    .chart-y-axis .yt.y-400{top:33.3333%}
+    .chart-y-axis .yt.y-300{top:50%}
+    .chart-y-axis .yt.y-200{top:66.6667%}
+    .chart-y-axis .yt.y-100{top:83.3333%}
+    .chart-y-axis .yt.y-0{bottom:0;top:auto;transform:translateY(0)}
+    .chart-plot-cell{
+      grid-column:2;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      border-bottom:2px solid rgba(0,0,0,.2);
+    }
+    .chart-grid-bg{
+      position:absolute;inset:0;
+      background:repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6)
+      );
+      pointer-events:none;
+    }
+    .chart{
+      position:relative;z-index:1;
+      display:flex;align-items:flex-end;justify-content:stretch;gap:6px;
+      width:100%;
+      height:100%;min-height:0;
+    }
+    .bar{
+      flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+      min-width:0;height:100%;
+    }
+    .bar-pair{
+      display:flex;flex-direction:row;align-items:flex-end;justify-content:center;
+      gap:5px;width:100%;height:100%;min-height:0;
+    }
+    .col{
+      flex:1 1 0;min-width:8px;border-radius:8px 8px 2px 2px;
+      min-height:2px;align-self:flex-end;
+      box-sizing:border-box;
+    }
+    .col.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .col.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .chart-x-foot{
+      grid-column:2;
+      grid-row:2;
+      display:flex;gap:6px;
+      margin-top:-2px;
+    }
+    .bar-foot{
+      flex:1 1 0;min-width:0;
+      text-align:center;padding-top:6px;
+    }
+    .chart-x-axis-cap{
+      margin:4px 0 0;
+      font:600 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.45);
+      text-align:center;
+    }
+    .chart-legend{
+      display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:12px;padding-top:10px;
+      border-top:1px solid rgba(0,0,0,.08);font-size:12px;color:rgba(0,0,0,.62)
+    }
+    .chart-legend span{display:inline-flex;align-items:center;gap:6px}
+    .chart-legend i{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+    .chart-legend i.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .chart-legend i.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .lab,.val{font-size:10px;line-height:1.25;text-align:center;color:rgba(0,0,0,.56)}
+    .val{font:700 10px/1 "DM Mono",monospace}
+    .lab{max-width:12em;margin:0 auto}
+
+    .scenario-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}
+    .scenario{padding:14px 16px;border-left:4px solid var(--blue)}
+    .scenario.bear{border-left-color:var(--red)}
+    .scenario.base{border-left-color:var(--amber)}
+    .scenario.bull{border-left-color:var(--green)}
+    .scenario .prob{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:8px}
+    .scenario h4{margin:0 0 6px;font-size:18px;line-height:1.1}
+    .scenario p{margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,.72)}
+
+    .legend{display:grid;gap:8px}
+    .legend .item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(0,0,0,.72)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)} .dot.blue{background:#2251ff}
+
+    .footer{
+      margin-top:28px;padding-top:22px;border-top:3px solid rgba(0,0,0,.12);
+      text-align:center;font-size:12px;line-height:1.65;color:rgba(0,0,0,.56)
+    }
+    .footer .links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+    .footer .links a{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.68)}
+    .footer .small{margin-top:12px;font-size:11px;color:rgba(0,0,0,.54)}
+
+    .reading-progress{
+      position:fixed;top:var(--nav-h, 68px);left:0;height:4px;width:0;z-index:101;
+      background:linear-gradient(90deg,var(--yel),#fff38c);box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 14px rgba(255,229,0,.45)
+    }
+    .watermark{
+      position:fixed;right:18px;bottom:14px;z-index:1;pointer-events:none;user-select:none;
+      font-size:clamp(68px,12vw,118px);font-weight:800;letter-spacing:-.06em;line-height:.8;color:rgba(0,0,0,.05)
+    }
+
+    @media (max-width:1024px){
+      .g2,.g3,.g4,.pillars,.scenario-grid{grid-template-columns:1fr}
+      .hero-top{grid-template-columns:1fr}
+      .content{padding:22px 18px 56px}
+    }
+    @media (max-width:900px){
+      .sidebar{display:none}
+      .content{
+        margin-left:auto;
+        margin-right:auto;
+        width:90vw;
+        max-width:none;
+      }
+    }
+    @media (max-width:760px){
+      .kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr 1fr}
+      .callout-row{grid-template-columns:1fr 1fr}
+      table{min-width:460px}
+    }
+    @media (max-width:560px){
+      .callout-row,.kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr}
+      .section-head h2{font-size:30px}
+      .hero .hero-hook{font-size:19px}
+      .hero .hero-sub{font-size:16px}
+      .panel{padding:20px}
+    }
+    .hero-snapshot-link {
+      display: inline-block;
+      margin-top: 4px;
+      font: 400 11px/1.4 "DM Mono", monospace;
+      color: rgba(0,0,0,.38);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .hero-snapshot-link:hover {
+      color: rgba(0,0,0,.68);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+  .aggregate-panel {
+    position: relative;
+    z-index: 1;
+  }
+  .aggregate-lead p {
+    margin: 0 0 16px;
+  }
+  .auto-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .aggregate-stack {
+    display: grid;
+    gap: 12px;
+  }
+  .aggregate-card {
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.05);
+  }
+  .aggregate-card.dark {
+    background: rgba(0,0,0,.92);
+    color: rgba(255,255,255,.92);
+    border-color: rgba(255,255,255,.08);
+  }
+  .aggregate-card.dark p,
+  .aggregate-card.dark li,
+  .aggregate-card.dark .aggregate-source {
+    color: rgba(255,255,255,.72);
+  }
+  .aggregate-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .aggregate-card-head h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    text-transform: lowercase;
+  }
+  .aggregate-card-body,
+  .aggregate-card-body p,
+  .aggregate-card-body li {
+    font-size: 15px;
+    line-height: 1.68;
+    color: rgba(0,0,0,.72);
+  }
+  .aggregate-card-body p {
+    margin: 0 0 12px;
+  }
+  .aggregate-card-body ul,
+  .aggregate-card-body ol {
+    margin: 0 0 12px 20px;
+    padding: 0;
+  }
+  .aggregate-card-body > *:last-child {
+    margin-bottom: 0;
+  }
+  .aggregate-source {
+    margin-top: 10px;
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .06em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.48);
+  }
+  .aggregate-substack {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .aggregate-chart-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .aggregate-chart-row {
+    display: grid;
+    grid-template-columns: minmax(80px, 140px) 1fr minmax(60px, 120px);
+    align-items: center;
+    gap: 10px;
+  }
+  .aggregate-chart-label,
+  .aggregate-chart-value {
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .04em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.62);
+  }
+  .aggregate-chart-track {
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .aggregate-chart-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+  }
+  .table-wrap table th.num,
+  .table-wrap table td.num {
+    text-align: right;
+  }
+  .table-wrap table td.pos { color: var(--green, #1a7f37); font-weight: 600; }
+  .table-wrap table td.neg { color: var(--red, #cf222e); font-weight: 600; }
+  .table-wrap table td.amb { color: var(--caution-text, #9a6700); font-weight: 600; }
+  .table-narrow {
+    max-width: 520px;
+  }
+  .table-narrow table {
+    min-width: 0;
+    width: 100%;
+  }
+  .g2 .table-narrow {
+    max-width: none;
+  }
+  .aggregate-mini-table {
+    margin-top: 8px;
+  }
+  .aggregate-mini-table table {
+    min-width: 0;
+  }
+  .aggregate-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .aggregate-list-item {
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    background: rgba(255,255,255,.72);
+  }
+  .aggregate-list-item strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .aggregate-audit {
+    margin-top: 8px;
+  }
+  @media (max-width: 1120px) {
+    .sidebar {
+      position: static;
+      width: auto;
+      top: auto;
+      padding: 12px 0;
+      border-right: 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: none;
+    }
+    .content {
+      margin-left: auto;
+      margin-right: auto;
+      width: 90vw;
+      max-width: none;
+      padding: 24px 18px 56px;
+    }
+    .watermark {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .hero-top {
+      grid-template-columns: 1fr;
+    }
+    .aggregate-chart-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+  .aggregate-pane-xref {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(0, 0, 0, 0.52);
+  }
+  .aggregate-pane-xref a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .aggregate-pane-xref a:hover {
+    color: rgba(0, 0, 0, 0.88);
+  }
+  .hero-snapshot-link {
+    display: inline-block;
+    margin-top: 4px;
+    font: 400 11px/1.4 "DM Mono", monospace;
+    color: rgba(0,0,0,.38);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .hero-snapshot-link:hover {
+    color: rgba(0,0,0,.68);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  </style>
+</head>
+<body data-xvary-aggregate-readable="1">
+  <a class="skip-link" href="#content">skip to content</a>
+  <div class="reading-progress" id="reading-progress"></div>
+  <div class="watermark" aria-hidden="true">O</div>
+
+  <nav class="nav nav--white" aria-label="main navigation" data-xvary-nav-static>
+    <a class="nav-brand" href="/">xvary</a>
+    <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" type="button" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+    <div class="nav-links">
+      <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/pricing/">pricing</a>
+      <a class="nav-cta" href="/pricing/">sign up</a>
+    </div>
+  </nav>
+
+  <div class="layout xvary-aggregate-deep-dive-body" data-template-id="aggregate-deep-dive-live-v1" lang="en">
+    <aside class="sidebar" aria-label="section navigation">
+      <div class="nav-section">
+        <div class="nav-label">quick navigation</div>
+        <a class="nav-pill active" href="#summary">
+          <span class="nav-kbd">0</span>
+          <span class="nav-txt">report snapshot</span>
+        </a>
+        <a class="nav-pill " href="#thesis">
+          <span class="nav-kbd">1</span>
+          <span class="nav-txt">variant perception &amp; thesis</span>
+        </a>
+        <a class="nav-pill " href="#financials">
+          <span class="nav-kbd">2</span>
+          <span class="nav-txt">financial analysis</span>
+        </a>
+        <a class="nav-pill " href="#valuation">
+          <span class="nav-kbd">3</span>
+          <span class="nav-txt">valuation</span>
+        </a>
+        <a class="nav-pill " href="#risk">
+          <span class="nav-kbd">4</span>
+          <span class="nav-txt">what breaks the thesis</span>
+        </a>
+        <a class="nav-pill " href="#ops">
+          <span class="nav-kbd">5</span>
+          <span class="nav-txt">fundamentals &amp; operations</span>
+        </a>
+        <a class="nav-pill " href="#competition">
+          <span class="nav-kbd">6</span>
+          <span class="nav-txt">competitive position</span>
+        </a>
+        <a class="nav-pill " href="#tam">
+          <span class="nav-kbd">7</span>
+          <span class="nav-txt">market size &amp; tam</span>
+        </a>
+        <a class="nav-pill " href="#product">
+          <span class="nav-kbd">8</span>
+          <span class="nav-txt">product &amp; technology</span>
+        </a>
+        <a class="nav-pill " href="#supply">
+          <span class="nav-kbd">9</span>
+          <span class="nav-txt">supply chain</span>
+        </a>
+        <a class="nav-pill " href="#catalysts">
+          <span class="nav-kbd">a</span>
+          <span class="nav-txt">catalyst map</span>
+        </a>
+        <a class="nav-pill " href="#street">
+          <span class="nav-kbd">b</span>
+          <span class="nav-txt">street expectations</span>
+        </a>
+        <a class="nav-pill " href="#management">
+          <span class="nav-kbd">c</span>
+          <span class="nav-txt">management &amp; leadership</span>
+        </a>
+        <a class="nav-pill " href="#macro">
+          <span class="nav-kbd">d</span>
+          <span class="nav-txt">macro sensitivity</span>
+        </a>
+        <a class="nav-pill " href="#governance">
+          <span class="nav-kbd">e</span>
+          <span class="nav-txt">governance &amp; accounting</span>
+        </a>
+        <a class="nav-pill " href="#value">
+          <span class="nav-kbd">f</span>
+          <span class="nav-txt">value framework</span>
+        </a>
+        <a class="nav-pill " href="#appendix">
+          <span class="nav-kbd">g</span>
+          <span class="nav-txt">appendix &amp; sources</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="content" id="content">
+      <section class="hero" aria-label="report intro">
+        <div class="hero-top">
+          <div>
+            <h1 class="hero-ticker">o</h1>
+            <div class="hero-co">realty income corporation</div>
+            <a class="hero-snapshot-link" href="/stock/o/snapshot/">snapshot page &rarr;</a>
+            <div class="hero-badges">
+              <span class="pill dark">deep dive</span>
+              <span class="pill ">real estate investment trusts</span>
+              <span class="pill ">cap n/a</span>
+              <span class="pill ">apr 11, 2026</span>
+            </div>
+            <div class="hero-tape" aria-label="headline tape">
+              <span><strong>Position</strong> Neutral</span>
+              <span><strong>Price</strong> $63.75</span>
+              <span><strong>N/A</strong> mcap</span>
+              <span><strong>apr 11, 2026</strong> as-of date</span>
+            </div>
+          </div>
+          <div>
+            <p class="hero-hook">This company pays a dividend every single month and has raised it 134 times in a row. Yet it still deploys billions into new properties at cash yields north of 7 percent while most investors chase flashy growth stories that blow up in downturns. How does a 'boring' landlord keep compounding like this through every cycle?</p>
+            <p class="hero-sub">We're <strong>Neutral at 47/100 signal strength</strong>; fair value about <strong>$66</strong> (+4.3% vs spot).</p>
+          </div>
+        </div>
+
+        <div class="kpi-grid cols-3">
+          <div class="kpi">
+            <div class="kpi-label">recommendation</div>
+            <div class="kpi-value ">Neutral</div>
+            <div class="kpi-sub">portfolio stance</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">12m price target</div>
+            <div class="kpi-value ">$66.50</div>
+            <div class="kpi-sub">+4% from $63.75</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">intrinsic value</div>
+            <div class="kpi-value ">$66</div>
+            <div class="kpi-sub">+4.3%</div>
+          </div>
+        </div>
+
+        <div class="callout-row">
+          <div class="callout">
+            <div class="label">assumptions scored</div>
+            <div class="metric ">24</div>
+            <div class="desc">7 high-conviction</div>
+          </div>
+          <div class="callout">
+            <div class="label">number registry</div>
+            <div class="metric ">438</div>
+            <div class="desc">6 verified vs EDGAR</div>
+          </div>
+          <div class="callout">
+            <div class="label">quality score</div>
+            <div class="metric ">63%</div>
+            <div class="desc">12-test average</div>
+          </div>
+          <div class="callout">
+            <div class="label">biases detected</div>
+            <div class="metric ">9</div>
+            <div class="desc">3 high severity</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>report snapshot</h2>
+          <div class="kicker">executive summary</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Intrinsic value of $66 implies 3.5% upside from the current $63.75 share price. The most important non-obvious insight is that despite 2025 net income growth of +23.0% YoY to $1.06B and revenue of $5.75B (+9.1% YoY), the DCF base fair value remains only $66 per share, well below the $63.75 market price, highlighting that the market is paying a substantial safety premium for monthly dividends and low beta (0.51) rather than accelerated per-share growth.</p></div>
+                <div class="g3"><div class="kpi"><div class="kpi-label">recommendation</div><div class="kpi-value ">Neutral</div><div class="kpi-sub">portfolio stance</div></div><div class="kpi"><div class="kpi-label">12m price target</div><div class="kpi-value ">$66.50</div><div class="kpi-sub">+4% from $63.75</div></div><div class="kpi"><div class="kpi-label">intrinsic value</div><div class="kpi-value ">$66</div><div class="kpi-sub">+4.3%</div></div></div>
+        <div class="g2" style="margin-top:10px">
+          <div class="quote"><strong class="kicker">core debate</strong><br><p>Intrinsic value of $66 implies 3.5% upside from the current $63.75 share price...</p></div>
+          <div class="quote"><strong class="kicker">headline tape</strong><br><p>$63.75 · N/A · as of apr 11, 2026.</p></div>
+        </div>
+        <div class="callout-row"><div class="callout"><div class="label">bear case</div><div class="metric value-rd">$53.20</div><div class="desc">Acquisition volumes fall short or yields compress below the cost of capital due to rising rates or increased competition in the net lease market...</div></div><div class="callout"><div class="label">bull case</div><div class="metric value-gn">$80.00</div><div class="desc">Realty Income executes flawlessly on $8B+ investments at 7.3%+ yields, maintains 98.5%+ occupancy, and delivers AFFO per share at or above the high end of guidance...</div></div><div class="callout"><div class="label">base case</div><div class="metric ">$66.50</div><div class="desc">Realty Income delivers on its $8B investment target at roughly 7.1-7.3% yields and hits the midpoint of AFFO per share guidance around $4.40 for 2026, reflecting modest 2-3% growth after accounting for some dilution and higher interest costs...</div></div></div>
+        <div class="note green"><strong>top findings</strong><br><p>Realty Income is the Monthly Dividend Company with a proven machine for deploying $8B+ annually into high-yielding single-tenant net leases on essential properties. At current levels the stock offers an attractive entry into a resilient portfolio with 98.9% occupancy, strong rent recapture over 103%, and external growth that has driven AFFO per share higher despite some dilution from equity raises...</p></div>
+        <div class="note amber"><strong>aggregate synthesis</strong><br><p>Numbers can look similar while narrative labels diverge — focus on which spreadsheet row the market is pricing.</p></div>
+
+      </section>
+      <section id="thesis" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>variant perception &amp; thesis</h2>
+          <div class="kicker">pm brief</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Realty Income (O) trades at a premium valuation that fully prices in its &#x27;Monthly Dividend Company&#x27; branding and defensive portfolio characteristics, yet the deterministic DCF and elevated PE ratio signal overvaluation relative to underlying cash flow growth. We take a Neutral position with moderate conviction, as the triple-net lease model and high occupancy provide stability, but modest AFFO growth and ongoing share dilution limit upside in the current rate environment.</p></div>
+                <div class="pillars"><div class="pillar"><div class="head"><h4>1. accretive acquisition execution</h4><span class="tag green">Catalyst</span></div><p>Can Realty Income consistently deploy its targeted $8B+ annual investment volume into accretive acquisitions at initial cash yields of ~7.1-7.3% or better, driving the majority of AFFO per share growth while maintaining disciplined underwriting spreads over its cost of capital...</p></div><div class="pillar"><div class="head"><h4>2. portfolio resilience and occupancy</h4><span class="tag blue">Thesis Pillar</span></div><p>Will Realty Income&#x27;s portfolio maintain high occupancy (~98.5%+) and strong rent recapture rates (&gt;103%) over the next 2-3 years, driven by its ~73-91% weighting toward essential/non-discretionary tenants under long-term single-tenant net leases...</p></div><div class="pillar"><div class="head"><h4>3. durable competitive advantage</h4><span class="tag blue">Thesis Pillar</span></div><p>Does Realty Income possess a durable competitive advantage (moat) that can sustain above-average returns on capital, or is the single-tenant net lease market contestable with low/replicable barriers to entry allowing competitors to erode acquisition spreads and scale benefits...</p></div><div class="pillar"><div class="head"><h4>4. balance sheet stability and cost of capital</h4><span class="tag green">Catalyst</span></div><p>Can Realty Income maintain its investment-grade credit profile, low leverage, and relative cost-of-capital advantage to support accretive growth and dividend sustainability amid potential higher-for-longer interest rates or credit market volatility...</p></div></div>
+        <div class="note"><strong>the 60-second pitch</strong><br><p>We claim the market overpays for perceived safety: at $63.75 the stock trades at 54.5x 2025 EPS despite DCF indicating $66 intrinsic value and only modest AFFO growth to $4.38, $4.42 in 2026. This is bearish for near-term total returns as dilution from 934.0M shares outstanding caps per-share upside. Bullish elements include portfolio resilience and dividend consistency...</p></div>
+        <div style="margin-top:12px"><div class="table-wrap"><table><thead><tr><th>Criterion</th><th>Threshold</th><th class="num">Actual Value</th><th>Pass/Fail</th></tr></thead><tbody><tr><td class="b"><p>Adequate Size</p></td><td><p>&gt;$100M revenue</p></td><td class="num"><p>$5.75B (2025)</p></td><td class="pos"><p>Pass</p></td></tr><tr><td class="b"><p>Strong Financial Condition</p></td><td>Current ratio >2 or debt/equity <0.5</td><td class="num"><p>Debt/equity 0.12</p></td><td class="pos"><p>Pass</p></td></tr><tr><td class="b"><p>Earnings Stability</p></td><td><p>Positive EPS last 10 years</p></td><td class="num"><p>Consistent positive EPS; 2025 $1.17</p></td><td class="pos"><p>Pass</p></td></tr><tr><td class="b"><p>Dividend Record</p></td><td><p>20+ years uninterrupted</p></td><td class="num"><p>669 consecutive monthly dividends</p></td><td class="pos"><p>Pass</p></td></tr><tr><td class="b"><p>Earnings Growth</p></td><td><p>Min. 33% over 10 years</p></td><td class="pos num"><p>+19.4% YoY EPS (2025); longer-term not fully detailed…</p></td><td class="amb"><p>Partial</p></td></tr><tr><td class="b"><p>Moderate P/E</p></td><td><p>&lt;15x avg. EPS</p></td><td class="num"><p>54.5x on 2025 EPS</p></td><td class="neg"><p>Fail</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Graham&#x27;s 7 Criteria Assessment | Source: SEC EDGAR FY2025 &amp; Derived ratios</div></div>
+
+      </section>
+      <section id="financials" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>financial analysis</h2>
+          <div class="kicker">elite economics</div>
+        </div>
+                <div class="callout-row"><div class="callout"><div class="label">Revenue</div><div class="metric ">$5.75B</div><div class="desc">vs prior +9.1% YoY</div></div><div class="callout"><div class="label">Net Income</div><div class="metric ">$1.06B</div><div class="desc">vs prior +23.0% YoY</div></div><div class="callout"><div class="label">EPS (Diluted)</div><div class="metric ">$1.17</div><div class="desc">vs prior +19.4% YoY</div></div><div class="callout"><div class="label">Debt/Equity</div><div class="metric ">0.12</div><div class="desc">conservative leverage</div></div><div class="callout"><div class="label">Net Margin</div><div class="metric ">18.4%</div><div class="desc">improved operating leverage</div></div><div class="callout"><div class="label">ROE</div><div class="metric ">2.7%</div><div class="desc">typical for REIT</div></div></div>
+        <div class="g2" style="margin-top:10px"><div><div class="table-wrap table-narrow"><table><thead><tr><th>Metric</th><th class="num">Value</th></tr></thead><tbody><tr><td class="b"><p>Revenue</p></td><td class="num"><p>$5.75B</p></td></tr><tr><td class="b"><p>Net income</p></td><td class="num"><p>$1.06B</p></td></tr><tr><td class="b"><p>EPS</p></td><td class="num"><p>$1.17</p></td></tr><tr><td class="b"><p>EPS (2)</p></td><td class="num"><p>18.4%</p></td></tr><tr><td class="b"><p>Revenue (2)</p></td><td class="num"><p>$2.52B</p></td></tr></tbody></table></div></div><div><div class="table-wrap"><table><thead><tr><th>Line Item</th><th class="num">FY2022</th><th class="num">FY2023</th><th class="num">FY2024</th><th class="num">FY2025</th></tr></thead><tbody><tr><td class="b"><p>Revenues</p></td><td class="num"><p>$3.3B</p></td><td class="num"><p>$4.1B</p></td><td class="num"><p>$5.3B</p></td><td class="num"><p>$5.7B</p></td></tr><tr><td class="b"><p>Net Income</p></td><td class="num"><p>$869M</p></td><td class="num"><p>$872M</p></td><td class="num"><p>$861M</p></td><td class="num"><p>$1.1B</p></td></tr><tr><td class="b"><p>EPS (Diluted)</p></td><td class="num"><p>$1.42</p></td><td class="num"><p>$1.26</p></td><td class="num"><p>$0.98</p></td><td class="num"><p>$1.17</p></td></tr><tr><td class="b"><p>Net Margin</p></td><td class="num"><p>26.0%</p></td><td class="num"><p>21.4%</p></td><td class="num"><p>16.3%</p></td><td class="num"><p>18.4%</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Financial Model (Income Statement) | Source: SEC EDGAR XBRL filings (USD)</div></div></div>
+        <div class="note green"><strong>production-report readthrough</strong><br><p>Key Takeaway. Realty Income delivered robust bottom-line growth in FY 2025 with net income rising 23.0% YoY to $1.06B while revenue grew 9.1% to $5.75B, resulting in net margin expansion to 18.4%. This outperformance highlights operating leverage from portfolio expansion, though low ROE of 2.7% and ROA of 1.5% reflect the capital-intensive nature of the REIT model focused on dividend distribution rather than earnings retention.</p></div>
+
+      </section>
+      <section id="valuation" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>valuation</h2>
+          <div class="kicker">probability-weighted fair value</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Realty Income (O) trades at a premium valuation on traditional earnings metrics but appears attractively positioned relative to its DCF-derived fair value and historical multiples when assessed through an AFFO lens. The stock&#x27;s forward P/AFFO of approximately 14.87x sits below the retail REIT industry average of 16.32x, while the deterministic DCF points to substantial upside from the current $63.75 price as of April 11, 2026. Key assumptions include a 9.0% WACC, 4.0% terminal growth, and a revenue base of $5.75B for FY2025, supporting a base-case per-share fair value of $66.</p></div>
+                <div class="g2"><div><div class="table-wrap table-narrow"><table><thead><tr><th>Parameter</th><th class="num">Value</th></tr></thead><tbody><tr><td class="b"><p>Revenue (base)</p></td><td class="num"><p>$5.75B (USD)</p></td></tr><tr><td class="b"><p>FCF Margin</p></td><td class="num"><p>64.5%</p></td></tr><tr><td class="b"><p>WACC</p></td><td class="num"><p>9.0%</p></td></tr><tr><td class="b"><p>Terminal Growth</p></td><td class="num"><p>4.0%</p></td></tr><tr><td class="b"><p>Growth Path</p></td><td class="num"><p>9.1% → 8.2% → 7.3% → 6.3% → 5.4%</p></td></tr><tr><td class="b"><p>Template</p></td><td class="num"><p>general</p></td></tr><tr><td class="b"><p>2025 AFFO per share</p></td><td class="num"><p>$4.28</p></td></tr><tr><td class="b"><p>2026 AFFO Guidance Midpoint</p></td><td class="num"><p>$4.40</p></td></tr><tr><td class="b"><p>Implied Investment Spread</p></td><td class="num"><p>Positive (7.3% yields vs. cost of capital)</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: DCF Assumptions | Source: SEC EDGAR XBRL; computed deterministically</div></div><div><div class="scenario-grid"><div class="scenario bear"><div class="prob">bear case</div><h4>$53.20</h4><p>Acquisition volumes fall short or yields compress below the cost of capital due to rising rates or increased competition in the net lease market...</p></div><div class="scenario bull"><div class="prob">bull case</div><h4>$80.00</h4><p>Realty Income executes flawlessly on $8B+ investments at 7.3%+ yields, maintains 98.5%+ occupancy, and delivers AFFO per share at or above the high end of guidance...</p></div><div class="scenario base"><div class="prob">base case</div><h4>$66.50</h4><p>Realty Income delivers on its $8B investment target at roughly 7.1-7.3% yields and hits the midpoint of AFFO per share guidance around $4.40 for 2026, reflecting modest 2-3% growth after accounting for some dilution and higher interest costs...</p></div></div></div></div>
+        
+        <div style="margin-top:12px"><div class="table-wrap table-narrow"><table><thead><tr><th>Metric</th><th class="num">Value</th></tr></thead><tbody><tr><td class="b"><p>Current Growth Rate</p></td><td class="num"><p>18.1%</p></td></tr><tr><td class="b"><p>Growth Uncertainty</p></td><td class="num"><p>±7.0pp</p></td></tr><tr><td class="b"><p>Observations</p></td><td class="num"><p>4</p></td></tr><tr><td class="b"><p>Year 1 Projected</p></td><td class="num"><p>15.0%</p></td></tr><tr><td class="b"><p>Year 2 Projected</p></td><td class="num"><p>12.5%</p></td></tr><tr><td class="b"><p>Year 3 Projected</p></td><td class="num"><p>10.5%</p></td></tr><tr><td class="b"><p>Year 4 Projected</p></td><td class="num"><p>8.9%</p></td></tr><tr><td class="b"><p>Year 5 Projected</p></td><td class="num"><p>7.6%</p></td></tr><tr><td class="b"><p>2025 Revenue YoY Growth</p></td><td class="num"><p>+9.1%</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Kalman Growth Estimator | Source: SEC EDGAR revenue history; Kalman filter</div></div>
+
+      </section>
+      <section id="risk" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>what breaks the thesis</h2>
+          <div class="kicker">falsifiable kill criteria</div>
+        </div>
+                <div class="note red"><strong>risk framing</strong><br><p>Risk/Reward Synthesis. Probability-weighted expected return remains challenged given bear case 59% downside at ~12-15% tail probability versus limited near-term upside to DCF bull $40.93. Risk is only partially compensated by the stable monthly dividend; the current price embeds optimistic growth assumptions not fully justified by 9.0% WACC.</p></div>
+        <div style="margin-top:10px"><div class="table-wrap"><table><thead><tr><th>Pillar</th><th>Invalidating Facts</th><th class="num">P(Invalidation)</th></tr></thead><tbody><tr><td class="b"><p>accretive_acquisition_execution</p></td><td><p>Realty Income fails to deploy at least $6-7B annually (well below targeted $8B+) in new investments over 2-3 years; Initial cash yields on acquisitions consistently fall below 6.8% (materially under 7.1-7.3% target) while cost of capital remains elevated; Acquisition spreads over cost of capital turn negative or negligible for the majority of volume, resulting in zero or negative contribution to AFFO per share growth…</p></td><td class="num"><p>35%</p><span class="tag blue">True</span></td></tr><tr><td class="b"><p>portfolio_resilience_and_occupancy</p></td><td><p>Portfolio occupancy drops and sustains below 97% (well under ~98.5% target) for multiple consecutive quarters; Rent recapture rates on re-leased or renewed properties fall below 98% (failing > 103% target) over 2-3 years; Non-essential/discretionary tenant exposure rises significantly above 30-40% of ABR with corresponding material increases in credit losses or vacancies…</p></td><td class="num"><p>20%</p><span class="tag blue">True</span></td></tr><tr><td class="b"><p>durable_competitive_advantage</p></td><td><p>Acquisition spreads compress industry-wide to near-zero or negative levels due to increased competition from private capital, other net lease REITs, or new entrants replicating scale benefits; Realty Income loses its relative cost-of-capital advantage, with peers or private buyers consistently outbidding on similar assets at equal or better terms; Evidence emerges of low barriers allowing easy replication of the single-tenant net lease model, eroding any proprietary data/analytics or relationship moat…</p></td><td class="num"><p>40%</p><span class="tag blue">True</span></td></tr><tr><td class="b"><p>balance_sheet_stability_and_cost_of_capital…</p></td><td><p>Credit rating downgraded below investment-grade (losing A3/A- level) or leverage (net debt to pro forma EBITDA) sustains above 6.5-7x; Cost of capital rises materially and persistently above acquisition yields, eliminating the relative advantage; Unable to access debt/equity markets on favorable terms during volatility or higher-for-longer rates, forcing reduced investment activity…</p></td><td class="num"><p>25%</p><span class="tag blue">True</span></td></tr><tr><td class="b"><p>dividend_growth_and_sustainability</p></td><td><p>AFFO payout ratio sustains above 85-90% for multiple years while AFFO per share growth stalls or turns negative; Dividend growth halts or reverses (no increases for 2+ years) or requires excessive equity issuance/dilution beyond historical norms during downturns; FCF margins deteriorate such that dividends cannot be covered without straining liquidity or increasing leverage unsustainably…</p></td><td class="num"><p>22%</p><span class="tag blue">True</span></td></tr><tr><td class="b"><p>international_expansion_risks</p></td><td><p>International (primarily Europe) exposure exceeds 25-30% of ABR and delivers materially lower occupancy, recapture rates, or yields than U.S. portfolio due to local factors; Currency volatility, geopolitical events, or regulatory changes cause sustained negative impact on overall AFFO growth or dividend coverage (e.g., &gt;5-10% drag); European acquisitions underperform U.S. equivalents in risk-adjusted returns, with higher credit losses or vacancy not offset by diversification benefits…</p></td><td class="num"><p>30%</p><span class="tag blue">True</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Kill File — 6 Thesis-Breaking Triggers | Source: Methodology Why-Tree Decomposition</div></div>
+        <div class="callout-row"><div class="callout"><div class="label">Overall Risk Rating</div><div class="metric value-rd">4/10</div><div class="desc">Low leverage offsets execution risks</div></div><div class="callout"><div class="label"># Key Risks</div><div class="metric value-rd">8</div><div class="desc">Ranked by prob × impact</div></div><div class="callout"><div class="label">Bear Case Downside</div><div class="metric value-rd">-59%</div><div class="desc">to DCF bear $26.20 from $63.75</div></div></div>
+        <div class="note amber"><strong>most dangerous zone</strong><br><p>Watch for drawdowns driven by fundamentals where funds de-risk faster than the business narrative updates.</p></div>
+
+      </section>
+      <section id="ops" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>fundamentals &amp; operations</h2>
+          <div class="kicker">unit economics</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">revenue</div><div class="kpi-value ">$5.75B</div><div class="kpi-sub">FY2025</div></div><div class="kpi"><div class="kpi-label">rev growth</div><div class="kpi-value ">+9.1%</div><div class="kpi-sub">YoY</div></div><div class="kpi"><div class="kpi-label">net margin</div><div class="kpi-value ">18.4%</div><div class="kpi-sub">FY2025</div></div><div class="kpi"><div class="kpi-label">op. cash flow</div><div class="kpi-value ">$4.0B</div><div class="kpi-sub">FY2025</div></div></div><div class="note green"><p>Takeaway. Realty Income delivered steady scale in 2025 with revenue reaching $5.75B (+9.1% YoY) and net income of $1.06B (+23.0% YoY), outpacing top-line growth due to disciplined cost management and high occupancy of 98.9%. The low Debt to Equity of 0.12 supports further portfolio expansion to $72.80B in total assets while maintaining balance sheet strength atypical for growth-oriented REITs.</p></div><div class="table-wrap"><table><thead><tr><th>Segment</th><th class="num">Annualized Base Rent ($M)</th><th class="num">% of Total</th><th class="num">Properties</th><th class="num">Growth Context</th></tr></thead><tbody><tr><td class="b"><p>Retail</p></td><td class="num"><p>4,204</p></td><td class="num"><p>79.1%</p></td><td class="num"><p>14,864</p></td><td class="num"><p>Core driver; ~91% non-discretionary tilt…</p></td></tr><tr><td class="b"><p>Industrial</p></td><td class="num"><p>817</p></td><td class="num"><p>15.4%</p></td><td class="num"><p>577</p></td><td class="num"><p>Expanding via acquisitions</p></td></tr><tr><td class="b"><p>Gaming</p></td><td class="num"><p>164</p></td><td class="num"><p>3.1%</p></td><td class="num"><p>2</p></td><td class="num"><p>Diversification play</p></td></tr><tr><td class="b"><p>Other</p></td><td class="num"><p>126</p></td><td class="num"><p>2.4%</p></td><td class="num"><p>68</p></td><td class="num"><p>Includes credit investments</p></td></tr><tr><td class="b"><p>Total</p></td><td class="num"><p>5,311</p></td><td class="num"><p>100.0%</p></td><td class="num"><p>15,511</p></td><td class="num"><p>Occupancy 98.9%</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Portfolio by Property Type (Annualized Base Rent as of 12/31/2025) | Source: Company 10-K FY2025; Supplemental Data</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Top 3 Revenue Drivers</h3><span class="tag blue">Growth Levers</span></div><div class="aggregate-card-body"><p>Realty Income&#x27;s revenue of $5.75B in FY2025 was primarily driven by its expansive net lease portfolio of 15,511 properties. The top driver is the retail segment (79.1% of ABR at $4.204B), anchored by essential tenants with ~91% non-discretionary or service-oriented exposure, delivering stable contractual rent and re-lease recapture rates of ~103.9%. Second is portfolio expansion through $6.3B in investments (U.S...</p></div></div><div class="table-wrap"><table><thead><tr><th>Top Clients</th><th class="num">ABR Contribution</th><th>Contract Duration (Weighted Avg)</th><th class="num">Risk Level</th></tr></thead><tbody><tr><td class="b"><p>7-Eleven</p></td><td class="num"><p>3.3%</p></td><td><p>8.8 years</p></td><td class="num"><span class="tag blue">LOW</span></td></tr><tr><td class="b"><p>Dollar General</p></td><td class="num"><p>3.2%</p></td><td><p>8.8 years</p></td><td class="num"><span class="tag blue">LOW</span></td></tr><tr><td class="b"><p>Walgreens</p></td><td class="num"><p>3.1%</p></td><td><p>8.8 years</p></td><td class="num"><span class="tag blue">LOW</span></td></tr><tr><td class="b"><p>Top 20 Clients</p></td><td class="num"><p>35.8%</p></td><td><p>8.8 years</p></td><td class="num"><p>Moderate (32.2% investment grade)</p></td></tr><tr><td class="b"><p>Remaining Clients</p></td><td class="num"><p>64.2%</p></td><td><p>8.8 years</p></td><td class="num"><p>Diversified across 1,741 clients</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Customer Concentration (Annualized Base Rent as of 12/31/2025) | Source: Company 10-K FY2025</div><div class="table-wrap"><table><thead><tr><th>Region</th><th class="num">% of ABR</th><th class="num">Revenue Contribution Context</th><th class="num">Growth</th><th>Currency Risk</th></tr></thead><tbody><tr><td class="b"><p>United States</p></td><td class="num"><p>81%</p></td><td class="num"><p>Primary base</p></td><td class="num"><p>Steady</p></td><td><span class="tag blue">LOW</span></td></tr><tr><td class="b"><p>United Kingdom / Europe</p></td><td class="num"><p>19%</p></td><td class="num"><p>~$1.01B implied</p></td><td class="num"><p>Accelerating (60% of 2025 acquisitions)</p></td><td><p>Moderate FX</p></td></tr><tr><td class="b"><p>Total</p></td><td class="num"><p>100%</p></td><td class="num"><p>$5.75B revenue</p></td><td class="pos num"><p>+9.1% YoY</p></td><td><p>Diversified</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Geographic Revenue Exposure (as of 12/31/2025) | Source: Company 10-K FY2025 &amp; Supplemental</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Unit Economics</h3><span class="tag blue">Pricing &amp; Costs</span></div><div class="aggregate-card-body"><p>Realty Income exhibits strong unit economics characteristic of a net lease REIT. Pricing power is evident in re-lease recapture rates of approximately 103.9%-104.9% in 2025, allowing rents on renewed or new leases to exceed prior levels despite modest same-store growth of 1.3%. Cost structure is heavily weighted toward non-cash D&A of $2.52B on a $72.80B asset base, with operating expenses managed efficiently to support net margin expansion to 18.4% and net income growth of +23.0% YoY (outpacing revenue +9.1%)...</p></div></div><p class="aggregate-pane-xref"><a href="#product">See product &amp; technology</a></p><p class="aggregate-pane-xref"><a href="#supply">See supply chain</a></p><p class="aggregate-pane-xref"><a href="#financials">See financial analysis</a></p>
+      </section>
+      <section id="competition" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>competitive position</h2>
+          <div class="kicker">moat vs. customer-as-competitor</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Market Share %: Largest net lease REIT (~10% in broader REIT context) (Dominant in diversified single-tenant net lease; peers NNN/ADC/WPC smaller) · # Direct Competitors: 8-12 major (NNN, ADC, WPC, EPR, VICI, others in fragmented net lease space) · Moat Score (1-10): 7 (Scale + diversification strong; sector remains contestable).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">market share %</div><div class="kpi-value ">Largest net lease REIT (~10% in broader REIT context)</div><div class="kpi-sub">Dominant in diversified single-tenant net lease; peers NNN/ADC/WPC smaller</div></div><div class="kpi"><div class="kpi-label"># direct competitors</div><div class="kpi-value ">8-12 major</div><div class="kpi-sub">NNN, ADC, WPC, EPR, VICI, others in fragmented net lease space</div></div><div class="kpi"><div class="kpi-label">moat score (1-10)</div><div class="kpi-value ">7</div><div class="kpi-sub">Scale + diversification strong; sector remains contestable</div></div><div class="kpi"><div class="kpi-label">contestability</div><div class="kpi-value ">Semi-Contestable</div><div class="kpi-sub">Multiple well-capitalized players; high capital but replicable assets</div></div></div><div class="note green"><p>Key Takeaway. Realty Income holds the largest portfolio in the diversified net lease REIT sector with 15,511 properties and 98.9% occupancy as of 12/31/2025, yet the market remains semi-contestable with multiple peers competing for similar assets. This scale supports a position-based edge when paired with customer captivity from long-term net leases, but does not eliminate acquisition-driven rivalry or mean-reversion risks in a fragmented industry.</p></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Realty Income (O)</th><th>NNN</th><th>ADC</th><th>WPC</th></tr></thead><tbody><tr><td class="b"><p>Revenue (2025)</p></td><td><p>$5.75B</p></td><td><p>~$0.93B (est. peer scale)</p></td><td><p>~$0.6B (est. smaller)</p></td><td><p>~$1.6B (est.)</p></td></tr><tr><td class="b"><p>Revenue Growth YoY</p></td><td class="pos"><p>+9.1%</p></td><td><p>Low-single digit</p></td><td><p>Higher growth via acquisitions</p></td><td class="amb"><p>Moderate</p></td></tr><tr><td class="b"><p>Net Margin</p></td><td><p>18.4%</p></td><td><p>Similar REIT range</p></td><td><p>Similar</p></td><td><p>Similar</p></td></tr><tr><td class="b"><p>Occupancy</p></td><td><p>98.9%</p></td><td><p>High 90s</p></td><td><p>High 90s</p></td><td><p>High 90s</p></td></tr><tr><td class="b"><p>Market Cap (approx.)</p></td><td><p>~$59B</p></td><td><p>~$14B</p></td><td><p>~$9B</p></td><td><p>~$13B</p></td></tr><tr><td class="b"><p>Market Share (net lease)</p></td><td><p>Largest</p></td><td><p>Mid-tier</p></td><td><p>Mid-tier</p></td><td><p>Significant</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Competitor Comparison Matrix (Porter #1-4 Scope) | Source: SEC EDGAR 2025 data for O; peer overviews from industry analysis</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Market Contestability Assessment</h3><span class="tag blue">Semi-Contestable</span></div><div class="aggregate-card-body"><p>Using the Greenwald framework, the diversified single-tenant net lease REIT market is semi-contestable . No single dominant player enjoys insurmountable barriers that prevent effective entry or expansion by well-capitalized peers such as NNN, ADC, and WPC. Public net lease REITs represent A new entrant or smaller peer can replicate cost structures through capital raises and asset purchases, though matching Realty Income&#x27;s scale (15,511 properties, ~355M sq ft, 1,761 clients across 92 industries) is difficult in the short term...</p></div></div><div class="table-wrap"><table><thead><tr><th>Mechanism</th><th class="num">Relevance</th><th>Strength</th><th class="num">Evidence</th><th>Durability</th></tr></thead><tbody><tr><td class="b"><p>Habit Formation</p></td><td class="num"><p>Low (infrequent tenant decisions)</p></td><td><span class="tag blue">WEAK</span></td><td class="num"><p>Long-term leases reduce repeat &#x27;purchases&#x27;…</p></td><td><p>N/A</p></td></tr><tr><td class="b"><p>Switching Costs</p></td><td class="num"><span class="tag blue">HIGH</span></td><td><p>Moderate-Strong</p></td><td class="num"><p>Net lease structure + mission-critical locations; tenants bear expenses but relocation costly…</p></td><td><p>8.8 years weighted average remaining lease term…</p></td></tr><tr><td class="b"><p>Brand as Reputation</p></td><td class="amb num"><p>Moderate</p></td><td class="amb"><span class="tag blue">MODERATE</span></td><td class="num"><p>&quot;Monthly Dividend Company&quot; track record; consistent occupancy 98.9%</p></td><td><p>High via dividend history</p></td></tr><tr><td class="b"><p>Network Effects</p></td><td class="num"><span class="tag blue">LOW</span></td><td><span class="tag blue">WEAK</span></td><td class="num"><p>No platform dynamics</p></td><td><p>N/A</p></td></tr><tr><td class="b"><p>Search Costs</p></td><td class="amb num"><p>Moderate</p></td><td class="amb"><span class="tag blue">MODERATE</span></td><td class="num"><p>Complex portfolio evaluation; proprietary data advantage for O…</p></td><td><p>Years of track record</p></td></tr><tr><td class="b"><p>Overall Captivity Strength</p></td><td class="num"><p>Weighted: Moderate</p></td><td class="amb"><span class="tag blue">MODERATE</span></td><td class="num"><p>Long leases and location value create tenant lock-in despite net lease pass-throughs…</p></td><td><p>Durable via scale</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Customer Captivity Scorecard | Source: Company 2025 portfolio data; Greenwald framework application</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Economies of Scale Assessment</h3><span class="tag blue">Strong Scale Advantage</span></div><div class="aggregate-card-body"><p>Realty Income exhibits significant economies of scale with fixed cost intensity reflected in efficient G&A (low as a portion of revenue relative to peers) and D&A of $2.52B (characteristic of capital-intensive REIT model). Minimum Efficient Scale (MES) is a large fraction of the market, replicating 15,511 properties and diversification across 92 industries requires substantial capital and time. Public net lease peers combined represent a small share of the $5.5T U.S...</p></div></div><div class="table-wrap"><table><thead><tr><th>Dimension</th><th>Assessment</th><th class="num">Score (1-10)</th><th class="num">Evidence</th><th>Durability (years)</th></tr></thead><tbody><tr><td class="b"><p>Position-Based CA</p></td><td><p>Present: Captivity + Scale</p></td><td class="num"><p>7</p></td><td class="num"><p>98.9% occupancy, 103.9% rent recapture, 15,511 properties…</p></td><td><p>8-10+</p></td></tr><tr><td class="b"><p>Capability-Based CA</p></td><td><p>Re-leasing analytics, deal flow</p></td><td class="num"><p>6</p></td><td class="num"><p>Consistent recapture > 103%; proprietary platform…</p></td><td><p>Moderate; needs conversion</p></td></tr><tr><td class="b"><p>Resource-Based CA</p></td><td><p>Credit ratings, portfolio assets</p></td><td class="num"><p>7</p></td><td class="num"><p>A3/A- ratings; $72.80B assets</p></td><td><p>High via legal/financial</p></td></tr><tr><td class="b"><p>Overall CA Type</p></td><td><p>Primarily Position-Based</p></td><td class="num"><p>7</p></td><td class="num"><p>Scale + moderate captivity dominate</p></td><td><p>Durable with execution</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 4: Competitive Advantage Classification | Source: SEC EDGAR 2025; portfolio metrics</div><p class="aggregate-pane-xref"><a href="#valuation">See related analysis in</a></p><p class="aggregate-pane-xref"><a href="#ops">See related analysis in</a></p><p class="aggregate-pane-xref"><a href="#tam">See market size</a></p>
+      </section>
+      <section id="tam" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>market size &amp; tam</h2>
+          <div class="kicker">runway vs. penetration</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Realty Income Corporation (NYSE: O) operates in the expansive net lease real estate sector, with an estimated global total addressable market (TAM) of approximately $14 trillion across its core target sectors. This includes necessity-based freestanding retail, industrial and logistics properties, gaming, data centers, and European opportunities. The company&#x27;s diversified platform, spanning over 15,500 properties and 355 million square feet of leasable space as of December 31, 2025, positions it to capture share in a highly fragmented market where public net lease REITs represent only a small fraction of the overall opportunity.</p></div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>Global Net Lease TAM Overview</h3></div><div class="aggregate-card-body"><p>Realty Income estimates its aggregate net lease total addressable market at roughly $14 trillion, derived from industry data sources including Nareit, CoStar, EPRA, FTSE, Bloomberg, and S&P Global. This figure represents the estimated commercial property value in target sectors, adjusted to exclude existing public REIT ownership...</p></div></div><div class="table-title"><h3>Key TAM Components by Sector (Estimated Property Values)</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Sector</th><th>Region</th><th class="num">Estimated Value ($T)</th><th>Notes</th></tr></thead><tbody><tr><td class="b"><p>Freestanding Retail</p></td><td><p>United States</p></td><td class="num"><p>2.6</p></td><td><p>Core necessity-based segment; foundation of Realty Income model…</p></td></tr><tr><td class="b"><p>Industrial &amp; Logistics</p></td><td><p>United States</p></td><td class="num"><p>2.0</p></td><td><p>Supports omnichannel retail growth; ~15% client overlap…</p></td></tr><tr><td class="b"><p>Europe Net Lease</p></td><td><p>Europe</p></td><td class="num"><p>8.5</p></td><td><p>Includes U.K. and eight additional countries; ~19% of ABR…</p></td></tr><tr><td class="b"><p>Gaming</p></td><td><p>United States</p></td><td class="num"><p>0.4</p></td><td><p>Post-2022 Wynn acquisition; applies 7.0% cap rate to industry NOI…</p></td></tr><tr><td class="b"><p>Data Centers</p></td><td><p>United States</p></td><td class="num"><p>0.5</p></td><td><p>Build-to-suit JV entry in 2023; high-growth adjacency…</p></td></tr><tr><td class="b"><p>Other Adjacencies</p></td><td><p>Global</p></td><td class="num"><p>0.3</p></td><td><p>Includes consumer-centric medical and select verticals…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Key TAM Components by Sector (Estimated Property Values)</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>U.S. Market Context and Competitive Landscape</h3></div><div class="aggregate-card-body"><p>The U.S. single-tenant net lease (STNL) retail market demonstrated resilience in 2025, with transaction volumes reaching approximately $6.5 billion in the second half alone, up 14% from the first half, amid cap rates compressing to around 6.7%. Overall net lease investment activity rose notably, contributing to broader U.S...</p></div></div><div class="note"><strong>Investment Implications</strong><br><p>Realty Income&#x27;s $14 trillion TAM provides a multi-decade growth runway, particularly in under-penetrated European markets and emerging adjacencies like data centers. With 2026 investment guidance of $8.0 billion following $6.3 billion deployed in 2025, the company is poised to compound earnings while maintaining portfolio quality. Peers remain fragmented, with public players capturing minimal overall share, favoring scale operators like O.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Growth Drivers and Historical Expansion</h3></div><div class="aggregate-card-body"><p>Realty Income has systematically broadened its TAM through vertical and geographic diversification. The 2022 gaming entry and 2023 data center JV illustrate proactive adjacency strategies, complementing the core freestanding retail portfolio that historically comprised the majority of assets. Necessity retail, emphasizing non-discretionary tenants, accounted for approximately 91% of the portfolio, contributing to stable cash flows even during economic stress, as demonstrated by average occupancy above 98% over the past decade-plus...</p></div></div><p class="aggregate-pane-xref"><a href="#competition">See competitive position</a></p><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#financials">See related analysis in</a></p>
+      </section>
+      <section id="product" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>product &amp; technology</h2>
+          <div class="kicker">roadmap + software stack</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Realty Income Corporation (NYSE: O) leverages a sophisticated, proprietary technology platform centered on predictive analytics, machine learning, and operational automation to drive disciplined capital allocation, proactive asset management, and long-term value creation across its expansive portfolio of over 15,500 properties as of December 31, 2025. This technology differentiation supports evaluation of more than $50 billion in transaction volume since 2019 and has contributed to strong re-leasing outcomes, including approximately 104% rent recapture on re-leased properties and 127% rent growth on new tenant placements during 2025. The platform integrates external data sources with proprietary insights from the company&#x27;s diversified holdings, enabling data-driven decisions throughout the investment lifecycle.</p></div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>Proprietary Predictive Analytics Platform</h3></div><div class="aggregate-card-body"><p>Realty Income has developed a robust proprietary predictive analytics platform that embeds machine learning models and data science capabilities across the entire investment lifecycle, including sourcing, underwriting, monitoring, and dispositions. This platform combines external market intelligence with proprietary data drawn from the company&#x27;s portfolio of over 15,500 properties across 10 countries, generating actionable insights on tenant credit signals, trade-area health, closure risks, rent sustainability, and real estate fungibility...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>ERP, Automation &amp; Operational Technology Stack</h3></div><div class="aggregate-card-body"><p>Realty Income&#x27;s technology foundation extends beyond analytics to include a tailored Enterprise Resource Planning (ERP) platform, source-to-book workflow automation, and Robotic Process Automation (RPA). These tools create an efficient, low-cost operating environment that supports the company&#x27;s vertically integrated, full-service real estate capital provider model. The ERP system and automation workflows streamline processes across investments, asset management, property management, finance, and legal functions, reducing manual intervention while enhancing data accuracy and speed of execution...</p></div></div><div class="table-title"><h3>Key Technology &amp; Portfolio Metrics</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">Value</th><th>Period/As Of</th><th>Notes</th></tr></thead><tbody><tr><td class="b"><p>Portfolio Properties</p></td><td class="num"><p>15,511</p></td><td><p>December 31, 2025</p></td><td><p>Across all 50 U.S. states, U.K., and 8 other European countries…</p></td></tr><tr><td class="b"><p>Transaction Volume Evaluated</p></td><td class="num"><p>&gt;$50 billion</p></td><td><p>2019-2025</p></td><td><p>Supported by predictive analytics platform…</p></td></tr><tr><td class="b"><p>Rent Recapture Rate (Re-leased)</p></td><td class="num"><p>~104%</p></td><td><p>Full Year 2025</p></td><td><p>Achieved through data-driven asset management…</p></td></tr><tr><td class="b"><p>Rent Growth (New Placements)</p></td><td class="num"><p>~127%</p></td><td><p>Full Year 2025</p></td><td><p>Reflective of platform insights on market positioning…</p></td></tr><tr><td class="b"><p>Portfolio Occupancy</p></td><td class="num"><p>98.9%</p></td><td><p>December 31, 2025</p></td><td><p>Compared to 98.7% at September 30, 2025</p></td></tr><tr><td class="b"><p>Annualized Base Rent (ABR)</p></td><td class="num"><p>~$5.3 billion</p></td><td><p>December 31, 2025</p></td><td><p>Diversified across 92 industries and 1,761 clients…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Key Technology &amp; Portfolio Metrics</div><div class="note red"><strong>Competitive Technology Differentiation</strong><br><p>Realty Income&#x27;s predictive analytics and automation stack provide a structural advantage over single-tenant net lease peers such as Agree Realty and NNN REIT, which generally rely on less integrated data platforms...</p></div><p class="aggregate-pane-xref"><a href="#competition">See competitive position</a></p><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p>
+      </section>
+      <section id="supply" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>supply chain</h2>
+          <div class="kicker">single points of failure</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">key client count</div><div class="kpi-value ">1,761</div><div class="kpi-sub">as of 12/31/2025; across 92 industries</div></div><div class="kpi"><div class="kpi-label">single-source dependency</div><div class="kpi-value ">0%</div><div class="kpi-sub">no single tenant &gt; ~3.3% of ABR</div></div><div class="kpi"><div class="kpi-label">customer concentration (top tenant)</div><div class="kpi-value ">~3.3%</div><div class="kpi-sub">7-Eleven; top 20 clients diversified</div></div><div class="kpi"><div class="kpi-label">lead time trend</div><div class="kpi-value ">Stable</div><div class="kpi-sub">net lease model delegates operational procurement</div></div></div><div class="note red"><p>Key Takeaway. Realty Income&#x27;s extreme tenant diversification across 1,761 clients and 92 industries materially mitigates supply chain concentration risk, with no single tenant exceeding approximately 3.3% of annualized base rent (ABR) as of December 31, 2025. This structure, combined with the net lease model where tenants bear direct operational and procurement costs, insulates the company&#x27;s rental cash flows from direct supply disruptions.</p></div><div class="table-wrap"><table><thead><tr><th>Supplier/Client</th><th>Component/Service</th><th class="num">Revenue Dependency (%)</th><th>Substitution Difficulty</th><th class="num">Risk Level</th><th>Signal</th></tr></thead><tbody><tr><td class="b"><p>7-Eleven</p></td><td><p>Convenience retail properties</p></td><td class="num"><p>~3.3</p></td><td><span class="tag blue">LOW</span></td><td class="num"><span class="tag blue">LOW</span></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td class="b"><p>Dollar General</p></td><td><p>Dollar stores</p></td><td class="num"><p>~3.2</p></td><td><span class="tag blue">LOW</span></td><td class="num"><span class="tag blue">LOW</span></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td class="b"><p>Walgreens</p></td><td><p>Drug stores</p></td><td class="num"><p>~3.1</p></td><td><span class="tag blue">LOW</span></td><td class="num"><span class="tag blue">LOW</span></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td class="b"><p>Family Dollar</p></td><td><p>Dollar stores</p></td><td class="num"><p>~2.6</p></td><td><span class="tag blue">LOW</span></td><td class="num"><span class="tag blue">LOW</span></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td class="b"><p>EG Group (B&Q)</p></td><td><p>Home improvement / convenience</p></td><td class="num"><p>~2.0</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><span class="tag blue">LOW</span></td><td class="amb"><span class="tag blue">NEUTRAL</span></td></tr><tr><td class="b"><p>Wynn Resorts</p></td><td><p>Gaming properties</p></td><td class="num"><p>~1.9</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><span class="tag blue">LOW</span></td><td class="amb"><span class="tag blue">NEUTRAL</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Top Client Scorecard by ABR Dependency | Source: Company 10-K FY2025; investor presentation as of 12/31/2025</div><div class="table-wrap"><table><thead><tr><th>Customer</th><th class="num">Revenue Contribution (% ABR)</th><th>Contract Duration (Wtd Avg Remaining)</th><th>Renewal Risk</th><th>Relationship Trend</th></tr></thead><tbody><tr><td class="b"><p>7-Eleven</p></td><td class="num"><p>~3.3</p></td><td><p>8.8 years portfolio avg</p></td><td><span class="tag blue">LOW</span></td><td><p>Stable</p></td></tr><tr><td class="b"><p>Dollar General</p></td><td class="num"><p>~3.2</p></td><td><p>8.8 years portfolio avg</p></td><td><span class="tag blue">LOW</span></td><td><p>Stable</p></td></tr><tr><td class="b"><p>Walgreens</p></td><td class="num"><p>~3.1</p></td><td><p>8.8 years portfolio avg</p></td><td><span class="tag blue">LOW</span></td><td><p>Stable</p></td></tr><tr><td class="b"><p>Family Dollar</p></td><td class="num"><p>~2.6</p></td><td><p>8.8 years portfolio avg</p></td><td><span class="tag blue">LOW</span></td><td><p>Stable</p></td></tr><tr><td class="b"><p>EG Group</p></td><td class="num"><p>~2.0</p></td><td><p>8.8 years portfolio avg</p></td><td><span class="tag blue">MEDIUM</span></td><td><p>Stable</p></td></tr><tr><td class="b"><p>Wynn Resorts</p></td><td class="num"><p>~1.9</p></td><td><p>8.8 years portfolio avg</p></td><td><span class="tag blue">LOW</span></td><td><p>Stable</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Customer Concentration and Lease Metrics | Source: Company 10-K FY2025; investor presentation as of 12/31/2025</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Supply Concentration Analysis</h3><span class="tag blue">Diversified</span></div><div class="aggregate-card-body"><p>Realty Income maintains exceptionally low supply chain concentration through its tenant base. As of December 31, 2025, the portfolio includes 15,511 properties leased to 1,761 clients across 92 industries, with no single tenant accounting for more than approximately 3.3% of annualized base rent (ABR) (7-Eleven). The top 20 clients collectively represent roughly 35% of ABR, reflecting a highly fragmented exposure...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Geographic Risk Exposure</h3><span class="tag blue">U.S.-Dominant</span></div><div class="aggregate-card-body"><p>Realty Income&#x27;s geographic footprint shows strong U.S. concentration at 81.2% of ABR as of December 31, 2025, with the United Kingdom contributing 14.3% and Continental Europe 4.5%. This distribution limits exposure to any single international supply chain or geopolitical event while providing modest diversification benefits from European expansion...</p></div></div><div class="table-wrap"><table><thead><tr><th>Component/Category</th><th class="num">% of Portfolio ABR / Exposure</th><th>Trend</th><th>Key Risk</th></tr></thead><tbody><tr><td class="b"><p>Retail (Necessity-Based)</p></td><td class="num"><p>79.1</p></td><td class="amb"><span class="tag blue">STABLE</span></td><td><p>Low (tenant-borne costs)</p></td></tr><tr><td class="b"><p>Industrial / Logistics</p></td><td class="num"><p>15.4</p></td><td class="amb"><span class="tag blue">STABLE</span></td><td><p>Moderate (supply chain linkage)</p></td></tr><tr><td class="b"><p>Gaming</p></td><td class="num"><p>3.1</p></td><td class="amb"><span class="tag blue">STABLE</span></td><td><span class="tag blue">LOW</span></td></tr><tr><td class="b"><p>Grocery Stores</p></td><td class="num"><p>11.0</p></td><td class="amb"><span class="tag blue">STABLE</span></td><td><span class="tag blue">LOW</span></td></tr><tr><td class="b"><p>Convenience Stores</p></td><td class="num"><p>9.6</p></td><td class="amb"><span class="tag blue">STABLE</span></td><td><span class="tag blue">LOW</span></td></tr><tr><td class="b"><p>U.S. Geographic</p></td><td class="num"><p>81.2</p></td><td class="amb"><span class="tag blue">STABLE</span></td><td><span class="tag blue">LOW</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Portfolio Cost Structure &amp; Exposure Breakdown by ABR | Source: Company 10-K FY2025; investor presentation as of 12/31/2025</div><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="catalysts" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>catalyst map</h2>
+          <div class="kicker">forward calendar</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">total catalysts</div><div class="kpi-value ">12</div><div class="kpi-sub">Next 12 months (confirmed + speculative)</div></div><div class="kpi"><div class="kpi-label">next event date</div><div class="kpi-value ">May 6, 2026</div><div class="kpi-sub">Q1 2026 earnings release (after close)</div></div><div class="kpi"><div class="kpi-label">net catalyst score</div><div class="kpi-value ">+4</div><div class="kpi-sub">Bullish 8 - Bearish 4 (directional signals)</div></div><div class="kpi"><div class="kpi-label">expected price impact range</div><div class="kpi-value ">$2.50, $6.00</div><div class="kpi-sub">Per share from top catalysts (base case)</div></div></div><div class="note green"><p>Key Takeaway. The May 6, 2026 Q1 earnings release stands out as the pivotal near-term event, offering the first hard data test of 2026 AFFO guidance ($4.38, $4.42) and the $8B investment target versus 2025&#x27;s $6.3B deployed. Management&#x27;s explicit pipeline commentary and recent private capital raises (GIC JV &gt;$1.5B, U.S...</p></div><div class="table-wrap"><table><thead><tr><th>Date</th><th class="num">Event</th><th>Category</th><th>Impact</th><th class="num">Probability (%)</th><th>Directional Signal</th></tr></thead><tbody><tr><td class="b"><p>May 6, 2026</p></td><td class="num"><p>Q1 2026 Earnings Release + Investor Call (2:00 p.m. PDT) (completed)</p><span class="tag blue">PAST</span></td><td><p>Earnings</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>95</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td class="b"><p>Jul/Aug 2026 (est.)</p></td><td class="num"><p>Q2 2026 Earnings</p></td><td><p>Earnings</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><p>85</p></td><td class="amb"><span class="tag blue">NEUTRAL</span></td></tr><tr><td class="b"><p>Oct/Nov 2026 (est.)</p></td><td class="num"><p>Q3 2026 Earnings</p></td><td><p>Earnings</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><p>80</p></td><td class="amb"><span class="tag blue">NEUTRAL</span></td></tr><tr><td class="b"><p>Feb 2027 (est.)</p></td><td class="num"><p>Q4/FY 2026 Earnings + 2027 Guidance</p></td><td><p>Earnings</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>90</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td class="b"><p>Ongoing 2026</p></td><td class="num"><p>$8B Investment Deployments (acquisitions/JVs)</p></td><td><p>Product</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>75</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td class="b"><p>Monthly (next: May 2026)</p></td><td class="num"><p>Monthly Dividend Declarations &amp; Payments (current $0.2705/share)</p></td><td><p>Earnings</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><p>100</p></td><td><span class="tag blue">BULLISH</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Catalyst Calendar — Next 12 Months | Source: Company announcements, Q4 2025 earnings release (Feb 24, 2026), 10-K/10-Q filings</div><div class="table-wrap"><table><thead><tr><th>Quarter</th><th class="num">Event</th><th>Category</th><th>Expected Impact ($/share est.)</th><th>Bull Outcome</th><th>Bear Outcome</th></tr></thead><tbody><tr><td class="b"><p>Q2 2026</p></td><td class="num"><p>Q1 Earnings + Guidance Confirmation</p></td><td><p>Earnings</p></td><td><p>+$1.50 – $3.00</p></td><td><p>AFFO trajectory confirmed; pipeline visibility…</p></td><td><p>Miss on investment pace</p></td></tr><tr><td class="b"><p>H1/H2 2026</p></td><td class="num"><p>$8B Acquisitions &amp; Private Capital Deployment…</p></td><td><p>Product</p></td><td><p>+$2.00 – $4.00</p></td><td><p>Accretive yields > 7%; JV scale</p></td><td><p>Dilution without accretion</p></td></tr><tr><td class="b"><p>Q3 2026</p></td><td class="num"><p>Q2 Earnings</p></td><td><p>Earnings</p></td><td><p>+$0.75 – $1.50</p></td><td><p>Same-store rent 1.0–1.3% met</p></td><td><p>Occupancy slippage below 98.5%</p></td></tr><tr><td class="b"><p>Q4 2026</p></td><td class="num"><p>Q3 Earnings + Dividend Updates</p></td><td><p>Earnings</p></td><td><p>+$1.00 – $2.00</p></td><td><p>134th+ dividend increase sustained</p></td><td><p>Credit loss normalization stalls</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: 12-Month Catalyst Timeline | Source: Company Q4 2025 results (Feb 24, 2026), guidance, and announcements</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Top 3 Catalysts by Probability × Price Impact</h3><span class="tag green">Ranked</span></div><div class="aggregate-card-body"><p>The highest-conviction catalyst is the May 6, 2026 Q1 2026 earnings release and call , with ~95% probability of occurring on schedule. Confirmation of progress toward the $4.38, $4.42 AFFO per share guidance and early traction on the $8B 2026 investment target could drive $2.00, $4.00 per share upside through multiple expansion and reduced perceived execution risk, given 2025&#x27;s $6.3B actual deployments at 7.3% weighted average cash yield. Second is sustained execution on the $8B investment pipeline (Product category), probability ~75%...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Quarterly Outlook — Next 1-2 Quarters</h3><span class="tag blue">Watch Items</span></div><div class="aggregate-card-body"><p>In Q2 2026 (post-May earnings), focus on validation of 2026 guidance components: AFFO per share trajectory toward $4.38, $4.42 midpoint, investment volume run-rate consistent with $8B full-year target (versus $6.3B in 2025), and occupancy holding near 98.5%. Key thresholds include same-store rent growth within 1.0, 1.3% and credit losses normalizing to 40, 50 bps of revenue. For Q3 reporting, monitor sequential progress on private capital deployment (GIC build-to-suit JV and Core Plus Fund) and any commentary on acquisition yields holding above 7%...</p></div></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Quarter</th><th class="num">Consensus EPS (est.)</th><th class="num">Consensus Revenue (est.)</th><th>Key Watch Items</th></tr></thead><tbody><tr><td class="b"><p>May 6, 2026 (after close)</p></td><td><p>Q1 2026 (completed)</p><span class="tag blue">PAST</span></td><td class="num"><p>~$0.40</p></td><td class="num"><p>~$1.39B</p></td><td><p>AFFO progress, $8B pipeline update, occupancy…</p></td></tr><tr><td class="b"><p>Jul/Aug 2026 (est.)</p></td><td><p>Q2 2026</p></td><td class="num"><p>~$0.42</p></td><td class="num"><p>~$1.45B</p></td><td><p>Same-store growth, investment volume</p></td></tr><tr><td class="b"><p>Oct/Nov 2026 (est.)</p></td><td><p>Q3 2026</p></td><td class="num"><p>~$0.43</p></td><td class="num"><p>~$1.48B</p></td><td><p>Re-leasing recapture, private capital scale…</p></td></tr><tr><td class="b"><p>Feb 2027 (est.)</p></td><td><p>Q4/FY 2026</p></td><td class="num"><p>~$0.44</p></td><td class="num"><p>~$1.52B</p></td><td><p>2027 guidance, full-year AFFO achievement…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Next 4 Earnings Dates | Source: Company press release (April 9, 2026) and historical filing patterns</div><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p><p class="aggregate-pane-xref"><a href="#valuation">See valuation</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="street" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>street expectations</h2>
+          <div class="kicker">consensus vs. framework</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Wall Street analysts maintain a generally cautious &#x27;Hold&#x27; consensus on Realty Income Corporation (NYSE: O), reflecting balanced views on the REIT&#x27;s stable dividend profile amid elevated valuation multiples and modest near-term growth expectations. Consensus price targets cluster around $66-$68, implying limited single-digit upside from the April 11, 2026 closing price of $63.75. Street forecasts incorporate continued portfolio expansion and occupancy stability but embed conservative assumptions for same-store rent growth and acquisition volumes in a higher-for-longer interest rate environment.</p></div>
+        <div class="kpi-grid cols-3"><div class="kpi"><div class="kpi-label">current price</div><div class="kpi-value ">$63.75</div><div class="kpi-sub">Apr 11, 2026</div></div><div class="kpi"><div class="kpi-label">dcf fair value</div><div class="kpi-value ">$66</div><div class="kpi-sub">our model</div></div><div class="kpi"><div class="kpi-label">vs current</div><div class="kpi-value ">+3.5%</div><div class="kpi-sub">DCF implied</div></div></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">Current</th><th class="num">Street Consensus</th></tr></thead><tbody><tr><td class="b"><p>P/E (TTM)</p></td><td class="num"><p>54.5</p></td><td class="num"><p>37.8x (2026E)</p></td></tr><tr><td class="b"><p>2026E EPS</p></td><td class="num"><p>$1.17 (2025A)</p></td><td class="num"><p>$1.60 - $1.68</p></td></tr><tr><td class="b"><p>2026E Revenue</p></td><td class="num"><p>$5.75B (2025A)</p></td><td class="num"><p>$6.09B</p></td></tr><tr><td class="b"><p>Consensus Price Target</p></td><td class="num"><p>$63.75</p></td><td class="num"><p>$66.39 (avg); High $72</p></td></tr><tr><td class="b"><p>Analyst Rating</p></td><td class="num"><p>N/A</p></td><td class="num"><p>Hold (16 analysts: 6 Buy, 9 Hold, 1 Sell)</p></td></tr><tr><td class="b"><p>Implied 2026 AFFO Growth</p></td><td class="num"><p>N/A</p></td><td class="num"><p>~2.8% (midpoint $4.40)</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Valuation Multiples vs Street | Source: SEC EDGAR; market data; Visible Alpha / analyst consensus aggregates</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Our Quantitative View</h3><span class="tag blue">DETERMINISTIC</span></div><div class="aggregate-card-body"><p>DCF Model: $66 per share base case, derived from a 9.0% WACC and 4.0% terminal growth rate. This valuation incorporates Realty Income&#x27;s latest audited financials, including $5.75B in 2025 annual revenue and $1.06B net income, alongside balance sheet strength with total assets reaching $72.80B as of December 31, 2025. Enterprise value stands at $122.36B, yielding substantial upside versus the current market price...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Wall Street Consensus Overview</h3><span class="tag blue">STREET VIEW</span></div><div class="aggregate-card-body"><p>Analyst coverage for Realty Income remains robust, with approximately 13-16 firms providing ratings as of early April 2026. The consensus rating aggregates to &#x27;Hold,&#x27; with a mix of 6 Buy, 9 Hold, and 1 Sell recommendations. The average 12-month price target stands at approximately $66.39, suggesting modest ~4-5% implied upside from the April 11, 2026 price of $63.75...</p></div></div><div class="note"><strong>Key Takeaway on Street vs. Intrinsic</strong><br><p>Street expectations price in limited growth and elevated required returns, leading to a tight range around current levels. Our deterministic models, anchored in audited 2025 results ($1.06B net income, $72.80B assets) and Monte Carlo outputs, point to material undervaluation. The gap highlights a variant perception opportunity centered on long-term net lease cash flow durability versus near-term macro caution...</p></div><p class="aggregate-pane-xref"><a href="#valuation">See valuation</a></p><p class="aggregate-pane-xref"><a href="#thesis">See variant perception &amp; thesis</a></p><p class="aggregate-pane-xref"><a href="#ops">See related analysis in</a></p>
+      </section>
+      <section id="management" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>management &amp; leadership</h2>
+          <div class="kicker">execution + key-person risk</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">management score</div><div class="kpi-value ">4.2/5</div><div class="kpi-sub">Strong execution on growth &amp; leverage discipline</div></div><div class="kpi"><div class="kpi-label">insider ownership %</div><div class="kpi-value ">0.13%</div><div class="kpi-sub">Low; typical for large REIT with institutional dominance</div></div><div class="kpi"><div class="kpi-label">ceo tenure</div><div class="kpi-value ">10.4 years</div><div class="kpi-sub">Sumit Roy since 2015/2018 promotion to CEO</div></div><div class="kpi"><div class="kpi-label">compensation alignment</div><div class="kpi-value ">93.8% variable</div><div class="kpi-sub">Heavy performance incentives tied to TSR &amp; operations</div></div></div><div class="note green"><p>Takeaway. Under CEO Sumit Roy, Realty Income delivered 2025 revenue of $5.75B (+9.1% YoY) and net income of $1.06B (+23.0% YoY) while maintaining a conservative Debt to Equity of 0.12, demonstrating disciplined scaling of the $72.80B asset base without excessive leverage.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>CEO &amp; Key Executive Assessment</h3><span class="tag blue">Experienced Steward</span></div><div class="aggregate-card-body"><p>Sumit Roy has served as President since 2015 and CEO since October 2018, with overall tenure exceeding 10 years at Realty Income (joined 2011). His background includes progressive roles in acquisitions, operations, and investment strategy. In 2025, the company completed $6.2, 6.3B in investment volume at a 7.3% initial weighted average cash yield, with ~60% in the U.K...</p></div></div><div class="table-wrap"><table><thead><tr><th>Name</th><th>Title</th><th>Tenure</th><th>Background</th><th class="num">Key Achievement</th></tr></thead><tbody><tr><td class="b"><p>Sumit Roy</p></td><td><p>President &amp; CEO</p></td><td><p>10.4 years</p></td><td><p>Joined 2011; prior roles: CIO, COO</p></td><td class="num"><p>Oversaw 2025 $6.2B+ investments &amp; international expansion…</p></td></tr><tr><td class="b"><p>Jonathan Pong</p></td><td><p>EVP &amp; CFO</p></td><td><p>~2.3 years</p></td><td><p>Finance leadership</p></td><td class="num"><p>Supported liquidity &amp; capital raises amid asset growth…</p></td></tr><tr><td class="b"><p>Mark Hagan</p></td><td><p>EVP &amp; Chief Investment Officer</p></td><td><p>~7.9 years</p></td><td><p>Investment strategy</p></td><td class="num"><p>Contributed to 7.3% yield investment volume in 2025…</p></td></tr><tr><td class="b"><p>Michelle Bushore</p></td><td><p>EVP, Chief Legal Officer &amp; General Counsel…</p></td><td><p>~5.2 years</p></td><td><p>Legal &amp; governance</p></td><td class="num"><p>Managed extended transition through Sep 2026…</p></td></tr><tr><td class="b"><p>Neil Abraham</p></td><td><p>President, Realty Income International; EVP, Chief Strategy Officer…</p></td><td><p>Not specified</p></td><td><p>International &amp; strategy</p></td><td class="num"><p>Supported ~60% of 2025 investments outside U.S.</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Key Executives Overview | Source: Company proxy statements &amp; leadership disclosures (2025-2026)</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Governance Structure</h3><span class="tag blue">Strong Independence</span></div><div class="aggregate-card-body"><p>The Board comprises 10 directors, with 9 independent non-employee directors (only CEO Sumit Roy is non-independent). All key committees (Audit, Compensation &amp; Talent, Nominating &amp; Corporate Governance) are fully independent. The company maintains a Non-Executive Chairman, annual director elections, a Lead Independent Director when applicable, and regular executive sessions of independent directors...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Compensation Alignment</h3><span class="tag blue">Pay-for-Performance</span></div><div class="aggregate-card-body"><p>Executive compensation is heavily performance-oriented, with ~93.8% variable for CEO Sumit Roy (total ~$16.25M, low base salary component). Programs link short-term incentives to operating/financial goals and long-term awards to relative TSR, AFFO growth, and strategic metrics. The Compensation &amp; Talent Committee engages independent consultants and conducts annual reviews...</p></div></div><div class="table-wrap"><table><thead><tr><th>Dimension</th><th class="num">Score (1-5)</th><th class="num">Evidence Summary</th></tr></thead><tbody><tr><td class="b"><p>Capital Allocation</p></td><td class="pos num"><p>4</p></td><td class="num"><p>$6.2B+ investments at 7.3% yield (2025); assets grew $72.80B from $68.84B; low Debt/Equity 0.12; perpetual fund &amp; Blackstone JV launched…</p></td></tr><tr><td class="b"><p>Communication</p></td><td class="pos num"><p>4</p></td><td class="num"><p>Consistent proxy &amp; earnings disclosures on dividend track record (133 increases), occupancy 98.9%, and strategic partnerships; proactive board refresh communication…</p></td></tr><tr><td class="b"><p>Insider Alignment</p></td><td class="amb num"><p>3</p></td><td class="num"><p>Insider ownership ~0.13%; recent net selling (e.g., Michelle Bushore sale Apr 2026, Gregory McLaughlin sales); grants/awards common but no major open-market buys noted…</p></td></tr><tr><td class="b"><p>Track Record</p></td><td class="pos num"><p>5</p></td><td class="num"><p>Revenue $5.75B (+9.1% YoY), net income $1.06B (+23.0% YoY), EPS $1.17 (+19.4% YoY) in 2025; sustained AFFO growth implied; TSR outperformance…</p></td></tr><tr><td class="b"><p>Strategic Vision</p></td><td class="pos num"><p>4</p></td><td class="num"><p>International expansion (60% of 2025 volume in UK/Europe); private capital diversification; predictive analytics emphasis; portfolio scaling post-Spirit integration…</p></td></tr><tr><td class="b"><p>Operational Execution</p></td><td class="pos num"><p>4</p></td><td class="num"><p>Net margin 18.4%; occupancy 98.9%; operating cash flow ~$4.0B; D&A $2.52B aligned with asset growth; recapture rate 103.9% on re-leases…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: 6-Dimension Management Quality Scorecard | Source: SEC EDGAR filings (10-K, proxy); derived ratios; 2025 performance data</div><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="macro" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>macro sensitivity</h2>
+          <div class="kicker">rates, fx, energy</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">rate sensitivity</div><div class="kpi-value ">Low</div><div class="kpi-sub">Predominantly fixed-rate debt; D/E 0.12</div></div><div class="kpi"><div class="kpi-label">fx exposure</div><div class="kpi-value ">~19%</div><div class="kpi-sub">of ABR from UK/Europe</div></div><div class="kpi"><div class="kpi-label">commodity exposure</div><div class="kpi-value ">Low</div><div class="kpi-sub">Net lease model limits direct input costs</div></div><div class="kpi"><div class="kpi-label">trade policy risk</div><div class="kpi-value ">Low-Med</div><div class="kpi-sub">Indirect via tenant supply chains</div></div></div><div class="note green"><p>Key Takeaway. Realty Income&#x27;s conservative balance sheet with Debt to Equity of just 0.12 and predominantly fixed-rate debt materially reduces near-term interest rate sensitivity compared to higher-levered REIT peers, even as the market prices the stock at a 54.5x trailing P/E versus a DCF fair value of $66.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Interest Rate Sensitivity</h3><span class="tag blue">Defensive</span></div><div class="aggregate-card-body"><p>Realty Income maintains a low-leverage profile with a Debt to Equity ratio of 0.12 and Total Liabilities to Equity of 0.83 as of year-end 2025. The vast majority of its debt is fixed-rate, with recent issuances including an $530 million 4.750% senior unsecured notes due 2033 and a $694 million term loan due 2036 at an all-in fixed rate of 4.91% (blended 4.34% after cross-currency swap). This structure insulates interest expense from short-term rate volatility...</p></div><div class="aggregate-source">Exhibit 1: Debt Profile and Rate Exposure | Source: Company filings, recent debt issuances, quantitative model outputs</div></div><div class="table-wrap"><table><thead><tr><th>Region</th><th class="num">ABR %</th><th>Primary Currency</th><th>Hedging Strategy</th><th>Net Unhedged Exposure</th><th>Est. Impact of 10% Move</th></tr></thead><tbody><tr><td class="b"><p>United States</p></td><td class="num"><p>81.2%</p></td><td><p>USD</p></td><td><p>N/A</p></td><td><p>None</p></td><td><p>Minimal</p></td></tr><tr><td class="b"><p>United Kingdom</p></td><td class="num"><p>14.3%</p></td><td><p>GBP</p></td><td><p>Partial (local debt &amp; swaps)</p></td><td class="amb"><p>Moderate</p></td><td><p>~1-2% on translated ABR</p></td></tr><tr><td class="b"><p>Continental Europe</p></td><td class="num"><p>4.5%</p></td><td><p>EUR &amp; others</p></td><td><p>Partial (cross-currency swaps)</p></td><td class="amb"><p>Moderate</p></td><td><p>~0.5% on translated ABR</p></td></tr><tr><td class="b"><p>Other Europe</p></td><td class="num"><p>~0.0% (residual)</p></td><td><p>Local</p></td><td><p>Partial</p></td><td><span class="tag blue">LOW</span></td><td><p>Negligible</p></td></tr><tr><td class="b"><p>Total International</p></td><td class="num"><p>~19%</p></td><td><p>Mix</p></td><td><p>Natural + financial hedges</p></td><td><p>Net translational risk</p></td><td><p>Limited P&L impact</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Geographic ABR Exposure and FX Hedging | Source: Company investor presentations and 10-K FY2025</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Commodity Exposure</h3><span class="tag blue">Minimal</span></div><div class="aggregate-card-body"><p>As a triple-net lease REIT, Realty Income&#x27;s direct exposure to commodity price swings is limited. Tenants bear most operating costs (including energy, maintenance, and inputs) under long-term net leases, insulating the company&#x27;s rental revenue and margins from volatility in key inputs like steel, energy, or building materials. Percentage of COGS tied to commodities is effectively negligible at the corporate level, as the business model focuses on collecting contractual base rent with escalators rather than managing physical inputs...</p></div><div class="aggregate-source">Exhibit 3: Commodity and Cost Structure Analysis | Source: Company 10-K FY2025 and supplemental data</div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Trade Policy &amp; Tariff Risk</h3><span class="tag blue">Indirect</span></div><div class="aggregate-card-body"><p>Realty Income has low direct tariff exposure, as its net lease portfolio does not involve significant owned manufacturing or import-heavy supply chains. China dependency is minimal at the property level. Indirect risks exist through tenant operations in retail, industrial, and distribution sectors potentially facing higher input costs or supply chain disruptions from tariffs (e.g., on steel, electronics, or goods from China/Mexico/Canada)...</p></div><div class="aggregate-source">Exhibit 4: Tariff Scenario Exposure | Source: Company 10-K risk factors and investor data</div></div><div class="table-wrap"><table><thead><tr><th>Indicator</th><th class="num">Current Value (Apr 2026)</th><th>Historical Avg</th><th>Signal</th><th>Impact on O</th></tr></thead><tbody><tr><td class="b"><p>VIX</p></td><td class="num"><p>~19.5</p></td><td><p>~20</p></td><td class="amb"><span class="tag blue">NEUTRAL</span></td><td><p>Low volatility supports REIT stability</p></td></tr><tr><td class="b"><p>Credit Spreads</p></td><td class="num"><p>Tight (IG ~80bps)</p></td><td><p>Higher in stress</p></td><td><p>Expansionary</p></td><td><p>Favorable borrowing environment</p></td></tr><tr><td class="b"><p>Yield Curve</p></td><td class="num"><p>Flattening (10Y ~4.29%)</p></td><td><p>Inverted in prior slowdowns</p></td><td class="amb"><span class="tag blue">NEUTRAL</span></td><td><p>Mixed signal for cap rates</p></td></tr><tr><td class="b"><p>ISM Manufacturing</p></td><td class="num"><p>~52.7</p></td><td><p>~50</p></td><td><p>Expansionary</p></td><td><p>Supports tenant activity</p></td></tr><tr><td class="b"><p>CPI YoY</p></td><td class="num"><p>~2.4-3.0% core</p></td><td><p>2% target</p></td><td class="amb"><span class="tag blue">NEUTRAL</span></td><td><p>Persistent inflation caps aggressive cuts…</p></td></tr><tr><td class="b"><p>Fed Funds Rate</p></td><td class="num"><p>Stable post-cuts</p></td><td><p>Varies</p></td><td><p>Expansionary</p></td><td><p>Lower rates would aid acquisitions</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 6: Current Economic Cycle Indicators | Source: Macro indicators and company context</div><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p><p class="aggregate-pane-xref"><a href="#valuation">See Valuation</a></p><p class="aggregate-pane-xref"><a href="#ops">See Fundamentals</a></p>
+      </section>
+      <section id="governance" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>governance &amp; accounting</h2>
+          <div class="kicker">quality control</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Board Independence: 90% (9 of 10 directors independent (NYSE compliant)) · Avg Board Tenure: 11 years (Balanced refreshment with recent additions) · CEO Pay Ratio: <span style="color:var(--muted,#999);font-style:italic">—</span> (SBC at 0.5% of revenue; pay-for-performance structure).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">board independence</div><div class="kpi-value ">90%</div><div class="kpi-sub">9 of 10 directors independent (NYSE compliant)</div></div><div class="kpi"><div class="kpi-label">avg board tenure</div><div class="kpi-value ">11 years</div><div class="kpi-sub">Balanced refreshment with recent additions</div></div><div class="kpi"><div class="kpi-label">governance score</div><div class="kpi-value ">A</div><div class="kpi-sub">High independence, no major defenses</div></div><div class="kpi"><div class="kpi-label">accounting quality flag</div><div class="kpi-value ">Clean</div><div class="kpi-sub">Stable goodwill, no impairments or restatements</div></div></div><div class="note green"><p>Key Takeaway. Realty Income maintains exceptional board independence at 90% with fully independent key committees and a conservative balance sheet (Debt to Equity 0.12), supporting disciplined capital allocation in a capital-intensive REIT. Stable goodwill at exactly $4.93B across all 2025 periods signals rigorous impairment testing and high accounting credibility.</p></div><div class="table-wrap"><table><thead><tr><th>Director Name</th><th>Independent</th><th class="num">Tenure (years)</th><th>Key Committees</th><th>Expertise</th></tr></thead><tbody><tr><td class="b"><p>Michael D. McKee</p></td><td><p>Y</p><span class="tag blue">Independent</span></td><td class="num"><p>31</p></td><td><p>Non-Executive Chairman</p></td><td><p>Senior Leadership, Real Estate</p></td></tr><tr><td class="b"><p>Priscilla Almodovar</p></td><td><p>Y</p><span class="tag blue">Independent</span></td><td class="num"><p>3</p></td><td><p>Audit, Compensation</p></td><td><p>Finance, Housing</p></td></tr><tr><td class="b"><p>A. Larry Chapman</p></td><td><p>Y</p><span class="tag blue">Independent</span></td><td class="num"><p>13</p></td><td><p>Audit</p></td><td><p>Accounting &amp; Financial</p></td></tr><tr><td class="b"><p>Reginald H. Gilyard</p></td><td><p>Y</p><span class="tag blue">Independent</span></td><td class="num"><p>7</p></td><td><p>Nominating</p></td><td><p>Strategic Planning</p></td></tr><tr><td class="b"><p>Mary Hogan Preusse</p></td><td><p>Y</p><span class="tag blue">Independent</span></td><td class="num"><p>3</p></td><td><p>Compensation</p></td><td><p>Investment Management</p></td></tr><tr><td class="b"><p>Kim Hourihan</p></td><td><p>Y</p><span class="tag blue">Independent</span></td><td class="num"><p>0.5 (joined Oct 2025)</p></td><td><p>Compensation</p></td><td><p>Private Funds</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Board of Directors Composition and Committee Assignments | Source: Company DEF 14A Proxy Statement (2025/2026); EDGAR governance disclosures</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Shareholder Rights Assessment</h3><span class="tag green">Strong</span></div><div class="aggregate-card-body"><p>Realty Income exhibits strong shareholder rights protections with no poison pill in effect, no classified (staggered) board, and annual director elections using a majority voting standard in uncontested elections. The company has no dual-class share structure, maintaining one class of common stock with equal voting rights. Proxy access is available consistent with market practice for large-cap REITs, and shareholders benefit from the ability to amend bylaws under certain conditions...</p></div></div><div class="table-wrap"><table><thead><tr><th>Executive Name</th><th>Title</th><th>Key Comp Elements</th><th>Alignment with TSR</th></tr></thead><tbody><tr><td class="b"><p>Sumit Roy</p></td><td><p>President &amp; CEO</p></td><td><p>Base ~6%, Majority at-risk (STIP cash + LTIP equity tied to TSR/financial goals)</p></td><td><p>High (74% at-risk in recent structure)</p></td></tr><tr><td class="b"><p>Christie B. Kelly</p></td><td><p>EVP, CFO &amp; Treasurer</p></td><td><p>Base, Incentive, Equity awards</p></td><td><p>Tied to operating/financial metrics</p></td></tr><tr><td class="b"><p>Mark E. Hagan</p></td><td><p>EVP, Chief Investment Officer</p></td><td><p>Total ~$5.27M (prior period reference)</p></td><td><p>Performance-linked</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Named Executive Officer Compensation Structure and Alignment | Source: DEF 14A Proxy Statement compensation discussion; Derived ratios (SBC 0.5% of revenue)</div><div class="table-wrap table-narrow"><table><thead><tr><th>Metric</th><th class="num">Value</th></tr></thead><tbody><tr><td class="b"><p>Equity Value</p></td><td class="num"><p>$4.93B</p></td></tr><tr><td class="b"><p>Equity Value (2)</p></td><td class="num"><p>$72.80B</p></td></tr><tr><td class="b"><p>Roce</p></td><td class="num"><p>$2.52B</p></td></tr><tr><td class="b"><p>Price / Earnings</p></td><td class="num"><p>$3.995B</p></td></tr><tr><td class="b"><p>Net income</p></td><td class="num"><p>$1.06B</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Accounting Quality Deep-Dive</h3><span class="tag green">Clean</span></div><div class="aggregate-card-body"><p>Accounting quality at Realty Income remains high based on audited 2025 financials. Goodwill held completely stable at $4.93B across every balance sheet date from December 31, 2024 through December 31, 2025, with no impairment charges despite Total Assets growth of $3.96B to $72.80B . This reflects conservative acquisition accounting and robust testing processes...</p></div></div><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p><p class="aggregate-pane-xref"><a href="#financials">See Financial Analysis</a></p><p class="aggregate-pane-xref"><a href="#risk">See What Breaks the Thesis</a></p>
+      </section>
+      <section id="value" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>value framework</h2>
+          <div class="kicker">greenwald / qarp</div>
+        </div>
+        <div class="lead aggregate-lead"><p>This pane applies Benjamin Graham&#x27;s quantitative 7-criteria screen alongside Warren Buffett&#x27;s qualitative checklist to Realty Income (O). The framework cross-references audited 2025 financials ($5.75B revenue, $1.06B net income, $1.17 diluted EPS) with DCF outputs (base fair value $66) and market pricing ($63.75 as of Apr 11, 2026). Overall, O passes several defensive metrics on scale and dividend history but fails on valuation multiples, yielding a moderate conviction score tempered by the gap between GAAP distortion and cash-based AFFO metrics.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">graham score</div><div class="kpi-value ">4/7</div><div class="kpi-sub">Passes size, financial condition, earnings stability, dividend record; fails moderate P/E &amp; P/B</div></div><div class="kpi"><div class="kpi-label">buffett quality score</div><div class="kpi-value ">B</div><div class="kpi-sub">Strong moat and management; understandable business; pricing tempered by premium valuation</div></div><div class="kpi"><div class="kpi-label">peg ratio</div><div class="kpi-value ">7.8x</div><div class="kpi-sub">Elevated vs. historical median; reflects low-single-digit expected AFFO growth</div></div><div class="kpi"><div class="kpi-label">margin of safety</div><div class="kpi-value value-rd">-49%</div><div class="kpi-sub">Current price $63.75 vs. DCF base $66; premium reflects moat but exceeds conservative assumptions</div></div></div><div class="note green"><p>Takeaway. The single most important non-obvious insight is that high D&A ($2.52B in 2025) distorts GAAP EPS ($1.17) and P/E (54.5x), making AFFO ($4.28 in 2025, guided $4.38-$4.42 for 2026) the superior metric for evaluating this monthly dividend REIT. While scale and low leverage support quality, the market&#x27;s ~5.1% dividend yield at $63.75 embeds a significant growth premium relative to the conservative 9.0% WACC DCF.</p></div><div class="table-wrap"><table><thead><tr><th>Criterion</th><th>Threshold</th><th class="num">Actual Value</th><th>Pass/Fail</th></tr></thead><tbody><tr><td class="b"><p>Adequate Size</p></td><td><p>Revenue &gt; $100M or Assets &gt; $50M (adjusted for inflation)</p></td><td class="num"><p>Revenue $5.75B; Total Assets $72.80B</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Strong Financial Condition</p></td><td>Current ratio > 2 or Debt/Equity < 0.5 (REIT-adjusted)</td><td class="num"><p>Debt/Equity 0.12; Total Liab/Equity 0.83…</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Earnings Stability</p></td><td><p>Positive EPS in 10 of last 10 years</p></td><td class="num"><p>Consistent positive EPS with +19.4% YoY growth in 2025…</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Dividend Record</p></td><td><p>Uninterrupted dividends for 20+ years</p></td><td class="num"><p>31+ years increases; 669 consecutive monthly dividends…</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Earnings Growth</p></td><td><p>EPS growth > 33% over 10 years (or consistent mid-single digits for REITs)</p></td><td class="num"><p>EPS +19.4% YoY; AFFO +2.1% in 2025 with guided +2.8% in 2026…</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Moderate P/E</p></td><td><p>P/E < 15x or below industry average</p></td><td class="num"><p>Trailing P/E 54.5x on GAAP EPS $1.17</p></td><td><p>Fail</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Graham&#x27;s 7 Criteria Assessment (FY2025 Data) | Source: SEC EDGAR 10-K/10-Q FY2025; derived ratios; GuruFocus Graham benchmarks</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Buffett Qualitative Checklist</h3><span class="tag blue">B Grade</span></div><div class="aggregate-card-body"><p>Realty Income operates an understandable business (5/5): a triple-net lease REIT focused on necessity-based retail with over 15,500 properties, long-term leases, and contractual rent escalators that generate predictable cash flows. High occupancy (~98.9% in 2025) and rent recapture rates (&gt;103%) further insulate operations. Favorable long-term prospects (4/5): Defensive model benefits from e-commerce resilience in grocery, dollar stores, and pharmacies; global diversification (U.S., U.K., Europe, recent Mexico entry) and $8.0B 2026 investment guidance at accretive yields support low-single-digit AFFO growth...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Investment Decision Framework</h3><span class="tag blue">Portfolio Fit</span></div><div class="aggregate-card-body"><p>Position sizing: Limit to 3-5% of portfolio given REIT sector concentration risk and interest-rate sensitivity, despite low operational volatility. Entry criteria include price near or below $50 (closer to DCF base with > 20% margin of safety) or AFFO yield > 6.5% with sustained 7%+ acquisition spreads. Exit if AFFO payout exceeds 85% persistently, occupancy drops below 97%, or debt/market cap rises above 40%...</p></div></div><div class="table-wrap"><table><thead><tr><th>Bias</th><th class="num">Risk Level</th><th>Mitigation Step</th><th>Status</th></tr></thead><tbody><tr><td class="b"><p>Anchoring</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Anchor to DCF $32.75 and AFFO multiples rather than historical premiums…</p></td><td><p>Clear</p></td></tr><tr><td class="b"><p>Confirmation</p></td><td class="num"><span class="tag blue">HIGH</span></td><td><p>Explicitly document bear case (narrower spreads, higher dilution)</p></td><td><p>Watch</p></td></tr><tr><td class="b"><p>Recency</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Review full 10-year dividend and AFFO track record vs. 2025 momentum…</p></td><td><p>Clear</p></td></tr><tr><td class="b"><p>Overconfidence</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Use conservative 9.0% WACC and base scenario weighting…</p></td><td><p>Watch</p></td></tr><tr><td class="b"><p>Availability</p></td><td class="num"><span class="tag blue">LOW</span></td><td><p>Cross-check with peer REITs (e.g., NNN) and macro rate scenarios…</p></td><td><p>Clear</p></td></tr><tr><td class="b"><p>Herding</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Independent DCF and Graham screen before Street targets ($65-72)</p></td><td><p>Clear</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Cognitive Bias Mitigation Checklist | Source: Internal analytical process; cross-referenced to 2025 filings</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Conviction Scoring Breakdown</h3><span class="tag blue">65/100</span></div><div class="aggregate-card-body"><p>Pillars (weighted total 65/100): Business Quality &amp; Moat (weight 30%, score 9/10): Triple-net necessity retail with scale (&gt;15,500 properties), high occupancy, and investment-grade cost of capital; evidence quality high from audited revenue $5.75B (+9.1% YoY) and conservative leverage. Management &amp; Capital Allocation (weight 25%, score 8/10): Disciplined 75.2% payout and $6.3B 2025 investments at 7.3% yield; offset by equity dilution to 934M shares. Valuation &amp; Margin of Safety (weight 25%, score 3/10): Premium pricing vs...</p></div></div><p class="aggregate-pane-xref"><a href="#valuation">See detailed DCF, comps, and precedent analysis</a></p><p class="aggregate-pane-xref"><a href="#thesis">See variant perception and full investment thesis</a></p><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p>
+      </section>
+      <section id="appendix" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>appendix &amp; sources</h2>
+          <div class="kicker">sources · methodology</div>
+        </div>
+        <div class="lead aggregate-lead"><p>How we source the tape, verify levels, and align this report with XVARY deep-dive standards.</p></div>
+        <div class="aggregate-sources-attribution"><p>Sources: SEC filings, company disclosures, market data vendors, and sources cited in the sections above. For investment presentation use only.</p></div><p class="aggregate-methodology-link">standards and pipeline: <a href="https://xvary.com/methodology/">xvary.com/methodology/</a></p>
+      </section>
+
+      <div class="footer">
+        xvary · 2026 · not investment advice
+        <div class="links">
+          <a href="https://xvary.com/pulse/">the pulse</a>
+          <a href="https://xvary.com/stacks/">the stacks</a>
+          <a href="https://xvary.com/discover/">discover</a>
+          <a href="https://xvary.com/collectibles/">collectibles</a>
+          <a href="https://xvary.com/pricing/">pricing</a>
+          <a href="https://xvary.com/methodology/">methodology</a>
+          <a href="https://xvary.com/newsletter/">newsletter</a>
+          <a href="https://xvary.com/legal/disclaimer/">disclaimer</a>
+          <a href="https://xvary.com/legal/privacy/">privacy</a>
+          <a href="https://xvary.com/legal/terms/">terms</a>
+        </div>
+        <div class="small">Sources: company filings and earnings, supplier disclosures, named sell-side notes where cited, alt-data where noted, and public flow/sentiment screens. Not investment advice — verify anything you trade on.</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const bar = document.getElementById("reading-progress");
+      const sections = [{"id": "summary", "hotkey": "0"}, {"id": "thesis", "hotkey": "1"}, {"id": "financials", "hotkey": "2"}, {"id": "valuation", "hotkey": "3"}, {"id": "risk", "hotkey": "4"}, {"id": "ops", "hotkey": "5"}, {"id": "competition", "hotkey": "6"}, {"id": "tam", "hotkey": "7"}, {"id": "product", "hotkey": "8"}, {"id": "supply", "hotkey": "9"}, {"id": "catalysts", "hotkey": "a"}, {"id": "street", "hotkey": "b"}, {"id": "management", "hotkey": "c"}, {"id": "macro", "hotkey": "d"}, {"id": "governance", "hotkey": "e"}, {"id": "value", "hotkey": "f"}, {"id": "appendix", "hotkey": "g"}];
+      const links = [...document.querySelectorAll(".sidebar a[href^='#']")];
+      const setActive = function (id) {
+        links.forEach(function (link) {
+          link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+        });
+      };
+
+      window.addEventListener("scroll", function () {
+        const root = document.documentElement;
+        const pct = (root.scrollTop / Math.max(root.scrollHeight - root.clientHeight, 1)) * 100;
+        if (bar) {
+          bar.style.width = Math.min(Math.max(pct, 0), 100) + "%";
+        }
+      }, { passive: true });
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(function (entries) {
+          entries.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+          const hit = entries.find(function (entry) {
+            return entry.isIntersecting && entry.intersectionRatio > 0.12;
+          });
+          if (hit) {
+            setActive(hit.target.id);
+          }
+        }, { rootMargin: "-40% 0px -40% 0px", threshold: [0, 0.12, 0.25, 0.45] });
+
+        sections.forEach(function (item) {
+          const node = document.getElementById(item.id);
+          if (node) {
+            observer.observe(node);
+          }
+        });
+      }
+
+      links.forEach(function (link) {
+        link.addEventListener("click", function () {
+          setActive(link.getAttribute("href").slice(1));
+        });
+      });
+
+      const hotkeys = {};
+      sections.forEach(function (item) {
+        hotkeys[item.hotkey] = item.id;
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.metaKey || event.ctrlKey) {
+          return;
+        }
+        const target = event.target;
+        if (target && target.closest && target.closest("input, textarea, select, [contenteditable='true']")) {
+          return;
+        }
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (!hotkeys[key]) {
+          return;
+        }
+        event.preventDefault();
+        const node = document.getElementById(hotkeys[key]);
+        if (node) {
+          node.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    })();
+  </script>
+  <footer class="footer" style="margin-left:var(--navw,0)">
+    xvary · 2026 · not investment advice
+    <div class="footer-links">
+      <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/methodology/">methodology</a>
+      <a href="/newsletter/">newsletter</a>
+      <a href="/pricing/">pricing</a>
+      <a href="/free/">free reports</a>
+      <a href="/legal/disclaimer/">disclaimer</a>
+      <a href="/legal/privacy/">privacy</a>
+      <a href="/legal/terms/">terms</a>
+    </div>
+    <div class="footer-logo">
+      <a href="/" aria-label="home">
+        <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+      </a>
+    </div>
+  </footer>
+  <script src="/js/site-chrome.js?v=1776081807" defer></script>
+</body>
+</html>

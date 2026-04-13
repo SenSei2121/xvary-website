@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>04 newspaper river — momentum revive demo</title>
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+  <link rel="stylesheet" href="demo-timeline.css?v=1776081807">
+  <style>
+    .wrap { max-width: 820px; margin: 0 auto; padding: 24px clamp(16px,3vw,32px) 80px; }
+    .hub { font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; text-transform: lowercase; margin-bottom: 24px; }
+    .hub a { color: var(--dark); }
+    h1 { font-size: clamp(30px,5vw,48px); text-transform: lowercase; letter-spacing: -.04em; text-align: center; margin: 0 0 12px; border-bottom: 4px double var(--dark); padding-bottom: 16px; }
+    .deck { text-align: center; font-family: var(--font-primary); font-size: clamp(16px, 1.8vw, 18px); font-weight: 500; color: var(--text2); line-height: 1.6; text-transform: lowercase; margin: 0 auto 40px; max-width: 44ch; }
+    .chapter { margin-bottom: 44px; break-inside: avoid; }
+    .chapter h2 { font-size: clamp(16px,2.5vw,20px); text-transform: lowercase; margin: 0 0 4px; border-left: 4px solid var(--yel); padding-left: 12px; }
+    .chapter .range { font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--muted); margin: 0 0 16px; padding-left: 16px; text-transform: lowercase; }
+    .river { column-count: 2; column-gap: 32px; font-family: var(--font-primary); font-size: 16px; line-height: 1.65; text-transform: lowercase; }
+    @media (max-width: 600px) { .river { column-count: 1; } }
+    .river p { margin: 0 0 12px; }
+    .river p::first-letter { font-weight: 700; }
+    .tag { font-family: var(--font-mono); font-size: 12px; letter-spacing: .05em; color: var(--muted); display: block; margin-bottom: 4px; }
+    .insert { column-span: all; margin: 20px 0; padding: 16px 20px; border: 2px solid var(--dark); background: linear-gradient(180deg, rgba(255,229,0,.15), transparent); font-family: var(--font-primary); font-size: 16px; line-height: 1.55; }
+    .insert h3 { font-family: var(--font-mono); font-size: 12px; font-weight: 600; margin: 0 0 12px; text-transform: lowercase; letter-spacing: .1em; }
+    .insert .row { display: grid; gap: 12px; }
+    @media (min-width: 560px) { .insert .row { grid-template-columns: 1fr 1fr 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="hub"><a href="index.html">← all layouts</a></p>
+    <h1 id="hero-title"></h1>
+    <p class="deck" id="hero-deck"></p>
+    <div id="demo-timeline-mount" class="demo-timeline-mount" data-variant="newspaper-rule"></div>
+    <div id="root"></div>
+  </div>
+  <script src="data.js?v=1776081807"></script>
+  <script src="demo-timeline.js?v=1776081807"></script>
+  <script>
+(function () {
+  var R = window.MR_DEMO_DATA;
+  function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  document.getElementById('hero-title').textContent = R.displayName + ' — newspaper river';
+  document.getElementById('hero-deck').textContent = R.windowLabel + ' · events in two columns; tape as a full-width ruled insert.';
+  var html = '';
+  R.chapters.forEach(function (ch, i) {
+    var paras = ch.events.map(function (e) {
+      return '<p><span class="tag">' + esc(e.tag) + '</span>' + esc(e.text) + '</p>';
+    }).join('');
+    var ins = '';
+    if (ch.tape) {
+      ins = '<div class="insert"><h3>tape · cross-asset</h3><div class="row">' +
+        '<div><strong style="font-family:var(--font-mono);font-size:9px;color:var(--muted)">stock</strong><br>' + esc(ch.tape.stock) + '</div>' +
+        '<div><strong style="font-family:var(--font-mono);font-size:9px;color:var(--muted)">indices</strong><br>' + esc(ch.tape.index) + '</div>' +
+        '<div><strong style="font-family:var(--font-mono);font-size:9px;color:var(--muted)">relative</strong><br>' + esc(ch.tape.rel) + '</div></div></div>';
+    }
+    html += '<section class="chapter" id="ch-' + (i + 1) + '"><h2>' + esc(ch.title) + '</h2><div class="range">chapter ' + (i + 1) + ' · ' + esc(ch.range) + '</div>' +
+      '<div class="river">' + paras + ins + '</div></section>';
+  });
+  document.getElementById('root').innerHTML = html;
+  window.initDemoTimeline();
+})();
+  </script>
+</body>
+</html>

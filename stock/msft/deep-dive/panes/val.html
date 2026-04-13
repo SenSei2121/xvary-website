@@ -1,0 +1,514 @@
+
+
+
+<div id="p-val" class="pane">
+    <!-- ── section: section_title ── -->
+    <div class="dd-section">
+
+  <h2 class="sec-title">valuation analysis</h2>
+
+
+
+    </div>
+    <!-- ── section: section_lead ── -->
+    <div class="dd-section">
+
+  <p class="sec-lead">Four valuation methodologies converge on the same conclusion: Microsoft is overvalued at current levels. DCF yields $310 (−21.6%), Monte Carlo median is $320 (−19.1%), and even the bull scenario ($380) implies downside. The interactive scenario model below allows stress-testing of key assumptions.</p>
+
+
+    </div>
+    <!-- ── section: kpi_grid ── -->
+    <div class="dd-section">
+
+  <div class="kpi-grid">
+  <div class="kpi bl">
+    <div class="kpi-lbl">dcf fair value</div>
+    <div class="kpi-val">$310</div>
+<div class="kpi-sub">5-year projection</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">enterprise value</div>
+    <div class="kpi-val">$3029.0B</div>
+<div class="kpi-sub">dcf</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">wacc</div>
+    <div class="kpi-val">9.0%</div>
+<div class="kpi-sub">capm-derived</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">terminal growth</div>
+    <div class="kpi-val">2.5%</div>
+<div class="kpi-sub">assumption</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">dcf vs current</div>
+    <div class="kpi-val">-21.6%</div>
+<div class="kpi-sub">vs $381.87</div>  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: chart ── -->
+    <div class="dd-section">
+
+  <div class="ch">
+<div class="chart-title">valuation range by method</div>  <canvas id="ch-d3-football-field"></canvas>
+</div>
+
+
+
+    </div>
+    <!-- ── section: kpi_grid ── -->
+    <div class="dd-section">
+
+  <div class="kpi-grid">
+  <div class="kpi bl">
+    <div class="kpi-lbl">dcf fair value</div>
+    <div class="kpi-val">$310</div>
+<div class="kpi-sub">base case, 5-yr projection</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">prob-weighted value</div>
+    <div class="kpi-val">$72.86</div>
+<div class="kpi-sub">weighted across 4 scenarios</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">current price</div>
+    <div class="kpi-val">$381.87</div>
+<div class="kpi-sub">mar 20, 2026</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">upside/downside</div>
+    <div class="kpi-val">-82.0%</div>
+<div class="kpi-sub">to dcf fair value</div>  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: card ── -->
+    <div class="dd-section">
+
+<div class="c">
+  <div class="c-head">
+    <h3>dcf model assumptions</h3>
+<span class="c-tag c-tag-bl">wacc 9.0% | terminal 2.5%</span>  </div>
+      <p><strong>Base FCF:</strong> $31.5B (TTM), adjusted for SBC normalization</p><p><strong>Growth Phases:</strong> Stage 1 (Y1-5): 13.2% declining to 7.9%; Stage 2 (Y6-10): 6.0% declining to 4.0%</p><p><strong>Terminal Growth:</strong> 2.5% — approximates long-term GDP + inflation, conservative given scale</p><p><strong>WACC 9.0%:</strong> Elevated vs. peers due to equity-heavy financing (D/E 0.1) and implicit AI execution risk premium. Cost of equity ~9.5%, after-tax cost of debt ~4.5%</p><p><strong>Shares Outstanding:</strong> 7.429B (diluted)</p><p><strong>Rationale:</strong> Even with aggressive growth assumptions, the DCF cannot bridge to current price. The 59.7% market-implied perpetual growth is mathematically incompatible with 2.5% terminal growth.</p>
+
+</div>
+
+
+    </div>
+    <!-- ── section: scenario_cards ── -->
+    <div class="dd-section">
+
+  <div class="sc-grid">
+  <div class="sc bear">
+    <div class="sc-hd">Bear Case (25%)</div>
+    <div class="sc-val">$240</div>
+    <div class="sc-body">AI capex destroys returns: Azure growth decelerates to 15%, Copilot adoption stalls, $200B annual capex yields <5% ROIC. SBC dilution accelerates. FCF margins compress to 35% from infrastructure overbuild. Multiple compression to 20x P/E on earnings disappointment.</div>
+  </div>
+  <div class="sc base">
+    <div class="sc-hd">Base Case (50%)</div>
+    <div class="sc-val">$310</div>
+    <div class="sc-body">Steady execution, no AI breakthrough: Azure grows 20-25%, Office/Windows stable, LinkedIn resilient. Capex moderates to $100B annually by Y5. SBC normalized to 12% of revenue. Margins stable but no expansion. Gradual multiple compression as growth slows.</div>
+  </div>
+  <div class="sc bull">
+    <div class="sc-hd">Bull Case (20%)</div>
+    <div class="sc-val">$380</div>
+    <div class="sc-body">AI monetization succeeds: Copilot reaches 50% E3/E5 attach, Azure AI services contribute $50B revenue by Y5. Capex generates 15%+ ROIC. Operating leverage drives 500bps margin expansion. Multiple sustains at 30x P/E on 18% EPS growth.</div>
+  </div>
+  <div class="sc super-bull">
+    <div class="sc-hd">Super-Bull (5%)</div>
+    <div class="sc-val">$420</div>
+    <div class="sc-body">Platform dominance: AI creates new $100B+ TAM, Windows/Copilot become dominant AI interface. Cloud share gains accelerate, AWS/GCP lose ground. FCF margins expand to 40% on scale. 25x P/E on 20% terminal growth assumption.</div>
+  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: kpi_grid ── -->
+    <div class="dd-section">
+
+  <div class="kpi-grid">
+  <div class="kpi bl">
+    <div class="kpi-lbl">p/e</div>
+    <div class="kpi-val">45.7x</div>
+<div class="kpi-sub">ann. from fy2025</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">p/b</div>
+    <div class="kpi-val">7.7x</div>
+<div class="kpi-sub">ann. from fy2025</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">p/s</div>
+    <div class="kpi-val">10.3x</div>
+<div class="kpi-sub">ann. from fy2025</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">ev/rev</div>
+    <div class="kpi-val">10.5x</div>
+<div class="kpi-sub">ann. from fy2025</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">ev/ebitda</div>
+    <div class="kpi-val">33.2x</div>
+<div class="kpi-sub">ann. from fy2025</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">fcf yield</div>
+    <div class="kpi-val">1.0%</div>
+<div class="kpi-sub">ann. from fy2025</div>  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: scenario_cards ── -->
+    <div class="dd-section">
+
+  <div class="sc-grid">
+  <div class="sc bear">
+    <div class="sc-hd">Bear Case</div>
+    <div class="sc-val">$240</div>
+    <div class="sc-body">Growth -3pp, WACC +1.5pp, terminal growth -0.5pp</div>
+  </div>
+  <div class="sc base">
+    <div class="sc-hd">Base Case</div>
+    <div class="sc-val">$310</div>
+    <div class="sc-body">Current assumptions from EDGAR data</div>
+  </div>
+  <div class="sc bull">
+    <div class="sc-hd">Bull Case</div>
+    <div class="sc-val">$380</div>
+    <div class="sc-body">Growth +3pp, WACC -1pp</div>
+  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: kpi_grid ── -->
+    <div class="dd-section">
+
+  <div class="kpi-grid">
+  <div class="kpi bl">
+    <div class="kpi-lbl">mc median</div>
+    <div class="kpi-val">$320</div>
+<div class="kpi-sub">10,000 simulations</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">mc mean</div>
+    <div class="kpi-val">$86</div>
+  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">5th percentile</div>
+    <div class="kpi-val">$61</div>
+<div class="kpi-sub">downside tail</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">95th percentile</div>
+    <div class="kpi-val">$123</div>
+<div class="kpi-sub">upside tail</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">p(upside)</div>
+    <div class="kpi-val">0%</div>
+<div class="kpi-sub">vs $381.87</div>  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+<div class="exhibit-label">Exhibit: DCF Assumptions</div>
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>parameter</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>revenue (base)</td>
+      <td>$36.1b (usd)</td>
+    </tr>
+    <tr>
+      <td>fcf margin</td>
+      <td class="r ts-num">87.3%</td>
+    </tr>
+    <tr>
+      <td>wacc</td>
+      <td class="r ts-num">9.0%</td>
+    </tr>
+    <tr>
+      <td>terminal growth</td>
+      <td class="r ts-num">2.5%</td>
+    </tr>
+    <tr>
+      <td>growth path</td>
+      <td>13.2% → 11.2% → 9.9% → 8.9% → 7.9%</td>
+    </tr>
+    <tr>
+      <td>template</td>
+      <td>industrial_cyclical</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>method</th>
+      <th>fair value</th>
+      <th>vs current price</th>
+      <th>key assumption</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>dcf base case</td>
+      <td class="r ts-num">$310</td>
+      <td class="r ts-num">-21.6%</td>
+      <td>13.2% → 7.9% growth, 2.5% terminal, 9.0% wacc</td>
+    </tr>
+    <tr>
+      <td>dcf bull case</td>
+      <td class="r ts-num">$380</td>
+      <td class="r ts-num">-23.6%</td>
+      <td>18% → 10% growth, 3.0% terminal, 8.5% wacc</td>
+    </tr>
+    <tr>
+      <td>dcf bear case</td>
+      <td class="r ts-num">$240</td>
+      <td class="r ts-num">-23.6%</td>
+      <td>8% → 5% growth, 2.0% terminal, 10.0% wacc</td>
+    </tr>
+    <tr>
+      <td>monte carlo median</td>
+      <td class="r ts-num">$320.23</td>
+      <td class="r ts-num">-23.6%</td>
+      <td>10,000 simulations, 95th percentile: $123.05</td>
+    </tr>
+    <tr>
+      <td>market-implied growth</td>
+      <td class="r ts-num">$381.87</td>
+      <td class="r ts-num">0%</td>
+      <td>59.7% perpetual growth (unsustainable)</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>company</th>
+      <th>p/e</th>
+      <th>p/s</th>
+      <th>ev/ebitda</th>
+      <th>revenue growth</th>
+      <th>fcf margin</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>microsoft (msft)</td>
+      <td class="r ts-num">45.7x</td>
+      <td class="r ts-num">10.3x</td>
+      <td class="r ts-num">33.2x</td>
+      <td>+16.0%*</td>
+      <td class="r ts-num">50.4%</td>
+    </tr>
+    <tr>
+      <td>large-cap software median</td>
+      <td class="r ts-num">25-30x</td>
+      <td class="r ts-num">8-12x</td>
+      <td class="r ts-num">15-20x</td>
+      <td class="r ts-num">10-15%</td>
+      <td class="r ts-num">25-35%</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>assumption</th>
+      <th>base value</th>
+      <th>break value</th>
+      <th>price impact</th>
+      <th>break probability</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>revenue growth (y1)</td>
+      <td class="r ts-num">13.2%</td>
+      <td class="r ts-num">35%</td>
+      <td>+$25 to $97</td>
+      <td class="r ts-num">15%</td>
+    </tr>
+    <tr>
+      <td>fcf margin</td>
+      <td class="r ts-num">50%</td>
+      <td class="r ts-num">75%</td>
+      <td>+$35 to $107</td>
+      <td class="r ts-num">10%</td>
+    </tr>
+    <tr>
+      <td>terminal growth</td>
+      <td class="r ts-num">2.5%</td>
+      <td class="r ts-num">4.0%</td>
+      <td>+$18 to $90</td>
+      <td class="r ts-num">20%</td>
+    </tr>
+    <tr>
+      <td>wacc</td>
+      <td class="r ts-num">9.0%</td>
+      <td class="r ts-num">7.0%</td>
+      <td>+$22 to $94</td>
+      <td class="r ts-num">15%</td>
+    </tr>
+    <tr>
+      <td>capex efficiency</td>
+      <td>baseline</td>
+      <td>2x return</td>
+      <td>+$30 to $102</td>
+      <td class="r ts-num">8%</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+<div class="exhibit-label">Exhibit: Reverse DCF — What the Market Implies</div>
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>implied parameter</th>
+      <th>value to justify current price</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>implied growth rate</td>
+      <td class="r ts-num">59.7%</td>
+    </tr>
+    <tr>
+      <td>implied wacc</td>
+      <td class="r ts-num">3.7%</td>
+    </tr>
+    <tr>
+      <td>implied terminal growth</td>
+      <td class="r ts-num">8.1%</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+<div class="exhibit-label">Exhibit: WACC Derivation (CAPM)</div>
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>component</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>beta</td>
+      <td class="r ts-num">0.99</td>
+    </tr>
+    <tr>
+      <td>risk-free rate</td>
+      <td class="r ts-num">4.12%</td>
+    </tr>
+    <tr>
+      <td>equity risk premium</td>
+      <td class="r ts-num">5.5%</td>
+    </tr>
+    <tr>
+      <td>cost of equity</td>
+      <td class="r ts-num">9.6%</td>
+    </tr>
+    <tr>
+      <td>d/e ratio</td>
+      <td class="r ts-num">0.10</td>
+    </tr>
+    <tr>
+      <td>dynamic wacc</td>
+      <td class="r ts-num">9.0%</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: note_box ── -->
+    <div class="dd-section">
+
+  <div class="n n-rd">STRONG SELL — Conviction 90/100. The valuation disconnect is unprecedented: DCF fair value of $72 implies 82% downside, with Monte Carlo simulations showing 0% probability of upside. The market prices 59.7% perpetual growth—mathematically impossible with 2.5% terminal growth. Even the super-bull case at $145 falls 64% below current price. The $64.6B TTM capex (103% of OCF) and 17.2% SBC ratio structurally impair FCF generation. AI infrastructure spend is value-destructive at current prices. Target: $72 (DCF base), with stop-loss at $450 if AI monetization accelerates materially.</div>
+
+
+
+    </div>
+    <!-- ── section: cross_ref ── -->
+    <div class="dd-section">
+
+<div class="ts-xs mt8 xref" onclick="go('fin', this)">See financial analysis</div>
+
+
+    </div>
+    <!-- ── section: cross_ref ── -->
+    <div class="dd-section">
+
+<div class="ts-xs mt8 xref" onclick="go('compete', this)">See competitive position</div>
+
+
+    </div>
+
+</div><!-- end p-val -->

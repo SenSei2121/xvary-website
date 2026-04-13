@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>xvary — sign in</title>
+<meta name="description" content="Sign in to access your XVARY research subscription.">
+<meta name="robots" content="noindex">
+<link rel="canonical" href="https://xvary.com/auth/login/">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+<style>
+.al-page{display:flex;min-height:100vh;flex-direction:column}
+.al-main{flex:1;display:flex;align-items:center;justify-content:center;padding:40px 24px}
+.al-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;max-width:920px;width:100%;align-items:center}
+.al-left h1{font-family:"Space Grotesk",system-ui,sans-serif;font-size:clamp(32px,5vw,48px);font-weight:800;line-height:1.1;margin:0 0 16px;letter-spacing:-.02em}
+.al-left p{font-size:15px;line-height:1.6;color:#333;margin:0 0 8px}
+.al-left .al-sub{font-size:13px;color:#666;margin-top:20px}
+.al-right{background:#111;border-radius:16px;padding:40px;color:#fff}
+.al-right h2{font-family:"Space Grotesk",system-ui,sans-serif;font-size:20px;font-weight:700;margin:0 0 8px}
+.al-right .al-note{font-size:13px;color:#999;margin:0 0 28px;line-height:1.5}
+.al-feat{list-style:none;padding:0;margin:0 0 28px}
+.al-feat li{font-size:14px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px}
+.al-feat li:last-child{border:0}
+.al-feat .al-ck{width:18px;height:18px;border-radius:50%;background:#ffe500;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.al-feat .al-ck svg{width:10px;height:10px}
+.al-cta{display:block;text-align:center;background:#ffe500;color:#000;font-family:"Space Grotesk",system-ui,sans-serif;font-weight:700;font-size:15px;padding:14px 24px;border-radius:999px;text-decoration:none;transition:opacity .15s}
+.al-cta:hover{opacity:.85}
+.al-cta-alt{display:block;text-align:center;color:#999;font-size:13px;margin-top:12px;text-decoration:none}
+.al-cta-alt:hover{color:#fff}
+.al-divider{display:flex;align-items:center;gap:12px;margin:20px 0;font-size:12px;color:#666}
+.al-divider::before,.al-divider::after{content:'';flex:1;height:1px;background:rgba(255,255,255,.15)}
+.al-browse{display:inline-flex;align-items:center;gap:6px;color:#ffe500;font-weight:600;text-decoration:none;font-size:14px;margin-top:16px}
+.al-browse:hover{text-decoration:underline}
+@media(max-width:720px){
+  .al-grid{grid-template-columns:1fr;gap:32px}
+  .al-left{text-align:center}
+}
+</style>
+</head>
+<body class="al-page">
+
+<nav class="nav nav--yel" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" type="button" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main class="al-main">
+  <div class="al-grid">
+    <div class="al-left">
+      <h1>the research is open. accounts are next.</h1>
+      <p>xvary is building subscriber accounts with saved watchlists, custom alerts, and gated deep dives. it's not ready yet.</p>
+      <p>until then, every snapshot, every pulse article, and every composite score is free and ungated.</p>
+      <a class="al-browse" href="/stacks/">browse 3,326 names &#8594;</a>
+      <p class="al-sub">already a founding member? your stripe subscription is active. account login will be emailed when ready.</p>
+    </div>
+    <div class="al-right">
+      <h2>founding membership</h2>
+      <p class="al-note">$5/mo locked forever. first 50 subscribers only. your price never changes.</p>
+      <ul class="al-feat">
+        <li><span class="al-ck"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5.5L4 7.5L8 3" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>full deep-dive research reports</li>
+        <li><span class="al-ck"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5.5L4 7.5L8 3" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>dcf models &amp; sensitivity tables</li>
+        <li><span class="al-ck"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5.5L4 7.5L8 3" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>competitive positioning matrix</li>
+        <li><span class="al-ck"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5.5L4 7.5L8 3" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>pdf export &amp; sharing</li>
+        <li><span class="al-ck"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5.5L4 7.5L8 3" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>post-earnings updates &amp; alerts</li>
+        <li><span class="al-ck"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5.5L4 7.5L8 3" stroke="#000" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></span>priority access to new reports</li>
+      </ul>
+      <a class="al-cta" href="/pricing/">claim founding spot &#8594;</a>
+      <div class="al-divider">or</div>
+      <a class="al-cta-alt" href="/free/">read the free deep dive first</a>
+    </div>
+  </div>
+</main>
+
+<script src="/js/site-chrome.js?v=1776081807"></script>
+</body>
+</html>

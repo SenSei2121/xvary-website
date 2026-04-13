@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>xvary — pricing</title>
+<meta name="description" content="Wall Street charges $25,000 for research. XVARY charges $5/month for founding members. Institutional-depth analysis, DCF models, competitive positioning.">
+<link rel="canonical" href="https://xvary.com/pricing/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="xvary — pricing">
+<meta property="og:description" content="Institutional-depth equity research. $0 for summaries. $5/mo founding. $12/mo standard.">
+<meta property="og:url" content="https://xvary.com/pricing/">
+<meta property="og:image" content="https://xvary.com/assets/og-default.png">
+<meta property="og:site_name" content="XVARY">
+<meta name="robots" content="index, follow">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="xvary — pricing">
+<meta name="twitter:description" content="Institutional-depth equity research. $0 for summaries. $5/mo founding. $12/mo standard.">
+<meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Product",
+  "name": "xvary founding membership",
+  "description": "Full access to institutional-depth AI equity research: deep-dive reports, DCF models, competitive positioning, composite scores.",
+  "url": "https://xvary.com/pricing/",
+  "brand": { "@type": "Brand", "name": "xvary" },
+  "offers": [
+    {
+      "@type": "Offer",
+      "name": "Founding Member",
+      "price": "60.00",
+      "priceCurrency": "USD",
+      "priceSpecification": { "@type": "UnitPriceSpecification", "billingDuration": "P1Y" },
+      "availability": "https://schema.org/LimitedAvailability",
+      "url": "https://xvary.com/pricing/"
+    },
+    {
+      "@type": "Offer",
+      "name": "Standard",
+      "price": "12.00",
+      "priceCurrency": "USD",
+      "priceSpecification": { "@type": "UnitPriceSpecification", "billingDuration": "P1M" },
+      "availability": "https://schema.org/InStock",
+      "url": "https://xvary.com/pricing/"
+    }
+  ]
+}
+</script>
+<style>
+  .price-card:not(.feat) {
+    background: rgba(255, 255, 255, .65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+  }
+  .price-card:not(.feat):hover {
+    background: rgba(255, 255, 255, .85);
+  }
+  .comp-card {
+    background: rgba(255, 255, 255, .65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+  }
+  /*
+    brutalist.css assumes .comp-card is on var(--dark); this page uses a glass card.
+    Without these overrides, th/td stay light-on-light and .w stays yellow-on-yellow.
+  */
+  .comp-card th {
+    color: rgba(0, 0, 0, 0.55);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  }
+  .comp-card th:last-child {
+    color: var(--text);
+  }
+  .comp-card td {
+    color: rgba(0, 0, 0, 0.9);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.07);
+  }
+  .comp-card tbody td:first-child {
+    color: var(--text);
+    font-weight: 600;
+  }
+  .comp-card .w {
+    color: var(--text);
+    font-weight: 700;
+  }
+  .comp-card .x {
+    color: var(--muted);
+    opacity: 1;
+  }
+</style>
+</head>
+<body>
+
+<a class="skip-link" href="#content">skip to content</a>
+
+<div class="grain"></div>
+
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/" class="active">pricing</a>
+    <a class="nav-cta" href="#founding">subscribe</a>
+  </div>
+</nav>
+
+<main id="content">
+<div class="page-header">
+  <h1>wall street charges $25,000. we charge $5.</h1>
+  <p>same institutional-depth analysis. dcf models. competitive positioning. ai generates it. humans verify it.</p>
+</div>
+
+<div class="pricing-grid" id="founding">
+  <div class="price-card">
+    <div class="pc-tier">free</div>
+    <div class="pc-amount">$0</div>
+    <div class="pc-period">forever</div>
+    <div class="pc-desc">see the verdict.</div>
+    <ul class="pc-features">
+      <li><span class="pf-y">yes</span> composite score</li>
+      <li><span class="pf-y">yes</span> position & verdict</li>
+      <li><span class="pf-y">yes</span> key metrics</li>
+      <li><span class="pf-y">yes</span> selected full deep dives (NVDA, MSFT)</li>
+      <li><span class="pf-n">—</span> summary</li>
+      <li><span class="pf-n">—</span> full report</li>
+      <li><span class="pf-n">—</span> models</li>
+      <li><span class="pf-n">—</span> pdf</li>
+    </ul>
+    <a href="/free/" class="pc-btn pc-btn-glass">browse free reports</a>
+  </div>
+
+  <div class="price-card feat">
+    <div class="pc-tier">founding · 58% off forever</div>
+    <div class="pc-amount">$5</div>
+    <div class="pc-period">per month · $60/year · locked at this price forever</div>
+    <div class="pc-desc">full access. first 50 subscribers only. this price never changes.</div>
+    <ul class="pc-features">
+      <li><span class="pf-y">yes</span> everything in free</li>
+      <li><span class="pf-y">yes</span> full deep-dive research reports</li>
+      <li><span class="pf-y">yes</span> dcf models & sensitivity tables</li>
+      <li><span class="pf-y">yes</span> competitive positioning matrix</li>
+      <li><span class="pf-y">yes</span> scenario analysis (bull/base/bear)</li>
+      <li><span class="pf-y">yes</span> pdf export & sharing</li>
+      <li><span class="pf-y">yes</span> post-earnings updates & alerts</li>
+      <li><span class="pf-y">yes</span> priority access to new reports</li>
+    </ul>
+    <a href="#" class="pc-btn pc-btn-lime js-founding-link" data-xvary-paywall-link="founding">claim founding spot &gt;</a>
+    <div class="pc-note"><span id="founding-remaining">50</span> of <span id="founding-total">50</span> remaining · price goes to $12/mo after founding closes</div>
+  </div>
+
+  <div class="price-card">
+    <div class="pc-tier">standard</div>
+    <div class="pc-amount">$12</div>
+    <div class="pc-period">per month</div>
+    <div class="pc-desc">same access. after founding.</div>
+    <ul class="pc-features">
+      <li><span class="pf-y">yes</span> everything in free</li>
+      <li><span class="pf-y">yes</span> summary</li>
+      <li><span class="pf-y">yes</span> full deep-dive report</li>
+      <li><span class="pf-y">yes</span> dcf & sensitivities</li>
+      <li><span class="pf-y">yes</span> competitive matrix</li>
+      <li><span class="pf-y">yes</span> pdf export</li>
+      <li><span class="pf-y">yes</span> post-earnings updates</li>
+    </ul>
+    <a href="#" class="pc-btn pc-btn-dark js-standard-link" data-xvary-paywall-link="standard">subscribe</a>
+  </div>
+</div>
+
+<section class="comp-sect">
+  <h2>vs. the alternatives</h2>
+  <div class="comp-card">
+    <table>
+      <thead>
+        <tr><th>feature</th><th>snacks / morning brew</th><th>motley fool</th><th>seeking alpha</th><th>sell-side research</th><th>xvary</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>depth</td><td>headline</td><td>medium</td><td>varies wildly</td><td>institutional</td><td class="w">institutional</td></tr>
+        <tr><td>coverage</td><td>headline</td><td>light</td><td>varies</td><td>institutional</td><td class="w">institutional-depth</td></tr>
+        <tr><td>dcf models</td><td class="x">—</td><td class="x">—</td><td>rare</td><td class="w">yes</td><td class="w">yes</td></tr>
+        <tr><td>kill criteria</td><td class="x">—</td><td class="x">—</td><td class="x">—</td><td>sometimes</td><td class="w">yes</td></tr>
+        <tr><td>composite score</td><td class="x">—</td><td class="x">—</td><td class="x">—</td><td class="x">—</td><td class="w">yes</td></tr>
+        <tr><td>plain english</td><td class="w">yes</td><td>mostly</td><td class="x">—</td><td class="x">—</td><td class="w">yes</td></tr>
+        <tr><td>cost / year</td><td>free</td><td>$199</td><td>$239</td><td>$25,000+</td><td class="w">$60</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<section class="faq-sect">
+  <h2>questions</h2>
+  <div class="faq-item" tabindex="0" role="button" onclick="this.classList.toggle('open')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('open')}">
+    <div class="faq-q">what's free?</div>
+    <div class="faq-a">composite scores, positions, verdicts, key metrics, and selected full deep dives including nvda and msft. no signup needed.</div>
+  </div>
+  <div class="faq-item" tabindex="0" role="button" onclick="this.classList.toggle('open')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('open')}">
+    <div class="faq-q">what's founding?</div>
+    <div class="faq-a">first 50 subscribers get $5/month forever. same access as $12. once gone, gone.</div>
+  </div>
+  <div class="faq-item" tabindex="0" role="button" onclick="this.classList.toggle('open')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('open')}">
+    <div class="faq-q">how are reports made?</div>
+    <div class="faq-a">multi-stage ai research pipeline. sec filings, earnings calls, competitive data. human editors verify.</div>
+  </div>
+  <div class="faq-item" tabindex="0" role="button" onclick="this.classList.toggle('open')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('open')}">
+    <div class="faq-q">investment advice?</div>
+    <div class="faq-a">no. educational research only. see our disclaimer.</div>
+  </div>
+  <div class="faq-item" tabindex="0" role="button" onclick="this.classList.toggle('open')" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();this.classList.toggle('open')}">
+    <div class="faq-q">can i cancel anytime?</div>
+    <div class="faq-a">yes. manage your subscription directly in stripe at any time. billing changes and any refunds follow the stripe checkout terms and refund policy shown at purchase.</div>
+  </div>
+</section>
+
+<section style="max-width:var(--max-w);margin:0 auto;padding:0 24px 40px">
+  <h2 style="font-size:18px;font-weight:700;text-transform:lowercase;margin-bottom:16px">already subscribed?</h2>
+  <p style="font-size:14px;color:var(--text2);text-transform:lowercase;margin-bottom:16px">manage billing, payment method, or cancellation directly in stripe.</p>
+  <a href="#" class="btn-dark btn-sm" data-xvary-portal-link>manage subscription</a>
+</section>
+
+<section class="final">
+  <h2>start with the free deep dives.</h2>
+  <p>no signup. no paywall. selected deep dives are fully open — read them and see the depth. the rest of the library starts at $5/mo.</p>
+  <a href="/free/" class="btn-dark btn-lg">browse free reports &gt;</a>
+</section>
+
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807"></script>
+<script src="/js/gate.js?v=1776081807" defer></script>
+<script>
+(function () {
+  var config = window.XVARY_CONFIG || {};
+  var total = Number(config.FOUNDING_TOTAL || 50);
+  var remainingEl = document.getElementById('founding-remaining');
+  var totalEl = document.getElementById('founding-total');
+  var foundingBtn = document.querySelector('.js-founding-link');
+  var foundingNote = foundingBtn ? foundingBtn.nextElementSibling : null;
+
+  /* Static fallback from config */
+  if (remainingEl) remainingEl.textContent = String(Number(config.FOUNDING_REMAINING) || total);
+  if (totalEl) totalEl.textContent = String(total);
+
+  function applySoldOut() {
+    if (remainingEl) remainingEl.textContent = '0';
+    if (foundingBtn) {
+      foundingBtn.textContent = 'sold out';
+      foundingBtn.classList.add('pc-btn-disabled');
+      foundingBtn.style.pointerEvents = 'none';
+      foundingBtn.style.opacity = '0.5';
+      foundingBtn.removeAttribute('href');
+    }
+    if (foundingNote) {
+      foundingNote.textContent = 'all founding spots have been claimed. subscribe at the standard rate.';
+    }
+  }
+
+  /* Fetch live count from Worker */
+  var workerUrl = (config.WORKER_URL || '').replace(/\/$/, '');
+  if (workerUrl && !/xxx|yourworker|example/i.test(workerUrl)) {
+    fetch(workerUrl + '/founding-count')
+      .then(function (r) { return r.json(); })
+      .then(function (data) {
+        if (data && typeof data.remaining === 'number') {
+          var remaining = Math.max(0, data.remaining);
+          if (remainingEl) remainingEl.textContent = String(remaining);
+          if (totalEl && data.total) totalEl.textContent = String(data.total);
+          if (remaining <= 0) applySoldOut();
+        }
+      })
+      .catch(function () { /* keep static fallback */ });
+  }
+})();
+</script>
+</body>
+</html>

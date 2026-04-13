@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>META - deep dive · xvary</title>
+  <meta name="description" content="Meta at $630 is the best risk-adjusted large-cap in mega-tech." />
+  <meta name="robots" content="index, follow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807" />
+  <style>
+:root{
+      --yel:#ffe500;
+      --ink:#000;
+      --paper:#fffdf3;
+      --card:#fff;
+      --line:rgba(0,0,0,.12);
+      --text:#111;
+      --muted:#555;
+      --soft:#f3eed8;
+      --green:#1a7f5a;
+      --red:#c53030;
+      --amber:#b7791f;
+      --blue:#2251ff;
+      --shadow:0 18px 42px rgba(0,0,0,.10);
+      --radius:16px;
+      --radius-sm:12px;
+      --navw:240px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    html{background:var(--yel);scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h, 68px) + 24px)}
+    body{
+      background:var(--yel);
+      color:var(--text);
+      font:500 16px/1.65 "Space Grotesk",system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    a{color:inherit;text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:var(--ink);color:var(--yel)}
+    .skip-link{
+      position:absolute;left:12px;top:-40px;z-index:9999;
+      background:var(--ink);color:var(--yel);
+      padding:8px 14px;border-radius:999px;font:700 12px/1 "DM Mono",monospace;
+    }
+    .skip-link:focus{top:12px}
+
+    .layout{display:block}
+    .sidebar{
+      position:fixed;left:0;top:var(--nav-h, 68px);bottom:0;width:var(--navw);
+      overflow:auto;background:var(--ink);color:#fff;border-right:1px solid rgba(255,255,255,.08);
+      padding:18px 0 16px;scrollbar-width:none;
+    }
+    .sidebar::-webkit-scrollbar{display:none}
+    .nav-section{padding:0 0 8px}
+    .nav-label{
+      padding:0 18px 10px;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.12em;text-transform:lowercase;color:rgba(255,255,255,.46);
+    }
+    .nav-pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 18px 10px 16px;color:rgba(255,255,255,.78);
+      border-left:3px solid transparent;text-decoration:none;font-size:12px;font-weight:600;line-height:1.35;
+    }
+    .nav-pill:hover{background:rgba(255,255,255,.06);text-decoration:none}
+    .nav-pill.active{background:var(--yel);color:var(--ink);border-left-color:var(--ink)}
+    .nav-kbd{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:22px;height:22px;border-radius:6px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+      font:700 10px/1 "DM Mono",monospace;flex:0 0 auto;
+    }
+    .nav-pill.active .nav-kbd{background:var(--ink);color:var(--yel);border-color:var(--ink)}
+    .nav-txt{min-width:0}
+
+    .content{
+      margin-left:var(--navw);
+      padding:28px 26px 64px;
+      width:calc((100vw - var(--navw)) * 0.9);
+      max-width:none;
+    }
+
+    .hero{
+      display:block;
+      text-align:left;
+      border-bottom:3px solid rgba(0,0,0,.14);
+      padding:18px 0 26px;margin-bottom:18px;
+    }
+    .hero-top{
+      display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:24px;align-items:end;
+      padding-bottom:18px;
+    }
+    .hero .hero-ticker{
+      font-size:clamp(58px,10vw,92px);line-height:.88;font-weight:800;letter-spacing:-.05em;text-transform:lowercase;margin:0;
+      max-width:none;text-align:left;
+    }
+    .hero-co{margin-top:4px;font-size:14px;color:rgba(0,0,0,.64);text-transform:lowercase}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .pill{
+      display:inline-flex;align-items:center;padding:5px 12px;border-radius:999px;
+      font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.06em;
+      background:rgba(0,0,0,.08);color:#111;
+    }
+    .pill.dark{background:var(--ink);color:var(--yel)}
+    .hero .hero-hook{
+      font-size:clamp(19px,2.05vw,24px);line-height:1.35;font-weight:700;margin:0;color:#111;
+      max-width:none;text-align:left;
+    }
+    .hero .hero-sub{
+      margin:10px 0 0;color:rgba(0,0,0,.70);font-size:17px;line-height:1.68;max-width:none;text-align:left;
+    }
+    .hero-tape{
+      display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;padding-top:16px;
+      border-top:2px solid rgba(0,0,0,.10);font:600 11px/1.5 "DM Mono",monospace;color:rgba(0,0,0,.58)
+    }
+    .hero-tape strong{color:rgba(0,0,0,.92)}
+
+    .kpi-grid{display:grid;gap:10px}
+    .kpi-grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .kpi-grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .kpi-grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi{
+      background:rgba(255,255,255,.84);border:1px solid rgba(0,0,0,.08);border-radius:14px;
+      padding:14px 16px;box-shadow:0 8px 20px rgba(0,0,0,.04)
+    }
+    .kpi-label{font:700 10px/1.25 "DM Mono",monospace;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .kpi-value{font-size:clamp(24px,2.8vw,34px);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+    .kpi-sub{margin-top:4px;font-size:12px;line-height:1.45;color:rgba(0,0,0,.55)}
+    .value-gn{color:var(--green)}
+    .value-rd{color:var(--red)}
+    .value-am{color:var(--amber)}
+
+    .panel{
+      background:rgba(255,255,255,.92);border:2px solid rgba(0,0,0,.08);border-left:5px solid var(--yel);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin:18px 0
+    }
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      margin-bottom:12px;padding-bottom:12px;border-bottom:3px solid #000
+    }
+    .section-head h2{
+      margin:0;font-size:clamp(34px,3.9vw,50px);line-height:.98;font-weight:800;letter-spacing:-.045em;text-transform:none
+    }
+    .kicker{font:700 11px/1 "DM Mono",monospace;letter-spacing:.12em;text-transform:lowercase;color:rgba(0,0,0,.52)}
+    .lead{margin:0 0 16px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.72)}
+    .aggregate-sources-attribution{margin:0 0 14px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.76)}
+    .aggregate-sources-attribution p{margin:0}
+    .aggregate-methodology-link{margin:0;max-width:80ch;font-size:14.5px;line-height:1.6;color:rgba(0,0,0,.62)}
+    #appendix .lead,
+    #appendix .aggregate-sources-attribution,
+    #appendix .aggregate-methodology-link{max-width:none}
+    .quote,.note,.callout,.pillar,.scenario,.table-wrap,.chart-box{
+      background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:14px
+    }
+    .quote{padding:14px 16px;font-size:15px;line-height:1.68;color:rgba(0,0,0,.72)}
+    .note{padding:14px 16px;margin-top:10px;font-size:14.5px;line-height:1.64;color:rgba(0,0,0,.72)}
+    .note strong,.table-title .tag,.legend-label,.pillars .head h4{
+      font:700 11px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase
+    }
+    .note.green{border-left:4px solid var(--green);background:rgba(26,127,90,.06)}
+    .note.amber{border-left:4px solid var(--amber);background:rgba(183,121,31,.08)}
+    .note.red{border-left:4px solid var(--red);background:rgba(197,48,48,.06)}
+
+    .g2,.g3,.g4,.callout-row,.pillars,.scenario-grid{display:grid;gap:10px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .callout-row{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:12px;min-width:0}
+    .callout{padding:14px 16px;min-width:0;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+    .callout .label{font:700 10px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .callout .metric{font-size:clamp(24px,2.8vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;word-break:break-word}
+    #appendix .callout .metric{font-size:clamp(13px,1.35vw,16px);font-weight:700;letter-spacing:0;line-height:1.4}
+    .callout .desc{margin-top:6px;font-size:12.5px;line-height:1.5;color:rgba(0,0,0,.56)}
+
+    .pillars{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px}
+    .pillar{padding:14px 16px}
+    .pillar .head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+    .pillar .head h4{margin:0;font-size:14px;color:#111;letter-spacing:0;text-transform:none;font-family:"Space Grotesk",sans-serif}
+    .tag{
+      display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;border:1px solid rgba(0,0,0,.10);
+      background:rgba(255,255,255,.85);font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.04em;
+    }
+    .tag.green{color:var(--green);background:rgba(26,127,90,.08);border-color:rgba(26,127,90,.25)}
+    .tag.amber{color:var(--amber);background:rgba(183,121,31,.10);border-color:rgba(183,121,31,.25)}
+    .tag.red{color:var(--red);background:rgba(197,48,48,.08);border-color:rgba(197,48,48,.25)}
+    .tag.blue{color:#111;background:rgba(255,229,0,.18);border-color:rgba(0,0,0,.20)}
+    .tag.ink{color:rgba(0,0,0,.68)}
+
+    .table-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+    .table-title h3{margin:0;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-.02em;text-transform:none}
+    .table-wrap{overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+    table{width:100%;border-collapse:collapse;min-width:520px;font-variant-numeric:tabular-nums;background:#fff}
+    th,td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+    thead th{
+      position:sticky;top:0;background:#f0ece4;color:#111;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.08em;text-transform:lowercase;border-bottom:3px solid #000;text-align:left
+    }
+    tbody tr:nth-child(even) td{background:rgba(240,236,228,.36)}
+    tbody tr:hover td{background:rgba(255,229,0,.16)}
+    td.num,th.num{text-align:right}
+    td.b{font-weight:800;color:#111}
+    td.pos{color:var(--green);font-weight:700}
+    td.neg{color:var(--red);font-weight:700}
+    td.amb{color:var(--amber);font-weight:700}
+
+    .chart-box{padding:16px 18px 18px;box-shadow:0 12px 36px rgba(0,0,0,.06)}
+    .chart-head h3{margin:0 0 4px;font-size:16px;line-height:1.2;text-transform:none}
+    .chart-head .sub{font-size:11px;color:rgba(0,0,0,.52);font-style:italic}
+    /* TAM vs revenue: y-axis ticks + grid + split x-label row */
+    .chart-labeled{
+      --chart-h:min(52vw,240px);
+      --chart-h-min:200px;
+      --chart-h-max:260px;
+      display:grid;
+      grid-template-columns:3.35rem 1fr;
+      grid-template-rows:minmax(var(--chart-h-min),var(--chart-h-max)) auto;
+      gap:8px 12px;
+      align-items:stretch;
+      margin-top:6px;
+    }
+    .chart-y-title{
+      margin:8px 0 0;
+      font:700 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.5);
+    }
+    .chart-y-axis{
+      grid-column:1;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      padding-right:8px;
+      border-right:2px solid rgba(0,0,0,.2);
+      font:600 10px/1 "DM Mono",monospace;
+      color:rgba(0,0,0,.58);
+      box-sizing:border-box;
+    }
+    .chart-y-axis .yt{
+      position:absolute;right:8px;line-height:1;white-space:nowrap;
+      transform:translateY(-50%);
+    }
+    .chart-y-axis .yt.y-600{top:0;transform:translateY(0)}
+    .chart-y-axis .yt.y-500{top:16.6667%}
+    .chart-y-axis .yt.y-400{top:33.3333%}
+    .chart-y-axis .yt.y-300{top:50%}
+    .chart-y-axis .yt.y-200{top:66.6667%}
+    .chart-y-axis .yt.y-100{top:83.3333%}
+    .chart-y-axis .yt.y-0{bottom:0;top:auto;transform:translateY(0)}
+    .chart-plot-cell{
+      grid-column:2;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      border-bottom:2px solid rgba(0,0,0,.2);
+    }
+    .chart-grid-bg{
+      position:absolute;inset:0;
+      background:repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6)
+      );
+      pointer-events:none;
+    }
+    .chart{
+      position:relative;z-index:1;
+      display:flex;align-items:flex-end;justify-content:stretch;gap:6px;
+      width:100%;
+      height:100%;min-height:0;
+    }
+    .bar{
+      flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+      min-width:0;height:100%;
+    }
+    .bar-pair{
+      display:flex;flex-direction:row;align-items:flex-end;justify-content:center;
+      gap:5px;width:100%;height:100%;min-height:0;
+    }
+    .col{
+      flex:1 1 0;min-width:8px;border-radius:8px 8px 2px 2px;
+      min-height:2px;align-self:flex-end;
+      box-sizing:border-box;
+    }
+    .col.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .col.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .chart-x-foot{
+      grid-column:2;
+      grid-row:2;
+      display:flex;gap:6px;
+      margin-top:-2px;
+    }
+    .bar-foot{
+      flex:1 1 0;min-width:0;
+      text-align:center;padding-top:6px;
+    }
+    .chart-x-axis-cap{
+      margin:4px 0 0;
+      font:600 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.45);
+      text-align:center;
+    }
+    .chart-legend{
+      display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:12px;padding-top:10px;
+      border-top:1px solid rgba(0,0,0,.08);font-size:12px;color:rgba(0,0,0,.62)
+    }
+    .chart-legend span{display:inline-flex;align-items:center;gap:6px}
+    .chart-legend i{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+    .chart-legend i.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .chart-legend i.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .lab,.val{font-size:10px;line-height:1.25;text-align:center;color:rgba(0,0,0,.56)}
+    .val{font:700 10px/1 "DM Mono",monospace}
+    .lab{max-width:12em;margin:0 auto}
+
+    .scenario-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}
+    .scenario{padding:14px 16px;border-left:4px solid var(--blue)}
+    .scenario.bear{border-left-color:var(--red)}
+    .scenario.base{border-left-color:var(--amber)}
+    .scenario.bull{border-left-color:var(--green)}
+    .scenario .prob{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:8px}
+    .scenario h4{margin:0 0 6px;font-size:18px;line-height:1.1}
+    .scenario p{margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,.72)}
+
+    .legend{display:grid;gap:8px}
+    .legend .item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(0,0,0,.72)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)} .dot.blue{background:#2251ff}
+
+    .footer{
+      margin-top:28px;padding-top:22px;border-top:3px solid rgba(0,0,0,.12);
+      text-align:center;font-size:12px;line-height:1.65;color:rgba(0,0,0,.56)
+    }
+    .footer .links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+    .footer .links a{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.68)}
+    .footer .small{margin-top:12px;font-size:11px;color:rgba(0,0,0,.54)}
+
+    .reading-progress{
+      position:fixed;top:var(--nav-h, 68px);left:0;height:4px;width:0;z-index:101;
+      background:linear-gradient(90deg,var(--yel),#fff38c);box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 14px rgba(255,229,0,.45)
+    }
+    .watermark{
+      position:fixed;right:18px;bottom:14px;z-index:1;pointer-events:none;user-select:none;
+      font-size:clamp(68px,12vw,118px);font-weight:800;letter-spacing:-.06em;line-height:.8;color:rgba(0,0,0,.05)
+    }
+
+    @media (max-width:1024px){
+      .g2,.g3,.g4,.pillars,.scenario-grid{grid-template-columns:1fr}
+      .hero-top{grid-template-columns:1fr}
+      .content{padding:22px 18px 56px}
+    }
+    @media (max-width:900px){
+      .sidebar{display:none}
+      .content{
+        margin-left:auto;
+        margin-right:auto;
+        width:90vw;
+        max-width:none;
+      }
+    }
+    @media (max-width:760px){
+      .kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr 1fr}
+      .callout-row{grid-template-columns:1fr 1fr}
+      table{min-width:460px}
+    }
+    @media (max-width:560px){
+      .callout-row,.kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr}
+      .section-head h2{font-size:30px}
+      .hero .hero-hook{font-size:19px}
+      .hero .hero-sub{font-size:16px}
+      .panel{padding:20px}
+    }
+    .hero-snapshot-link {
+      display: inline-block;
+      margin-top: 4px;
+      font: 400 11px/1.4 "DM Mono", monospace;
+      color: rgba(0,0,0,.38);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .hero-snapshot-link:hover {
+      color: rgba(0,0,0,.68);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+  .aggregate-panel {
+    position: relative;
+    z-index: 1;
+  }
+  .aggregate-lead p {
+    margin: 0 0 16px;
+  }
+  .auto-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .aggregate-stack {
+    display: grid;
+    gap: 12px;
+  }
+  .aggregate-card {
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.05);
+  }
+  .aggregate-card.dark {
+    background: rgba(0,0,0,.92);
+    color: rgba(255,255,255,.92);
+    border-color: rgba(255,255,255,.08);
+  }
+  .aggregate-card.dark p,
+  .aggregate-card.dark li,
+  .aggregate-card.dark .aggregate-source {
+    color: rgba(255,255,255,.72);
+  }
+  .aggregate-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .aggregate-card-head h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    text-transform: lowercase;
+  }
+  .aggregate-card-body,
+  .aggregate-card-body p,
+  .aggregate-card-body li {
+    font-size: 15px;
+    line-height: 1.68;
+    color: rgba(0,0,0,.72);
+  }
+  .aggregate-card-body p {
+    margin: 0 0 12px;
+  }
+  .aggregate-card-body ul,
+  .aggregate-card-body ol {
+    margin: 0 0 12px 20px;
+    padding: 0;
+  }
+  .aggregate-card-body > *:last-child {
+    margin-bottom: 0;
+  }
+  .aggregate-source {
+    margin-top: 10px;
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .06em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.48);
+  }
+  .aggregate-substack {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .aggregate-chart-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .aggregate-chart-row {
+    display: grid;
+    grid-template-columns: minmax(80px, 140px) 1fr minmax(60px, 120px);
+    align-items: center;
+    gap: 10px;
+  }
+  .aggregate-chart-label,
+  .aggregate-chart-value {
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .04em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.62);
+  }
+  .aggregate-chart-track {
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .aggregate-chart-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+  }
+  .table-wrap table th.num,
+  .table-wrap table td.num {
+    text-align: right;
+  }
+  .table-wrap table td.pos { color: var(--green, #1a7f37); font-weight: 600; }
+  .table-wrap table td.neg { color: var(--red, #cf222e); font-weight: 600; }
+  .table-wrap table td.amb { color: var(--caution-text, #9a6700); font-weight: 600; }
+  .table-narrow {
+    max-width: 520px;
+  }
+  .table-narrow table {
+    min-width: 0;
+    width: 100%;
+  }
+  .g2 .table-narrow {
+    max-width: none;
+  }
+  .aggregate-mini-table {
+    margin-top: 8px;
+  }
+  .aggregate-mini-table table {
+    min-width: 0;
+  }
+  .aggregate-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .aggregate-list-item {
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    background: rgba(255,255,255,.72);
+  }
+  .aggregate-list-item strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .aggregate-audit {
+    margin-top: 8px;
+  }
+  @media (max-width: 1120px) {
+    .sidebar {
+      position: static;
+      width: auto;
+      top: auto;
+      padding: 12px 0;
+      border-right: 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: none;
+    }
+    .content {
+      margin-left: auto;
+      margin-right: auto;
+      width: 90vw;
+      max-width: none;
+      padding: 24px 18px 56px;
+    }
+    .watermark {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .hero-top {
+      grid-template-columns: 1fr;
+    }
+    .aggregate-chart-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+  .aggregate-pane-xref {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(0, 0, 0, 0.52);
+  }
+  .aggregate-pane-xref a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .aggregate-pane-xref a:hover {
+    color: rgba(0, 0, 0, 0.88);
+  }
+  .hero-snapshot-link {
+    display: inline-block;
+    margin-top: 4px;
+    font: 400 11px/1.4 "DM Mono", monospace;
+    color: rgba(0,0,0,.38);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .hero-snapshot-link:hover {
+    color: rgba(0,0,0,.68);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  </style>
+</head>
+<body data-xvary-aggregate-readable="1">
+  <a class="skip-link" href="#content">skip to content</a>
+  <div class="reading-progress" id="reading-progress"></div>
+  <div class="watermark" aria-hidden="true">META</div>
+
+  <nav class="nav nav--white" aria-label="main navigation" data-xvary-nav-static>
+    <a class="nav-brand" href="/">xvary</a>
+    <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" type="button" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+    <div class="nav-links">
+      <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/pricing/">pricing</a>
+      <a class="nav-cta" href="/pricing/">sign up</a>
+    </div>
+  </nav>
+
+  <div class="layout xvary-aggregate-deep-dive-body" data-template-id="aggregate-deep-dive-live-v1" lang="en">
+    <aside class="sidebar" aria-label="section navigation">
+      <div class="nav-section">
+        <div class="nav-label">quick navigation</div>
+        <a class="nav-pill active" href="#summary">
+          <span class="nav-kbd">0</span>
+          <span class="nav-txt">report snapshot</span>
+        </a>
+        <a class="nav-pill " href="#thesis">
+          <span class="nav-kbd">1</span>
+          <span class="nav-txt">variant perception &amp; thesis</span>
+        </a>
+        <a class="nav-pill " href="#financials">
+          <span class="nav-kbd">2</span>
+          <span class="nav-txt">financial analysis</span>
+        </a>
+        <a class="nav-pill " href="#valuation">
+          <span class="nav-kbd">3</span>
+          <span class="nav-txt">valuation</span>
+        </a>
+        <a class="nav-pill " href="#risk">
+          <span class="nav-kbd">4</span>
+          <span class="nav-txt">what breaks the thesis</span>
+        </a>
+        <a class="nav-pill " href="#ops">
+          <span class="nav-kbd">5</span>
+          <span class="nav-txt">fundamentals &amp; operations</span>
+        </a>
+        <a class="nav-pill " href="#competition">
+          <span class="nav-kbd">6</span>
+          <span class="nav-txt">competitive position</span>
+        </a>
+        <a class="nav-pill " href="#tam">
+          <span class="nav-kbd">7</span>
+          <span class="nav-txt">market size &amp; tam</span>
+        </a>
+        <a class="nav-pill " href="#product">
+          <span class="nav-kbd">8</span>
+          <span class="nav-txt">product &amp; technology</span>
+        </a>
+        <a class="nav-pill " href="#supply">
+          <span class="nav-kbd">9</span>
+          <span class="nav-txt">supply chain</span>
+        </a>
+        <a class="nav-pill " href="#catalysts">
+          <span class="nav-kbd">a</span>
+          <span class="nav-txt">catalyst map</span>
+        </a>
+        <a class="nav-pill " href="#street">
+          <span class="nav-kbd">b</span>
+          <span class="nav-txt">street expectations</span>
+        </a>
+        <a class="nav-pill " href="#scorecard">
+          <span class="nav-kbd">c</span>
+          <span class="nav-txt">earnings scorecard</span>
+        </a>
+        <a class="nav-pill " href="#signals">
+          <span class="nav-kbd">d</span>
+          <span class="nav-txt">alternative data</span>
+        </a>
+        <a class="nav-pill " href="#history">
+          <span class="nav-kbd">e</span>
+          <span class="nav-txt">historical analogies</span>
+        </a>
+        <a class="nav-pill " href="#management">
+          <span class="nav-kbd">f</span>
+          <span class="nav-txt">management &amp; leadership</span>
+        </a>
+        <a class="nav-pill " href="#macro">
+          <span class="nav-kbd">g</span>
+          <span class="nav-txt">macro sensitivity</span>
+        </a>
+        <a class="nav-pill " href="#quant">
+          <span class="nav-kbd">h</span>
+          <span class="nav-txt">quantitative profile</span>
+        </a>
+        <a class="nav-pill " href="#derivatives">
+          <span class="nav-kbd">i</span>
+          <span class="nav-txt">options &amp; derivatives</span>
+        </a>
+        <a class="nav-pill " href="#governance">
+          <span class="nav-kbd">j</span>
+          <span class="nav-txt">governance &amp; accounting</span>
+        </a>
+        <a class="nav-pill " href="#value">
+          <span class="nav-kbd">k</span>
+          <span class="nav-txt">value framework</span>
+        </a>
+        <a class="nav-pill " href="#appendix">
+          <span class="nav-kbd">l</span>
+          <span class="nav-txt">appendix &amp; sources</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="content" id="content">
+      <section class="hero" aria-label="report intro">
+        <div class="hero-top">
+          <div>
+            <h1 class="hero-ticker">meta</h1>
+            <div class="hero-co">meta platforms, inc.</div>
+            <a class="hero-snapshot-link" href="/stock/meta/snapshot/">snapshot page &rarr;</a>
+            <div class="hero-badges">
+              <span class="pill dark">deep dive</span>
+              <span class="pill ">services-computer programming, data processing, etc.</span>
+              <span class="pill ">cap n/a</span>
+              <span class="pill ">apr 12, 2026</span>
+            </div>
+            <div class="hero-tape" aria-label="headline tape">
+              <span><strong>Position</strong> Long 4%</span>
+              <span><strong>Price</strong> $629.86</span>
+              <span><strong>n/a</strong> mcap</span>
+              <span><strong>apr 12, 2026</strong> as-of date</span>
+            </div>
+          </div>
+          <div>
+            <p class="hero-hook">Meta at $630 is the best risk-adjusted large-cap in mega-tech. The ad business generates $52B FCF on $160B revenue with 43% operating margins — and AI is making it better, not disrupting it.</p>
+            <p class="hero-sub">We're <strong>Long at {'base_score': 7.5, 'pillar_scores': {'ad-platform-durability': 8.0, 'ai-capex-roi': 6.5, 'margin-sustainability': 7.5, 'reality-labs-optionality': 5.0, 'regulatory-governance-risk': 7.0}, 'adjustments': {'challenge_penalty': -0.2, 'bias_penalty': -0.1}, 'final_score': 7.2, 'sizing_band': '3-5%', 'sizing_pct': '4%', 'cap_applied': 'Capex uncertainty limits sizing above 5%', 'confidence_distribution': {'well_supported': 0.55, 'weakly_supported': 0.3, 'speculative': 0.15}}/100 signal strength</strong>.</p>
+          </div>
+        </div>
+
+        <div class="kpi-grid cols-3">
+          <div class="kpi">
+            <div class="kpi-label">price</div>
+            <div class="kpi-value ">$629.86</div>
+            <div class="kpi-sub">Apr 2026</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">target (12m)</div>
+            <div class="kpi-value value-gn">$720</div>
+            <div class="kpi-sub">+14.3% upside</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">position</div>
+            <div class="kpi-value value-gn">Long 4%</div>
+            <div class="kpi-sub">3-5% band</div>
+          </div>
+        </div>
+
+        <div class="callout-row">
+          <div class="callout">
+            <div class="label">revenue</div>
+            <div class="metric value-gn">$164.5B</div>
+            <div class="desc">FY2024, +22% YoY</div>
+          </div>
+          <div class="callout">
+            <div class="label">operating margin</div>
+            <div class="metric value-gn">43%</div>
+            <div class="desc">Up from 25% (FY22)</div>
+          </div>
+          <div class="callout">
+            <div class="label">fcf</div>
+            <div class="metric value-gn">$52B</div>
+            <div class="desc">Up from $18.4B (FY22)</div>
+          </div>
+          <div class="callout">
+            <div class="label">cash + securities</div>
+            <div class="metric value-gn">$58B</div>
+            <div class="desc">Net cash position</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>report snapshot</h2>
+          <div class="kicker">executive summary</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Long — Meta at $630 is the best risk-adjusted pure-play on digital advertising + AI monetization. The Family of Apps generates $164B revenue at 43% operating margins, with AI-driven targeting improvements sustaining 15%+ growth. At 26x forward earnings, the stock prices in reasonable growth with massive capital returns ($50B+ buybacks). Reality Labs ($18B losses) is the known drag, and $60B+ AI capex is the key risk to margin sustainability. Conviction: 72/100, 4% position sizing.</p></div>
+                <div class="g3"><div class="kpi"><div class="kpi-label">price</div><div class="kpi-value ">$629.86</div><div class="kpi-sub">Apr 2026</div></div><div class="kpi"><div class="kpi-label">target (12m)</div><div class="kpi-value value-gn">$720</div><div class="kpi-sub">+14.3% upside</div></div><div class="kpi"><div class="kpi-label">position</div><div class="kpi-value value-gn">Long 4%</div><div class="kpi-sub">3-5% band</div></div></div>
+        <div class="g2" style="margin-top:10px">
+          <div class="quote"><strong class="kicker">core debate</strong><br><p>Long — Meta at $630 is the best risk-adjusted pure-play on digital advertising + AI monetization. The Family of Apps generates $164B revenue at 43% operating margins, with AI-driven targeting improvements sustaining 15%+ growth...</p></div>
+          <div class="quote"><strong class="kicker">headline tape</strong><br><p>$629.86 · · as of apr 12, 2026.</p></div>
+        </div>
+        <div class="callout-row"><div class="callout"><div class="label">bull case</div><div class="metric value-gn">$850</div><div class="desc">TikTok ban windfall, AI monetization inflection, margins hold 42%+, Reality Labs reaches inflection. Probability: 25%.</div></div><div class="callout"><div class="label">base case</div><div class="metric ">$720</div><div class="desc">Continued 13-16% revenue growth, margins 38-42%, $50B+ annual buybacks, gradual AI improvement. Probability: 50%.</div></div><div class="callout"><div class="label">bear case</div><div class="metric value-rd">$480</div><div class="desc">AI capex compresses margins below 35%, ad growth slows to < 10%, EU regulatory headwinds. Probability: 25%.</div></div></div>
+        <div class="note green"><strong>top findings</strong><br><p>Key catalysts: FY2025 Q2 earnings (margin sustainability test), TikTok regulatory resolution, Advantage+ penetration metrics, Reality Labs revenue trajectory, AI capex guidance updates.</p></div>
+        <div class="note amber"><strong>aggregate synthesis</strong><br><p>Numbers can look similar while narrative labels diverge — focus on which spreadsheet row the market is pricing.</p></div>
+
+      </section>
+      <section id="thesis" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>variant perception &amp; thesis</h2>
+          <div class="kicker">pm brief</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Long — Meta is the best-positioned mega-cap to benefit from AI-driven advertising efficiency. The Family of Apps generates $164B revenue at 43% margins with 3.3 billion daily users. At 26x forward earnings, the stock prices in solid growth with room for upside from international monetization and potential TikTok disruption.</p></div>
+                <div class="pillars"><div class="pillar"><div class="head"><h4>1. ad platform durability</h4><span class="tag green">Strong</span></div><p>AI-driven targeting (Advantage+) delivering 20-30% better CPA. Instagram Reels monetizing toward Feed levels...</p></div><div class="pillar"><div class="head"><h4>2. ai capex roi</h4><span class="tag amber">Monitoring</span></div><p>$60-65B 2025 capex raises near-term margin risk. Llama models and MTIA custom silicon are positive long-term but payback uncertain.</p></div><div class="pillar"><div class="head"><h4>3. margin sustainability</h4><span class="tag green">Solid</span></div><p>Year of Efficiency permanently reset the cost base. Headcount flat at ~67K while revenue grew 22%...</p></div><div class="pillar"><div class="head"><h4>4. reality labs</h4><span class="tag red">Drag</span></div><p>$18B annual losses, $60B+ cumulative. Ray-Ban Meta is a bright spot but Quest declining...</p></div></div>
+        <div class="note"><strong>the 60-second pitch</strong><br><p>Read the pillar scores as conviction on each leg of the variant view; low scores are where consensus could be right.</p></div>
+        <div style="margin-top:12px"><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">FY2022</th><th class="num">FY2023</th><th class="num">FY2024</th><th>Trend</th></tr></thead><tbody><tr><td><p>Revenue ($B)</p></td><td class="num"><p>$116.6</p></td><td class="num"><p>$134.9</p></td><td class="num"><p>$164.5</p></td><td class="pos"><p>Accelerating</p></td></tr><tr><td><p>Operating Margin</p></td><td class="num"><p>25%</p></td><td class="num"><p>35%</p></td><td class="num"><p>43%</p></td><td class="pos"><p>Expanding</p></td></tr><tr><td><p>DAP (B)</p></td><td class="num"><p>2.96</p></td><td class="num"><p>3.14</p></td><td class="num"><p>3.35</p></td><td class="pos"><p>Growing</p></td></tr><tr><td><p>FCF ($B)</p></td><td class="num"><p>$18.4</p></td><td class="num"><p>$43.9</p></td><td class="num"><p>$52.0</p></td><td class="pos"><p>Strong growth</p></td></tr><tr><td><p>RL Losses ($B)</p></td><td class="num"><p>$13.7</p></td><td class="num"><p>$16.1</p></td><td class="num"><p>$17.7</p></td><td class="neg"><p>Still growing</p></td></tr></tbody></table></div></div>
+
+      </section>
+      <section id="financials" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>financial analysis</h2>
+          <div class="kicker">elite economics</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The Year of Efficiency was transformative.</p></div>
+                <div class="callout-row"><div class="callout"><div class="label">Revenue</div><div class="metric value-gn">$164.5B</div><div class="desc">FY2024, +22% YoY</div></div><div class="callout"><div class="label">Operating Margin</div><div class="metric value-gn">43%</div><div class="desc">Up from 25% (FY22)</div></div><div class="callout"><div class="label">FCF</div><div class="metric value-gn">$52B</div><div class="desc">Up from $18.4B (FY22)</div></div><div class="callout"><div class="label">Cash + Securities</div><div class="metric value-gn">$58B</div><div class="desc">Net cash position</div></div></div>
+        <div class="g2" style="margin-top:10px"><div><div class="table-wrap"><table><thead><tr><th>($B)</th><th class="num">FY2022</th><th class="num">FY2023</th><th class="num">FY2024</th><th class="num">YoY Change</th></tr></thead><tbody><tr><td><p>Revenue</p></td><td class="num"><p>$116.6</p></td><td class="num"><p>$134.9</p></td><td class="num"><p>$164.5</p></td><td class="pos num"><p>+22%</p></td></tr><tr><td><p>Cost of Revenue</p></td><td class="num"><p>$25.2</p></td><td class="num"><p>$24.7</p></td><td class="num"><p>$27.6</p></td><td class="num"><p>+12%</p></td></tr><tr><td><p>Gross Profit</p></td><td class="num"><p>$91.4</p></td><td class="num"><p>$110.2</p></td><td class="num"><p>$136.9</p></td><td class="pos num"><p>+24%</p></td></tr><tr><td><p>R&D</p></td><td class="num"><p>$35.3</p></td><td class="num"><p>$38.5</p></td><td class="num"><p>$42.3</p></td><td class="num"><p>+10%</p></td></tr><tr><td><p>Operating Income</p></td><td class="num"><p>$28.9</p></td><td class="num"><p>$46.8</p></td><td class="num"><p>$70.0</p></td><td class="pos num"><p>+50%</p></td></tr><tr><td><p>Net Income</p></td><td class="num"><p>$23.2</p></td><td class="num"><p>$39.1</p></td><td class="num"><p>$62.4</p></td><td class="pos num"><p>+60%</p></td></tr></tbody></table></div></div><div><div class="table-wrap"><table><thead><tr><th>Segment</th><th class="num">FY2024 Rev</th><th class="num">FY2024 Op Inc</th><th class="num">Op Margin</th><th>Note</th></tr></thead><tbody><tr><td><p>Family of Apps</p></td><td class="num"><p>$160.4B</p></td><td class="num"><p>$87.7B</p></td><td class="pos num"><p>55%</p></td><td><p>FB, IG, WA, Messenger</p></td></tr><tr><td><p>Reality Labs</p></td><td class="num"><p>$2.2B</p></td><td class="num"><p>-$17.7B</p></td><td class="neg num"><p>NM</p></td><td><p>Quest, Ray-Ban Meta</p></td></tr><tr><td><p>Corporate/Other</p></td><td class="num"><p>—</p></td><td class="num"><p>~$0</p></td><td class="num"><p>—</p></td><td><p>Elims</p></td></tr><tr><td><p>Total</p></td><td class="num"><p>$164.5B</p></td><td class="num"><p>$70.0B</p></td><td class="pos num"><p>43%</p></td><td></td></tr></tbody></table></div></div></div>
+        <div class="note green"><strong>production-report readthrough</strong><br><p>These numbers ground the thesis in reported economics; the debate is durability and cycle, not obvious accounting gaps.</p></div>
+
+      </section>
+      <section id="valuation" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>valuation</h2>
+          <div class="kicker">probability-weighted fair value</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Meta is trading roughly at fair value on current fundamentals with modest upside to our $720 thesis-adjusted target.</p></div>
+                <div class="g2"><div><div class="table-wrap"><table><thead><tr><th>Method</th><th class="num">Value/Share</th><th>Key Assumptions</th></tr></thead><tbody><tr><td><p>DCF (Multi-stage)</p></td><td class="num"><p>$680</p></td><td><p>WACC 9.5%, terminal growth 3%, base FCF $52B</p></td></tr><tr><td><p>Thesis-Adjusted DCF</p></td><td class="num"><p>$720</p></td><td><p>Higher Yr1 growth (15%), modest margin compression</p></td></tr><tr><td><p>P/E Relative</p></td><td class="num"><p>$680-750</p></td><td><p>26-28x on $26 FY25E EPS</p></td></tr><tr><td><p>EV/EBITDA</p></td><td class="num"><p>$650-700</p></td><td><p>19-20x on $81B EBITDA</p></td></tr><tr><td><p>Monte Carlo (p50)</p></td><td class="num"><p>$680</p></td><td><p>10K simulations, tight distribution</p></td></tr></tbody></table></div></div><div><div class="scenario-grid"><div class="scenario bull"><div class="prob">bull — $850</div><h4>$850</h4><p>30x on $28+ EPS. TikTok catalyst + margin stability + AI monetization acceleration</p></div><div class="scenario base"><div class="prob">base — $720</div><h4>$720</h4><p>27x on $27 EPS. Steady growth, modest margin compression, continued buybacks</p></div><div class="scenario bear"><div class="prob">bear — $480</div><h4>$480</h4><p>20x on $24 EPS. Margin compression, growth slowdown, sentiment shift on AI capex</p></div></div></div></div>
+        
+        
+
+      </section>
+      <section id="risk" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>what breaks the thesis</h2>
+          <div class="kicker">risk assessment — what breaks the thesis</div>
+        </div>
+        <div class="lead aggregate-lead"><p>AI capex is the primary near-term risk.</p></div>
+                <div class="note red"><strong>risk framing</strong><br><p>This is not generic macro risk language — it is a short list of observable thresholds that would force us to change the view.</p></div>
+        <div style="margin-top:10px"><div class="table-wrap"><table><thead><tr><th>Risk Factor</th><th class="num">Probability</th><th>Impact</th><th>Mitigant</th></tr></thead><tbody><tr><td><p>AI capex compresses margins</p></td><td class="num"><p>Medium</p></td><td class="neg"><p>High</p></td><td><p>Revenue growth may outpace depreciation</p></td></tr><tr><td><p>Ad market recession</p></td><td class="num"><p>Low-Med</p></td><td class="neg"><p>High</p></td><td><p>$58B cash buffer, counter-cyclical share gains</p></td></tr><tr><td><p>EU DMA enforcement</p></td><td class="num"><p>Medium</p></td><td class="amb"><p>Medium</p></td><td><p>Affects ~25% of revenue; compliance underway</p></td></tr><tr><td><p>FTC forced breakup</p></td><td class="num"><p>Low</p></td><td class="neg"><p>High</p></td><td><p>Legally weak case; years of appeals</p></td></tr><tr><td><p>Reality Labs losses accelerate</p></td><td class="num"><p>Low-Med</p></td><td class="amb"><p>Medium</p></td><td><p>Zuckerberg control limits activist pressure</p></td></tr><tr><td><p>TikTok competition intensifies</p></td><td class="num"><p>Medium</p></td><td class="amb"><p>Medium</p></td><td><p>Reels effectively competing; ban is upside</p></td></tr></tbody></table></div></div>
+        <div class="callout-row"><div class="callout"><div class="label">Overall Risk</div><div class="metric value-rd">Moderate</div><div class="desc">Known risks largely priced</div></div><div class="callout"><div class="label">Downside to Bear</div><div class="metric value-rd">-24%</div><div class="desc">$480 bear case</div></div><div class="callout"><div class="label">Key Risk</div><div class="metric value-rd">AI Capex ROI</div><div class="desc">Margin compression if ROI disappoints</div></div></div>
+        <div class="note amber"><strong>most dangerous zone</strong><br><p>Watch for drawdowns driven by fundamentals where funds de-risk faster than the business narrative updates.</p></div>
+
+      </section>
+      <section id="ops" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>fundamentals &amp; operations</h2>
+          <div class="kicker">unit economics</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Family of Apps ecosystem is unmatched in scale.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">dap</div><div class="kpi-value value-gn">3.35B</div><div class="kpi-sub">Q4 2024, +7% YoY</div></div><div class="kpi"><div class="kpi-label">na arpp</div><div class="kpi-value value-gn">$74/qtr</div><div class="kpi-sub">Highest globally</div></div><div class="kpi"><div class="kpi-label">headcount</div><div class="kpi-value value-gn">~67K</div><div class="kpi-sub">Flat YoY (post-layoffs)</div></div><div class="kpi"><div class="kpi-label">threads mau</div><div class="kpi-value value-gn">300M+</div><div class="kpi-sub">Growing competitive moat</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Operational Deep Dive</h3><span class="tag green">Strong Execution</span></div><div class="aggregate-card-body"><p>Family of Apps ecosystem is unmatched in scale. With Facebook (3B+ MAU), Instagram (2B+ MAU), WhatsApp (2.5B+ MAU), and Messenger (1B+), Meta operates the largest social network ecosystem globally. Cross-app integration (shared login, messaging interop, cross-posting) creates high switching costs...</p></div></div><p class="aggregate-pane-xref"><a href="#Product">Related</a></p>
+      </section>
+      <section id="competition" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>competitive position</h2>
+          <div class="kicker">moat vs. customer-as-competitor</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Google is a co-pilot, not an adversary.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">digital ad share</div><div class="kpi-value value-gn">~21%</div><div class="kpi-sub">2nd behind Google (~28%)</div></div><div class="kpi"><div class="kpi-label">social ad lead</div><div class="kpi-value value-gn">#1</div><div class="kpi-sub">2x TikTok revenue</div></div><div class="kpi"><div class="kpi-label">key threat</div><div class="kpi-value value-am">TikTok</div><div class="kpi-sub">But regulatory risk benefits Meta</div></div><div class="kpi"><div class="kpi-label">moat width</div><div class="kpi-value value-gn">Wide</div><div class="kpi-sub">Network effects + data + AI</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Competitive Landscape</h3><span class="tag green">Dominant Position</span></div><div class="aggregate-card-body"><p>Google is a co-pilot, not an adversary. Meta and Google collectively control ~50% of global digital ads. They compete at the margin but largely serve different advertiser needs (intent vs...</p></div></div><p class="aggregate-pane-xref"><a href="#TAM">Related</a></p>
+      </section>
+      <section id="tam" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>market size &amp; tam</h2>
+          <div class="kicker">total addressable market</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Digital advertising is a secular growth market.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">digital ad tam</div><div class="kpi-value value-gn">$700B</div><div class="kpi-sub">2024, growing ~10% CAGR</div></div><div class="kpi"><div class="kpi-label">social ad tam</div><div class="kpi-value value-gn">$250B+</div><div class="kpi-sub">Growing ~13-15% CAGR</div></div><div class="kpi"><div class="kpi-label">meta share</div><div class="kpi-value value-gn">~21%</div><div class="kpi-sub">Of total digital ads</div></div><div class="kpi"><div class="kpi-label">tam by 2027</div><div class="kpi-value value-gn">$850B+</div><div class="kpi-sub">Digital advertising</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Market Opportunity</h3><span class="tag green">Large and Growing</span></div><div class="aggregate-card-body"><p>Digital advertising is a secular growth market. The ongoing shift from traditional (TV, print, radio) to digital advertising continues, with digital now representing ~70% of total ad spending and still gaining share. Social media advertising growing above market...</p></div></div><p class="aggregate-pane-xref"><a href="#Operations">Related</a></p>
+      </section>
+      <section id="product" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>product &amp; technology</h2>
+          <div class="kicker">roadmap + software stack</div>
+        </div>
+        <div class="lead aggregate-lead"><p>AI is Meta&#x27;s core technology differentiator.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">llama</div><div class="kpi-value value-gn">#1 OSS LLM</div><div class="kpi-sub">Most downloaded open-source model</div></div><div class="kpi"><div class="kpi-label">meta ai users</div><div class="kpi-value value-gn">500M+</div><div class="kpi-sub">Across all apps</div></div><div class="kpi"><div class="kpi-label">advantage+ lift</div><div class="kpi-value value-gn">20-30%</div><div class="kpi-sub">Better CPA for advertisers</div></div><div class="kpi"><div class="kpi-label">ray-ban meta</div><div class="kpi-value value-gn">Best-seller</div><div class="kpi-sub">Smart glasses market leader</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Technology Stack</h3><span class="tag green">AI-First Platform</span></div><div class="aggregate-card-body"><p>AI is Meta&#x27;s core technology differentiator. The company&#x27;s AI strategy spans three pillars: (1) ad targeting and recommendation (Advantage+, content ranking), (2) generative AI products (Meta AI assistant, AI creative tools), and (3) foundational models (Llama open-source LLMs). Llama is a strategic moat-builder...</p></div></div><p class="aggregate-pane-xref"><a href="#Supply">Related</a></p>
+      </section>
+      <section id="supply" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>supply chain</h2>
+          <div class="kicker">single points of failure</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Meta is one of the world&#x27;s largest GPU purchasers.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">ai capex</div><div class="kpi-value value-am">$60-65B</div><div class="kpi-sub">2025 guidance</div></div><div class="kpi"><div class="kpi-label">gpu fleet</div><div class="kpi-value value-gn">600K+ H100s</div><div class="kpi-sub">Largest non-cloud fleet</div></div><div class="kpi"><div class="kpi-label">custom silicon</div><div class="kpi-value value-gn">MTIA v2</div><div class="kpi-sub">Reducing Nvidia dependency</div></div><div class="kpi"><div class="kpi-label">data centers</div><div class="kpi-value value-am">Doubling</div><div class="kpi-sub">Capacity by 2027</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Infrastructure Analysis</h3><span class="tag amber">Massive Investment</span></div><div class="aggregate-card-body"><p>Meta is one of the world&#x27;s largest GPU purchasers. With 600K+ Nvidia H100 GPUs and major B200 orders, Meta has built one of the largest AI compute clusters outside of cloud providers. This infrastructure powers ad ranking, content recommendation, and Llama model training...</p></div></div><p class="aggregate-pane-xref"><a href="#Financials">Related</a></p>
+      </section>
+      <section id="catalysts" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>catalyst map</h2>
+          <div class="kicker">forward calendar</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Meta has several identifiable catalysts on a 6-18 month horizon, with TikTok regulatory resolution and AI monetization metrics being the highest-impact events.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Catalyst</th><th>Timeline</th><th>Impact</th><th class="num">Probability</th></tr></thead><tbody><tr><td><p>TikTok US ban/divestiture</p></td><td><p>2025 H1-H2</p></td><td class="pos"><p>High positive</p></td><td class="num"><p>40%</p></td></tr><tr><td><p>Advantage+ penetration > 50% of ad spend</p></td><td><p>2025 H2</p></td><td class="pos"><p>Medium positive</p></td><td class="num"><p>60%</p></td></tr><tr><td><p>FY2025 margins hold > 40%</p></td><td><p>Q3 2025</p></td><td class="pos"><p>Medium positive</p></td><td class="num"><p>55%</p></td></tr><tr><td><p>Reality Labs loss reduction</p></td><td><p>2026+</p></td><td class="pos"><p>Medium positive</p></td><td class="num"><p>30%</p></td></tr><tr><td><p>EU DMA enforcement action</p></td><td><p>2025-2026</p></td><td class="neg"><p>Medium negative</p></td><td class="num"><p>45%</p></td></tr><tr><td><p>Ad market recession</p></td><td><p>2025-2026</p></td><td class="neg"><p>High negative</p></td><td class="num"><p>20%</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Catalyst Analysis</h3><span class="tag blue">Key Events</span></div><div class="aggregate-card-body"><p>TikTok resolution is the asymmetric catalyst. If TikTok is banned or divested, Instagram Reels stands to capture a disproportionate share of displaced engagement and ad dollars. Even a partial disruption to TikTok&#x27;s US operations benefits Meta...</p></div></div><p class="aggregate-pane-xref"><a href="#Risk">Related</a></p>
+      </section>
+      <section id="street" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>street expectations</h2>
+          <div class="kicker">consensus vs. framework</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Wall Street is overwhelmingly bullish.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">consensus rev fy25e</div><div class="kpi-value value-gn">$187B</div><div class="kpi-sub">+14% YoY</div></div><div class="kpi"><div class="kpi-label">consensus eps fy25e</div><div class="kpi-value value-gn">$26.50</div><div class="kpi-sub">+8% YoY</div></div><div class="kpi"><div class="kpi-label">consensus pt</div><div class="kpi-value value-gn">$710</div><div class="kpi-sub">+13% upside</div></div><div class="kpi"><div class="kpi-label">buy ratings</div><div class="kpi-value value-am">90%+</div><div class="kpi-sub">Overwhelming consensus</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Street View</h3><span class="tag green">Consensus Bullish</span></div><div class="aggregate-card-body"><p>Wall Street is overwhelmingly bullish. Over 90% of covering analysts rate META as Buy/Overweight with a consensus price target around $710. The bull case centers on AI-driven ad efficiency, sustained revenue growth, and massive capital returns...</p></div></div><p class="aggregate-pane-xref"><a href="#Valuation">Related</a></p>
+      </section>
+      <section id="scorecard" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>earnings scorecard</h2>
+          <div class="kicker">execution quality</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Meta has established a track record of consistent outperformance since the efficiency pivot.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">beat rate</div><div class="kpi-value value-gn">4/4</div><div class="kpi-sub">FY2024 quarters</div></div><div class="kpi"><div class="kpi-label">avg beat</div><div class="kpi-value value-gn">~9%</div><div class="kpi-sub">EPS vs consensus</div></div><div class="kpi"><div class="kpi-label">revenue beat</div><div class="kpi-value value-gn">4/4</div><div class="kpi-sub">Consistent outperformance</div></div><div class="kpi"><div class="kpi-label">guidance</div><div class="kpi-value value-gn">Raised</div><div class="kpi-sub">Multiple guide-ups in FY24</div></div></div><div class="table-wrap"><table><thead><tr><th>Quarter</th><th class="num">EPS Act</th><th class="num">EPS Est</th><th class="num">Beat %</th><th class="num">Rev Surprise</th></tr></thead><tbody><tr><td><p>Q4 2024</p></td><td class="num"><p>$8.02</p></td><td class="num"><p>$7.35</p></td><td class="pos num"><p>+9.1%</p></td><td class="pos num"><p>+2.1%</p></td></tr><tr><td><p>Q3 2024</p></td><td class="num"><p>$6.03</p></td><td class="num"><p>$5.57</p></td><td class="pos num"><p>+8.3%</p></td><td class="pos num"><p>+1.8%</p></td></tr><tr><td><p>Q2 2024</p></td><td class="num"><p>$5.16</p></td><td class="num"><p>$4.73</p></td><td class="pos num"><p>+9.1%</p></td><td class="pos num"><p>+2.3%</p></td></tr><tr><td><p>Q1 2024</p></td><td class="num"><p>$4.71</p></td><td class="num"><p>$4.36</p></td><td class="pos num"><p>+8.0%</p></td><td class="pos num"><p>+2.7%</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Earnings Analysis</h3><span class="tag green">Consistent Beats</span></div><div class="aggregate-card-body"><p>Meta has established a track record of consistent outperformance since the efficiency pivot. The combination of revenue beats (driven by AI-enhanced ad targeting) and operating leverage (flat headcount on growing revenue) has resulted in significant EPS beats every quarter. The bar is high but Meta keeps clearing it...</p></div></div><p class="aggregate-pane-xref"><a href="#Street">Related</a></p>
+      </section>
+      <section id="signals" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>alternative data</h2>
+          <div class="kicker">signals & sentiment</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Institutional positioning is strong and broad-based.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">institutional own</div><div class="kpi-value value-gn">78%</div><div class="kpi-sub">Strong institutional conviction</div></div><div class="kpi"><div class="kpi-label">short interest</div><div class="kpi-value value-gn">~1%</div><div class="kpi-sub">Minimal short positioning</div></div><div class="kpi"><div class="kpi-label">insider sales</div><div class="kpi-value value-am">Routine</div><div class="kpi-sub">Zuckerberg planned sales</div></div><div class="kpi"><div class="kpi-label">analyst sentiment</div><div class="kpi-value value-gn">Very Bullish</div><div class="kpi-sub">90%+ Buy ratings</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Signal Analysis</h3><span class="tag green">Positive Setup</span></div><div class="aggregate-card-body"><p>Institutional positioning is strong and broad-based. At 78% institutional ownership with top holders including Vanguard, BlackRock, and Fidelity, Meta is a core holding across large-cap portfolios. This breadth of ownership provides a stable shareholder base...</p></div></div><p class="aggregate-pane-xref"><a href="#Street">Related</a></p>
+      </section>
+      <section id="history" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>historical analogies</h2>
+          <div class="kicker">base rates</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Meta&#x27;s 2022-2024 arc is one of the most dramatic turnarounds in big tech history.</p></div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>Historical Context</h3><span class="tag green">Remarkable Recovery</span></div><div class="aggregate-card-body"><p>Meta&#x27;s 2022-2024 arc is one of the most dramatic turnarounds in big tech history. From a 77% stock decline ($384→$88) driven by metaverse spending fears and ATT headwinds, to a 700%+ rally back to all-time highs, Meta demonstrated that a dominant platform business with a decisive founder can pivot rapidly. Historical analogue: Apple 2013-2016...</p></div></div><div class="table-wrap"><table><thead><tr><th class="num">Year</th><th class="num">Event</th><th>Impact</th></tr></thead><tbody><tr><td class="num"><p>2004</p></td><td class="num"><p>Facebook founded</p></td><td><p>Beginning of social network era</p></td></tr><tr><td class="num"><p>2012</p></td><td class="num"><p>IPO + Instagram acquisition ($1B)</p></td><td><p>Rocky IPO; acquisition now worth $200B+</p></td></tr><tr><td class="num"><p>2014</p></td><td class="num"><p>WhatsApp acquisition ($19B)</p></td><td><p>2.5B+ users, growing monetization</p></td></tr><tr><td class="num"><p>2018</p></td><td class="num"><p>Cambridge Analytica scandal</p></td><td><p>$5B FTC fine, privacy overhaul</p></td></tr><tr><td class="num"><p>2021</p></td><td class="num"><p>Rebrand to Meta; metaverse pivot</p></td><td><p>Launched Reality Labs spending spree</p></td></tr><tr><td class="num"><p>2021 (2)</p></td><td class="num"><p>Apple ATT rollout</p></td><td><p>$10B+ annual revenue headwind</p></td></tr></tbody></table></div><p class="aggregate-pane-xref"><a href="#Thesis">Related</a></p>
+      </section>
+      <section id="management" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>management &amp; leadership</h2>
+          <div class="kicker">execution + key-person risk</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Zuckerberg is one of the most capable tech CEOs alive.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">ceo</div><div class="kpi-value value-am">M. Zuckerberg</div><div class="kpi-sub">Founder, 61% voting control</div></div><div class="kpi"><div class="kpi-label">tenure</div><div class="kpi-value value-gn">20 years</div><div class="kpi-sub">Since founding (2004)</div></div><div class="kpi"><div class="kpi-label">execution</div><div class="kpi-value value-gn">Excellent</div><div class="kpi-sub">Year of Efficiency transformation</div></div><div class="kpi"><div class="kpi-label">governance</div><div class="kpi-value value-rd">Weak</div><div class="kpi-sub">Dual-class, no accountability</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Leadership Assessment</h3><span class="tag amber">Strong Execution, Governance Concerns</span></div><div class="aggregate-card-body"><p>Zuckerberg is one of the most capable tech CEOs alive. His track record includes: building Facebook from dorm room to 3.3B users, acquiring Instagram and WhatsApp (two of the greatest acquisitions in tech history), successfully pivoting to mobile in 2012-2013, navigating the ATT crisis, and executing the Year of Efficiency that doubled operating margins. The 2022-2023 transformation was masterful...</p></div></div><p class="aggregate-pane-xref"><a href="#Governance">Related</a></p>
+      </section>
+      <section id="macro" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>macro sensitivity</h2>
+          <div class="kicker">rates, fx, energy</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Ad revenue is cyclically sensitive but less so than traditional media.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">ad cyclicality</div><div class="kpi-value value-am">Moderate</div><div class="kpi-sub">5-15% revenue decline in recession</div></div><div class="kpi"><div class="kpi-label">rate sensitivity</div><div class="kpi-value value-gn">Low</div><div class="kpi-sub">Net cash position</div></div><div class="kpi"><div class="kpi-label">fx exposure</div><div class="kpi-value value-am">Medium</div><div class="kpi-sub">~55% international revenue</div></div><div class="kpi"><div class="kpi-label">recession resilience</div><div class="kpi-value value-gn">Strong</div><div class="kpi-sub">$58B cash buffer</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Macro Analysis</h3><span class="tag amber">Moderate Sensitivity</span></div><div class="aggregate-card-body"><p>Ad revenue is cyclically sensitive but less so than traditional media. In 2020 (COVID recession), Meta&#x27;s revenue dipped only briefly before recovering strongly as advertisers shifted to digital. In a typical recession, expect 5-15% ad revenue decline, less than TV or print advertising...</p></div></div><p class="aggregate-pane-xref"><a href="#Risk">Related</a></p>
+      </section>
+      <section id="quant" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>quantitative profile</h2>
+          <div class="kicker">factor + mean reversion</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Meta is the cheapest mega-cap tech stock on a growth-adjusted basis.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">p/e (ttm)</div><div class="kpi-value value-gn">25.7x</div><div class="kpi-sub">vs 28x GOOGL</div></div><div class="kpi"><div class="kpi-label">p/s</div><div class="kpi-value value-am">9.8x</div><div class="kpi-sub">Premium but justified by margins</div></div><div class="kpi"><div class="kpi-label">ev/ebitda</div><div class="kpi-value value-gn">19.5x</div><div class="kpi-sub">Reasonable for growth profile</div></div><div class="kpi"><div class="kpi-label">fcf yield</div><div class="kpi-value value-gn">3.2%</div><div class="kpi-sub">$52B / $1.6T mkt cap</div></div></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">META</th><th class="num">GOOGL</th><th class="num">AMZN</th><th class="num">AAPL</th></tr></thead><tbody><tr><td><p>Fwd P/E</p></td><td class="num"><p>26x</p></td><td class="num"><p>28x</p></td><td class="num"><p>42x</p></td><td class="num"><p>28x</p></td></tr><tr><td><p>Rev Growth</p></td><td class="num"><p>22%</p></td><td class="num"><p>14%</p></td><td class="num"><p>12%</p></td><td class="num"><p>5%</p></td></tr><tr><td><p>Op Margin</p></td><td class="num"><p>43%</p></td><td class="num"><p>32%</p></td><td class="num"><p>11%</p></td><td class="num"><p>31%</p></td></tr><tr><td><p>FCF Yield</p></td><td class="num"><p>3.2%</p></td><td class="num"><p>3.5%</p></td><td class="num"><p>2.1%</p></td><td class="num"><p>3.3%</p></td></tr><tr><td><p>Buyback Yield</p></td><td class="num"><p>~3.5%</p></td><td class="num"><p>~2%</p></td><td class="num"><p>~0%</p></td><td class="num"><p>~3.5%</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Quantitative Assessment</h3><span class="tag green">Attractively Valued</span></div><div class="aggregate-card-body"><p>Meta is the cheapest mega-cap tech stock on a growth-adjusted basis. At 26x forward earnings with 22% revenue growth, Meta&#x27;s PEG ratio (~1.2x) is the lowest among the Magnificent 7. GOOGL at 28x with 14% growth, AAPL at 28x with 5% growth, and AMZN at 42x with 12% growth all look more expensive relative to their growth profiles...</p></div></div><p class="aggregate-pane-xref"><a href="#Valuation">Related</a></p>
+      </section>
+      <section id="derivatives" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>options &amp; derivatives</h2>
+          <div class="kicker">sentiment gauge</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Implied volatility is moderate for the growth profile.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">30d iv</div><div class="kpi-value value-am">~35%</div><div class="kpi-sub">Moderate for mega-cap tech</div></div><div class="kpi"><div class="kpi-label">iv percentile</div><div class="kpi-value value-gn">~45th</div><div class="kpi-sub">12-month range</div></div><div class="kpi"><div class="kpi-label">put/call ratio</div><div class="kpi-value value-gn">0.7</div><div class="kpi-sub">Modestly bullish skew</div></div><div class="kpi"><div class="kpi-label">earnings iv crush</div><div class="kpi-value value-am">~8-10%</div><div class="kpi-sub">Typical post-earnings IV decline</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Options Analysis</h3><span class="tag amber">Moderate Volatility</span></div><div class="aggregate-card-body"><p>Implied volatility is moderate for the growth profile. At ~35% 30-day implied vol, META options are pricing in typical earnings-driven moves of ~7-8%. This is reasonable given the consistent beat history but elevated capex uncertainty...</p></div></div><p class="aggregate-pane-xref"><a href="#Signals">Related</a></p>
+      </section>
+      <section id="governance" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>governance &amp; accounting</h2>
+          <div class="kicker">quality control</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Dual-class structure is the dominant governance feature.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">governance grade</div><div class="kpi-value value-am">C+</div><div class="kpi-sub">Dual-class penalizes</div></div><div class="kpi"><div class="kpi-label">accounting quality</div><div class="kpi-value value-gn">High</div><div class="kpi-sub">Clean audits, transparent</div></div><div class="kpi"><div class="kpi-label">board independence</div><div class="kpi-value value-rd">Limited</div><div class="kpi-sub">Zuckerberg controls votes</div></div><div class="kpi"><div class="kpi-label">esg score</div><div class="kpi-value value-am">Mixed</div><div class="kpi-sub">Privacy issues offset by diversity</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Governance Assessment</h3><span class="tag amber">Mixed</span></div><div class="aggregate-card-body"><p>Dual-class structure is the dominant governance feature. Zuckerberg&#x27;s 61% voting control via Class B shares means all governance mechanisms (board oversight, say-on-pay, proxy fights) are effectively ceremonial. This is the single biggest governance risk in the Mag-7...</p></div></div><p class="aggregate-pane-xref"><a href="#Management">Related</a></p>
+      </section>
+      <section id="value" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>value framework</h2>
+          <div class="kicker">greenwald / qarp</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Meta fits the &#x27;quality compounder&#x27; archetype.</p></div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>Investment Framework</h3><span class="tag green">Quality Compounder</span></div><div class="aggregate-card-body"><p>Meta fits the &#x27;quality compounder&#x27; archetype. Wide-moat business with network effects, high margins (43% operating), massive FCF generation ($52B), growing TAM (digital ads $700B→$850B), and aggressive capital returns ($50B+ buybacks). The combination of 13-16% revenue growth, margin stability, and 3-4% buyback yield targets mid-to-high teens annual returns...</p></div></div><p class="aggregate-pane-xref"><a href="#Thesis">Related</a></p>
+      </section>
+      <section id="appendix" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>appendix &amp; sources</h2>
+          <div class="kicker">sources · methodology</div>
+        </div>
+        <div class="lead aggregate-lead"><p>How we source the tape, verify levels, and align this report with XVARY deep-dive standards.</p></div>
+        <div class="aggregate-sources-attribution"><p>Sources: SEC filings, company disclosures, market data vendors, and sources cited in the sections above. For investment presentation use only.</p></div><p class="aggregate-methodology-link">standards and pipeline: <a href="https://xvary.com/methodology/">xvary.com/methodology/</a></p>
+      </section>
+
+      <div class="footer">
+        xvary · 2026 · not investment advice
+        <div class="links">
+          <a href="https://xvary.com/pulse/">the pulse</a>
+          <a href="https://xvary.com/stacks/">the stacks</a>
+          <a href="https://xvary.com/discover/">discover</a>
+          <a href="https://xvary.com/collectibles/">collectibles</a>
+          <a href="https://xvary.com/pricing/">pricing</a>
+          <a href="https://xvary.com/methodology/">methodology</a>
+          <a href="https://xvary.com/newsletter/">newsletter</a>
+          <a href="https://xvary.com/legal/disclaimer/">disclaimer</a>
+          <a href="https://xvary.com/legal/privacy/">privacy</a>
+          <a href="https://xvary.com/legal/terms/">terms</a>
+        </div>
+        <div class="small">Sources: company filings and earnings, supplier disclosures, named sell-side notes where cited, alt-data where noted, and public flow/sentiment screens. Not investment advice — verify anything you trade on.</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const bar = document.getElementById("reading-progress");
+      const sections = [{"id": "summary", "hotkey": "0"}, {"id": "thesis", "hotkey": "1"}, {"id": "financials", "hotkey": "2"}, {"id": "valuation", "hotkey": "3"}, {"id": "risk", "hotkey": "4"}, {"id": "ops", "hotkey": "5"}, {"id": "competition", "hotkey": "6"}, {"id": "tam", "hotkey": "7"}, {"id": "product", "hotkey": "8"}, {"id": "supply", "hotkey": "9"}, {"id": "catalysts", "hotkey": "a"}, {"id": "street", "hotkey": "b"}, {"id": "scorecard", "hotkey": "c"}, {"id": "signals", "hotkey": "d"}, {"id": "history", "hotkey": "e"}, {"id": "management", "hotkey": "f"}, {"id": "macro", "hotkey": "g"}, {"id": "quant", "hotkey": "h"}, {"id": "derivatives", "hotkey": "i"}, {"id": "governance", "hotkey": "j"}, {"id": "value", "hotkey": "k"}, {"id": "appendix", "hotkey": "l"}];
+      const links = [...document.querySelectorAll(".sidebar a[href^='#']")];
+      const setActive = function (id) {
+        links.forEach(function (link) {
+          link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+        });
+      };
+
+      window.addEventListener("scroll", function () {
+        const root = document.documentElement;
+        const pct = (root.scrollTop / Math.max(root.scrollHeight - root.clientHeight, 1)) * 100;
+        if (bar) {
+          bar.style.width = Math.min(Math.max(pct, 0), 100) + "%";
+        }
+      }, { passive: true });
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(function (entries) {
+          entries.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+          const hit = entries.find(function (entry) {
+            return entry.isIntersecting && entry.intersectionRatio > 0.12;
+          });
+          if (hit) {
+            setActive(hit.target.id);
+          }
+        }, { rootMargin: "-40% 0px -40% 0px", threshold: [0, 0.12, 0.25, 0.45] });
+
+        sections.forEach(function (item) {
+          const node = document.getElementById(item.id);
+          if (node) {
+            observer.observe(node);
+          }
+        });
+      }
+
+      links.forEach(function (link) {
+        link.addEventListener("click", function () {
+          setActive(link.getAttribute("href").slice(1));
+        });
+      });
+
+      const hotkeys = {};
+      sections.forEach(function (item) {
+        hotkeys[item.hotkey] = item.id;
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.metaKey || event.ctrlKey) {
+          return;
+        }
+        const target = event.target;
+        if (target && target.closest && target.closest("input, textarea, select, [contenteditable='true']")) {
+          return;
+        }
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (!hotkeys[key]) {
+          return;
+        }
+        event.preventDefault();
+        const node = document.getElementById(hotkeys[key]);
+        if (node) {
+          node.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    })();
+  </script>
+  <footer class="footer" style="margin-left:var(--navw,0)">
+    xvary · 2026 · not investment advice
+    <div class="footer-links">
+      <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/methodology/">methodology</a>
+      <a href="/newsletter/">newsletter</a>
+      <a href="/pricing/">pricing</a>
+      <a href="/free/">free reports</a>
+      <a href="/legal/disclaimer/">disclaimer</a>
+      <a href="/legal/privacy/">privacy</a>
+      <a href="/legal/terms/">terms</a>
+    </div>
+    <div class="footer-logo">
+      <a href="/" aria-label="home">
+        <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+      </a>
+    </div>
+  </footer>
+  <script src="/js/site-chrome.js?v=1776081807" defer></script>
+</body>
+</html>

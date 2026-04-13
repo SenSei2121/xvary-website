@@ -1,0 +1,838 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>discover a stock — random stock analysis picker · xvary</title>
+<meta name="description" content="Can't decide what to research? One click, one random stock analysis from 3,300+ companies. Free AI-powered insights on every name.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://xvary.com/discover/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="discover a stock — random stock analysis picker · xvary">
+<meta property="og:description" content="One click, one random stock analysis from 3,300+ companies. Free AI-powered insights.">
+<meta property="og:url" content="https://xvary.com/discover/">
+<meta property="og:image" content="https://xvary.com/assets/og-default.png">
+<meta property="og:site_name" content="XVARY">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="discover a stock — random stock analysis picker · xvary">
+<meta name="twitter:description" content="One click, one random stock analysis from 3,300+ companies. Free AI-powered insights.">
+<meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+<style>
+  .discover-hero {
+    min-height: 70vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    padding: 40px 24px;
+    position: relative;
+  }
+  .discover-hero h1 {
+    font-size: clamp(36px, 8vw, 72px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -2px;
+    text-transform: lowercase;
+    margin-bottom: 16px;
+  }
+  .discover-hero p {
+    font-size: clamp(15px, 2vw, 18px);
+    color: var(--text2);
+    max-width: 480px;
+    margin: 0 auto 40px;
+    line-height: 1.6;
+    text-transform: lowercase;
+  }
+  
+  /* Slot Machine */
+  .slot-machine {
+    width: 100%;
+    max-width: 600px;
+    perspective: 1000px;
+  }
+  .slot-window {
+    background: var(--dark);
+    border-radius: var(--radius-card-lg);
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+    min-height: 320px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: box-shadow 0.2s;
+  }
+  .slot-window:hover {
+    box-shadow: 0 20px 60px rgba(0,0,0,.3);
+  }
+  .slot-window::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: conic-gradient(from 0deg, transparent, var(--yel), transparent 30%);
+    opacity: 0;
+    animation: none;
+  }
+  .slot-window.spinning::before {
+    animation: rotate 1s linear infinite;
+    opacity: 0.1;
+  }
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  .slot-content {
+    position: relative;
+    z-index: 2;
+    text-align: center;
+    color: var(--white);
+    width: 100%;
+  }
+  .slot-placeholder {
+    font-size: clamp(48px, 10vw, 80px);
+    font-weight: 700;
+    color: rgba(255, 229, 0, 0.55);
+    text-transform: lowercase;
+    letter-spacing: -3px;
+  }
+  .slot-ticker {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(48px, 10vw, 80px);
+    font-weight: 500;
+    color: var(--yel);
+    letter-spacing: -2px;
+    margin-bottom: 8px;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  .slot-ticker.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .slot-scramble {
+    font-family: 'DM Mono', monospace;
+    font-size: clamp(36px, 8vw, 64px);
+    font-weight: 500;
+    color: rgba(255,229,0,.6);
+    letter-spacing: -2px;
+    margin-bottom: 16px;
+  }
+  .slot-name {
+    font-size: clamp(18px, 3vw, 24px);
+    font-weight: 500;
+    color: rgba(255,255,255,.8);
+    margin-bottom: 24px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease 0.1s;
+  }
+  .slot-name.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .slot-score {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(255,255,255,.08);
+    padding: 12px 24px;
+    border-radius: var(--radius-pill);
+    margin-bottom: 24px;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: all 0.3s ease 0.2s;
+  }
+  .slot-score.revealed {
+    opacity: 1;
+    transform: scale(1);
+  }
+  .slot-score-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--yel);
+  }
+  .slot-score-lbl {
+    font-size: 12px;
+    color: rgba(255,255,255,.6);
+    text-transform: lowercase;
+  }
+  .slot-position {
+    display: inline-block;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    padding: 4px 14px;
+    border-radius: var(--radius-pill);
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+    opacity: 0;
+    transform: translateY(8px);
+    transition: all 0.3s ease 0.15s;
+  }
+  .slot-position.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .slot-position--long {
+    background: rgba(137,226,25,.15);
+    color: var(--green);
+  }
+  .slot-position--short {
+    background: rgba(255,69,0,.15);
+    color: var(--red);
+  }
+  .slot-position--neutral {
+    background: rgba(255,255,255,.1);
+    color: rgba(255,255,255,.6);
+  }
+  .slot-verdict {
+    font-size: 15px;
+    line-height: 1.6;
+    color: rgba(255,255,255,.7);
+    max-width: 400px;
+    margin: 0 auto 24px;
+    opacity: 0;
+    transition: opacity 0.4s ease 0.3s;
+  }
+  .slot-verdict.revealed {
+    opacity: 1;
+  }
+  .slot-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--yel);
+    color: var(--dark);
+    font-size: 14px;
+    font-weight: 700;
+    padding: 14px 28px;
+    border-radius: var(--radius-pill);
+    text-decoration: none;
+    text-transform: lowercase;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease 0.35s, background 0.2s;
+  }
+  .slot-cta:hover {
+    background: #fff;
+  }
+  .slot-cta.revealed {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  .slot-cta svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  /* Filters */
+  .discover-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+    margin-bottom: 32px;
+    max-width: 600px;
+  }
+  .filter-chip {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    background: rgba(0,0,0,.06);
+    border: 1.5px solid rgba(0,0,0,.18);
+    cursor: pointer;
+    text-transform: lowercase;
+    transition: all 0.2s;
+  }
+  .filter-chip:hover {
+    background: rgba(0,0,0,.1);
+    border-color: rgba(0,0,0,.3);
+  }
+  .filter-chip.active {
+    background: var(--dark);
+    color: var(--yel);
+    border-color: var(--dark);
+  }
+  
+  /* Spin Button */
+  .spin-btn {
+    font-family: inherit;
+    font-size: 18px;
+    font-weight: 700;
+    padding: 20px 48px;
+    border-radius: var(--radius-pill);
+    background: var(--dark);
+    color: var(--yel);
+    border: none;
+    cursor: pointer;
+    text-transform: lowercase;
+    transition: all 0.2s;
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 32px;
+  }
+  .spin-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(0,0,0,.25);
+  }
+  .spin-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+  .spin-btn svg {
+    width: 20px;
+    height: 20px;
+    animation: none;
+  }
+  .spin-btn.spinning svg {
+    animation: spin 1s linear infinite;
+  }
+  @keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+  
+  /* History */
+  .discover-history {
+    max-width: var(--max-w);
+    margin: 60px auto 0;
+    padding: 0 24px;
+  }
+  .history-title {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--text2);
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+  .history-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .history-item {
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: var(--radius-pill);
+    background: rgba(0,0,0,.04);
+    text-decoration: none;
+    color: var(--text);
+    text-transform: lowercase;
+    transition: background 0.2s;
+  }
+  .history-item:hover {
+    background: rgba(0,0,0,.1);
+  }
+  
+  /* Recent Discoveries */
+  .recent-discoveries {
+    max-width: var(--max-w);
+    margin: 80px auto;
+    padding: 0 24px;
+  }
+  .recent-discoveries h2 {
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 700;
+    text-transform: lowercase;
+    margin-bottom: 24px;
+  }
+  .discovery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .discovery-card {
+    background: var(--white);
+    border-radius: var(--radius-card);
+    padding: 24px;
+    text-decoration: none;
+    color: var(--text);
+    transition: transform 0.2s, box-shadow 0.2s;
+    border: 1px solid rgba(0,0,0,.06);
+  }
+  .discovery-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 12px 30px rgba(0,0,0,.1);
+  }
+  .discovery-ticker {
+    font-family: 'DM Mono', monospace;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 4px;
+  }
+  .discovery-name {
+    font-size: 14px;
+    color: var(--text2);
+    margin-bottom: 12px;
+    text-transform: lowercase;
+  }
+  .discovery-meta {
+    display: flex;
+    gap: 12px;
+    font-size: 12px;
+    font-weight: 500;
+  }
+  .discovery-score {
+    background: var(--yel);
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+  }
+  .discovery-position {
+    padding: 4px 10px;
+    border-radius: var(--radius-pill);
+    text-transform: lowercase;
+  }
+  .discovery-position--long {
+    background: var(--dark);
+    color: var(--yel);
+  }
+  .discovery-position--short {
+    background: var(--red);
+    color: var(--white);
+  }
+  .discovery-position--neutral {
+    background: rgba(0,0,0,.08);
+    color: var(--text2);
+  }
+  
+  @media (max-width: 600px) {
+    .discover-hero {
+      min-height: 60vh;
+      padding: 24px 16px;
+    }
+    .slot-window {
+      padding: 32px 24px;
+      min-height: 260px;
+    }
+    .discover-filters {
+      padding: 0 16px;
+    }
+    .spin-btn {
+      font-size: 16px;
+      padding: 16px 36px;
+    }
+  }
+</style>
+<script>document.documentElement.classList.add('has-js')</script>
+</head>
+<body>
+
+<a class="skip-link" href="#content">skip to content</a>
+
+
+<div class="grain"></div>
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/" class="active">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content">
+<section class="discover-hero">
+  <h1 class="reveal">surprise me</h1>
+  <p class="reveal" style="transition-delay:.1s">paralysis of choice is real. click the button. let fate pick your next research rabbit hole.</p>
+  
+  <div class="discover-filters reveal" style="transition-delay:.15s" id="filters">
+    <button class="filter-chip active" data-filter="all">everything</button>
+    <button class="filter-chip" data-filter="high-composite">high composite (80+)</button>
+    <button class="filter-chip" data-filter="recent">recently updated</button>
+    <button class="filter-chip" data-filter="longs">longs only</button>
+    <button class="filter-chip" data-filter="shorts">shorts only</button>
+  </div>
+  
+  <div class="slot-machine">
+    <div class="slot-window" id="slotWindow">
+      <div class="slot-content" id="slotContent">
+        <div class="slot-placeholder">???</div>
+      </div>
+    </div>
+    
+    <button class="spin-btn" id="spinBtn">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+      </svg>
+      <span id="spinLabel">discover a stock</span>
+    </button>
+  </div>
+</section>
+
+<section class="recent-discoveries" id="recentSection" style="display:none">
+  <h2>explore the library</h2>
+  <div class="discovery-grid" id="discoveryGrid"></div>
+</section>
+
+<section class="discover-history" id="historySection" style="display:none">
+  <div class="history-title">your recent discoveries</div>
+  <div class="history-items" id="historyItems"></div>
+</section>
+
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/library-version.js?v=1776081807"></script>
+<script src="/js/library-loader.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807" defer></script>
+<script>
+(function() {
+  function rowComposite(row) {
+    if (!row) return NaN;
+    var typ = String(row.type || '').toLowerCase();
+    var s = row.composite_score;
+    if (s != null && s !== '') {
+      var n = Number(s);
+      if (Number.isFinite(n) && n >= 0) return n;
+    }
+    // Deep-dive rows: do not substitute thesis conviction for VL composite.
+    if (typ === 'report') return NaN;
+    var c = row.conviction;
+    if (c != null && c !== '') {
+      var cn = Number(c);
+      if (Number.isFinite(cn) && cn >= 0) return cn * 10;
+    }
+    return NaN;
+  }
+
+  function formatCompositeSlot(score) {
+    return Number.isFinite(score) ? String(Math.round(score)) : '—';
+  }
+
+  function bootDiscover() {
+  var rawLib = Array.isArray(window.XVARY_LIBRARY_DATA) ? window.XVARY_LIBRARY_DATA : [];
+  var allTickers = rawLib.map(function (row) {
+    return {
+      ticker: row.ticker,
+      name: row.name,
+      url: row.url,
+      position: row.position,
+      updated: row.updated || row.publishedAt,
+      verdict: row.verdict,
+      summary: row.summary,
+      composite_score: rowComposite(row)
+    };
+  });
+  var currentFilter = 'all';
+  var isSpinning = false;
+  var discoveryHistory = [];
+  try { discoveryHistory = JSON.parse(localStorage.getItem('xvary_discoveries') || '[]'); } catch (e) { discoveryHistory = []; }
+
+  var slotWindow = document.getElementById('slotWindow');
+  var slotContent = document.getElementById('slotContent');
+  var spinBtn = document.getElementById('spinBtn');
+  var filterMsg = document.createElement('div');
+  filterMsg.style.cssText = 'font-size:14px;color:#FF6B6B;text-transform:lowercase;margin-top:12px;display:none;';
+  document.getElementById('filters').insertAdjacentElement('afterend', filterMsg);
+
+  var filterCount = document.createElement('div');
+  filterCount.style.cssText = 'font-family:DM Mono,monospace;font-size:11px;color:rgba(0,0,0,.45);text-transform:lowercase;letter-spacing:0.5px;margin-top:4px;margin-bottom:8px;';
+  filterCount.textContent = allTickers.length + ' stocks in the pool';
+  document.getElementById('filters').insertAdjacentElement('afterend', filterCount);
+
+  // Filter chips
+  document.querySelectorAll('.filter-chip').forEach(function (chip) {
+    chip.addEventListener('click', function () {
+      document.querySelectorAll('.filter-chip').forEach(function (c) { c.classList.remove('active'); });
+      chip.classList.add('active');
+      currentFilter = chip.dataset.filter;
+      filterMsg.style.display = 'none';
+      var count = getFilteredTickers().length;
+      filterCount.textContent = count + ' stock' + (count !== 1 ? 's' : '') + ' in the pool';
+    });
+  });
+
+  function getFilteredTickers() {
+    switch(currentFilter) {
+      case 'high-composite':
+        return allTickers.filter(function (t) {
+          return Number.isFinite(t.composite_score) && t.composite_score >= 80;
+        });
+      case 'recent':
+        var weekAgo = new Date();
+        weekAgo.setDate(weekAgo.getDate() - 7);
+        return allTickers.filter(function (t) { return new Date(t.updated) >= weekAgo; });
+      case 'longs':
+        return allTickers.filter(function (t) { return t.position === 'Long'; });
+      case 'shorts':
+        return allTickers.filter(function (t) { return t.position === 'Short'; });
+      default:
+        return allTickers;
+    }
+  }
+
+  /* Fisher-Yates shuffle */
+  function shuffle(arr) {
+    for (var i = arr.length - 1; i > 0; i--) {
+      var j = Math.floor(Math.random() * (i + 1));
+      var tmp = arr[i]; arr[i] = arr[j]; arr[j] = tmp;
+    }
+    return arr;
+  }
+
+  function spin() {
+    if (isSpinning) return;
+
+    var filtered = getFilteredTickers();
+    if (filtered.length === 0) {
+      filterMsg.textContent = 'no stocks match your current filter. try a different one.';
+      filterMsg.style.display = 'block';
+      return;
+    }
+    filterMsg.style.display = 'none';
+
+    isSpinning = true;
+    spinBtn.disabled = true;
+    spinBtn.classList.add('spinning');
+    slotWindow.classList.add('spinning');
+
+    // Clear previous result
+    slotContent.textContent = '';
+    var scrambleEl = document.createElement('div');
+    scrambleEl.className = 'slot-scramble';
+    scrambleEl.textContent = '????';
+    slotContent.appendChild(scrambleEl);
+
+    // Spin animation
+    var tickerNames = filtered.map(function (t) { return t.ticker; });
+    var spins = 0;
+    var maxSpins = 20;
+    var interval = setInterval(function () {
+      var randomTicker = tickerNames[Math.floor(Math.random() * tickerNames.length)];
+      scrambleEl.textContent = randomTicker;
+      spins++;
+
+      if (spins >= maxSpins) {
+        clearInterval(interval);
+        finalizeSpin(filtered);
+      }
+    }, 100);
+  }
+
+  // Wire spin button (no global leak)
+  spinBtn.removeAttribute('onclick');
+  spinBtn.addEventListener('click', spin);
+
+  function escapeHtml(str) {
+    var div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  function finalizeSpin(filtered) {
+    var winner = filtered[Math.floor(Math.random() * filtered.length)];
+
+    // Add to history
+    discoveryHistory.unshift({
+      ticker: winner.ticker,
+      timestamp: new Date().toISOString()
+    });
+    discoveryHistory = discoveryHistory.slice(0, 10);
+    try { localStorage.setItem('xvary_discoveries', JSON.stringify(discoveryHistory)); } catch (e) { /* private browsing */ }
+
+    // Build result safely (no raw innerHTML with pipeline data)
+    slotContent.textContent = '';
+
+    var tickerEl = document.createElement('div');
+    tickerEl.className = 'slot-ticker';
+    tickerEl.id = 'resultTicker';
+    tickerEl.textContent = winner.ticker;
+    slotContent.appendChild(tickerEl);
+
+    var nameEl = document.createElement('div');
+    nameEl.className = 'slot-name';
+    nameEl.id = 'resultName';
+    nameEl.textContent = (winner.name || winner.ticker).toLowerCase();
+    slotContent.appendChild(nameEl);
+
+    var scoreEl = document.createElement('div');
+    scoreEl.className = 'slot-score';
+    scoreEl.id = 'resultScore';
+    scoreEl.innerHTML = '<span class="slot-score-val">' + escapeHtml(formatCompositeSlot(winner.composite_score)) + '</span>'
+      + '<span class="slot-score-lbl">composite</span>';
+    slotContent.appendChild(scoreEl);
+
+    var posClass = (winner.position || '').toLowerCase();
+    var posEl = document.createElement('div');
+    posEl.className = 'slot-position slot-position--' + posClass;
+    posEl.id = 'resultPosition';
+    posEl.textContent = (winner.position || '').toLowerCase();
+    slotContent.appendChild(posEl);
+
+    var verdictText = (winner.verdict || winner.summary || '').toLowerCase();
+    if (verdictText.length > 120) verdictText = verdictText.substring(0, 120) + '...';
+    var verdictEl = document.createElement('div');
+    verdictEl.className = 'slot-verdict';
+    verdictEl.id = 'resultVerdict';
+    verdictEl.textContent = verdictText;
+    slotContent.appendChild(verdictEl);
+
+    var ctaEl = document.createElement('a');
+    ctaEl.href = winner.url;
+    ctaEl.className = 'slot-cta';
+    ctaEl.id = 'resultCta';
+    ctaEl.innerHTML = 'read the full analysis <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>';
+    slotContent.appendChild(ctaEl);
+
+    // Stop spinning visuals
+    isSpinning = false;
+    spinBtn.disabled = false;
+    spinBtn.classList.remove('spinning');
+    slotWindow.classList.remove('spinning');
+
+    // Reveal animations
+    requestAnimationFrame(function () {
+      tickerEl.classList.add('revealed');
+      setTimeout(function () { nameEl.classList.add('revealed'); }, 100);
+      setTimeout(function () { scoreEl.classList.add('revealed'); }, 200);
+      setTimeout(function () { posEl.classList.add('revealed'); }, 250);
+      setTimeout(function () { verdictEl.classList.add('revealed'); }, 350);
+      setTimeout(function () { ctaEl.classList.add('revealed'); }, 450);
+    });
+
+    document.getElementById('spinLabel').textContent = 'try another';
+
+    updateHistory();
+
+    // Track event
+    if (window.plausible) {
+      plausible('Discover Spin', { props: { ticker: winner.ticker, filter: currentFilter } });
+    }
+  }
+
+  function updateHistory() {
+    var historySection = document.getElementById('historySection');
+    var historyItems = document.getElementById('historyItems');
+
+    if (discoveryHistory.length === 0) {
+      historySection.style.display = 'none';
+      return;
+    }
+
+    historySection.style.display = 'block';
+    historyItems.textContent = '';
+    discoveryHistory.forEach(function (h) {
+      var ticker = allTickers.find(function (t) { return t.ticker === h.ticker; });
+      if (!ticker) return;
+      var a = document.createElement('a');
+      a.href = ticker.url;
+      a.className = 'history-item';
+      a.textContent = ticker.ticker.toLowerCase();
+      historyItems.appendChild(a);
+    });
+  }
+
+  function loadRecentDiscoveries() {
+    var recentSection = document.getElementById('recentSection');
+    var discoveryGrid = document.getElementById('discoveryGrid');
+
+    // Pick 6 random stocks using Fisher-Yates
+    var shuffled = shuffle(allTickers.slice());
+    var featured = shuffled.slice(0, 6);
+
+    if (featured.length === 0) return;
+
+    recentSection.style.display = 'block';
+    discoveryGrid.textContent = '';
+    featured.forEach(function (t) {
+      var card = document.createElement('a');
+      card.href = t.url;
+      card.className = 'discovery-card';
+
+      var tickerDiv = document.createElement('div');
+      tickerDiv.className = 'discovery-ticker';
+      tickerDiv.textContent = t.ticker.toLowerCase();
+      card.appendChild(tickerDiv);
+
+      var nameDiv = document.createElement('div');
+      nameDiv.className = 'discovery-name';
+      nameDiv.textContent = (t.name || '').toLowerCase();
+      card.appendChild(nameDiv);
+
+      var metaDiv = document.createElement('div');
+      metaDiv.className = 'discovery-meta';
+      var scoreSpan = document.createElement('span');
+      scoreSpan.className = 'discovery-score';
+      scoreSpan.textContent = formatCompositeSlot(t.composite_score);
+      metaDiv.appendChild(scoreSpan);
+      var posSpan = document.createElement('span');
+      var posLower = (t.position || '').toLowerCase();
+      posSpan.className = 'discovery-position discovery-position--' + posLower;
+      posSpan.textContent = posLower;
+      metaDiv.appendChild(posSpan);
+      card.appendChild(metaDiv);
+
+      discoveryGrid.appendChild(card);
+    });
+  }
+
+  updateHistory();
+  loadRecentDiscoveries();
+  }
+
+  if (window.XVARY_LIBRARY_READY || Array.isArray(window.XVARY_LIBRARY_DATA)) {
+    bootDiscover();
+  } else {
+    var discoverStarted = false;
+    var onLibraryReady = function () {
+      if (discoverStarted) return;
+      discoverStarted = true;
+      document.removeEventListener('xvary-library-ready', onLibraryReady);
+      window.removeEventListener('xvary-library-ready', onLibraryReady);
+      bootDiscover();
+    };
+    document.addEventListener('xvary-library-ready', onLibraryReady);
+    window.addEventListener('xvary-library-ready', onLibraryReady);
+  }
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>xvary — verifying</title>
+<meta name="robots" content="noindex">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+<style>
+.cb-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+.cb-card{background:#111;color:#fff;border-radius:16px;padding:40px;max-width:420px;text-align:center}
+.cb-card h1{font-size:20px;font-weight:700;margin:0 0 12px;text-transform:lowercase}
+.cb-card p{font-size:14px;line-height:1.6;color:rgba(255,255,255,.7);margin:0 0 24px}
+.cb-spinner{width:32px;height:32px;border:3px solid rgba(255,255,255,.15);border-top-color:#ffe500;border-radius:50%;animation:cb-spin .8s linear infinite;margin:0 auto 20px}
+@keyframes cb-spin{to{transform:rotate(360deg)}}
+.cb-link{color:#ffe500;font-weight:600;text-decoration:none;font-size:14px}
+.cb-link:hover{text-decoration:underline}
+</style>
+</head>
+<body>
+
+<div class="cb-wrap">
+  <div class="cb-card">
+    <div class="cb-spinner"></div>
+    <h1>verifying your session</h1>
+    <p>account access is coming soon. redirecting you to the stacks in a moment.</p>
+    <a class="cb-link" href="/stacks/">go to the stacks now</a>
+  </div>
+</div>
+
+<script>
+setTimeout(function () { window.location.href = '/stacks/'; }, 3000);
+</script>
+<script src="/js/site-chrome.js?v=1776081807"></script>
+</body>
+</html>

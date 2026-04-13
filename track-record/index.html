@@ -1,0 +1,139 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>xvary — track record</title>
+  <meta name="description" content="Public composite score history for all XVARY reports. Timestamped positions, targets, and scores.">
+  <link rel="canonical" href="https://xvary.com/track-record/">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="xvary — track record">
+  <meta property="og:description" content="Public composite score history for all XVARY reports. Timestamped positions, targets, and scores.">
+  <meta property="og:url" content="https://xvary.com/track-record/">
+  <meta property="og:image" content="https://xvary.com/assets/og-default.png">
+  <meta property="og:site_name" content="XVARY">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="xvary — track record">
+  <meta name="twitter:description" content="Public composite score history for all XVARY reports. Timestamped positions, targets, and scores.">
+  <meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+  <script defer data-domain="xvary.com" src="https://plausible.io/js/script.js?v=1776081807"></script>
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Dataset",
+    "name": "XVARY Track Record",
+    "description": "Public composite score history with timestamped positions, targets, and scores for all XVARY equity research reports.",
+    "url": "https://xvary.com/track-record/",
+    "creator": { "@type": "Organization", "name": "xvary", "url": "https://xvary.com" },
+    "license": "https://xvary.com/legal/terms/",
+    "temporalCoverage": "2026-02/2026-03"
+  }
+  </script>
+  <style>
+    .tr-shell { max-width: var(--max-w-wide); margin: 0 auto; padding: 80px 24px 60px; }
+    .tr-shell h1 { font-size: clamp(32px, 6vw, 48px); font-weight: 700; letter-spacing: -1px; text-transform: lowercase; margin-bottom: 8px; }
+    .tr-shell .lead { font-size: 15px; color: var(--text2); text-transform: lowercase; max-width: 620px; margin-bottom: 32px; }
+    .xvary-card-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 40px; }
+    .xvary-stock-card { display: block; background: var(--dark); border-radius: 16px; padding: 24px; color: #fff; text-decoration: none; transition: transform .15s; }
+    .xvary-stock-card:hover { transform: translateY(-3px); }
+    .xvary-stock-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px; }
+    .xvary-stock-head .ticker { font-size: 22px; font-weight: 800; text-transform: lowercase; }
+    .xvary-stock-head .position { font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 600; padding: 4px 10px; border-radius: 100px; text-transform: lowercase; }
+    .position.long { background: rgba(255,229,0,.12); color: var(--yel); }
+    .position.short { background: rgba(255,100,100,.12); color: #ff6b6b; }
+    .position.neutral { background: rgba(255,255,255,.08); color: rgba(255,255,255,.5); }
+    .xvary-stock-name { font-size: 12px; color: rgba(255,255,255,.5); text-transform: lowercase; margin-bottom: 12px; }
+    .xvary-conviction-meter { margin-bottom: 12px; }
+    .xvary-conviction-meter .value { font-size: 28px; font-weight: 800; color: var(--yel); display: inline; }
+    .xvary-conviction-meter .label { font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,.4); text-transform: lowercase; display: inline; margin-left: 6px; }
+    .xvary-meter-track { height: 4px; border-radius: 2px; background: rgba(255,255,255,.06); overflow: hidden; margin-top: 8px; }
+    .xvary-meter-fill { height: 100%; border-radius: 2px; background: var(--yel); }
+    .xvary-stock-card p { font-size: 12px; color: rgba(255,255,255,.55); line-height: 1.5; text-transform: lowercase; margin-bottom: 12px; }
+    .xvary-stock-meta { display: flex; justify-content: space-between; font-family: 'DM Mono', monospace; font-size: 10px; color: rgba(255,255,255,.3); text-transform: lowercase; }
+    .xvary-table-wrap { margin-top: 18px; background: var(--dark); border-radius: 16px; overflow: auto; }
+    table { width: 100%; border-collapse: collapse; min-width: 920px; }
+    th, td { text-align: left; padding: 10px 12px; border-bottom: 1px solid rgba(255,255,255,.06); font-size: 13px; font-family: 'Space Grotesk', sans-serif; }
+    th { font-family: 'DM Mono', monospace; font-size: 11px; text-transform: lowercase; letter-spacing: 0.06em; color: rgba(255,255,255,.4); background: rgba(255,255,255,.03); }
+    td { color: rgba(255,255,255,.7); }
+    @media (max-width: 900px) { .xvary-card-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 768px) { .tr-shell { padding: 60px 16px 40px; } }
+  </style>
+</head>
+<body>
+
+<a class="skip-link" href="#content">skip to content</a>
+
+<div class="grain"></div>
+
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+<main id="content">
+  <div class="tr-shell">
+    <h1>track record</h1>
+    <p class="lead">every composite score is appended with timestamp and source json. last generated: 2026-03-24 17:05 UTC.</p>
+
+    <section class="xvary-card-grid"><a class="xvary-stock-card" href="/stock/pdd/snapshot/"><div class="xvary-stock-head"><div class="ticker">PDD</div><span class="position long">Long</span></div><div class="xvary-stock-name">PDD Holdings Inc.</div><div class="xvary-conviction-meter"><div class="value">90</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:90.0%"></div></div></div><p>We see upside in PDD Holdings Inc. (PDD): target $355 versus current price $101.62.</p><div class="xvary-stock-meta"><span>March 11, 2026</span><span>2026-03-14</span></div></a><a class="xvary-stock-card" href="/stock/aapl/snapshot/"><div class="xvary-stock-head"><div class="ticker">AAPL</div><span class="position long">Long</span></div><div class="xvary-stock-name">Apple Inc.</div><div class="xvary-conviction-meter"><div class="value">80</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:80.0%"></div></div></div><p>We see upside in Apple Inc. (AAPL): target $550.24 versus current price $250.12.</p><div class="xvary-stock-meta"><span>March 15, 2026</span><span>2026-03-15</span></div></a><a class="xvary-stock-card" href="/stock/jnj/snapshot/"><div class="xvary-stock-head"><div class="ticker">JNJ</div><span class="position long">Long</span></div><div class="xvary-stock-name">Johnson & Johnson</div><div class="xvary-conviction-meter"><div class="value">80</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:80.0%"></div></div></div><p>We see upside in Johnson & Johnson (JNJ): target $285 versus current price $242.04.</p><div class="xvary-stock-meta"><span>March 12, 2026</span><span>2026-03-14</span></div></a><a class="xvary-stock-card" href="/stock/nvda/snapshot/"><div class="xvary-stock-head"><div class="ticker">NVDA</div><span class="position long">Long</span></div><div class="xvary-stock-name">NVIDIA CORP</div><div class="xvary-conviction-meter"><div class="value">70</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:70.0%"></div></div></div><p>We see upside in NVIDIA (NVDA): 12-month target $210 and probability-weighted intrinsic value $279 versus a Feb. 24, 2026 price of $192.85.</p><div class="xvary-stock-meta"><span>February 24, 2026</span><span>2026-03-15</span></div></a><a class="xvary-stock-card" href="/stock/adbe/snapshot/"><div class="xvary-stock-head"><div class="ticker">ADBE</div><span class="position neutral">Neutral</span></div><div class="xvary-stock-name">Adobe Inc.</div><div class="xvary-conviction-meter"><div class="value">70</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:70.0%"></div></div></div><p>Adobe Inc. (ADBE) carries a composite score of 82 in our current framework.</p><div class="xvary-stock-meta"><span>February 2026</span><span>2026-03-14</span></div></a><a class="xvary-stock-card" href="/stock/baba/snapshot/"><div class="xvary-stock-head"><div class="ticker">BABA</div><span class="position short">Short</span></div><div class="xvary-stock-name">Alibaba Group Holding Limited</div><div class="xvary-conviction-meter"><div class="value">70</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:70.0%"></div></div></div><p>We see downside risk in Alibaba Group Holding Limited (BABA): target $13 versus current price $134.20.</p><div class="xvary-stock-meta"><span>March 11, 2026</span><span>2026-03-14</span></div></a><a class="xvary-stock-card" href="/stock/stng/snapshot/"><div class="xvary-stock-head"><div class="ticker">STNG</div><span class="position short">Short</span></div><div class="xvary-stock-name">Scorpio Tankers Inc.</div><div class="xvary-conviction-meter"><div class="value">70</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:70.0%"></div></div></div><p>We see downside risk in Scorpio Tankers Inc. (STNG): target $42 versus current price $67.42.</p><div class="xvary-stock-meta"><span>March 11, 2026</span><span>2026-03-14</span></div></a><a class="xvary-stock-card" href="/stock/axti/snapshot/"><div class="xvary-stock-head"><div class="ticker">AXTI</div><span class="position short">Short</span></div><div class="xvary-stock-name">AXT Inc</div><div class="xvary-conviction-meter"><div class="value">60</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:60.0%"></div></div></div><p>We see downside risk in AXT Inc (AXTI): target $15.00 versus current price $46.73.</p><div class="xvary-stock-meta"><span>February 2026</span><span>2026-03-14</span></div></a><a class="xvary-stock-card" href="/stock/gme/snapshot/"><div class="xvary-stock-head"><div class="ticker">GME</div><span class="position long">Long</span></div><div class="xvary-stock-name">GameStop Corp</div><div class="xvary-conviction-meter"><div class="value">60</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:60.0%"></div></div></div><p>We see upside in GameStop Corp (GME): target $33.00 versus current price $24.43.</p><div class="xvary-stock-meta"><span>February 2026</span><span>2026-03-14</span></div></a><a class="xvary-stock-card" href="/stock/msft/snapshot/"><div class="xvary-stock-head"><div class="ticker">MSFT</div><span class="position short">Short</span></div><div class="xvary-stock-name">Microsoft Corporation</div><div class="xvary-conviction-meter"><div class="value">60</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:60.0%"></div></div></div><p>Microsoft represents one of the most extreme valuation disconnects in large-cap technology. We are SHORT with composite 92, as the market prices shares at $395.55 against a DCF fair value of $310—implying 21.6% downside...</p><div class="xvary-stock-meta"><span>March 11, 2026</span><span>2026-03-14</span></div></a><a class="xvary-stock-card" href="/stock/amzn/snapshot/"><div class="xvary-stock-head"><div class="ticker">AMZN</div><span class="position short">Short</span></div><div class="xvary-stock-name">AMAZON COM INC</div><div class="xvary-conviction-meter"><div class="value">50</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:50.0%"></div></div></div><p>We see downside risk in AMAZON COM INC (AMZN): target $205 versus current price $209.53.</p><div class="xvary-stock-meta"><span>March 11, 2026</span><span>2026-03-14</span></div></a><a class="xvary-stock-card" href="/stock/cvna/snapshot/"><div class="xvary-stock-head"><div class="ticker">CVNA</div><span class="position short">Short</span></div><div class="xvary-stock-name">CARVANA CO.</div><div class="xvary-conviction-meter"><div class="value">50</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:50.0%"></div></div></div><p>We see downside risk in CARVANA CO. (CVNA): target $152 versus current price $300.66.</p><div class="xvary-stock-meta"><span>March 13, 2026</span><span>2026-03-14</span></div></a><a class="xvary-stock-card" href="/stock/jpm/snapshot/"><div class="xvary-stock-head"><div class="ticker">JPM</div><span class="position neutral">Neutral</span></div><div class="xvary-stock-name">JPMorgan Chase & Co</div><div class="xvary-conviction-meter"><div class="value">50</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:50.0%"></div></div></div><p>JPMorgan Chase trades at $283.44, 6.5% above our $265 fair value estimate, with the market pricing peak-cycle profitability as structural. The 15.7% ROE and 31.3% net margin—10-15 percentage points above money-center nor...</p><div class="xvary-stock-meta"><span>March 14, 2026</span><span>2026-03-14</span></div></a><a class="xvary-stock-card" href="/stock/pfe/snapshot/"><div class="xvary-stock-head"><div class="ticker">PFE</div><span class="position long">Long</span></div><div class="xvary-stock-name">Pfizer Inc.</div><div class="xvary-conviction-meter"><div class="value">30</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:30.0%"></div></div></div><p>Long at $26.58 with 28% upside to $34.00 12-month target, supported by 6% FCF yield and post-COVID normalization, but conviction remains low (composite 68) due to execution risk on $71B Seagen integration and patent...</p><div class="xvary-stock-meta"><span>March 13, 2026</span><span>2026-03-14</span></div></a><a class="xvary-stock-card" href="/stock/meli/snapshot/"><div class="xvary-stock-head"><div class="ticker">MELI</div><span class="position neutral">Neutral</span></div><div class="xvary-stock-name">MercadoLibre, Inc.</div><div class="xvary-conviction-meter"><div class="value">30</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:30.0%"></div></div></div><p>We maintain a Neutral stance on MercadoLibre (MELI) at its current price of $1,670.00, anticipating only modest upside to our 12-month target of $1,734.00.</p><div class="xvary-stock-meta"><span>March 15, 2026</span><span>2026-03-17</span></div></a><a class="xvary-stock-card" href="/stock/mu/snapshot/"><div class="xvary-stock-head"><div class="ticker">MU</div><span class="position long">Long</span></div><div class="xvary-stock-name">Micron Technology, Inc.</div><div class="xvary-conviction-meter"><div class="value">20</div><div class="label">Composite</div><div class="xvary-meter-track"><div class="xvary-meter-fill" style="width:20.0%"></div></div></div><p>Micron Technology trades at $426.13, a 16.0x premium to our DCF-derived fair value of $26.56, requiring investors to believe in 14.2% terminal growth—more than triple sustainable memory industry norms and 255% above our...</p><div class="xvary-stock-meta"><span>March 15, 2026</span><span>2026-03-15</span></div></a></section>
+
+    <section class="xvary-table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>logged</th>
+            <th>ticker</th>
+            <th>position</th>
+            <th>composite</th>
+            <th>price</th>
+            <th>target</th>
+            <th>intrinsic</th>
+            <th>sub-scores</th>
+          </tr>
+        </thead>
+        <tbody><tr><td>2026-03-17</td><td>MELI</td><td>Neutral</td><td>30</td><td>$1,670.00</td><td>$1,734</td><td>$1,734</td><td></td></tr><tr><td>2026-03-15</td><td>AAPL</td><td>Long</td><td>80</td><td>$250.12</td><td>$550.24</td><td>$550.24</td><td></td></tr><tr><td>2026-03-15</td><td>NVDA</td><td>Long</td><td>70</td><td>$192.85</td><td>$210</td><td>$279</td><td></td></tr><tr><td>2026-03-15</td><td>MU</td><td>Long</td><td>20</td><td>$426.13</td><td>$580.00</td><td>$27</td><td>momentum: 82.0</td></tr><tr><td>2026-03-14</td><td>MSFT</td><td>Short</td><td>60</td><td>$395.55</td><td>$320</td><td>$310.00</td><td></td></tr><tr><td>2026-03-14</td><td>PDD</td><td>Long</td><td>90</td><td>$101.62</td><td>$355</td><td>$355.28</td><td></td></tr><tr><td>2026-03-14</td><td>PFE</td><td>Long</td><td>30</td><td>$26.58</td><td>$34.00</td><td>$32.30</td><td>momentum: 42.0</td></tr><tr><td>2026-03-14</td><td>STNG</td><td>Short</td><td>70</td><td>$67.42</td><td>$42</td><td>$35.69</td><td></td></tr><tr><td>2026-03-14</td><td>GME</td><td>Long</td><td>60</td><td>$24.43</td><td>$33.00</td><td>$30.00</td><td></td></tr><tr><td>2026-03-14</td><td>JNJ</td><td>Long</td><td>80</td><td>$242.04</td><td>$285</td><td>$320.43</td><td>momentum: 72.0</td></tr><tr><td>2026-03-14</td><td>JPM</td><td>Neutral</td><td>50</td><td>$283.44</td><td>$285.00</td><td>$265.00</td><td>momentum: 68.0</td></tr><tr><td>2026-03-14</td><td>ADBE</td><td>Neutral</td><td>70</td><td>$269.78</td><td>$450-680</td><td>$550</td><td></td></tr><tr><td>2026-03-14</td><td>AMZN</td><td>Short</td><td>50</td><td>$209.53</td><td>$205</td><td>$182.49</td><td></td></tr><tr><td>2026-03-14</td><td>AXTI</td><td>Short</td><td>60</td><td>$46.73</td><td>$15.00</td><td>$13.10</td><td></td></tr><tr><td>2026-03-14</td><td>BABA</td><td>Short</td><td>70</td><td>$134.20</td><td>$13</td><td>$11</td><td></td></tr><tr><td>2026-03-14</td><td>CVNA</td><td>Short</td><td>50</td><td>$300.66</td><td>$152</td><td>$152</td><td>momentum: 78.0</td></tr><tr><td>2026-03-14</td><td>AAPL</td><td>Long</td><td>60</td><td>$250.12</td><td>$290.00</td><td>$285.00</td><td>momentum: 72.0</td></tr><tr><td>2026-03-14</td><td>NVDA</td><td>Short</td><td>80</td><td>$180.25</td><td>$92</td><td>$99.62</td><td></td></tr></tbody>
+      </table>
+    </section>
+  </div>
+</main>
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807"></script>
+</body>
+</html>

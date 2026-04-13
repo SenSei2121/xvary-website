@@ -1,0 +1,1030 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AAPL - deep dive · xvary</title>
+  <meta name="description" content="Apple pulls in over 100 billion dollars a year from services alone with 75 percent gross margins." />
+  <meta name="robots" content="index, follow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807" />
+  <style>
+:root{
+      --yel:#ffe500;
+      --ink:#000;
+      --paper:#fffdf3;
+      --card:#fff;
+      --line:rgba(0,0,0,.12);
+      --text:#111;
+      --muted:#555;
+      --soft:#f3eed8;
+      --green:#1a7f5a;
+      --red:#c53030;
+      --amber:#b7791f;
+      --blue:#2251ff;
+      --shadow:0 18px 42px rgba(0,0,0,.10);
+      --radius:16px;
+      --radius-sm:12px;
+      --navw:240px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    html{background:var(--yel);scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h, 68px) + 24px)}
+    body{
+      background:var(--yel);
+      color:var(--text);
+      font:500 16px/1.65 "Space Grotesk",system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    a{color:inherit;text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:var(--ink);color:var(--yel)}
+    .skip-link{
+      position:absolute;left:12px;top:-40px;z-index:9999;
+      background:var(--ink);color:var(--yel);
+      padding:8px 14px;border-radius:999px;font:700 12px/1 "DM Mono",monospace;
+    }
+    .skip-link:focus{top:12px}
+
+    .layout{display:block}
+    .sidebar{
+      position:fixed;left:0;top:var(--nav-h, 68px);bottom:0;width:var(--navw);
+      overflow:auto;background:var(--ink);color:#fff;border-right:1px solid rgba(255,255,255,.08);
+      padding:18px 0 16px;scrollbar-width:none;
+    }
+    .sidebar::-webkit-scrollbar{display:none}
+    .nav-section{padding:0 0 8px}
+    .nav-label{
+      padding:0 18px 10px;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.12em;text-transform:lowercase;color:rgba(255,255,255,.46);
+    }
+    .nav-pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 18px 10px 16px;color:rgba(255,255,255,.78);
+      border-left:3px solid transparent;text-decoration:none;font-size:12px;font-weight:600;line-height:1.35;
+    }
+    .nav-pill:hover{background:rgba(255,255,255,.06);text-decoration:none}
+    .nav-pill.active{background:var(--yel);color:var(--ink);border-left-color:var(--ink)}
+    .nav-kbd{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:22px;height:22px;border-radius:6px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+      font:700 10px/1 "DM Mono",monospace;flex:0 0 auto;
+    }
+    .nav-pill.active .nav-kbd{background:var(--ink);color:var(--yel);border-color:var(--ink)}
+    .nav-txt{min-width:0}
+
+    .content{
+      margin-left:var(--navw);
+      padding:28px 26px 64px;
+      width:calc((100vw - var(--navw)) * 0.9);
+      max-width:none;
+    }
+
+    .hero{
+      display:block;
+      text-align:left;
+      border-bottom:3px solid rgba(0,0,0,.14);
+      padding:18px 0 26px;margin-bottom:18px;
+    }
+    .hero-top{
+      display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:24px;align-items:end;
+      padding-bottom:18px;
+    }
+    .hero .hero-ticker{
+      font-size:clamp(58px,10vw,92px);line-height:.88;font-weight:800;letter-spacing:-.05em;text-transform:lowercase;margin:0;
+      max-width:none;text-align:left;
+    }
+    .hero-co{margin-top:4px;font-size:14px;color:rgba(0,0,0,.64);text-transform:lowercase}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .pill{
+      display:inline-flex;align-items:center;padding:5px 12px;border-radius:999px;
+      font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.06em;
+      background:rgba(0,0,0,.08);color:#111;
+    }
+    .pill.dark{background:var(--ink);color:var(--yel)}
+    .hero .hero-hook{
+      font-size:clamp(19px,2.05vw,24px);line-height:1.35;font-weight:700;margin:0;color:#111;
+      max-width:none;text-align:left;
+    }
+    .hero .hero-sub{
+      margin:10px 0 0;color:rgba(0,0,0,.70);font-size:17px;line-height:1.68;max-width:none;text-align:left;
+    }
+    .hero-tape{
+      display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;padding-top:16px;
+      border-top:2px solid rgba(0,0,0,.10);font:600 11px/1.5 "DM Mono",monospace;color:rgba(0,0,0,.58)
+    }
+    .hero-tape strong{color:rgba(0,0,0,.92)}
+
+    .kpi-grid{display:grid;gap:10px}
+    .kpi-grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .kpi-grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .kpi-grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi{
+      background:rgba(255,255,255,.84);border:1px solid rgba(0,0,0,.08);border-radius:14px;
+      padding:14px 16px;box-shadow:0 8px 20px rgba(0,0,0,.04)
+    }
+    .kpi-label{font:700 10px/1.25 "DM Mono",monospace;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .kpi-value{font-size:clamp(24px,2.8vw,34px);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+    .kpi-sub{margin-top:4px;font-size:12px;line-height:1.45;color:rgba(0,0,0,.55)}
+    .value-gn{color:var(--green)}
+    .value-rd{color:var(--red)}
+    .value-am{color:var(--amber)}
+
+    .panel{
+      background:rgba(255,255,255,.92);border:2px solid rgba(0,0,0,.08);border-left:5px solid var(--yel);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin:18px 0
+    }
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      margin-bottom:12px;padding-bottom:12px;border-bottom:3px solid #000
+    }
+    .section-head h2{
+      margin:0;font-size:clamp(34px,3.9vw,50px);line-height:.98;font-weight:800;letter-spacing:-.045em;text-transform:none
+    }
+    .kicker{font:700 11px/1 "DM Mono",monospace;letter-spacing:.12em;text-transform:lowercase;color:rgba(0,0,0,.52)}
+    .lead{margin:0 0 16px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.72)}
+    .aggregate-sources-attribution{margin:0 0 14px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.76)}
+    .aggregate-sources-attribution p{margin:0}
+    .aggregate-methodology-link{margin:0;max-width:80ch;font-size:14.5px;line-height:1.6;color:rgba(0,0,0,.62)}
+    #appendix .lead,
+    #appendix .aggregate-sources-attribution,
+    #appendix .aggregate-methodology-link{max-width:none}
+    .quote,.note,.callout,.pillar,.scenario,.table-wrap,.chart-box{
+      background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:14px
+    }
+    .quote{padding:14px 16px;font-size:15px;line-height:1.68;color:rgba(0,0,0,.72)}
+    .note{padding:14px 16px;margin-top:10px;font-size:14.5px;line-height:1.64;color:rgba(0,0,0,.72)}
+    .note strong,.table-title .tag,.legend-label,.pillars .head h4{
+      font:700 11px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase
+    }
+    .note.green{border-left:4px solid var(--green);background:rgba(26,127,90,.06)}
+    .note.amber{border-left:4px solid var(--amber);background:rgba(183,121,31,.08)}
+    .note.red{border-left:4px solid var(--red);background:rgba(197,48,48,.06)}
+
+    .g2,.g3,.g4,.callout-row,.pillars,.scenario-grid{display:grid;gap:10px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .callout-row{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:12px;min-width:0}
+    .callout{padding:14px 16px;min-width:0;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+    .callout .label{font:700 10px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .callout .metric{font-size:clamp(24px,2.8vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;word-break:break-word}
+    #appendix .callout .metric{font-size:clamp(13px,1.35vw,16px);font-weight:700;letter-spacing:0;line-height:1.4}
+    .callout .desc{margin-top:6px;font-size:12.5px;line-height:1.5;color:rgba(0,0,0,.56)}
+
+    .pillars{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px}
+    .pillar{padding:14px 16px}
+    .pillar .head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+    .pillar .head h4{margin:0;font-size:14px;color:#111;letter-spacing:0;text-transform:none;font-family:"Space Grotesk",sans-serif}
+    .tag{
+      display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;border:1px solid rgba(0,0,0,.10);
+      background:rgba(255,255,255,.85);font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.04em;
+    }
+    .tag.green{color:var(--green);background:rgba(26,127,90,.08);border-color:rgba(26,127,90,.25)}
+    .tag.amber{color:var(--amber);background:rgba(183,121,31,.10);border-color:rgba(183,121,31,.25)}
+    .tag.red{color:var(--red);background:rgba(197,48,48,.08);border-color:rgba(197,48,48,.25)}
+    .tag.blue{color:#111;background:rgba(255,229,0,.18);border-color:rgba(0,0,0,.20)}
+    .tag.ink{color:rgba(0,0,0,.68)}
+
+    .table-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+    .table-title h3{margin:0;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-.02em;text-transform:none}
+    .table-wrap{overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+    table{width:100%;border-collapse:collapse;min-width:520px;font-variant-numeric:tabular-nums;background:#fff}
+    th,td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+    thead th{
+      position:sticky;top:0;background:#f0ece4;color:#111;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.08em;text-transform:lowercase;border-bottom:3px solid #000;text-align:left
+    }
+    tbody tr:nth-child(even) td{background:rgba(240,236,228,.36)}
+    tbody tr:hover td{background:rgba(255,229,0,.16)}
+    td.num,th.num{text-align:right}
+    td.b{font-weight:800;color:#111}
+    td.pos{color:var(--green);font-weight:700}
+    td.neg{color:var(--red);font-weight:700}
+    td.amb{color:var(--amber);font-weight:700}
+
+    .chart-box{padding:16px 18px 18px;box-shadow:0 12px 36px rgba(0,0,0,.06)}
+    .chart-head h3{margin:0 0 4px;font-size:16px;line-height:1.2;text-transform:none}
+    .chart-head .sub{font-size:11px;color:rgba(0,0,0,.52);font-style:italic}
+    /* TAM vs revenue: y-axis ticks + grid + split x-label row */
+    .chart-labeled{
+      --chart-h:min(52vw,240px);
+      --chart-h-min:200px;
+      --chart-h-max:260px;
+      display:grid;
+      grid-template-columns:3.35rem 1fr;
+      grid-template-rows:minmax(var(--chart-h-min),var(--chart-h-max)) auto;
+      gap:8px 12px;
+      align-items:stretch;
+      margin-top:6px;
+    }
+    .chart-y-title{
+      margin:8px 0 0;
+      font:700 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.5);
+    }
+    .chart-y-axis{
+      grid-column:1;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      padding-right:8px;
+      border-right:2px solid rgba(0,0,0,.2);
+      font:600 10px/1 "DM Mono",monospace;
+      color:rgba(0,0,0,.58);
+      box-sizing:border-box;
+    }
+    .chart-y-axis .yt{
+      position:absolute;right:8px;line-height:1;white-space:nowrap;
+      transform:translateY(-50%);
+    }
+    .chart-y-axis .yt.y-600{top:0;transform:translateY(0)}
+    .chart-y-axis .yt.y-500{top:16.6667%}
+    .chart-y-axis .yt.y-400{top:33.3333%}
+    .chart-y-axis .yt.y-300{top:50%}
+    .chart-y-axis .yt.y-200{top:66.6667%}
+    .chart-y-axis .yt.y-100{top:83.3333%}
+    .chart-y-axis .yt.y-0{bottom:0;top:auto;transform:translateY(0)}
+    .chart-plot-cell{
+      grid-column:2;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      border-bottom:2px solid rgba(0,0,0,.2);
+    }
+    .chart-grid-bg{
+      position:absolute;inset:0;
+      background:repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6)
+      );
+      pointer-events:none;
+    }
+    .chart{
+      position:relative;z-index:1;
+      display:flex;align-items:flex-end;justify-content:stretch;gap:6px;
+      width:100%;
+      height:100%;min-height:0;
+    }
+    .bar{
+      flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+      min-width:0;height:100%;
+    }
+    .bar-pair{
+      display:flex;flex-direction:row;align-items:flex-end;justify-content:center;
+      gap:5px;width:100%;height:100%;min-height:0;
+    }
+    .col{
+      flex:1 1 0;min-width:8px;border-radius:8px 8px 2px 2px;
+      min-height:2px;align-self:flex-end;
+      box-sizing:border-box;
+    }
+    .col.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .col.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .chart-x-foot{
+      grid-column:2;
+      grid-row:2;
+      display:flex;gap:6px;
+      margin-top:-2px;
+    }
+    .bar-foot{
+      flex:1 1 0;min-width:0;
+      text-align:center;padding-top:6px;
+    }
+    .chart-x-axis-cap{
+      margin:4px 0 0;
+      font:600 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.45);
+      text-align:center;
+    }
+    .chart-legend{
+      display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:12px;padding-top:10px;
+      border-top:1px solid rgba(0,0,0,.08);font-size:12px;color:rgba(0,0,0,.62)
+    }
+    .chart-legend span{display:inline-flex;align-items:center;gap:6px}
+    .chart-legend i{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+    .chart-legend i.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .chart-legend i.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .lab,.val{font-size:10px;line-height:1.25;text-align:center;color:rgba(0,0,0,.56)}
+    .val{font:700 10px/1 "DM Mono",monospace}
+    .lab{max-width:12em;margin:0 auto}
+
+    .scenario-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}
+    .scenario{padding:14px 16px;border-left:4px solid var(--blue)}
+    .scenario.bear{border-left-color:var(--red)}
+    .scenario.base{border-left-color:var(--amber)}
+    .scenario.bull{border-left-color:var(--green)}
+    .scenario .prob{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:8px}
+    .scenario h4{margin:0 0 6px;font-size:18px;line-height:1.1}
+    .scenario p{margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,.72)}
+
+    .legend{display:grid;gap:8px}
+    .legend .item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(0,0,0,.72)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)} .dot.blue{background:#2251ff}
+
+    .footer{
+      margin-top:28px;padding-top:22px;border-top:3px solid rgba(0,0,0,.12);
+      text-align:center;font-size:12px;line-height:1.65;color:rgba(0,0,0,.56)
+    }
+    .footer .links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+    .footer .links a{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.68)}
+    .footer .small{margin-top:12px;font-size:11px;color:rgba(0,0,0,.54)}
+
+    .reading-progress{
+      position:fixed;top:var(--nav-h, 68px);left:0;height:4px;width:0;z-index:101;
+      background:linear-gradient(90deg,var(--yel),#fff38c);box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 14px rgba(255,229,0,.45)
+    }
+    .watermark{
+      position:fixed;right:18px;bottom:14px;z-index:1;pointer-events:none;user-select:none;
+      font-size:clamp(68px,12vw,118px);font-weight:800;letter-spacing:-.06em;line-height:.8;color:rgba(0,0,0,.05)
+    }
+
+    @media (max-width:1024px){
+      .g2,.g3,.g4,.pillars,.scenario-grid{grid-template-columns:1fr}
+      .hero-top{grid-template-columns:1fr}
+      .content{padding:22px 18px 56px}
+    }
+    @media (max-width:900px){
+      .sidebar{display:none}
+      .content{
+        margin-left:auto;
+        margin-right:auto;
+        width:90vw;
+        max-width:none;
+      }
+    }
+    @media (max-width:760px){
+      .kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr 1fr}
+      .callout-row{grid-template-columns:1fr 1fr}
+      table{min-width:460px}
+    }
+    @media (max-width:560px){
+      .callout-row,.kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr}
+      .section-head h2{font-size:30px}
+      .hero .hero-hook{font-size:19px}
+      .hero .hero-sub{font-size:16px}
+      .panel{padding:20px}
+    }
+    .hero-snapshot-link {
+      display: inline-block;
+      margin-top: 4px;
+      font: 400 11px/1.4 "DM Mono", monospace;
+      color: rgba(0,0,0,.38);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .hero-snapshot-link:hover {
+      color: rgba(0,0,0,.68);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+  .aggregate-panel {
+    position: relative;
+    z-index: 1;
+  }
+  .aggregate-lead p {
+    margin: 0 0 16px;
+  }
+  .auto-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .aggregate-stack {
+    display: grid;
+    gap: 12px;
+  }
+  .aggregate-card {
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.05);
+  }
+  .aggregate-card.dark {
+    background: rgba(0,0,0,.92);
+    color: rgba(255,255,255,.92);
+    border-color: rgba(255,255,255,.08);
+  }
+  .aggregate-card.dark p,
+  .aggregate-card.dark li,
+  .aggregate-card.dark .aggregate-source {
+    color: rgba(255,255,255,.72);
+  }
+  .aggregate-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .aggregate-card-head h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    text-transform: lowercase;
+  }
+  .aggregate-card-body,
+  .aggregate-card-body p,
+  .aggregate-card-body li {
+    font-size: 15px;
+    line-height: 1.68;
+    color: rgba(0,0,0,.72);
+  }
+  .aggregate-card-body p {
+    margin: 0 0 12px;
+  }
+  .aggregate-card-body ul,
+  .aggregate-card-body ol {
+    margin: 0 0 12px 20px;
+    padding: 0;
+  }
+  .aggregate-card-body > *:last-child {
+    margin-bottom: 0;
+  }
+  .aggregate-source {
+    margin-top: 10px;
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .06em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.48);
+  }
+  .aggregate-substack {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .aggregate-chart-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .aggregate-chart-row {
+    display: grid;
+    grid-template-columns: minmax(80px, 140px) 1fr minmax(60px, 120px);
+    align-items: center;
+    gap: 10px;
+  }
+  .aggregate-chart-label,
+  .aggregate-chart-value {
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .04em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.62);
+  }
+  .aggregate-chart-track {
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .aggregate-chart-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+  }
+  .table-wrap table th.num,
+  .table-wrap table td.num {
+    text-align: right;
+  }
+  .table-wrap table td.pos { color: var(--green, #1a7f37); font-weight: 600; }
+  .table-wrap table td.neg { color: var(--red, #cf222e); font-weight: 600; }
+  .table-wrap table td.amb { color: var(--caution-text, #9a6700); font-weight: 600; }
+  .table-narrow {
+    max-width: 520px;
+  }
+  .table-narrow table {
+    min-width: 0;
+    width: 100%;
+  }
+  .g2 .table-narrow {
+    max-width: none;
+  }
+  .aggregate-mini-table {
+    margin-top: 8px;
+  }
+  .aggregate-mini-table table {
+    min-width: 0;
+  }
+  .aggregate-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .aggregate-list-item {
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    background: rgba(255,255,255,.72);
+  }
+  .aggregate-list-item strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .aggregate-audit {
+    margin-top: 8px;
+  }
+  @media (max-width: 1120px) {
+    .sidebar {
+      position: static;
+      width: auto;
+      top: auto;
+      padding: 12px 0;
+      border-right: 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: none;
+    }
+    .content {
+      margin-left: auto;
+      margin-right: auto;
+      width: 90vw;
+      max-width: none;
+      padding: 24px 18px 56px;
+    }
+    .watermark {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .hero-top {
+      grid-template-columns: 1fr;
+    }
+    .aggregate-chart-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+  .aggregate-pane-xref {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(0, 0, 0, 0.52);
+  }
+  .aggregate-pane-xref a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .aggregate-pane-xref a:hover {
+    color: rgba(0, 0, 0, 0.88);
+  }
+  .hero-snapshot-link {
+    display: inline-block;
+    margin-top: 4px;
+    font: 400 11px/1.4 "DM Mono", monospace;
+    color: rgba(0,0,0,.38);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .hero-snapshot-link:hover {
+    color: rgba(0,0,0,.68);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  </style>
+</head>
+<body data-xvary-aggregate-readable="1">
+  <a class="skip-link" href="#content">skip to content</a>
+  <div class="reading-progress" id="reading-progress"></div>
+  <div class="watermark" aria-hidden="true">AAPL</div>
+
+  <nav class="nav nav--white" aria-label="main navigation" data-xvary-nav-static>
+    <a class="nav-brand" href="/">xvary</a>
+    <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" type="button" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+    <div class="nav-links">
+      <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/pricing/">pricing</a>
+      <a class="nav-cta" href="/pricing/">sign up</a>
+    </div>
+  </nav>
+
+  <div class="layout xvary-aggregate-deep-dive-body" data-template-id="aggregate-deep-dive-live-v1" lang="en">
+    <aside class="sidebar" aria-label="section navigation">
+      <div class="nav-section">
+        <div class="nav-label">quick navigation</div>
+        <a class="nav-pill active" href="#summary">
+          <span class="nav-kbd">0</span>
+          <span class="nav-txt">report snapshot</span>
+        </a>
+        <a class="nav-pill " href="#thesis">
+          <span class="nav-kbd">1</span>
+          <span class="nav-txt">variant perception &amp; thesis</span>
+        </a>
+        <a class="nav-pill " href="#financials">
+          <span class="nav-kbd">2</span>
+          <span class="nav-txt">financial analysis</span>
+        </a>
+        <a class="nav-pill " href="#valuation">
+          <span class="nav-kbd">3</span>
+          <span class="nav-txt">valuation</span>
+        </a>
+        <a class="nav-pill " href="#risk">
+          <span class="nav-kbd">4</span>
+          <span class="nav-txt">what breaks the thesis</span>
+        </a>
+        <a class="nav-pill " href="#ops">
+          <span class="nav-kbd">5</span>
+          <span class="nav-txt">fundamentals &amp; operations</span>
+        </a>
+        <a class="nav-pill " href="#competition">
+          <span class="nav-kbd">6</span>
+          <span class="nav-txt">competitive position</span>
+        </a>
+        <a class="nav-pill " href="#tam">
+          <span class="nav-kbd">7</span>
+          <span class="nav-txt">market size &amp; tam</span>
+        </a>
+        <a class="nav-pill " href="#product">
+          <span class="nav-kbd">8</span>
+          <span class="nav-txt">product &amp; technology</span>
+        </a>
+        <a class="nav-pill " href="#supply">
+          <span class="nav-kbd">9</span>
+          <span class="nav-txt">supply chain</span>
+        </a>
+        <a class="nav-pill " href="#catalysts">
+          <span class="nav-kbd">a</span>
+          <span class="nav-txt">catalyst map</span>
+        </a>
+        <a class="nav-pill " href="#street">
+          <span class="nav-kbd">b</span>
+          <span class="nav-txt">street expectations</span>
+        </a>
+        <a class="nav-pill " href="#management">
+          <span class="nav-kbd">c</span>
+          <span class="nav-txt">management &amp; leadership</span>
+        </a>
+        <a class="nav-pill " href="#macro">
+          <span class="nav-kbd">d</span>
+          <span class="nav-txt">macro sensitivity</span>
+        </a>
+        <a class="nav-pill " href="#governance">
+          <span class="nav-kbd">e</span>
+          <span class="nav-txt">governance &amp; accounting</span>
+        </a>
+        <a class="nav-pill " href="#value">
+          <span class="nav-kbd">f</span>
+          <span class="nav-txt">value framework</span>
+        </a>
+        <a class="nav-pill " href="#appendix">
+          <span class="nav-kbd">g</span>
+          <span class="nav-txt">appendix &amp; sources</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="content" id="content">
+      <section class="hero" aria-label="report intro">
+        <div class="hero-top">
+          <div>
+            <h1 class="hero-ticker">aapl</h1>
+            <div class="hero-co">apple inc.</div>
+            <a class="hero-snapshot-link" href="/stock/aapl/snapshot/">snapshot page &rarr;</a>
+            <div class="hero-badges">
+              <span class="pill dark">deep dive</span>
+              <span class="pill ">industrial machinery</span>
+              <span class="pill ">cap n/a</span>
+              <span class="pill ">apr 11, 2026</span>
+            </div>
+            <div class="hero-tape" aria-label="headline tape">
+              <span><strong>Position</strong> Long</span>
+              <span><strong>Price</strong> $260.48</span>
+              <span><strong>N/A</strong> mcap</span>
+              <span><strong>apr 11, 2026</strong> as-of date</span>
+            </div>
+          </div>
+          <div>
+            <p class="hero-hook">Apple pulls in over 100 billion dollars a year from services alone with 75 percent gross margins. Most people still think of it as just an iPhone company that might be running out of steam.</p>
+            <p class="hero-sub">We're <strong>Long at 53/100 signal strength</strong>; fair value about <strong>$290</strong> (+11.3% vs spot).</p>
+          </div>
+        </div>
+
+        <div class="kpi-grid cols-3">
+          <div class="kpi">
+            <div class="kpi-label">recommendation</div>
+            <div class="kpi-value ">Long</div>
+            <div class="kpi-sub">portfolio stance</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">12m price target</div>
+            <div class="kpi-value ">$290.00</div>
+            <div class="kpi-sub">+11% from $260.48</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">intrinsic value</div>
+            <div class="kpi-value ">$290</div>
+            <div class="kpi-sub">+11.3%</div>
+          </div>
+        </div>
+
+        <div class="callout-row">
+          <div class="callout">
+            <div class="label">assumptions scored</div>
+            <div class="metric ">24</div>
+            <div class="desc">14 high-conviction</div>
+          </div>
+          <div class="callout">
+            <div class="label">number registry</div>
+            <div class="metric ">256</div>
+            <div class="desc">2 verified vs EDGAR</div>
+          </div>
+          <div class="callout">
+            <div class="label">quality score</div>
+            <div class="metric ">73%</div>
+            <div class="desc">12-test average</div>
+          </div>
+          <div class="callout">
+            <div class="label">biases detected</div>
+            <div class="metric ">6</div>
+            <div class="desc">1 high severity</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>report snapshot</h2>
+          <div class="kicker">executive summary</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Intrinsic value of $290 implies 11.3% upside from the current $260.48 share price. Variant Perception: The market treats Apple like a slowing hardware company stuck in premium saturation and upgrade fatigue, obsessing over iPhone cycles and China risks while completely missing how the services engine now powers nearly all incremental profit growth with 70%+ gross margins and double-digit expansion that turns the entire business into a high-quality compounder.</p></div>
+                <div class="g3"><div class="kpi"><div class="kpi-label">recommendation</div><div class="kpi-value ">Long</div><div class="kpi-sub">portfolio stance</div></div><div class="kpi"><div class="kpi-label">12m price target</div><div class="kpi-value ">$290.00</div><div class="kpi-sub">+11% from $260.48</div></div><div class="kpi"><div class="kpi-label">intrinsic value</div><div class="kpi-value ">$290</div><div class="kpi-sub">+11.3%</div></div></div>
+        <div class="g2" style="margin-top:10px">
+          <div class="quote"><strong class="kicker">core debate</strong><br><p>Intrinsic value of $290 implies 11.3% upside from the current $260.48 share price...</p></div>
+          <div class="quote"><strong class="kicker">headline tape</strong><br><p>$260.48 · N/A · as of apr 11, 2026.</p></div>
+        </div>
+        <div class="callout-row"><div class="callout"><div class="label">bull case</div><div class="metric value-gn">$348.00</div><div class="desc">Services continue compounding at 12-15% with 75%+ margins while iPhone holds or gains share through AI-driven innovation and new cycles, pushing overall revenue growth to mid-single digits and earnings higher with expanding net margins near 27%...</div></div><div class="callout"><div class="label">base case</div><div class="metric ">$290.00</div><div class="desc">Services sustain double-digit growth and high margins that offset modest iPhone cycles, delivering overall revenue growth around 6-8% annually with net income continuing to outpace on mix shift...</div></div><div class="callout"><div class="label">bear case</div><div class="metric value-rd">$232.00</div><div class="desc">iPhone demand weakens further from premium saturation and upgrade fatigue, services growth decelerates to single digits amid regulatory pressure on App Store or competition in cloud/ads, and China supply chain issues plus tariffs erode margins during a messy diversification...</div></div></div>
+        <div class="note green"><strong>top findings</strong><br><p>Apple is the ultimate ecosystem compounder where the quiet services mix shift to over 26% of revenue and 70%+ margins drives outsized earnings power that more than offsets any hardware lumpiness, backed by unmatched brand loyalty, switching costs, and scale that keep competitors at bay even as AI features refresh the iPhone franchise and supply chain diversification reduces geopolitical noise...</p></div>
+        <div class="note amber"><strong>aggregate synthesis</strong><br><p>Numbers can look similar while narrative labels diverge — focus on which spreadsheet row the market is pricing.</p></div>
+
+      </section>
+      <section id="thesis" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>variant perception &amp; thesis</h2>
+          <div class="kicker">pm brief</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Price: $260.48 (Apr 11, 2026).</p></div>
+                <div class="pillars"><div class="pillar"><div class="head"><h4>1. services mix shift sustainability</h4><span class="tag green">Catalyst</span></div><p>Will Apple&#x27;s ongoing shift toward higher-margin Services revenue (targeting sustained double-digit growth and > 70% gross margins) continue to drive disproportionate profit growth and offset any potential slowdown in hardware cycles over the next 3-5 years...</p></div><div class="pillar"><div class="head"><h4>2. iphone franchise resilience</h4><span class="tag green">Catalyst</span></div><p>Can Apple sustain or grow its iPhone revenue and global market share (currently ~20-21%) through innovation (e.g., AI features, new cycles) despite premium segment saturation and upgrade fatigue...</p></div><div class="pillar"><div class="head"><h4>3. moat durability</h4><span class="tag blue">Thesis Pillar</span></div><p>Is Apple&#x27;s competitive advantage (ecosystem lock-in, brand, switching costs, patents, and scale) durable against weakening barriers, new entrants, or regulatory erosion over the medium term...</p></div><div class="pillar"><div class="head"><h4>4. valuation premium justification</h4><span class="tag green">Catalyst</span></div><p>Does the current market valuation (~$260/share, implying 16%+ growth or multiple expansion) accurately reflect Apple&#x27;s fundamentals, or is there material overvaluation relative to conservative DCF scenarios (~$142 base case)...</p></div></div>
+        <div class="note"><strong>the 60-second pitch</strong><br><p>Variant Perception: The market treats Apple like a slowing hardware company stuck in premium saturation and upgrade fatigue, obsessing over iPhone cycles and China risks while completely missing how the services engine now powers nearly all incremental profit growth with 70%+ gross margins and double-digit expansion that turns the entire business into a high-quality compounder...</p></div>
+
+      </section>
+      <section id="financials" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>financial analysis</h2>
+          <div class="kicker">elite economics</div>
+        </div>
+                <div class="callout-row"><div class="callout"><div class="label">Revenue (FY2025)</div><div class="metric ">$416.16B</div><div class="desc">+6.4% YoY</div></div><div class="callout"><div class="label">Net Income (FY2025)</div><div class="metric ">$112.01B</div><div class="desc">+19.5% YoY</div></div><div class="callout"><div class="label">Diluted EPS (FY2025)</div><div class="metric ">$7.46</div><div class="desc">+22.7% YoY</div></div><div class="callout"><div class="label">Debt/Equity</div><div class="metric ">1.0</div><div class="desc">stable leverage</div></div><div class="callout"><div class="label">Current Ratio</div><div class="metric ">0.97</div><div class="desc">seasonal</div></div><div class="callout"><div class="label">FCF Yield</div><div class="metric ">2.6%</div><div class="desc">at $260.48 price</div></div></div>
+        <div class="g2" style="margin-top:10px"><div><div class="table-wrap"><table><thead><tr><th>Line Item</th><th class="num">FY2022</th><th class="num">FY2023</th><th class="num">FY2024</th><th class="num">FY2025</th></tr></thead><tbody><tr><td class="b"><p>Revenues</p></td><td class="num"><p>$394.3B</p></td><td class="num"><p>$383.3B</p></td><td class="num"><p>$391.0B</p></td><td class="num"><p>$416.2B</p></td></tr><tr><td class="b"><p>COGS</p></td><td class="num"><p>$223.5B</p></td><td class="num"><p>$214.1B</p></td><td class="num"><p>$210.4B</p></td><td class="num"><p>$221.0B</p></td></tr><tr><td class="b"><p>Gross Profit</p></td><td class="num"><p>$170.8B</p></td><td class="num"><p>$169.1B</p></td><td class="num"><p>$180.7B</p></td><td class="num"><p>$195.2B</p></td></tr><tr><td class="b"><p>R&D</p></td><td class="num"><p>$26.3B</p></td><td class="num"><p>$29.9B</p></td><td class="num"><p>$31.4B</p></td><td class="num"><p>$34.5B</p></td></tr><tr><td class="b"><p>SG&A</p></td><td class="num"><p>$25.1B</p></td><td class="num"><p>$24.9B</p></td><td class="num"><p>$26.1B</p></td><td class="num"><p>$27.6B</p></td></tr><tr><td class="b"><p>Operating Income</p></td><td class="num"><p>$119.4B</p></td><td class="num"><p>$114.3B</p></td><td class="num"><p>$123.2B</p></td><td class="num"><p>$133.1B</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Financial Model (Income Statement) | Source: SEC EDGAR XBRL filings (USD)</div></div><div><div class="table-wrap"><table><thead><tr><th>Component</th><th class="num">Amount</th><th class="num">% of Total</th></tr></thead><tbody><tr><td class="b"><p>Long-Term Debt</p></td><td class="num"><p>$88.5B</p></td><td class="num"><p>100%</p></td></tr><tr><td class="b"><p>Cash &amp; Equivalents</p></td><td class="num"><p>($45.3B)</p></td><td class="num"></td></tr><tr><td class="b"><p>Net Debt</p></td><td class="num"><p>$43.2B</p></td><td class="num"></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Debt Composition | Source: SEC EDGAR XBRL filings</div></div></div>
+        <div class="note green"><strong>production-report readthrough</strong><br><p>Key Takeaway. Apple&#x27;s FY2025 results show margin expansion outpacing modest revenue growth of 6.4%, with net income rising 19.5% to $112.01B and gross margin reaching 46.9%. This reflects successful Services mix shift and pricing power, even as hardware cycles remain uneven...</p></div>
+
+      </section>
+      <section id="valuation" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>valuation</h2>
+          <div class="kicker">probability-weighted fair value</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Apple Inc. (AAPL) trades at a premium valuation reflective of its high-ROIC business model, durable ecosystem, and services-driven margin expansion. The deterministic DCF fair value stands at $290 per share, implying a -45.6% discount to the current market price of $260.48 as of April 11, 2026. This gap highlights market expectations for accelerated growth beyond the model&#x27;s conservative assumptions derived from SEC EDGAR data. Enterprise value reaches $2,125.6B under the base DCF framework, supported by a WACC of 10.0% and terminal growth of 3.9%. While the forward P/E of approximately 30.5x exceeds many tech peers, Apple&#x27;s superior net margins near 27% and ROIC of 85.5% justify a quality premium for many investors.</p></div>
+                <div class="g2"><div><div class="table-wrap table-narrow"><table><thead><tr><th>Parameter</th><th class="num">Value</th></tr></thead><tbody><tr><td class="b"><p>Revenue (base)</p></td><td class="num"><p>$416.2B (USD)</p></td></tr><tr><td class="b"><p>FCF Margin</p></td><td class="num"><p>23.7%</p></td></tr><tr><td class="b"><p>WACC</p></td><td class="num"><p>10.0%</p></td></tr><tr><td class="b"><p>Terminal Growth</p></td><td class="num"><p>3.9%</p></td></tr><tr><td class="b"><p>Growth Path</p></td><td class="num"><p>6.4% → 6.0% → 5.6% → 5.1% → 4.7% → 4.3% → 3.9%</p></td></tr><tr><td class="b"><p>Template</p></td><td class="num"><p>mature_cash_generator</p></td></tr><tr><td class="b"><p>Free Cash Flow (TTM)</p></td><td class="num"><p>$98.767B</p></td></tr><tr><td class="b"><p>Operating Cash Flow (TTM)</p></td><td class="num"><p>$111.482B</p></td></tr><tr><td class="b"><p>CapEx (FY2025)</p></td><td class="num"><p>$12.71B</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: DCF Assumptions | Source: SEC EDGAR XBRL; computed deterministically</div></div><div><div class="scenario-grid"><div class="scenario bull"><div class="prob">bull case</div><h4>$348.00</h4><p>Services continue compounding at 12-15% with 75%+ margins while iPhone holds or gains share through AI-driven innovation and new cycles, pushing overall revenue growth to mid-single digits and earnings higher with expanding net margins near 27%...</p></div><div class="scenario base"><div class="prob">base case</div><h4>$290.00</h4><p>Services sustain double-digit growth and high margins that offset modest iPhone cycles, delivering overall revenue growth around 6-8% annually with net income continuing to outpace on mix shift...</p></div><div class="scenario bear"><div class="prob">bear case</div><h4>$232.00</h4><p>iPhone demand weakens further from premium saturation and upgrade fatigue, services growth decelerates to single digits amid regulatory pressure on App Store or competition in cloud/ads, and China supply chain issues plus tariffs erode margins during a messy diversification...</p></div></div></div></div>
+        <div class="g2" style="margin-top:10px"><div class="note"><p>Apple&#x27;s trailing P/E of 34.9x sits above the broader tech peer average near 29-30x but is supported by superior profitability metrics. Peers such as Microsoft trade at forward P/E around 23-30x, Alphabet near 29x, while Samsung shows lower EV/EBITDA around 14x. Apple&#x27;s EV/EBITDA of 25.1x reflects its services-heavy mix and high gross margins of 46.9%...</p></div></div>
+        <div style="margin-top:12px"><div class="table-wrap table-narrow"><table><thead><tr><th>Metric</th><th class="num">Value</th></tr></thead><tbody><tr><td class="b"><p>Current Growth Rate</p></td><td class="num"><p>1.8%</p></td></tr><tr><td class="b"><p>Growth Uncertainty</p></td><td class="num"><p>±3.7pp</p></td></tr><tr><td class="b"><p>Observations</p></td><td class="num"><p>4</p></td></tr><tr><td class="b"><p>Year 1 Projected</p></td><td class="num"><p>1.9%</p></td></tr><tr><td class="b"><p>Year 2 Projected</p></td><td class="num"><p>2.0%</p></td></tr><tr><td class="b"><p>Year 3 Projected</p></td><td class="num"><p>2.1%</p></td></tr><tr><td class="b"><p>Year 4 Projected</p></td><td class="num"><p>2.2%</p></td></tr><tr><td class="b"><p>Year 5 Projected</p></td><td class="num"><p>2.3%</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Kalman Growth Estimator | Source: SEC EDGAR revenue history; Kalman filter</div></div>
+
+      </section>
+      <section id="risk" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>what breaks the thesis</h2>
+          <div class="kicker">falsifiable kill criteria</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The bull thesis for AAPL rests on sustained Services mix shift to high-margin recurring revenue, resilient iPhone franchise with AI-driven upgrades, durable ecosystem moat, valuation premium supported by superior growth and returns, smooth leadership transition, and resilient supply chain diversification. This risk pane outlines the specific invalidating triggers that would materially undermine these pillars, drawing from DCF-implied growth requirements, regulatory developments, and historical performance benchmarks.</p></div>
+                <div class="note red"><strong>risk framing</strong><br><p>Anchoring Risk: Dominant anchor class: ANCHORED (73% of leaves). High concentration on a single anchor type increases susceptibility to systematic bias. Investors should stress-test against the DCF base case fair value of $290 and Monte Carlo median of $125.40, which highlight the embedded optimism in current pricing near $260...</p></div>
+        <div style="margin-top:10px"><div class="table-wrap"><table><thead><tr><th>Pillar</th><th>Invalidating Facts</th><th class="num">P(Invalidation)</th></tr></thead><tbody><tr><td class="b"><p>services_mix_shift_sustainability</p></td><td><p>Services revenue growth falls below 10% YoY for two consecutive quarters and fails to sustain double-digit trajectory; Services gross margins drop below 70% (e.g., due to increased competition from Google Play and alternative app stores, regulatory caps on App Store fees as seen in the Epic Games case with the December 2025 Ninth Circuit ruling prohibiting 27% fees on external purchases, or higher content/acquisition costs for Apple TV+ and Arcade); Services fail to offset any hardware revenue slowdown, with overall profit growth stalling or declining despite mix shift. In Q1 FY2026, Services reached $30.0B (up 14% YoY), contributing meaningfully to the $143.8B total revenue (up 16% YoY), but any sustained deceleration below recent 13-15% levels would challenge the margin expansion narrative versus hardware peers like Samsung.</p></td><td class="num"><p>25%</p><span class="tag blue">True</span></td></tr><tr><td class="b"><p>iphone_franchise_resilience</p></td><td><p>Global iPhone market share drops below 18% sustained (from current ~20% in 2025 per Counterpoint Research, with Apple leading at 20% shipments and 10% YoY growth), with no recovery via AI-driven upgrades; iPhone revenue declines YoY for multiple quarters amid premium saturation and upgrade cycles extending beyond 3-4 years; AI features (e.g., Apple Intelligence) fail to drive meaningful super-cycle upgrades, with adoption and monetization remaining low. Historical context includes an 11% YoY iPhone sales decline in Greater China in Q1 2025, contrasted by recovery in Q1 2026 with overall revenue strength, but sustained erosion versus Samsung (19% share) or Xiaomi (13%) would invalidate the premium positioning.</p></td><td class="num"><p>35%</p><span class="tag blue">True</span></td></tr><tr><td class="b"><p>moat_durability</p></td><td><p>Major regulatory rulings (DOJ antitrust trial or EU DMA expansions, including the €500M fine in April 2025 and ongoing non-compliance concerns through 2026) force opening of App Store/iMessage/ecosystem, materially reducing switching costs and services margins; Ecosystem lock-in erodes measurably (e.g., iPhone retention falls below 85-90%, cross-device ownership declines significantly); New entrants or AI shifts commoditize hardware/software integration, with competitors like Google Pixel or Huawei capturing share in key segments. The DMA has already introduced alternative app marketplaces in the EU, increasing security risks and potentially pressuring App Store economics.</p></td><td class="num"><p>40%</p><span class="tag blue">True</span></td></tr><tr><td class="b"><p>valuation_premium_justification</p></td><td><p>Conservative DCF models (using 8-10% discount rate, mid-single-digit long-term growth) consistently value AAPL below $180/share while market price remains ~$260 (as of Apr 11, 2026 at $260.48); Realized growth falls short of the 16.3% implied by current valuation from reverse DCF (e.g., revenue/EPS growth averages < 10% over 2-3 years, versus consensus 6.4% long-term); Multiple contraction occurs without corresponding fundamental improvement, with P/E or EV/FCF remaining elevated relative to peers like Samsung and historical averages (trailing P/E around 34-38x in recent periods). Monte Carlo simulation shows median fair value at $125.40 with only 5.5% probability of upside at current levels.</p></td><td class="num"><p>45%</p><span class="tag blue">True</span></td></tr><tr><td class="b"><p>leadership_succession_risk</p></td><td><p>Tim Cook departs (or announces imminent exit) without a smooth, pre-communicated internal transition plan, leading to observable strategic disruption or market uncertainty; Key executive departures (beyond normal) cluster around succession period, signaling internal instability or groupthink; New leadership demonstrates clear loss of agility (e.g., delayed innovation responses or missteps in AI/hardware cycles). Reports from late 2025 indicate accelerated planning with John Ternus (SVP Hardware Engineering) as a leading candidate, potentially for an early 2026 transition, but any disorderly process could mirror historical tech leadership vacuums at peers.</p></td><td class="num"><p>30%</p><span class="tag blue">True</span></td></tr><tr><td class="b"><p>geopolitical_supply_chain_resilience</p></td><td><p>China supplier concentration remains > 70% with no meaningful reduction (80% of top 100 suppliers still in China as of recent data), and new tariffs/geopolitical events cause sustained > 5-10% margin erosion (e.g., 2025 tariffs impacting ~$3.3B cumulatively before partial Supreme Court relief); Diversification efforts (India, Vietnam, US) result in higher costs, quality issues, or delays that erode competitiveness without offsetting risk reduction; Major supply disruption (e.g., from tariffs, export controls, or regional conflict) materially impacts production and revenue for > 1-2 quarters. Manufacturing remains heavily concentrated in China mainland, India, and Vietnam, with vendor receivables also Asia-focused.</p></td><td class="num"><p>35%</p><span class="tag blue">True</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Kill File — 6 Thesis-Breaking Triggers | Source: Methodology Why-Tree Decomposition</div></div>
+        <div class="callout-row"><div class="callout"><div class="label">CURRENT RATIO</div><div class="metric value-rd">0.97x</div><div class="desc">Q2 FY2026</div></div><div class="callout"><div class="label">INTEREST COV</div><div class="metric value-rd">33.8x</div><div class="desc">Op. Income / Interest</div></div><div class="callout"><div class="label">NET MARGIN</div><div class="metric value-rd">26.9%</div><div class="desc">Latest annual</div></div></div>
+        <div class="note amber"><strong>most dangerous zone</strong><br><p>Watch for drawdowns driven by fundamentals where funds de-risk faster than the business narrative updates.</p></div>
+
+      </section>
+      <section id="ops" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>fundamentals &amp; operations</h2>
+          <div class="kicker">unit economics</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">revenue (fy2025)</div><div class="kpi-value ">$416.16B</div><div class="kpi-sub">vs prior +6.4% YoY</div></div><div class="kpi"><div class="kpi-label">revenue growth</div><div class="kpi-value ">+6.4%</div><div class="kpi-sub">FY2025; Q1 FY2026 +16%</div></div><div class="kpi"><div class="kpi-label">gross margin</div><div class="kpi-value ">46.9%</div><div class="kpi-sub">annual; Q1 FY2026 48.2%</div></div><div class="kpi"><div class="kpi-label">op. margin</div><div class="kpi-value ">32.0%</div><div class="kpi-sub">annual</div></div></div><div class="note green"><p>Key Takeaway. Apple&#x27;s Q1 FY2026 revenue accelerated sharply to $290.756B (+16% YoY) versus FY2025&#x27;s +6.4% growth, driven by iPhone cycle strength and Services expansion. This reacceleration, combined with gross margin expansion to 48.2%, highlights improving mix and pricing power amid hardware cyclicality.</p></div><div class="table-wrap"><table><thead><tr><th>Segment</th><th class="num">FY2025 Revenue</th><th class="num">% of Total</th><th class="num">Growth (YoY)</th><th class="num">Q1 FY2026 Revenue</th><th class="num">Q1 Growth</th></tr></thead><tbody><tr><td class="b"><p>iPhone</p></td><td class="num"><p>$209.59B</p></td><td class="num"><p>50.4%</p></td><td class="pos num"><p>+4%</p></td><td class="num"><p>$85.269B</p></td><td class="pos num"><p>+23%</p></td></tr><tr><td class="b"><p>Services</p></td><td class="num"><p>$109.16B</p></td><td class="num"><p>26.2%</p></td><td class="pos num"><p>+14%</p></td><td class="num"><p>$30.013B</p></td><td class="pos num"><p>+14%</p></td></tr><tr><td class="b"><p>Mac</p></td><td class="num"><p>$33.71B</p></td><td class="num"><p>8.1%</p></td><td class="pos num"><p>+12%</p></td><td class="num"><p>$8.386B</p></td><td class="neg num"><p>-7%</p></td></tr><tr><td class="b"><p>iPad</p></td><td class="num"><p>$28.02B</p></td><td class="num"><p>6.7%</p></td><td class="pos num"><p>+5%</p></td><td class="num"><p>$8.595B</p></td><td class="pos num"><p>+6%</p></td></tr><tr><td class="b"><p>Wearables/Home/Accessories</p></td><td class="num"><p>$35.69B</p></td><td class="num"><p>8.6%</p></td><td class="neg num"><p>-4%</p></td><td class="num"><p>$11.493B</p></td><td class="neg num"><p>-2%</p></td></tr><tr><td class="b"><p>Total</p></td><td class="num"><p>$416.16B</p></td><td class="num"><p>100%</p></td><td class="pos num"><p>+6.4%</p></td><td class="num"><p>$143.756B</p></td><td class="pos num"><p>+16%</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Revenue by Product Segment with Growth | Source: Company 10-K FY2025; Q1 FY2026 10-Q (quarter ended Dec 27, 2025)</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Top 3 Revenue Drivers</h3><span class="tag blue">Growth Engines</span></div><div class="aggregate-card-body"><p>1. iPhone remains the dominant driver, delivering $209.59B in FY2025 (50.4% of total) and surging 23% YoY to $85.269B in Q1 FY2026. The iPhone 17 cycle, particularly Pro models, fueled this acceleration amid premium demand versus Android competitors like Samsung...</p></div><div class="aggregate-source">Source: SEC EDGAR 10-K FY2025 and Q1 FY2026 10-Q</div></div><div class="table-wrap"><table><thead><tr><th>Category</th><th>Concentration Detail</th><th class="num">Revenue Contribution</th><th>Risk Factor</th><th>Mitigation</th></tr></thead><tbody><tr><td class="b"><p>No single customer > 10%</p></td><td><p>Diversified end-users</p></td><td class="num"><p>N/A</p></td><td><span class="tag blue">LOW</span></td><td><p>Ecosystem lock-in</p></td></tr><tr><td class="b"><p>Carriers/Resellers</p></td><td><p>Substantial portion of trade receivables…</p></td><td class="num"><p>Not quantified</p></td><td><p>Medium (collectibility)</p></td><td><p>Direct sales growth</p></td></tr><tr><td class="b"><p>Vendor Non-Trade Receivables</p></td><td><p>Concentrated among few Asia-based vendors…</p></td><td class="num"><p>Not quantified</p></td><td><p>Medium (supply)</p></td><td><p>Long-term prepayments</p></td></tr><tr><td class="b"><p>Enterprise/Education/Govt</p></td><td><p>Direct sales channel</p></td><td class="num"><p>Growing but minority</p></td><td><span class="tag blue">LOW</span></td><td><p>Diversification</p></td></tr><tr><td class="b"><p>Services Users</p></td><td><p>850M+ weekly App Store users</p></td><td class="num"><p>~26% of rev</p></td><td><p>Low churn</p></td><td><p>Habit formation</p></td></tr><tr><td class="b"><p>Overall Assessment</p></td><td><p>No material single-customer risk disclosed…</p></td><td class="num"><p>Diversified</p></td><td><span class="tag blue">LOW</span></td><td><p>Strong balance sheet</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Customer and Concentration Risk Profile | Source: Company 10-K FY2025 (Risk Factors section)</div><div class="table-wrap"><table><thead><tr><th>Region</th><th>FY2025 Contribution</th><th class="num">Growth Trend</th><th>Q1 FY2026 Highlight</th><th>Currency/Geo Risk</th></tr></thead><tbody><tr><td class="b"><p>Americas</p></td><td><p>~43-46% (dominant)</p></td><td class="pos num"><p>+7%</p></td><td class="amb"><p>Stable</p></td><td><span class="tag blue">LOW</span></td></tr><tr><td class="b"><p>Europe</p></td><td><p>Significant</p></td><td class="pos num"><p>+10%</p></td><td><p>Solid</p></td><td><p>Medium (FX)</p></td></tr><tr><td class="b"><p>Greater China</p></td><td><p>~15% (declined 4% FY2025)</p></td><td class="neg num"><p>-4% FY</p></td><td class="pos"><p>+38% Q1 rebound</p></td><td><p>High (competition/Huawei, trade)</p></td></tr><tr><td class="b"><p>Japan</p></td><td><p>Notable</p></td><td class="pos num"><p>+15%</p></td><td><p>Strong</p></td><td><span class="tag blue">MEDIUM</span></td></tr><tr><td class="b"><p>Rest of Asia Pacific</p></td><td><p>Balanced</p></td><td class="pos num"><p>+10%</p></td><td><p>Positive</p></td><td><p>Medium (FX/supply)</p></td></tr><tr><td class="b"><p>Total</p></td><td><p>$416.16B</p></td><td class="pos num"><p>+6.4%</p></td><td><p>$143.756B (+16%)</p></td><td><p>Managed via hedging</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 4: Geographic Revenue Breakdown | Source: Company 10-K FY2025 and Q1 FY2026 10-Q geographic commentary</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Unit Economics &amp; Cost Structure</h3><span class="tag blue">Pricing Power</span></div><div class="aggregate-card-body"><p>Apple exhibits strong pricing power, particularly in Services (gross margin ~76% in Q1 FY2026 vs products ~40.7%), lifting overall gross margin to 48.2%. Products gross margins remain resilient at ~37-41% despite component costs and tariffs, supported by premium positioning and ecosystem integration. Cost structure is disciplined: R&D at ~8.3% of revenue ($10.89B in Q1), SG&A ~6.6%, with CapEx controlled at $12.71B annually versus FCF of $98.77B (23.7% margin)...</p></div><div class="aggregate-source">Source: SEC EDGAR filings FY2025 10-K and Q1 FY2026 10-Q; derived ratios</div></div><p class="aggregate-pane-xref"><a href="#product">See product &amp; technology</a></p><p class="aggregate-pane-xref"><a href="#supply">See supply chain</a></p><p class="aggregate-pane-xref"><a href="#financials">See financial analysis</a></p>
+      </section>
+      <section id="competition" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>competitive position</h2>
+          <div class="kicker">moat vs. customer-as-competitor</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">global smartphone market share</div><div class="kpi-value ">20%</div><div class="kpi-sub">2025 (Counterpoint); gaining trend, led with 10% YoY shipment growth</div></div><div class="kpi"><div class="kpi-label"># direct competitors</div><div class="kpi-value ">5+</div><div class="kpi-sub">Samsung (19%), Xiaomi (13%), vivo/OPPO, Huawei in key regions</div></div><div class="kpi"><div class="kpi-label">moat score</div><div class="kpi-value ">9/10</div><div class="kpi-sub">Position-based CA dominant via ecosystem + scale</div></div><div class="kpi"><div class="kpi-label">contestability</div><div class="kpi-value ">Non-Contestable</div><div class="kpi-sub">Premium ecosystem segment</div></div></div><div class="note green"><p>Key Takeaway. Apple&#x27;s 20% global smartphone market share leadership in 2025 (with 10% YoY shipment growth, highest among top brands) combined with iPhone retention rates of ~89-92% demonstrates durable position-based competitive advantage in a non-contestable premium segment...</p></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Apple</th><th>Samsung</th><th>Xiaomi</th><th>Lenovo (PC ref)</th></tr></thead><tbody><tr><td class="b"><p>Revenue (FY/Recent)</p></td><td><p>~$416B (implied FY2025)</p></td><td><p><span style="color:var(--muted,#999);font-style:italic">—</span></p></td><td><p><span style="color:var(--muted,#999);font-style:italic">—</span></p></td><td><p><span style="color:var(--muted,#999);font-style:italic">—</span></p></td></tr><tr><td class="b"><p>Revenue Growth YoY</p></td><td class="pos"><p>+6.4%</p></td><td><p>Modest (5% shipments)</p></td><td><p>Stable but softer</p></td><td><p>N/A</p></td></tr><tr><td class="b"><p>Gross Margin</p></td><td class="pos"><p>46.9%</p></td><td><p>Lower (est. 30-40% range)</p></td><td><p>Lower</p></td><td><p>N/A</p></td></tr><tr><td class="b"><p>Operating Margin</p></td><td class="pos"><p>32.0%</p></td><td><p>Lower</p></td><td><p>Lower</p></td><td><p>N/A</p></td></tr><tr><td class="b"><p>R&D / Revenue</p></td><td><p>8.3%</p></td><td><p>Higher relative spend</p></td><td><p>Lower</p></td><td><p>N/A</p></td></tr><tr><td class="b"><p>P/E Ratio</p></td><td><p>34.9</p></td><td><p>Lower</p></td><td><p>Lower</p></td><td><p>N/A</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Competitor Comparison Matrix (Porter Forces Scope 1-4) | Source: Counterpoint Research 2025 full year; Gartner Q1 2026 PC; Derived ratios from AAPL SEC filings FY2025; Analyst estimates for peers</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Market Contestability Assessment</h3><span class="tag green">NON-CONTESTABLE</span></div><div class="aggregate-card-body"><p>Using the Greenwald framework, Apple&#x27;s core premium smartphone and ecosystem market is NON-CONTESTABLE . A dominant player (Apple with 20% global smartphone share in 2025, rising to 21% in Q1 2026) benefits from barriers that prevent easy replication of both cost structure and demand capture. New entrants cannot easily replicate Apple&#x27;s cost structure due to massive fixed costs in R&D ($34.55B or 8.3% of revenue), global distribution, and manufacturing scale...</p></div></div><div class="table-wrap"><table><thead><tr><th>Mechanism</th><th class="num">Relevance</th><th>Strength</th><th class="num">Evidence</th><th>Durability</th></tr></thead><tbody><tr><td class="b"><p>Habit Formation</p></td><td class="num"><p>High (recurring device/services use)</p></td><td><span class="tag blue">STRONG</span></td><td class="num"><p>Frequent upgrades and services attach; retention supports repeat behavior…</p></td><td><p>High (ecosystem reinforces daily use)</p></td></tr><tr><td class="b"><p>Switching Costs</p></td><td class="num"><p>High (ecosystem investments)</p></td><td><span class="tag blue">STRONG</span></td><td class="num"><p>iOS apps, iCloud, integrations, data lock-in; months/years to replicate…</p></td><td><p>Very High</p></td></tr><tr><td class="b"><p>Brand as Reputation</p></td><td class="num"><p>High (experience goods)</p></td><td><span class="tag blue">STRONG</span></td><td class="num"><p>Premium positioning, track record in quality and privacy…</p></td><td><span class="tag blue">HIGH</span></td></tr><tr><td class="b"><p>Network Effects</p></td><td class="num"><p>Moderate-High (two-sided via App Store, iMessage)</p></td><td><span class="tag blue">STRONG</span></td><td class="num"><p>Value increases with user base; services and messaging reinforce…</p></td><td><span class="tag blue">HIGH</span></td></tr><tr><td class="b"><p>Search Costs</p></td><td class="num"><p>High (complex ecosystem evaluation)</p></td><td><span class="tag blue">STRONG</span></td><td class="num"><p>Evaluating alternatives is time-intensive and uncertain for customized setup…</p></td><td><span class="tag blue">HIGH</span></td></tr><tr><td class="b"><p>Overall Captivity Strength</p></td><td class="num"><p>Weighted</p></td><td><span class="tag blue">STRONG</span></td><td class="num"><p>iPhone loyalty/retention ~89-92% in 2025 periods…</p></td><td><p>Multi-year durable</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Customer Captivity Mechanisms | Source: Counterpoint, CIRP, analyst reports 2025-2026; AAPL filings context</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Economies of Scale Assessment</h3><span class="tag green">STRONG + CAPTIVITY</span></div><div class="aggregate-card-body"><p>Apple exhibits high fixed cost intensity, with significant R&D ($34.55B, 8.3% of revenue) and infrastructure/distribution investments spread over large volumes. Minimum Efficient Scale (MES) represents a large fraction of the premium market, creating a cost advantage for the incumbent. A hypothetical entrant at 10% market share would face materially higher per-unit costs in R&D amortization, marketing, and supply chain leverage...</p></div></div><div class="table-wrap"><table><thead><tr><th>Dimension</th><th>Assessment</th><th class="num">Score (1-10)</th><th class="num">Evidence</th><th>Durability (years)</th></tr></thead><tbody><tr><td class="b"><p>Position-Based CA</p></td><td><p>Strong (captivity + scale present)</p></td><td class="num"><p>9</p></td><td class="num"><p>Customer captivity (89-92% retention) + economies of scale in R&D/distribution; 20% smartphone share…</p></td><td><p>10+ (durable moat)</p></td></tr><tr><td class="b"><p>Capability-Based CA</p></td><td><p>Moderate (supports position)</p></td><td class="num"><p>7</p></td><td class="num"><p>R&D/integration expertise ($34.55B spend); learning in ecosystem design…</p></td><td><p>5-7 (needs conversion)</p></td></tr><tr><td class="b"><p>Resource-Based CA</p></td><td class="amb"><p>Moderate</p></td><td class="num"><p>6</p></td><td class="num"><p>Patents, brand, supply agreements; no unique natural resources…</p></td><td><p>Variable (legal protection)</p></td></tr><tr><td class="b"><p>Overall CA Type</p></td><td><p>Dominant: Position-Based</p></td><td class="num"><p>9</p></td><td class="num"><p>Combination creates near-insurmountable moat; explains high margins vs. Walmart-style low…</p></td><td><p>Long-term sustainable</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Competitive Advantage Type Classification | Source: Greenwald framework application; AAPL derived ratios and evidence</div><p class="aggregate-pane-xref"><a href="#thesis">See related analysis in</a></p><p class="aggregate-pane-xref"><a href="#ops">See related analysis in</a></p><p class="aggregate-pane-xref"><a href="#tam">See market size</a></p>
+      </section>
+      <section id="tam" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>market size &amp; tam</h2>
+          <div class="kicker">runway vs. penetration</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">tam (est. addressable)</div><div class="kpi-value ">$1,200B+</div><div class="kpi-sub">Smartphones ~$580B value + PC ~$270B + Services ecosystem</div></div><div class="kpi"><div class="kpi-label">sam (relevant)</div><div class="kpi-value ">$650B+</div><div class="kpi-sub">Premium smartphones + premium PC/notebooks + core Services</div></div><div class="kpi"><div class="kpi-label">som (apple capture)</div><div class="kpi-value ">$416B</div><div class="kpi-sub">FY2025 revenue; ~20% global smartphone share</div></div><div class="kpi"><div class="kpi-label">market growth rate</div><div class="kpi-value ">Low-single digit</div><div class="kpi-sub">Smartphones ~1-2% units 2025; PC ~9% units 2025 but softening 2026</div></div></div><div class="note green"><p>Key Takeaway. Apple&#x27;s $416B FY2025 revenue reflects strong premium positioning in a maturing hardware market, with Services at $109.2B (26% of total, +14% YoY) providing durable growth ballast. The 2.5B+ installed base and 20% global smartphone share (247M iPhone units) underscore ecosystem leverage, yet TAM expansion hinges on low-end Mac penetration and AI-driven Services attach rates.</p></div><div class="table-wrap"><table><thead><tr><th>Segment</th><th class="num">Current Size (2025)</th><th>2028 Projected (Est.)</th><th>CAGR (Est.)</th><th>Apple Share (2025)</th></tr></thead><tbody><tr><td class="b"><p>Smartphones (Global Value)</p></td><td class="num"><p>$578.9B</p></td><td><p>$600B+</p></td><td><p>Low-single digit</p></td><td><p>20% units; higher value share</p></td></tr><tr><td class="b"><p>Personal Computers (Global)</p></td><td class="num"><p>~$260B</p></td><td><p>$274B (2026 value)</p></td><td><p>Flat to declining units</p></td><td><p>~9-10% (Mac share gains)</p></td></tr><tr><td class="b"><p>Low-End Notebooks ($300-800)</p></td><td class="num"><p>$32B (2026 TAM)</p></td><td><p>N/A</p></td><td><p>N/A</p></td><td><p>0.6% (pre-Neo)</p></td></tr><tr><td class="b"><p>Services Ecosystem</p></td><td class="num"><p>$109.2B (Apple revenue)</p></td><td><p>$140B+</p></td><td><p>10-14%</p></td><td><p>Dominant via 2.5B devices</p></td></tr><tr><td class="b"><p>App Store Ecosystem Billings</p></td><td class="num"><p>$1.3T (2024)</p></td><td><p>Growth trajectory</p></td><td><p>N/A</p></td><td><p>Platform enabler</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: TAM Breakdown by Core Segment | Source: Counterpoint Research, IDC, Gartner, BofA estimates, Apple filings/evidence (FY2025 revenue $416B, Services $109.2B)</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Bottom-Up TAM Sizing Methodology</h3><span class="tag blue">Methodology</span></div><div class="aggregate-card-body"><p>Bottom-up sizing for Apple&#x27;s addressable market starts with verifiable unit economics and installed base leverage from the 2.5B+ active devices. For smartphones, global shipments reached ~1.25B units in 2025 (2% YoY growth per Counterpoint/IDC), with value ~$579B; Apple&#x27;s 247M units (20% share, 10% YoY growth) and premium ASP drive outsized revenue contribution (~$210B iPhone). Services attach from this base (1.15B+ paid subscriptions, iCloud ~42%) generated $109.2B revenue (+14% YoY) at high ~76% gross margins...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Penetration Analysis &amp; Growth Runway</h3><span class="tag blue">Penetration</span></div><div class="aggregate-card-body"><p>Apple&#x27;s current penetration stands at 20% global smartphone shipments (leading share in 2025 per Counterpoint) and record 69% US share in Q4 2025, up from prior periods, supported by iPhone 17 series demand. With ~2.5B installed base, Services penetration (e.g., paid subscriptions > 1.15B) drives recurring revenue at 26% of $416B FY2025 total. Mac penetration remains premium-focused (~9-10% share gains in recovering PC market of ~270M units), with minimal 0.6% in low-end notebooks pre-Neo...</p></div></div><div class="chart-box"><div class="chart-head"><h3>Market Size &amp; Apple Share Trends</h3><div class="sub">bar</div></div><div class="aggregate-mini-table table-wrap"><table><thead><tr><th>period</th><th class="num">Total Market Size ($B)</th><th class="num">Apple Revenue/Share Contribution</th></tr></thead><tbody><tr><td class="b">Smartphones 2025</td><td class="num">579</td><td class="num">210</td></tr><tr><td class="b">PC 2025</td><td class="num">260</td><td class="num">33</td></tr><tr><td class="b">Services Revenue</td><td class="num">109</td><td class="num">109</td></tr><tr><td class="b">Low-End Notebook 2026</td><td class="num">32</td><td></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: TAM vs Apple Capture by Segment | Source: IDC/Counterpoint (smartphones), Gartner/IDC (PC), Apple FY2025 data, BofA (MacBook Neo)</div></div><div class="note red"><p>Biggest Risk. 2026 memory shortages and component cost spikes (DRAM/NAND) could pressure smartphone/PC shipments (forecast softening/declines per Counterpoint/Gartner/IDC), compressing hardware margins and muting iPhone growth despite Apple&#x27;s supply chain resilience. Cite: global smartphone units risked declining after 2% 2025 growth; PC value growth limited despite prior 9% unit rebound.</p></div><p class="aggregate-pane-xref"><a href="#competition">See competitive position</a></p><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="product" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>product &amp; technology</h2>
+          <div class="kicker">roadmap + software stack</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">r&amp;d spend (fy2025)</div><div class="kpi-value ">$34.55B</div><div class="kpi-sub">8.3% of revenue, +10.1% YoY</div></div><div class="kpi"><div class="kpi-label">r&amp;d % revenue</div><div class="kpi-value ">8.3%</div><div class="kpi-sub">Supports AI and silicon innovation</div></div><div class="kpi"><div class="kpi-label">major product categories</div><div class="kpi-value ">6</div><div class="kpi-sub">iPhone, Mac, iPad, Wearables/Home/Accessories, Services + ecosystem</div></div><div class="kpi"><div class="kpi-label">u.s. patents granted (2025)</div><div class="kpi-value ">2,722</div><div class="kpi-sub">Global portfolio ~116k; active ~98.8k</div></div></div><div class="note green"><p>Key Takeaway. Apple&#x27;s R&D acceleration to $34.55B (8.3% of revenue) in FY2025, with a record $10.89B in the Dec 2025 quarter, directly funds vertical integration in custom silicon (M5 family rollout Oct 2025) and on-device AI via Apple Intelligence, sustaining premium gross margins of 46.9% despite only 6.4% revenue growth. This efficiency conversion, driving 22.7% EPS growth, highlights durable technology differentiation versus Android peers facing more fragmented economics.</p></div><div class="table-wrap"><table><thead><tr><th>Product/Category</th><th class="num">Revenue Contribution (FY2025)</th><th class="num">% of Total</th><th class="num">Growth Rate (YoY)</th><th>Lifecycle Stage</th><th>Competitive Position</th></tr></thead><tbody><tr><td class="b"><p>iPhone</p></td><td class="num"><p>$209.59B</p></td><td class="num"><p>~50%</p></td><td class="pos num"><p>+4%</p></td><td class="b"><span class="tag blue">MATURE</span></td><td><p>Leader</p></td></tr><tr><td class="b"><p>Mac</p></td><td class="num"><p>$33.71B</p></td><td class="num"><p>~8%</p></td><td class="pos num"><p>+12%</p></td><td class="b"><span class="tag blue">GROWTH</span></td><td><p>Leader (AI PC tailwinds)</p></td></tr><tr><td class="b"><p>iPad</p></td><td class="num"><p>$28.02B</p></td><td class="num"><p>~7%</p></td><td class="pos num"><p>+5%</p></td><td class="b"><span class="tag blue">MATURE</span></td><td><p>Leader</p></td></tr><tr><td class="b"><p>Wearables, Home &amp; Accessories</p></td><td class="num"><p>~$35.6B</p></td><td class="num"><p>~9%</p></td><td class="num"><p>Stable/Modest</p></td><td class="b"><span class="tag blue">GROWTH</span></td><td><p>Leader</p></td></tr><tr><td class="b"><p>Services</p></td><td class="num"><p>$109.16B</p></td><td class="num"><p>~26%</p></td><td class="pos num"><p>+14%</p></td><td class="b"><span class="tag blue">GROWTH</span></td><td><p>Leader (high-margin ecosystem)</p></td></tr><tr><td class="b"><p>Total</p></td><td class="num"><p>~$416B</p></td><td class="num"><p>100%</p></td><td class="pos num"><p>+6.4%</p></td><td></td><td></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Product Portfolio Overview (FY2025) | Source: Company 10-K FY2025; segment data and external breakdowns aligned with EDGAR aggregates</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Technology Stack and Platform Differentiation</h3><span class="tag blue">Vertical Integration</span></div><div class="aggregate-card-body"><p>Apple&#x27;s core differentiation stems from deep vertical integration spanning custom silicon (A-series for iPhone, M-series for Mac/iPad), proprietary operating systems (iOS, macOS), and a closed ecosystem linking hardware to high-margin Services. The M5 chip family, launched in October 2025 across MacBook Pro, iPad Pro, and Vision Pro, emphasizes performance-per-watt advantages and Neural Engine enhancements for on-device AI processing, targeting over 95% on-device execution for privacy-focused Apple Intelligence features. This contrasts with commodity Android supply chains and cloud-heavy competitor approaches...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>R&D Pipeline and Upcoming Launches</h3><span class="tag blue">AI &amp; Silicon Focus</span></div><div class="aggregate-card-body"><p>R&D spending reached $34.55B in FY2025 (8.3% of revenue), accelerating to a quarterly record of $10.89B in Dec 2025, funding the Apple Intelligence rollout (late-2024 initiation with 2025 global expansion) and M5/M5 Pro/Max transitions. Key near-term deliverables include additional M5 variants for Mac mini and Mac Studio in early 2026, potential OLED iPad refreshes, and continued iPhone 18 preparations (rumored foldable/under-display elements in 2026-2027). CapEx of $12.71B in FY2025, with Dec 2025 quarter at $2.37B, supports silicon manufacturing investments and U.S...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Intellectual Property and Technology Moat</h3><span class="tag blue">Patent Leadership</span></div><div class="aggregate-card-body"><p>Apple maintains a robust IP portfolio with approximately 116,492 global patents (of which ~98,761 are active) and was granted 2,722 U.S. patents in 2025. This underpins defensibility in custom silicon architectures, neural processing units, ecosystem integrations, and on-device AI techniques central to Apple Intelligence...</p></div></div><div class="note green"><p>Caution. While R&D reached $34.55B and patent grants totaled 2,722 in 2025, a 12% YoY decline in U.S. patents signals potential moderation in innovation output amid rising AI competition...</p></div><p class="aggregate-pane-xref"><a href="#competition">See competitive position</a></p><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="supply" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>supply chain</h2>
+          <div class="kicker">single points of failure</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Apple maintains a highly complex global supply chain, with final assembly of substantially all hardware products performed by outsourcing partners located primarily in Asia. The company continues to diversify manufacturing locations, notably accelerating iPhone assembly in India while expanding U.S.-based component production through its American Manufacturing Program. Despite these efforts, a significant majority of manufacturing remains concentrated in China mainland, India, Japan, South Korea, Taiwan, and Vietnam, alongside U.S. sourcing.</p></div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>Geographic Diversification and Manufacturing Footprint</h3></div><div class="aggregate-card-body"><p>Apple&#x27;s supply chain features final assembly concentrated among outsourcing partners primarily in Asia. As of the latest disclosures, the company relies on partners located in China mainland, India, Japan, South Korea, Taiwan, and Vietnam for a significant majority of manufacturing activities, with additional sourcing from U.S. facilities...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>American Manufacturing Program and U.S. Investments</h3></div><div class="aggregate-card-body"><p>Apple launched its American Manufacturing Program in August 2025 as part of a broader $600 billion, four-year commitment to U.S. manufacturing and innovation, accompanied by a $100 billion spending increase. The program focuses on expanding domestic production of key components and materials...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Supplier Concentration and Dependency Risks</h3></div><div class="aggregate-card-body"><p>Apple depends on single-source or limited-source partners for many essential components, with final assembly of substantially all hardware products outsourced primarily to Asian partners. As of September 27, 2025, vendor non-trade receivables were heavily concentrated: two vendors (primarily in Asia) accounted for 46% and 23% of the total. Although most components are available from multiple sources, certain critical ones remain single-sourced, creating potential vulnerabilities to disruptions in specific regions or partners...</p></div></div><div class="table-title"><h3>Key Supply Chain Metrics and Diversification Indicators</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">Value</th><th>Period/Notes</th></tr></thead><tbody><tr><td class="b"><p>iPhone Assembly in India</p></td><td class="num"><p>55 million units</p></td><td><p>2025 (53% YoY increase from 36 million)</p></td></tr><tr><td class="b"><p>India Share of Global iPhone Output</p></td><td class="num"><p>25%</p></td><td><p>2025</p></td></tr><tr><td class="b"><p>U.S.-Made Chips Sourced</p></td><td class="num"><p>Over 20 billion</p></td><td><p>Since American Manufacturing Program launch…</p></td></tr><tr><td class="b"><p>American Manufacturing Program Investment (New Partners)</p></td><td class="num"><p>$400 million</p></td><td><p>Through 2030 with Bosch, Cirrus Logic, TDK, Qnity Electronics…</p></td></tr><tr><td class="b"><p>Overall U.S. Manufacturing Commitment</p></td><td class="num"><p>$600 billion</p></td><td><p>Four-year commitment announced 2025</p></td></tr><tr><td class="b"><p>Supplier Assessments Conducted</p></td><td class="num"><p>893 independent third-party</p></td><td><p>2024</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Key Supply Chain Metrics and Diversification Indicators</div><div class="note red"><strong>Key Takeaway</strong><br><p>Apple&#x27;s supply chain diversification efforts, including accelerated India production targeting all U.S.-bound iPhones by end-2026 and expanded U.S. component manufacturing via $400 million commitments, demonstrate proactive risk management. However, persistent concentration in Asia for both assembly and components, combined with single-source dependencies, continues to warrant close monitoring amid geopolitical and trade uncertainties...</p></div><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p>
+      </section>
+      <section id="catalysts" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>catalyst map</h2>
+          <div class="kicker">forward calendar</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Apple Inc. (AAPL) enters a pivotal period in fiscal 2026 with a series of near-term and medium-term catalysts that could influence revenue growth, margin expansion, and investor sentiment. Key events include the upcoming Q2 2026 earnings release and conference call on April 30, 2026, the Worldwide Developers Conference (WWDC) scheduled for June 8, 12, 2026, and anticipated product launches such as the foldable iPhone targeted for September 2026. These milestones build on recent momentum, including the Q1 2026 results announced January 29, 2026, which delivered record revenue of $290.76 billion (up 15.7% YoY) and diluted EPS of $2.84 that beat consensus estimates by approximately $0.17. With shares outstanding at 14.70 billion as of December 27, 2025, and a current stock price of $260.48 as of April 11, 2026, these catalysts arrive amid a backdrop of 6.4% YoY revenue growth and 22.7% YoY EPS growth in the latest reported periods.</p></div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>Near-Term Earnings Catalyst: Q2 2026 Results</h3></div><div class="aggregate-card-body"><p>Apple&#x27;s fiscal Q2 2026 earnings, covering the quarter ended March 29, 2026, represent the most immediate catalyst for the stock. The company is scheduled to announce results after market close on Thursday, April 30, 2026, followed by a conference call at 2:00 p.m. PT / 5:00 p.m...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>WWDC 2026: Software and AI Advancements</h3></div><div class="aggregate-card-body"><p>The Worldwide Developers Conference (WWDC) 2026, set for June 8, 12, 2026, with the keynote on June 8, stands as a major software-focused catalyst expected to highlight AI advancements, platform updates, and developer tools. The event, primarily online with limited in-person elements at Apple Park, will spotlight updates to iOS, macOS, watchOS, and other platforms, building on Apple Intelligence initiatives. Analysts anticipate deeper integration of AI features, potentially including enhancements to Siri and on-device capabilities, which could drive software monetization opportunities such as new subscription tiers in late 2026...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Product Launch Pipeline: Foldable iPhone and Hardware Cycle</h3></div><div class="aggregate-card-body"><p>A significant medium-term catalyst is the anticipated launch of Apple&#x27;s first foldable iPhone, expected in September 2026 alongside the iPhone 18 series, with possible availability extending into late 2026. This device, potentially priced over $2,000, is projected by analysts to generate $40, 60 billion in revenue within 18 months of launch, representing a new growth vector in a premium segment. Trial production has reportedly begun, with mass production targeted for July 2026, though engineering challenges around hinges and displays could introduce variability...</p></div></div><div class="note red"><strong>Catalyst Risks and Considerations</strong><br><p>While the catalyst map highlights growth potential from earnings clarity, WWDC AI momentum, and the foldable iPhone, execution risks remain, including supply chain delays for new form factors or competitive responses from Samsung and Google in AI and foldables. Apple&#x27;s strong balance sheet, with shareholders&#x27; equity at $88.19 billion and low long-term debt of $88.50 billion, provides a buffer, but forward guidance will be critical...</p></div><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p><p class="aggregate-pane-xref"><a href="#valuation">See valuation</a></p><p class="aggregate-pane-xref"><a href="#competition">See related analysis in</a></p>
+      </section>
+      <section id="street" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>street expectations</h2>
+          <div class="kicker">consensus vs. framework</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Wall Street maintains a Moderate Buy consensus on AAPL with an average 12-month price target near $300, embedding mid-teens EPS growth into FY2026-2027 driven by iPhone momentum and Services expansion. Our differentiated view, anchored in conservative DCF assumptions, sees more limited upside given the premium valuation already pricing in optimistic perpetual growth.</p></div>
+        <div class="kpi-grid cols-3"><div class="kpi"><div class="kpi-label">current price</div><div class="kpi-value ">$260.48</div><div class="kpi-sub">Apr 11, 2026</div></div><div class="kpi"><div class="kpi-label">dcf fair value</div><div class="kpi-value ">$290</div><div class="kpi-sub">+11.3% vs current</div></div><div class="kpi"><div class="kpi-label">vs current</div><div class="kpi-value ">+11.3%</div><div class="kpi-sub">DCF implied</div></div></div><div class="note green"><p>Takeaway. Street targets around $300 imply continued premium multiple support on forward earnings, yet recent upward revisions in FY2026 EPS to ~$8.51 reflect the strong Q1 FY2026 beat ($2.84 actual vs ~$2.67 expected) more than aggressive new assumptions.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Consensus vs Our Thesis</h3><span class="tag blue">Variant View</span></div><div class="aggregate-card-body"><p>STREET SAYS: Moderate Buy with average price target ~$300 (15-16% upside from $260.48), FY2026 EPS ~$8.51 (~14% growth from FY2025 $7.46), FY2027 EPS ~$9.34, and revenue ~$465.5B in FY2026 stepping to ~$498B in FY2027. Analysts cite iPhone supercycle, Services momentum, and AI features as drivers of sustained mid-teens growth and margin stability near 46.9% gross. WE SAY: Base DCF fair value of $290 (bear $232, bull $348) with 3.9% terminal growth and 10% WACC...</p></div></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">Street Consensus</th><th class="num">Our Estimate</th><th>Diff %</th><th>Key Driver of Difference</th></tr></thead><tbody><tr><td class="b"><p>FY2026 Revenue</p></td><td class="num"><p>$465.5B</p></td><td class="num"><p>$440B</p></td><td class="neg"><p>-5.5%</p></td><td><p>Conservative China demand and tariff impacts vs Street iPhone/Services acceleration…</p></td></tr><tr><td class="b"><p>FY2026 EPS</p></td><td class="num"><p>$8.51</p></td><td class="num"><p>$7.90</p></td><td class="neg"><p>-7.2%</p></td><td><p>Lower revenue base and stable 46.9% gross margin without major mix shift upside…</p></td></tr><tr><td class="b"><p>FY2026 Gross Margin</p></td><td class="num"><p>46.9%</p></td><td class="num"><p>46.5%</p></td><td class="neg"><p>-0.4pts</p></td><td><p>Potential component cost pressures vs Street stability assumption…</p></td></tr><tr><td class="b"><p>Next Qtr (Jun 2026) Revenue</p></td><td class="num"><p>~$109B</p></td><td class="num"><p>$105B</p></td><td class="neg"><p>-3.7%</p></td><td><p>Sequential moderation post Q1 record, aligned with historical patterns…</p></td></tr><tr><td class="b"><p>FY2027 EPS</p></td><td class="num"><p>$9.34</p></td><td class="num"><p>$8.40</p></td><td class="neg"><p>-10.1%</p></td><td><p>Terminal growth capped at 3.9% vs Street ~10% step-up…</p></td></tr><tr><td class="b"><p>Implied Perpetual Growth</p></td><td class="num"><p>16.3%</p></td><td class="num"><p>3.9%</p></td><td class="neg"><p>-12.4pts</p></td><td><p>Reverse DCF calibration vs our base case WACC/terminal…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Key Estimates Comparison vs Street | Source: Aggregated analyst estimates (Yahoo, MarketBeat, MarketWatch); XVARY DCF model from EDGAR data</div><div class="table-wrap"><table><thead><tr><th>Year</th><th class="num">Revenue Est</th><th class="num">EPS Est</th><th class="num">Growth %</th></tr></thead><tbody><tr><td class="b"><p>FY2025 (Actual)</p></td><td class="num"><p>$416.2B</p></td><td class="num"><p>$7.46</p></td><td class="pos num"><p>+6.4% Rev / +22.7% EPS</p></td></tr><tr><td class="b"><p>FY2026 (Street)</p></td><td class="num"><p>$465.5B</p></td><td class="num"><p>$8.51</p></td><td class="pos num"><p>+12% Rev / +14% EPS</p></td></tr><tr><td class="b"><p>FY2027 (Street)</p></td><td class="num"><p>$497.6B</p></td><td class="num"><p>$9.34</p></td><td class="pos num"><p>+7% Rev / +10% EPS</p></td></tr><tr><td class="b"><p>FY2026 (Our Base)</p></td><td class="num"><p>$440B</p></td><td class="num"><p>$7.90</p></td><td class="pos num"><p>+6% Rev / +6% EPS</p></td></tr><tr><td class="b"><p>FY2027 (Our Base)</p></td><td class="num"><p>$465B</p></td><td class="num"><p>$8.40</p></td><td class="pos num"><p>+6% Rev / +6% EPS</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Annual Revenue and EPS Estimates | Source: EDGAR FY2025 actuals &amp; derived ratios; consensus aggregates</div><div class="table-wrap"><table><thead><tr><th>Firm</th><th>Analyst</th><th>Rating</th><th class="num">Price Target</th><th>Date of Last Update</th></tr></thead><tbody><tr><td class="b"><p>Wedbush</p></td><td><p>Dan Ives</p></td><td><span class="tag blue">BUY</span></td><td class="num"><p>$350</p></td><td><p>Mar 31, 2026</p></td></tr><tr><td class="b"><p>Morgan Stanley</p></td><td><p>Katy Huberty</p></td><td><span class="tag blue">BUY</span></td><td class="num"><p>~$315</p></td><td><p>Mar 2026</p></td></tr><tr><td class="b"><p>Average (36 analysts)</p></td><td><p>N/A</p></td><td><p>Moderate Buy</p></td><td class="num"><p>$301</p></td><td><p>Recent</p></td></tr><tr><td class="b"><p>Phillip Securities</p></td><td><p>N/A</p></td><td><span class="tag blue">SELL</span></td><td class="num"><p>$200</p></td><td><p>Sep 2025</p></td></tr><tr><td class="b"><p>Bank of America</p></td><td><p>Wamsi Mohan</p></td><td><span class="tag blue">BUY</span></td><td class="num"><p>$325</p></td><td><p>Jan 2026</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Select Analyst Coverage Snapshot | Source: Aggregated from MarketBeat, Benzinga, Yahoo Finance, and recent reports</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Revision Trends</h3><span class="tag blue">Upward Bias</span></div><div class="aggregate-card-body"><p>Analyst estimates have seen net upward revisions over the past 3-6 months, with 37+ upward moves on FY EPS and revenue following Apple&#x27;s record Q1 FY2026 results (revenue $290.76B +16% YoY, EPS $2.84 +19% YoY, beating ~$2.67 EPS consensus). FY2026 EPS consensus moved from lower levels to ~$8.51, while next-quarter (Jun 2026) EPS sits near $1.73-$1.94 with revenue ~$109B. Recent activity includes Wedbush raising to $350 on AI/iPhone catalysts (Mar 31, 2026)...</p></div></div><p class="aggregate-pane-xref"><a href="#valuation">See valuation</a></p><p class="aggregate-pane-xref"><a href="#thesis">See variant perception &amp; thesis</a></p><p class="aggregate-pane-xref"><a href="#catalysts">See Catalyst Map</a></p>
+      </section>
+      <section id="management" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>management &amp; leadership</h2>
+          <div class="kicker">execution + key-person risk</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">management score</div><div class="kpi-value ">4.5/5</div><div class="kpi-sub">Strong execution amid transitions</div></div><div class="kpi"><div class="kpi-label">insider ownership %</div><div class="kpi-value ">0.06%</div><div class="kpi-sub">Typical for mega-cap; Cook ~0.02%</div></div><div class="kpi"><div class="kpi-label">ceo tenure</div><div class="kpi-value ">~15 years</div><div class="kpi-sub">Since 2011; continuity in FY2025</div></div><div class="kpi"><div class="kpi-label">compensation alignment</div><div class="kpi-value ">Equity-Heavy</div><div class="kpi-sub">Cook: $57.5M stock awards / $74.3M total FY2025</div></div></div><div class="note green"><p>Key Takeaway. Apple&#x27;s leadership delivered record FY2025 results, net income $112.01B (+19.5% YoY), diluted EPS $7.46 (+22.7% YoY), while executing multiple C-suite transitions including new COO Sabih Khan (July 2025) and CFO Kevan Parekh (Jan 2025), with no disruption to operating margin (32.0%) or free cash flow ($98.767B).</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>CEO and Key Executive Assessment</h3><span class="tag green">Strong Continuity</span></div><div class="aggregate-card-body"><p>Tim Cook has led Apple since 2011, overseeing transformation to a services powerhouse with FY2025 services revenue contributing to overall revenue of approximately $416B (up 6.4% YoY) and gross margin stability at 46.9%. Under his tenure, the company has expanded its installed base beyond 2.5B active devices while maintaining exceptional capital efficiency (ROIC 85.5%, ROE 127.0%). Recent executive transitions, Sabih Khan as COO succeeding Jeff Williams in July 2025 and Kevan Parekh as CFO succeeding Luca Maestri in January 2025, demonstrate proactive bench strength and internal promotion focus...</p></div></div><div class="table-wrap"><table><thead><tr><th>Name</th><th>Title</th><th>Tenure</th><th>Background</th><th class="num">Key Achievement</th></tr></thead><tbody><tr><td class="b"><p>Tim Cook</p></td><td><p>CEO</p></td><td><p>Since 2011 (~15 years)</p></td><td><p>Operations &amp; supply chain expert</p></td><td class="num"><p>Oversaw FY2025 record net income $112.01B and EPS growth +22.7% YoY…</p></td></tr><tr><td class="b"><p>Sabih Khan</p></td><td><p>COO</p></td><td><p>Since July 2025</p></td><td><p>30+ years at Apple; former SVP Operations…</p></td><td class="num"><p>Global supply chain leadership supporting ~166,000 employees and strong margins…</p></td></tr><tr><td class="b"><p>Kevan Parekh</p></td><td><p>CFO</p></td><td><p>Since Jan 2025</p></td><td><p>Internal finance veteran</p></td><td class="num"><p>Maintained financial discipline post-transition with operating margin 32.0%</p></td></tr><tr><td class="b"><p>John Ternus</p></td><td><p>SVP Hardware Engineering</p></td><td><p>Long-term internal</p></td><td><p>Hardware leadership</p></td><td class="num"><p>Oversees devices generating ~80% of revenue; leading internal succession candidate…</p></td></tr><tr><td class="b"><p>Deirdre O&#x27;Brien</p></td><td><p>SVP Retail + People</p></td><td><p>Long-term</p></td><td><p>Retail &amp; HR operations</p></td><td class="num"><p>Supports talent retention amid ~540 Apple Stores…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Key Executives Overview | Source: Company leadership disclosures and 2026 proxy</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Governance Structure</h3><span class="tag green">High Independence</span></div><div class="aggregate-card-body"><p>Apple&#x27;s board maintains strong independence, with all members other than CEO Tim Cook determined independent under Nasdaq rules per the 2026 proxy statement. The board includes experienced directors such as Chairman Arthur D. Levinson and independents like Wanda Austin, Andrea Jung, and Susan L...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Compensation Alignment</h3><span class="tag green">Strong Shareholder Alignment</span></div><div class="aggregate-card-body"><p>Executive compensation is heavily equity-weighted to align with long-term shareholder interests. Tim Cook&#x27;s FY2025 total compensation was $74,294,811, including $3M base salary (unchanged since 2016), $57,535,293 in stock awards, and $12M non-equity incentive. Performance-based RSUs tie pay to long-term total shareholder return (TSR) outperformance...</p></div></div><div class="table-wrap"><table><thead><tr><th>Dimension</th><th class="num">Score (1-5)</th><th class="num">Evidence Summary</th></tr></thead><tbody><tr><td class="b"><p>Capital Allocation</p></td><td class="pos num"><p>5</p></td><td class="num"><p>Strong FCF $98.767B (margin 23.7%), share reduction to 14.70B, R&D $34.55B (8.3% revenue), CapEx disciplined at $12.71B FY2025…</p></td></tr><tr><td class="b"><p>Communication</p></td><td class="pos num"><p>4</p></td><td class="num"><p>Consistent guidance delivery supporting +16% YoY revenue in Q1 FY2026 ($143.8B); transparent on services growth…</p></td></tr><tr><td class="b"><p>Insider Alignment</p></td><td class="pos num"><p>4</p></td><td class="num"><p>Equity-heavy pay (Cook $57.5M stock awards); routine planned sales under 10b5-1; low overall ownership 0.06% typical for scale…</p></td></tr><tr><td class="b"><p>Track Record</p></td><td class="pos num"><p>5</p></td><td class="num"><p>FY2025 net income $112.01B (+19.5% YoY), EPS $7.46 (+22.7% YoY), operating margin 32.0% despite transitions…</p></td></tr><tr><td class="b"><p>Strategic Vision</p></td><td class="pos num"><p>4</p></td><td class="num"><p>Services expansion, ecosystem scale (&gt;2.5B devices), internal promotions for AI/hardware continuity; adaptability shown in supply chain resilience…</p></td></tr><tr><td class="b"><p>Operational Execution</p></td><td class="pos num"><p>5</p></td><td class="num"><p>Gross margin 46.9%, SG&A 6.6%, current ratio 0.97; seamless COO/CFO handovers with no margin erosion…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: 6-Dimension Management Quality Scorecard | Source: SEC EDGAR FY2025 data and derived ratios; 2026 proxy</div><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="macro" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>macro sensitivity</h2>
+          <div class="kicker">rates, fx, energy</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">rate sensitivity</div><div class="kpi-value ">Low</div><div class="kpi-sub">Strong interest coverage 33.8x; hedged debt exposure</div></div><div class="kpi"><div class="kpi-label">fx exposure</div><div class="kpi-value ">~57%</div><div class="kpi-sub">Non-US revenue share; partial hedging program</div></div><div class="kpi"><div class="kpi-label">commodity exposure</div><div class="kpi-value ">Low</div><div class="kpi-sub">Not material % of COGS; limited direct pass-through disclosed</div></div><div class="kpi"><div class="kpi-label">trade policy risk</div><div class="kpi-value ">Medium</div><div class="kpi-sub">High China supply chain dependency (~majority assembly)</div></div></div><div class="note green"><p>Key Takeaway. Apple&#x27;s macro resilience stems from services mix and hedging, yet Greater China volatility (FY2025 -4% implied before +38% Q1 FY2026 rebound to $25.526B) highlights demand sensitivity despite overall FY2025 revenue growth of +6.4% to $416.161B.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Interest Rate Sensitivity</h3><span class="tag blue">Managed</span></div><div class="aggregate-card-body"><p>Apple maintains low direct interest rate sensitivity with long-term debt of $88.50B as of December 27, 2025, down from $94.80B prior, and a strong interest coverage ratio of 33.8x. The company uses interest rate swaps with notional ~$12.875B to manage exposure on term debt subject to fair value hedges (~$12.6B carrying value), converting portions of fixed-rate debt effectively. A 100bp increase in rates would have limited impact on valuation given the asset-light model, high free cash flow of $98.767B (23.7% margin), and WACC of 10.0% (beta 1.09, risk-free rate 4.25%, ERP 5.5%)...</p></div></div><div class="table-wrap"><table><thead><tr><th>Region</th><th class="num">Revenue ($B)</th><th class="num">Revenue %</th><th>Primary Currency</th><th>Hedging Strategy</th><th>Net Unhedged Exposure</th><th>Est. Impact of 10% Adverse Move</th></tr></thead><tbody><tr><td class="b"><p>Americas</p></td><td class="num"><p>178.35</p></td><td class="num"><p>42.86%</p></td><td><p>USD</p></td><td><p>N/A</p></td><td><p>Minimal</p></td><td><span class="tag blue">LOW</span></td></tr><tr><td class="b"><p>Europe</p></td><td class="num"><p>111.03</p></td><td class="num"><p>26.68%</p></td><td><p>EUR/GBP/etc.</p></td><td><p>Partial (forwards/options up to 12 months)</p></td><td class="amb"><p>Moderate</p></td><td><p>Negative on translation</p></td></tr><tr><td class="b"><p>Greater China</p></td><td class="num"><p>64.38</p></td><td class="num"><p>15.47%</p></td><td><p>CNY</p></td><td><p>Partial</p></td><td><p>Higher</p></td><td><p>~$6.4B revenue hit</p></td></tr><tr><td class="b"><p>Japan</p></td><td class="num"><p>28.70</p></td><td class="num"><p>6.90%</p></td><td><p>JPY</p></td><td><p>Partial</p></td><td class="amb"><p>Moderate</p></td><td><p>Negative</p></td></tr><tr><td class="b"><p>Rest of Asia Pacific</p></td><td class="num"><p>33.70</p></td><td class="num"><p>8.10%</p></td><td><p>Various</p></td><td><p>Partial</p></td><td class="amb"><p>Moderate</p></td><td><p>Variable</p></td></tr><tr><td class="b"><p>Total Non-US</p></td><td class="num"><p>~237.81</p></td><td class="num"><p>~57.14%</p></td><td><p>Multi-currency</p></td><td><p>Designated notional $46.619B + non-designated $120.980B…</p></td><td><p>Significant</p></td><td><p>Partial offset via hedges</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Revenue Exposure by Region (FY2025) | Source: Company 10-K FY2025; geographic segment data</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Commodity Exposure</h3><span class="tag blue">Low</span></div><div class="aggregate-card-body"><p>Apple&#x27;s direct commodity exposure is limited and not broken out as a material percentage of COGS ($348.96B for FY2025). Key inputs include semiconductors, rare earths, and metals for hardware, but the company benefits from an asset-light model and services revenue mix that now supports gross margin stability at 46.9%. Hedging programs focus primarily on FX rather than commodities; pass-through ability exists via pricing power in premium products, though competitive pressures in Greater China could constrain it...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Trade Policy &amp; Tariff Risk</h3><span class="tag amber">Medium-High</span></div><div class="aggregate-card-body"><p>Apple faces notable tariff exposure due to heavy reliance on China for assembly (majority of iPhones and supply chain). FY2025 Greater China revenue was $64.38B (15.47% of total), with Q1 FY2026 rebound to $25.526B (+38% YoY) underscoring demand but also vulnerability. Pledged investments in China aim to mitigate tensions, yet potential new tariffs could pressure margins (historical projections suggested compression toward 41-42% under escalation scenarios)...</p></div></div><div class="table-wrap"><table><thead><tr><th>Indicator</th><th class="num">Current Value</th><th>Historical Avg</th><th>Signal</th><th>Impact on AAPL</th></tr></thead><tbody><tr><td class="b"><p>VIX</p></td><td class="num"><p>Elevated but < 40</p></td><td><p>~20</p></td><td class="amb"><span class="tag blue">NEUTRAL</span></td><td><p>{&#x27;value&#x27;: &#x27;Moderate volatility risk&#x27;, &#x27;class&#x27;: &#x27;am&#x27;}</p></td></tr><tr><td class="b"><p>Credit Spreads</p></td><td class="num"><p>Modestly widened</p></td><td><p>Tight</p></td><td class="amb"><span class="tag blue">NEUTRAL</span></td><td><p>{&#x27;value&#x27;: &#x27;Limited direct; strong balance sheet&#x27;, &#x27;class&#x27;: &#x27;gn&#x27;}</p></td></tr><tr><td class="b"><p>Yield Curve</p></td><td class="num"><p>Steepening</p></td><td><p>Flat/Inverted</p></td><td><p>Expansionary</p></td><td><p>{&#x27;value&#x27;: &#x27;Positive for consumer financing&#x27;, &#x27;class&#x27;: &#x27;gn&#x27;}</p></td></tr><tr><td class="b"><p>ISM Manufacturing</p></td><td class="num"><p>~52-53</p></td><td><p>50</p></td><td><p>Expansionary</p></td><td><p>{&#x27;value&#x27;: &#x27;Supportive for supply chain&#x27;, &#x27;class&#x27;: &#x27;gn&#x27;}</p></td></tr><tr><td class="b"><p>CPI YoY</p></td><td class="num"><p>~2.4-3%</p></td><td><p>2%</p></td><td class="amb"><span class="tag blue">NEUTRAL</span></td><td><p>{&#x27;value&#x27;: &#x27;Margin pressure if persistent&#x27;, &#x27;class&#x27;: &#x27;am&#x27;}</p></td></tr><tr><td class="b"><p>Fed Funds Rate</p></td><td class="num"><p>~3.5-3.75%</p></td><td><span class="tag blue">LOW</span></td><td class="amb"><span class="tag blue">NEUTRAL</span></td><td><p>{&#x27;value&#x27;: &#x27;Managed via hedges&#x27;, &#x27;class&#x27;: &#x27;bl&#x27;}</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Current Macro Cycle Indicators (April 2026) | Source: Macro context data &amp; company filings</div><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p><p class="aggregate-pane-xref"><a href="#valuation">See Valuation</a></p><p class="aggregate-pane-xref"><a href="#ops">See Fundamentals</a></p>
+      </section>
+      <section id="governance" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>governance &amp; accounting</h2>
+          <div class="kicker">quality control</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Apple maintains best-in-class governance practices with an ISS Governance QualityScore of 1 as of April 1, 2026, reflecting low risk across board structure, shareholder rights, and overall oversight. This framework, paired with unqualified EY audit opinions and conservative accounting policies, underpins the reliability of FY2025 results including $416.2 billion revenue, $112.01 billion net income, and $7.46 diluted EPS. Strong pay-for-performance alignment and disciplined capital allocation further minimize agency risks while supporting long-term shareholder value creation.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">board independence</div><div class="kpi-value ">87.5%</div><div class="kpi-sub">7/8 directors independent (excl. CEO)</div></div><div class="kpi"><div class="kpi-label">avg board tenure</div><div class="kpi-value ">13.2 years</div><div class="kpi-sub">Balanced continuity &amp; refresh (Levinson 26+ yrs; Austin since 2024)</div></div><div class="kpi"><div class="kpi-label">ceo pay ratio</div><div class="kpi-value ">Approx. 2,500:1</div><div class="kpi-sub">Tim Cook $74.3M vs median employee (proxy-derived estimate)</div></div><div class="kpi"><div class="kpi-label">iss governance qualityscore</div><div class="kpi-value ">1</div><div class="kpi-sub">Low risk (Apr 1, 2026); Board 1, Shareholder Rights 1</div></div></div><div class="note green"><p>Takeaway. Apple&#x27;s governance stands out with an ISS QualityScore of 1 as of April 1, 2026, driven by near-perfect board independence (7/8 directors) and shareholder rights protections, coinciding with strong FY2025 results including $112.01B net income and 127.0% ROE. This structure has supported disciplined capital allocation without material agency risks...</p></div><div class="table-wrap"><table><thead><tr><th>Director</th><th>Independent</th><th class="num">Tenure (years)</th><th>Key Committees</th><th>Expertise</th></tr></thead><tbody><tr><td class="b"><p>Art Levinson</p></td><td class="pos"><p>Y</p></td><td class="num"><p>26</p></td><td><p>Chair; People &amp; Comp</p></td><td><p>Innovation, Leadership</p></td></tr><tr><td class="b"><p>Wanda Austin</p></td><td class="pos"><p>Y</p></td><td class="num"><p>2</p></td><td><p>Audit &amp; Finance</p></td><td><p>Operations, Risk Mgmt</p></td></tr><tr><td class="b"><p>Alex Gorsky</p></td><td class="pos"><p>Y</p></td><td class="num"><p>5</p></td><td><p>People &amp; Comp; Nominating</p></td><td><p>Global Ops, Healthcare</p></td></tr><tr><td class="b"><p>Andrea Jung</p></td><td class="pos"><p>Y</p></td><td class="num"><p>18</p></td><td><p>Chair People &amp; Comp; Nominating</p></td><td><p>Brand, People &amp; Culture</p></td></tr><tr><td class="b"><p>Monica Lozano</p></td><td class="pos"><p>Y</p></td><td class="num"><p>5</p></td><td><p>Audit &amp; Finance</p></td><td><p>Finance, Public Policy</p></td></tr><tr><td class="b"><p>Ron Sugar</p></td><td class="pos"><p>Y</p></td><td class="num"><p>16</p></td><td><p>Chair Audit &amp; Finance</p></td><td><p>Financial, Risk Mgmt</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Board Composition and Independence (as of 2026 Proxy) | Source: Apple DEF 14A Proxy Statement (filed Jan 2026); 10-K FY2025</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Shareholder Rights Assessment</h3><span class="tag green">Strong</span></div><div class="aggregate-card-body"><p>Apple maintains robust shareholder rights with no poison pill, no classified board, and annual director elections under a majority voting standard. The company does not have dual-class shares, and proxy access is available. All committees are fully independent, satisfying Nasdaq and SEC rules...</p></div></div><div class="table-wrap"><table><thead><tr><th>Executive</th><th>Title</th><th class="num">Total Comp (FY2025)</th><th>Key Equity</th></tr></thead><tbody><tr><td class="b"><p>Tim Cook</p></td><td><p>CEO</p></td><td class="num"><p>$74.3M</p></td><td><p>$57.5M stock awards (75% perf-based target)</p></td></tr><tr><td class="b"><p>Kevan Parekh</p></td><td><p>CFO</p></td><td class="num"><p>$22.5M</p></td><td><p>97,864 RSUs (half perf-based, vest 2028)</p></td></tr><tr><td class="b"><p>Other NEOs (avg)</p></td><td><p>SVPs</p></td><td class="num"><p>~$27M</p></td><td><p>Equity-heavy structure</p></td></tr><tr><td class="b"><p>Compensation Actually Paid (Cook)</p></td><td><p>CEO</p></td><td class="num"><p>$108.423M</p></td><td><p>TSR index 233.88</p></td></tr><tr><td class="b"><p>Peer Context</p></td><td><p>Tech Peers</p></td><td class="num"><p>80-90th %ile positioning</p></td><td><p>Primary peer group (Alphabet, Microsoft, etc.)</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Named Executive Officer Compensation &amp; Alignment | Source: Apple DEF 14A Proxy Statement (filed Jan 2026); FY2025 financials</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Accounting Quality Deep-Dive</h3><span class="tag green">Clean</span></div><div class="aggregate-card-body"><p>Ernst &amp; Young LLP issued unqualified opinions on Apple&#x27;s FY2025 consolidated financial statements (fair presentation under U.S. GAAP) and internal controls over financial reporting (effective per COSO 2013 framework) as of September 27, 2025, with management concurring on no material weaknesses. Revenue recognition for services remains conservative, reflected in $13.7B deferred revenue...</p></div></div><div class="table-wrap"><table><thead><tr><th>Dimension</th><th class="num">Score (1-5)</th><th class="num">Evidence Summary</th></tr></thead><tbody><tr><td class="b"><p>Capital Allocation</p></td><td class="num"><p>5</p></td><td class="num"><p>Declining LT debt to $88.50B; $98.767B FCF; strong buybacks/dividends…</p></td></tr><tr><td class="b"><p>Strategy Execution</p></td><td class="num"><p>5</p></td><td class="num"><p>FY2025 revenue $416.2B (+6.4% YoY); services growth; innovation pipeline…</p></td></tr><tr><td class="b"><p>Communication</p></td><td class="num"><p>4</p></td><td class="num"><p>Consistent shareholder engagement; transparent proxy disclosures…</p></td></tr><tr><td class="b"><p>Culture</p></td><td class="num"><p>4</p></td><td class="num"><p>Values-driven leadership; retention focus via equity incentives…</p></td></tr><tr><td class="b"><p>Track Record</p></td><td class="num"><p>5</p></td><td class="num"><p>EPS +22.7% YoY; ROIC 85.5%; TSR outperformance…</p></td></tr><tr><td class="b"><p>Alignment</p></td><td class="num"><p>5</p></td><td class="num"><p>TSR-linked pay (187% vesting example); low governance risk…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Management Quality Scorecard | Source: Derived from 10-K FY2025, DEF 14A, and derived ratios</div><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p><p class="aggregate-pane-xref"><a href="#valuation">See Valuation</a></p><p class="aggregate-pane-xref"><a href="#financials">See Financial Analysis</a></p>
+      </section>
+      <section id="value" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>value framework</h2>
+          <div class="kicker">greenwald / qarp</div>
+        </div>
+        <div class="lead aggregate-lead"><p>This Value Framework pane applies Benjamin Graham&#x27;s seven defensive criteria and Warren Buffett&#x27;s qualitative checklist to Apple Inc. (AAPL), cross-referenced against quantitative outputs including a DCF base fair value of $290 per share. At the current price of $260.48 (as of April 11, 2026), AAPL passes most Graham tests on financial strength and earnings stability but fails on moderate valuation multiples. Buffett-style analysis highlights a durable ecosystem moat and capital allocation discipline, yet the elevated P/E of 34.9 implies limited margin of safety relative to conservative growth assumptions.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">graham score</div><div class="kpi-value ">5/7</div><div class="kpi-sub">Fails valuation; passes size, finances, stability, dividends, growth</div></div><div class="kpi"><div class="kpi-label">buffett quality</div><div class="kpi-value ">A-</div><div class="kpi-sub">Strong moat and management; sensible allocation but price premium</div></div><div class="kpi"><div class="kpi-label">peg ratio</div><div class="kpi-value ">1.3</div><div class="kpi-sub">P/E 34.9 / EPS growth +22.7% YoY</div></div><div class="kpi"><div class="kpi-label">margin of safety</div><div class="kpi-value value-rd">-84%</div><div class="kpi-sub">vs DCF base $290</div></div></div><div class="note green"><p>Key Takeaway. Apple&#x27;s fortress balance sheet and elite capital efficiency (ROE 127.0%, ROIC 85.5%) generate exceptional free cash flow of $98.77B (23.7% margin), yet the stock trades at a P/E of 34.9 against a DCF base fair value of $290, embedding aggressive 16.3% implied perpetual growth that exceeds historical norms and terminal assumptions of 3.9%.</p></div><div class="table-wrap"><table><thead><tr><th>Criterion</th><th>Threshold</th><th>Actual</th><th>Pass/Fail</th></tr></thead><tbody><tr><td class="b"><p>Adequate Size</p></td><td><p>Revenue &gt; $100M or Assets &gt; $50M</p></td><td><p>FY2025 Revenue $416.16B; Assets $359.24B…</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Strong Financial Condition</p></td><td>Current Ratio > 2; LT Debt < Net Current Assets…</td><td><p>Current Ratio 0.97; Net Working Capital negative; Debt/Equity 1.0…</p></td><td><p>Fail</p></td></tr><tr><td class="b"><p>Earnings Stability</p></td><td><p>No deficit in last 10 years</p></td><td><p>Consistent positive EPS; +22.7% YoY growth in latest period…</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Dividend Record</p></td><td><p>Uninterrupted payments 20+ years</p></td><td><p>Long-standing dividend payer with consistent increases…</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Earnings Growth</p></td><td><p>33%+ cumulative over 10 years</p></td><td><p>EPS $7.46 FY2025; +22.7% YoY; strong multi-year trajectory…</p></td><td><p>Pass</p></td></tr><tr><td class="b"><p>Moderate P/E Ratio</p></td><td><p>&lt;15x or P/E < 1.5x AAA bond yield</p></td><td><p>P/E 34.9 at $260.48 price</p></td><td><p>Fail</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Graham&#x27;s 7 Defensive Criteria Assessment | Source: Company 10-K FY2025, 10-Q Q1 FY2026; derived ratios from EDGAR data</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Buffett Qualitative Checklist</h3><span class="tag blue">A-</span></div><div class="aggregate-card-body"><p>Apple operates a highly understandable business centered on premium hardware integrated with a growing services ecosystem, leveraging a > 2.5 billion installed base for recurring revenue. Long-term prospects remain favorable due to pricing power (services gross margin 76.5% in Q1 FY2026), network effects, and switching costs, though subject to regulatory and innovation risks. Management under Tim Cook demonstrates trustworthiness through disciplined capital allocation, including $25B in share repurchases in Q1 FY2026 and sustained FCF generation of $98.77B (23.7% margin)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Investment Decision Framework</h3><span class="tag blue">Framework</span></div><div class="aggregate-card-body"><p>Position sizing should be limited to 3-5% of portfolio given valuation risk, prioritizing high-conviction quality names within circle of competence (consumer technology ecosystems). Entry criteria include a price below $180 (providing > 25% margin of safety to DCF base) or evidence of services growth deceleration below 10% YoY. Exit triggers encompass sustained ROIC erosion below 60%, material antitrust remedies forcing App Store revenue sharing, or P/E expansion beyond 40x without commensurate EPS acceleration...</p></div></div><div class="table-wrap"><table><thead><tr><th>Bias</th><th class="num">Risk Level</th><th>Mitigation</th><th>Status</th></tr></thead><tbody><tr><td class="b"><p>Anchoring</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Cross-reference multiple DCF scenarios and historical multiples…</p></td><td><p>Clear</p></td></tr><tr><td class="b"><p>Confirmation</p></td><td class="num"><span class="tag blue">HIGH</span></td><td><p>Explicitly document bear case (e.g., regulatory disruption)</p></td><td><p>Watch</p></td></tr><tr><td class="b"><p>Recency</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Balance Q1 FY2026 strength (+16% revenue) with full-year trends…</p></td><td><p>Clear</p></td></tr><tr><td class="b"><p>Overconfidence</p></td><td class="num"><span class="tag blue">HIGH</span></td><td><p>Use Monte Carlo dispersion ($77.55-$267.65) for ranges…</p></td><td><p>Watch</p></td></tr><tr><td class="b"><p>Herding</p></td><td class="num"><span class="tag blue">LOW</span></td><td><p>Compare to peer hardware multiples and Graham thresholds…</p></td><td><p>Clear</p></td></tr><tr><td class="b"><p>Availability</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Reference specific EDGAR metrics over narrative headlines…</p></td><td><p>Clear</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Cognitive Bias Mitigation Checklist | Internal analytical process</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Conviction Scoring Breakdown</h3><span class="tag blue">65/100</span></div><div class="aggregate-card-body"><p>Moat &amp; Competitive Position (9/10, weight 30%): Ecosystem lock-in and services scalability from > 2.5B devices drive superior margins (48.2% gross Q1 FY2026). Evidence quality high from filings. Management &amp; Capital Allocation (8/10, weight 25%): Aggressive repurchases ($25B Q1) and FCF durability support score; track record strong...</p></div></div><p class="aggregate-pane-xref"><a href="#valuation">See detailed DCF, multiples, and precedent analysis</a></p><p class="aggregate-pane-xref"><a href="#thesis">See variant perception and full investment thesis</a></p><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p>
+      </section>
+      <section id="appendix" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>appendix &amp; sources</h2>
+          <div class="kicker">sources · methodology</div>
+        </div>
+        <div class="lead aggregate-lead"><p>How we source the tape, verify levels, and align this report with XVARY deep-dive standards.</p></div>
+        <div class="aggregate-sources-attribution"><p>Sources: SEC filings, company disclosures, market data vendors, and sources cited in the sections above. For investment presentation use only.</p></div><p class="aggregate-methodology-link">standards and pipeline: <a href="https://xvary.com/methodology/">xvary.com/methodology/</a></p>
+      </section>
+
+      <div class="footer">
+        xvary · 2026 · not investment advice
+        <div class="links">
+          <a href="https://xvary.com/pulse/">the pulse</a>
+          <a href="https://xvary.com/stacks/">the stacks</a>
+          <a href="https://xvary.com/discover/">discover</a>
+          <a href="https://xvary.com/collectibles/">collectibles</a>
+          <a href="https://xvary.com/pricing/">pricing</a>
+          <a href="https://xvary.com/methodology/">methodology</a>
+          <a href="https://xvary.com/newsletter/">newsletter</a>
+          <a href="https://xvary.com/legal/disclaimer/">disclaimer</a>
+          <a href="https://xvary.com/legal/privacy/">privacy</a>
+          <a href="https://xvary.com/legal/terms/">terms</a>
+        </div>
+        <div class="small">Sources: company filings and earnings, supplier disclosures, named sell-side notes where cited, alt-data where noted, and public flow/sentiment screens. Not investment advice — verify anything you trade on.</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const bar = document.getElementById("reading-progress");
+      const sections = [{"id": "summary", "hotkey": "0"}, {"id": "thesis", "hotkey": "1"}, {"id": "financials", "hotkey": "2"}, {"id": "valuation", "hotkey": "3"}, {"id": "risk", "hotkey": "4"}, {"id": "ops", "hotkey": "5"}, {"id": "competition", "hotkey": "6"}, {"id": "tam", "hotkey": "7"}, {"id": "product", "hotkey": "8"}, {"id": "supply", "hotkey": "9"}, {"id": "catalysts", "hotkey": "a"}, {"id": "street", "hotkey": "b"}, {"id": "management", "hotkey": "c"}, {"id": "macro", "hotkey": "d"}, {"id": "governance", "hotkey": "e"}, {"id": "value", "hotkey": "f"}, {"id": "appendix", "hotkey": "g"}];
+      const links = [...document.querySelectorAll(".sidebar a[href^='#']")];
+      const setActive = function (id) {
+        links.forEach(function (link) {
+          link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+        });
+      };
+
+      window.addEventListener("scroll", function () {
+        const root = document.documentElement;
+        const pct = (root.scrollTop / Math.max(root.scrollHeight - root.clientHeight, 1)) * 100;
+        if (bar) {
+          bar.style.width = Math.min(Math.max(pct, 0), 100) + "%";
+        }
+      }, { passive: true });
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(function (entries) {
+          entries.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+          const hit = entries.find(function (entry) {
+            return entry.isIntersecting && entry.intersectionRatio > 0.12;
+          });
+          if (hit) {
+            setActive(hit.target.id);
+          }
+        }, { rootMargin: "-40% 0px -40% 0px", threshold: [0, 0.12, 0.25, 0.45] });
+
+        sections.forEach(function (item) {
+          const node = document.getElementById(item.id);
+          if (node) {
+            observer.observe(node);
+          }
+        });
+      }
+
+      links.forEach(function (link) {
+        link.addEventListener("click", function () {
+          setActive(link.getAttribute("href").slice(1));
+        });
+      });
+
+      const hotkeys = {};
+      sections.forEach(function (item) {
+        hotkeys[item.hotkey] = item.id;
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.metaKey || event.ctrlKey) {
+          return;
+        }
+        const target = event.target;
+        if (target && target.closest && target.closest("input, textarea, select, [contenteditable='true']")) {
+          return;
+        }
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (!hotkeys[key]) {
+          return;
+        }
+        event.preventDefault();
+        const node = document.getElementById(hotkeys[key]);
+        if (node) {
+          node.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    })();
+  </script>
+  <footer class="footer" style="margin-left:var(--navw,0)">
+    xvary · 2026 · not investment advice
+    <div class="footer-links">
+      <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/methodology/">methodology</a>
+      <a href="/newsletter/">newsletter</a>
+      <a href="/pricing/">pricing</a>
+      <a href="/free/">free reports</a>
+      <a href="/legal/disclaimer/">disclaimer</a>
+      <a href="/legal/privacy/">privacy</a>
+      <a href="/legal/terms/">terms</a>
+    </div>
+    <div class="footer-logo">
+      <a href="/" aria-label="home">
+        <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+      </a>
+    </div>
+  </footer>
+  <script src="/js/site-chrome.js?v=1776081807" defer></script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<!--
+  Evergreen pulse page — macro dissection.
+  Built by: evergreen/build_evergreen.py
+  Template: evergreen/templates/macro-dissection.html
+  Data:     evergreen/data/rates-strip.json
+  Ship:     4. Website/dist/pulse/macro-rates-strip/index.html
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>The rates strip — fed funds, curve segments, and real yields — xvary pulse</title>
+  <meta name="description" content="how overnight policy, the 2-year anchor, the 10-year term premium, and real yields each hit equities — with regimes from 1990 to 2026.">
+  <link rel="canonical" href="https://xvary.com/pulse/macro-rates-strip/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="The rates strip — macro dissection · xvary">
+  <meta property="og:description" content="how overnight policy, the 2-year anchor, the 10-year term premium, and real yields each hit equities — with regimes from 1990 to 2026.">
+  <meta property="og:url" content="https://xvary.com/pulse/macro-rates-strip/">
+  <meta property="og:image" content="https://xvary.com/assets/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="XVARY">
+  <meta name="robots" content="index, follow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="The rates strip — macro dissection · xvary">
+  <meta name="twitter:description" content="how overnight policy, the 2-year anchor, the 10-year term premium, and real yields each hit equities — with regimes from 1990 to 2026.">
+  <meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-article.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-evergreen.css?v=1776081807">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "The rates strip — macro dissection · xvary",
+  "description": "how overnight policy, the 2-year anchor, the 10-year term premium, and real yields each hit equities — with regimes from 1990 to 2026.",
+  "datePublished": "2026-03-25",
+  "dateModified": "2026-03-25",
+  "author": {
+    "@type": "Organization",
+    "name": "xvary"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "xvary",
+    "url": "https://xvary.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://xvary.com/assets/xvary-logo.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://xvary.com/pulse/macro-rates-strip/"
+  },
+  "image": ["https://xvary.com/assets/og-default.png"],
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".pa-headline", ".pa-body"]
+  },
+  "url": "https://xvary.com/pulse/macro-rates-strip/"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://xvary.com/pulse/macro-rates-strip/#faq",
+  "url": "https://xvary.com/pulse/macro-rates-strip/",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "why do investors watch the 2-year treasury so closely?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "the 2-year yield compresses market expectations for policy over the next couple of years. when it jumps or drops rapidly, equity duration and sector rotation often respond before gdp data confirms the turn."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "what is the difference between nominal and real yields for stocks?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "nominal yields include inflation compensation. real yields strip that out. rising real yields raise the discount rate for distant cash flows, which tends to pressure long-duration equities more than near-term earners."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "can fed funds be unchanged while financial conditions tighten?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "yes. credit spreads, the dollar, mortgage rates, and equity volatility can tighten conditions without another hike. markets often react to the vector of conditions, not a single rate print."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "what does it mean when the curve is steep but fed funds is high?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "it can mean the market expects cuts, extra term premium, or stronger long-run growth. the equity read depends on whether the steepening is driven by falling short rates or rising long yields."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "how should i use this page in practice?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "use it as a regime map. identify which historical era today's policy path rhymes with, then check which equity factors and sectors tended to win in that era — knowing the rhyme is never perfect."
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body class="pa-article">
+<a class="skip-link" href="#content">skip to content</a>
+<div class="grain"></div>
+
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="active nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content" class="md-layout">
+  <div class="pa-wrap md-wrap">
+    <div class="pa-back"><a href="/pulse/">← back to the pulse</a></div>
+
+    <header class="pa-head md-head">
+      <div class="pa-kicker-row">
+        <span class="pa-type">evergreen · macro dissection</span>
+        <span class="pa-ticker-pill">fed funds, curve segments, and real rates</span>
+      </div>
+      <h1>The rates strip — fed funds, curve segments, and real yields</h1>
+      <p class="pa-deck">what fed funds, 2s, 10s, and real yields each price in — and which parts of the equity market historically cared about which leg of the strip.</p>
+      <div class="pa-byline">xvary research desk · 2026-03-25 · 1990 to 2026</div>
+    </header>
+
+    <div class="pa-grid md-grid">
+      <article class="pa-body md-body">
+        <section class="md-definitions" aria-labelledby="md-definitions-h"><h2 class="pa-geo-h" id="md-definitions-h">key definitions</h2><dl class="md-definition-list"><div class="md-definition"><dt><dfn>fed funds</dfn></dt><dd>the effective federal funds rate is the overnight rate corridor the fed targets. it is the cleanest read on how tight policy is right now.</dd></div><div class="md-definition"><dt><dfn>2-year treasury</dfn></dt><dd>the 2-year yield is often treated as a market-implied path for policy over the next couple of years. when it moves sharply, equities repricing duration can lag.</dd></div><div class="md-definition"><dt><dfn>10-year treasury</dfn></dt><dd>the 10-year yield mixes expected growth, long-run inflation, and term premium. equity multiples argue with it constantly.</dd></div><div class="md-definition"><dt><dfn>real yield</dfn></dt><dd>the real yield is the nominal bond yield minus expected inflation (often proxied by TIPS). it is the discount rate that matters for long-duration cash flows.</dd></div></dl></section>
+        <p>most investors talk about &#x27;rates&#x27; as one thing. the bond market does not. overnight policy, the 2-year anchor, the 10-year term structure, and inflation-linked real rates often send different messages at the same time. when they align, macro conviction is easy. when they disagree, equity leadership tends to split between quality, cyclicals, and speculative growth.</p><p>fed funds tell you how hard the fed is stepping on the brake or accelerator today. the 2-year yield usually embeds how much of that pressure the market thinks will persist. the 10-year yield often reflects longer growth and inflation expectations plus whatever risk premium investors demand to lend long.</p><p>real yields strip out inflation compensation. in practical equity terms, higher real yields raise the bar for distant earnings and make today’s cash flow more attractive on a relative basis. that is why the same nominal rate environment can feel very different for growth stocks versus value when breakevens move.</p><p>this page treats the rates strip as a regime map. the charts use annual averages to keep the story readable and comparable across decades. the point is not a trading print on one day — it is the sequence of policy and curve repricing that defined each macro era.</p>
+
+        <figure class="md-master-chart">
+          <figcaption>effective federal funds rate — annual average (%)</figcaption>
+          <svg viewBox="0 0 760 280" role="img" aria-label="effective federal funds rate — annual average (%)" xmlns="http://www.w3.org/2000/svg"><rect width="760" height="280" fill="#F4F4F2" rx="20" /><text x="10" y="25.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">8</text><line x1="46" y1="20.00" x2="742" y2="20.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><text x="10" y="243.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">0</text><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><text x="10" y="243.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">0</text><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="#1A1A1A" stroke-width="1.75" stroke-dasharray="5 4" /><path d="M 46.00 20.00 L 65.33 84.59 L 84.67 143.80 L 104.00 157.26 L 123.33 124.96 L 142.67 81.90 L 162.00 95.36 L 181.33 89.98 L 200.67 92.67 L 220.00 98.05 L 239.33 71.14 L 258.67 133.04 L 278.00 194.94 L 297.33 211.09 L 316.67 200.32 L 336.00 151.88 L 355.33 106.12 L 374.67 122.27 L 394.00 184.17 L 413.33 235.31 L 432.67 235.31 L 452.00 235.31 L 471.33 227.23 L 490.67 200.32 L 510.00 178.79 L 529.33 178.79 L 548.67 194.94 L 568.00 235.31 L 587.33 235.31 L 606.67 235.31 L 626.00 173.41 L 645.33 92.67 L 664.67 95.36 L 684.00 119.58 L 703.33 122.27 L 722.67 124.96 L 742.00 133.04 L 742.00 238.00 L 46.00 238.00 Z" fill="rgba(245,225,0,0.55)" stroke="none" /><path d="M 46.00 20.00 L 65.33 84.59 L 84.67 143.80 L 104.00 157.26 L 123.33 124.96 L 142.67 81.90 L 162.00 95.36 L 181.33 89.98 L 200.67 92.67 L 220.00 98.05 L 239.33 71.14 L 258.67 133.04 L 278.00 194.94 L 297.33 211.09 L 316.67 200.32 L 336.00 151.88 L 355.33 106.12 L 374.67 122.27 L 394.00 184.17 L 413.33 235.31 L 432.67 235.31 L 452.00 235.31 L 471.33 227.23 L 490.67 200.32 L 510.00 178.79 L 529.33 178.79 L 548.67 194.94 L 568.00 235.31 L 587.33 235.31 L 606.67 235.31 L 626.00 173.41 L 645.33 92.67 L 664.67 95.36 L 684.00 119.58 L 703.33 122.27 L 722.67 124.96 L 742.00 133.04" fill="none" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /><circle cx="46.00" cy="20.00" r="2.6" fill="#1A1A1A" /><circle cx="65.33" cy="84.59" r="2.6" fill="#1A1A1A" /><circle cx="84.67" cy="143.80" r="2.6" fill="#1A1A1A" /><circle cx="104.00" cy="157.26" r="2.6" fill="#1A1A1A" /><circle cx="123.33" cy="124.96" r="2.6" fill="#1A1A1A" /><circle cx="142.67" cy="81.90" r="2.6" fill="#1A1A1A" /><circle cx="162.00" cy="95.36" r="2.6" fill="#1A1A1A" /><circle cx="181.33" cy="89.98" r="2.6" fill="#1A1A1A" /><circle cx="200.67" cy="92.67" r="2.6" fill="#1A1A1A" /><circle cx="220.00" cy="98.05" r="2.6" fill="#1A1A1A" /><circle cx="239.33" cy="71.14" r="2.6" fill="#1A1A1A" /><circle cx="258.67" cy="133.04" r="2.6" fill="#1A1A1A" /><circle cx="278.00" cy="194.94" r="2.6" fill="#1A1A1A" /><circle cx="297.33" cy="211.09" r="2.6" fill="#1A1A1A" /><circle cx="316.67" cy="200.32" r="2.6" fill="#1A1A1A" /><circle cx="336.00" cy="151.88" r="2.6" fill="#1A1A1A" /><circle cx="355.33" cy="106.12" r="2.6" fill="#1A1A1A" /><circle cx="374.67" cy="122.27" r="2.6" fill="#1A1A1A" /><circle cx="394.00" cy="184.17" r="2.6" fill="#1A1A1A" /><circle cx="413.33" cy="235.31" r="2.6" fill="#1A1A1A" /><circle cx="432.67" cy="235.31" r="2.6" fill="#1A1A1A" /><circle cx="452.00" cy="235.31" r="2.6" fill="#1A1A1A" /><circle cx="471.33" cy="227.23" r="2.6" fill="#1A1A1A" /><circle cx="490.67" cy="200.32" r="2.6" fill="#1A1A1A" /><circle cx="510.00" cy="178.79" r="2.6" fill="#1A1A1A" /><circle cx="529.33" cy="178.79" r="2.6" fill="#1A1A1A" /><circle cx="548.67" cy="194.94" r="2.6" fill="#1A1A1A" /><circle cx="568.00" cy="235.31" r="2.6" fill="#1A1A1A" /><circle cx="587.33" cy="235.31" r="2.6" fill="#1A1A1A" /><circle cx="606.67" cy="235.31" r="2.6" fill="#1A1A1A" /><circle cx="626.00" cy="173.41" r="2.6" fill="#1A1A1A" /><circle cx="645.33" cy="92.67" r="2.6" fill="#1A1A1A" /><circle cx="664.67" cy="95.36" r="2.6" fill="#1A1A1A" /><circle cx="684.00" cy="119.58" r="2.6" fill="#1A1A1A" /><circle cx="703.33" cy="122.27" r="2.6" fill="#1A1A1A" /><circle cx="722.67" cy="124.96" r="2.6" fill="#1A1A1A" /><circle cx="742.00" cy="133.04" r="2.6" fill="#1A1A1A" /><text x="46.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">1990</text><text x="220.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">1999</text><text x="394.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2008</text><text x="568.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2017</text><text x="742.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2026</text></svg>
+        </figure>
+
+        <div class="md-regime-nav-wrap"><nav class="md-regime-nav" aria-label="regime navigation"><a class="md-regime-chip" href="#regime-early-90s-tightening"><span class="md-regime-chip-title">early-1990s disinflation</span><span class="md-regime-chip-range">1990 to 1994</span></a><a class="md-regime-chip" href="#regime-mid-90s-mid-2000s"><span class="md-regime-chip-title">mid-1990s calm through the mid-2000s hiking cycle</span><span class="md-regime-chip-range">1995 to 2007</span></a><a class="md-regime-chip" href="#regime-financial-crisis-unlimited"><span class="md-regime-chip-title">the financial crisis and zero-rate era</span><span class="md-regime-chip-range">2008 to 2015</span></a><a class="md-regime-chip" href="#regime-late-cycle-2016-2019"><span class="md-regime-chip-title">late-cycle normalization</span><span class="md-regime-chip-range">2016 to 2019</span></a><a class="md-regime-chip" href="#regime-pandemic-to-hiking"><span class="md-regime-chip-title">pandemic zero to inflation shock hiking</span><span class="md-regime-chip-range">2020 to 2026</span></a></nav></div>
+        <article class="md-regime-card" id="regime-early-90s-tightening"><header class="md-regime-head"><div><h2 class="md-regime-title">early-1990s disinflation</h2><div class="md-regime-range">1990 to 1994</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 69.33 21.12 L 130.67 34.06 L 192.00 37.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="69.33" cy="21.12" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="130.67" cy="34.06" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">rates were high entering the 1990 recession, then fell as the fed prioritized growth as inflation cooled.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">8</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-8</text><rect x="65.75" y="16.00" width="77.50" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="190.75" y="40.00" width="77.50" height="57.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="315.75" y="62.00" width="77.50" height="35.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="440.75" y="67.00" width="77.50" height="30.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="104.50" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">8</text><text x="104.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1990</text><text x="229.50" y="32.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">5</text><text x="229.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1991</text><text x="354.50" y="54.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">3</text><text x="354.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1992</text><text x="479.50" y="59.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">3</text><text x="479.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1993</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">fed</span>policy stayed restrictive into the downturn, then eased through the recovery.</li><li><span class="md-event-tag">economy</span>unemployment peaked after the recession officially ended — a classic labor lag.</li><li><span class="md-event-tag">market</span>rate cuts helped reflate risk once the worst credit stress passed.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>when the fed pivots from inflation fight to growth support, the front end can fall faster than earnings estimates reset.</p></div><blockquote class="md-regime-quotable"><p>the effective fed funds rate averaged roughly 8.1% in 1990 and near 3.0% by 1993 as policy normalized after the recession.</p><cite>FRED DFF</cite></blockquote></article><article class="md-regime-card" id="regime-mid-90s-mid-2000s"><header class="md-regime-head"><div><h2 class="md-regime-title">mid-1990s calm through the mid-2000s hiking cycle</h2><div class="md-regime-range">1995 to 2007</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 69.33 17.26 L 130.67 37.00 L 192.00 14.11" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="69.33" cy="17.26" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="130.67" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="14.11" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">rates rose into the late 1990s boom, fell after the dot-com bust, then climbed again into the housing cycle peak.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">5</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-5</text><rect x="65.75" y="16.00" width="77.50" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="190.75" y="36.25" width="77.50" height="60.75" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="315.75" y="75.19" width="77.50" height="21.81" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="440.75" y="30.02" width="77.50" height="66.98" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="104.50" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">5</text><text x="104.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1999</text><text x="229.50" y="28.25" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">3</text><text x="229.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2001</text><text x="354.50" y="67.19" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">1</text><text x="354.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2004</text><text x="479.50" y="22.02" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">4</text><text x="479.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2007</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">fed</span>greenspan and then bernanke cycles: boom tightening, bust easing, reflation hiking.</li><li><span class="md-event-tag">economy</span>productivity optimism, then investment collapse, then housing-led growth.</li><li><span class="md-event-tag">market</span>equity duration worked in the late 1990s until the curve flattened and credit cracked.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>the middle of the strip often matters most for multinationals and capex-heavy sectors when the belly of the curve leads the economy.</p></div><blockquote class="md-regime-quotable"><p>fed funds fell from roughly 6.2% in 2000 to about 1.6% in 2004 during the post-dot-com easing phase.</p><cite>FRED DFF</cite></blockquote></article><article class="md-regime-card" id="regime-financial-crisis-unlimited"><header class="md-regime-head"><div><h2 class="md-regime-title">the financial crisis and zero-rate era</h2><div class="md-regime-range">2008 to 2015</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 9.86 L 69.33 37.00 L 130.67 32.71 L 192.00 7.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="9.86" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="69.33" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="130.67" cy="32.71" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">policy slammed to zero, forward guidance and QE dominated the long end more than daily fed funds prints.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">2</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-2</text><rect x="65.75" y="23.36" width="77.50" height="73.64" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="190.75" y="93.32" width="77.50" height="3.68" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="315.75" y="82.27" width="77.50" height="14.73" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="440.75" y="16.00" width="77.50" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="104.50" y="15.36" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">2</text><text x="104.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2008</text><text x="229.50" y="85.32" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">0</text><text x="229.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2009</text><text x="354.50" y="74.27" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">0</text><text x="354.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2012</text><text x="479.50" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">2</text><text x="479.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2015</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">fed</span>cuts to zero, emergency facilities, then QE and guidance to pin yields.</li><li><span class="md-event-tag">economy</span>deep recession, slow repair, persistent output gap debates.</li><li><span class="md-event-tag">market</span>duration and quality worked until growth rebounded enough to taper tantrum.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>when the front end is pinned, equities start arguing with the long end and real rates instead of with fed funds.</p></div><blockquote class="md-regime-quotable"><p>the effective funds rate averaged about 1.6% in 2008 and near 0.1% for several years after the crisis.</p><cite>FRED DFF</cite></blockquote></article><article class="md-regime-card" id="regime-late-cycle-2016-2019"><header class="md-regime-head"><div><h2 class="md-regime-title">late-cycle normalization</h2><div class="md-regime-range">2016 to 2019</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 69.33 37.00 L 130.67 37.00 L 192.00 37.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="69.33" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="130.67" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">gradual hikes into full employment with muted inflation — until the pandemic broke the script.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">1</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-1</text><rect x="65.75" y="16.00" width="77.50" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="190.75" y="91.94" width="77.50" height="5.06" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="315.75" y="91.94" width="77.50" height="5.06" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="440.75" y="91.94" width="77.50" height="5.06" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="104.50" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">1</text><text x="104.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2016</text><text x="229.50" y="83.94" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">0</text><text x="229.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2017</text><text x="354.50" y="83.94" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">0</text><text x="354.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2018</text><text x="479.50" y="83.94" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">0</text><text x="479.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2019</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">fed</span>quarter-point hikes and balance-sheet runoff tightened conditions slowly.</li><li><span class="md-event-tag">economy</span>late expansion with low unemployment and uneven capex.</li><li><span class="md-event-tag">market</span>growth stocks led until real yields and the dollar mattered more in late 2018.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>slow tightening can feel painless until liquidity-sensitive assets and housing roll first.</p></div><blockquote class="md-regime-quotable"><p>fed funds rose from roughly 0.4% in 2016 to about 2.2% in 2019 before the pandemic shock.</p><cite>FRED DFF</cite></blockquote></article><article class="md-regime-card" id="regime-pandemic-to-hiking"><header class="md-regime-head"><div><h2 class="md-regime-title">pandemic zero to inflation shock hiking</h2><div class="md-regime-range">2020 to 2026</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 37.00 L 69.33 7.00 L 130.67 17.34 L 192.00 21.48" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="69.33" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="130.67" cy="17.34" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="21.48" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">emergency zero, then the fastest hiking cycle in decades, then easing as inflation cooled.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">5</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-5</text><rect x="65.75" y="60.32" width="77.50" height="36.68" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="190.75" y="16.00" width="77.50" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="315.75" y="31.28" width="77.50" height="65.72" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="440.75" y="37.40" width="77.50" height="59.60" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="104.50" y="52.32" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">2</text><text x="104.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2020</text><text x="229.50" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">5</text><text x="229.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2022</text><text x="354.50" y="23.28" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">4</text><text x="354.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2024</text><text x="479.50" y="29.40" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">3</text><text x="479.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2026</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">fed</span>zero bound, then hikes, then cuts as inflation gravity changed.</li><li><span class="md-event-tag">economy</span>violent stop-start, then goods-led inflation, then services normalization.</li><li><span class="md-event-tag">market</span>duration crashed in 2022, then stabilized as the strip priced an end to the hiking cycle.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>when the fed moves late relative to inflation, the belly of the curve can whipsaw equities more than the long end.</p></div><blockquote class="md-regime-quotable"><p>after averaging roughly 0.4% in 2021, the effective funds rate climbed above 5% in the 2023–2024 window before easing into 2025–2026.</p><cite>FRED DFF</cite></blockquote></article>
+        <p>when you are positioning equities around rates, start with which part of the strip is actually moving. policy shocks hit the front end first. growth shocks often migrate to the long end. inflation surprises infect breakevens and real rates.</p><p>history rewards investors who separate &#x27;high rates&#x27; from &#x27;tight financial conditions&#x27;. you can have elevated nominal yields with loose conditions if growth is strong and credit is open — or the reverse if the economy is fragile.</p><p>use this dissection as a bookmark. when the next fed cycle turns, come back to the analog table: which era does today’s strip resemble, and which equity factors usually won when that shape dominated?</p>
+      </article>
+
+      <aside class="pa-aside md-aside" aria-label="signal card">
+        <div class="pa-score pa-score--editorial md-score">
+          <div class="pa-score-label">policy path</div>
+          <div class="pa-pulse-stat">the effective fed funds rate fell from roughly 5.2% in 2007 to near zero by 2009, then stayed depressed for most of a decade before the 2022–2024 hiking cycle took it above 5% again.</div>
+          <div class="pa-score-label pa-kill-heading">why it matters</div>
+          <p class="pa-verdict">equity duration fights live inside the rates strip. when the fed is moving fast, the front end reprices first. when growth and inflation debates dominate, the belly and long end do more of the work.</p>
+          <div class="pa-score-label pa-verdict-heading">verdict</div>
+          <p class="pa-verdict">read the strip as layers: policy today (fed funds), policy over the cycle (2s), long-run growth and term premium (10s), and inflation-adjusted hurdles (real yields).</p>
+          <a href="/pulse/" class="pa-score-cta">more pulse research →</a>
+        </div>
+      </aside>
+    </div>
+
+    <div class="pa-geo-wrap">
+      <section class="pa-geo-takeaways" aria-label="key takeaways"><h2 class="pa-geo-h" id="takeaways">key takeaways</h2><ul class="pa-geo-takeaways-list"><li>split &#x27;rates&#x27; into fed funds, 2s, 10s, and real yields — they rarely tell one story at the same time.</li><li>the front end leads when the shock is policy; the long end leads when the shock is growth or term premium.</li><li>real yields matter for growth stock multiples even when nominal yields look unchanged.</li><li>when fed funds is pinned, watch financial conditions indices and long real rates for the real pressure on risk assets.</li><li>equity historians anchor on eras — this page is built so you can match today&#x27;s strip to the closest analog.</li></ul></section>
+      <section class="pa-geo-faq" aria-label="frequently asked questions"><h2 class="pa-geo-h" id="faq">faq</h2><div class="pa-geo-faq-items"><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">why do investors watch the 2-year treasury so closely?</h3><p class="pa-geo-faq-a">the 2-year yield compresses market expectations for policy over the next couple of years. when it jumps or drops rapidly, equity duration and sector rotation often respond before gdp data confirms the turn.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">what is the difference between nominal and real yields for stocks?</h3><p class="pa-geo-faq-a">nominal yields include inflation compensation. real yields strip that out. rising real yields raise the discount rate for distant cash flows, which tends to pressure long-duration equities more than near-term earners.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">can fed funds be unchanged while financial conditions tighten?</h3><p class="pa-geo-faq-a">yes. credit spreads, the dollar, mortgage rates, and equity volatility can tighten conditions without another hike. markets often react to the vector of conditions, not a single rate print.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">what does it mean when the curve is steep but fed funds is high?</h3><p class="pa-geo-faq-a">it can mean the market expects cuts, extra term premium, or stronger long-run growth. the equity read depends on whether the steepening is driven by falling short rates or rising long yields.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">how should i use this page in practice?</h3><p class="pa-geo-faq-a">use it as a regime map. identify which historical era today&#x27;s policy path rhymes with, then check which equity factors and sectors tended to win in that era — knowing the rhyme is never perfect.</p></div></div></section>
+      <section class="md-sources" aria-labelledby="md-sources-h"><h2 class="pa-geo-h" id="md-sources-h">sources</h2><ol class="md-sources-list"><li><a href="https://fred.stlouisfed.org/series/DFF">FRED: Effective Federal Funds Rate (DFF)</a></li><li><a href="https://www.federalreserve.gov/monetarypolicy.htm">Federal Reserve: Monetary Policy</a></li><li><a href="https://www.newyorkfed.org/data/treasury.html">NY Fed: Treasury yield curve data</a></li></ol></section>
+    </div>
+
+    <div class="pa-cta-row">
+      <a href="/pulse/" class="pa-cta is-primary">back to the pulse →</a>
+      <a href="/stacks/" class="pa-cta">the stacks →</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807"></script>
+<script src="/js/gate.js?v=1776081807" defer></script>
+</body>
+</html>

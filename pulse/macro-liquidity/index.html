@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<!--
+  Evergreen pulse page — macro dissection.
+  Built by: evergreen/build_evergreen.py
+  Template: evergreen/templates/macro-dissection.html
+  Data:     evergreen/data/liquidity.json
+  Ship:     4. Website/dist/pulse/macro-liquidity/index.html
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Liquidity mechanics — Fed balance sheet, reserves, and plumbing — xvary pulse</title>
+  <meta name="description" content="QE, QT, and how central bank balance-sheet size interacts with Treasury issuance, money markets, and risk asset carry.">
+  <link rel="canonical" href="https://xvary.com/pulse/macro-liquidity/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Liquidity mechanics — macro dissection · xvary">
+  <meta property="og:description" content="QE, QT, and how central bank balance-sheet size interacts with Treasury issuance, money markets, and risk asset carry.">
+  <meta property="og:url" content="https://xvary.com/pulse/macro-liquidity/">
+  <meta property="og:image" content="https://xvary.com/assets/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="XVARY">
+  <meta name="robots" content="index, follow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Liquidity mechanics — macro dissection · xvary">
+  <meta name="twitter:description" content="QE, QT, and how central bank balance-sheet size interacts with Treasury issuance, money markets, and risk asset carry.">
+  <meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-article.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-evergreen.css?v=1776081807">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Liquidity mechanics — macro dissection · xvary",
+  "description": "QE, QT, and how central bank balance-sheet size interacts with Treasury issuance, money markets, and risk asset carry.",
+  "datePublished": "2026-03-25",
+  "dateModified": "2026-03-25",
+  "author": {
+    "@type": "Organization",
+    "name": "xvary"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "xvary",
+    "url": "https://xvary.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://xvary.com/assets/xvary-logo.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://xvary.com/pulse/macro-liquidity/"
+  },
+  "image": ["https://xvary.com/assets/og-default.png"],
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".pa-headline", ".pa-body"]
+  },
+  "url": "https://xvary.com/pulse/macro-liquidity/"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://xvary.com/pulse/macro-liquidity/#faq",
+  "url": "https://xvary.com/pulse/macro-liquidity/",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "does QE directly buy stocks?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "not in the US baseline — it lowers risk-free rates and absorbs duration, lifting other assets indirectly."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "what broke in Sept 2019 repo?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "reserve distribution and Treasury issuance collided — not just 'low reserves' headline."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "RRP draining means what?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "cash moving from Fed facility into bills or private assets — nuance needed."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "is SVB 2023 a liquidity episode?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "partly — duration mismatches met depositor runs; policy response mattered."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "best single Fed release?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "H.4.1 factors affecting reserve balances."
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body class="pa-article">
+<a class="skip-link" href="#content">skip to content</a>
+<div class="grain"></div>
+
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="active nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content" class="md-layout">
+  <div class="pa-wrap md-wrap">
+    <div class="pa-back"><a href="/pulse/">← back to the pulse</a></div>
+
+    <header class="pa-head md-head">
+      <div class="pa-kicker-row">
+        <span class="pa-type">evergreen · macro dissection</span>
+        <span class="pa-ticker-pill">Fed balance sheet, reserves, and market plumbing</span>
+      </div>
+      <h1>Liquidity mechanics — Fed balance sheet, reserves, and plumbing</h1>
+      <p class="pa-deck">QE, QT, RRP, and bank reserves — how central bank balance-sheet mechanics leak into asset prices and dollar funding.</p>
+      <div class="pa-byline">xvary research desk · 2026-03-25 · 1990 to 2026</div>
+    </header>
+
+    <div class="pa-grid md-grid">
+      <article class="pa-body md-body">
+        <section class="md-definitions" aria-labelledby="md-definitions-h"><h2 class="pa-geo-h" id="md-definitions-h">key definitions</h2><dl class="md-definition-list"><div class="md-definition"><dt><dfn>QE</dfn></dt><dd>large-scale asset purchases that expand the central bank balance sheet and create reserves.</dd></div><div class="md-definition"><dt><dfn>QT</dfn></dt><dd>quantitative tightening — shrinking the balance sheet by letting securities roll off or selling them.</dd></div><div class="md-definition"><dt><dfn>RRP</dfn></dt><dd>overnight reverse repo facility — a release valve for excess cash in the system.</dd></div><div class="md-definition"><dt><dfn>reserves</dfn></dt><dd>bank deposits at the Fed — foundational settlement liquidity.</dd></div></dl></section>
+        <p>reserves can be ample yet localized — stress appears in plumbing, not headlines.</p><p>Treasury issuance and QT interact: more duration supply can drain liquidity even if rates stable.</p>
+
+        <figure class="md-master-chart">
+          <figcaption>Fed total assets — stylized (USD trillions)</figcaption>
+          <svg viewBox="0 0 760 280" role="img" aria-label="Fed total assets — stylized (USD trillions)" xmlns="http://www.w3.org/2000/svg"><rect width="760" height="280" fill="#F4F4F2" rx="20" /><text x="10" y="25.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">8</text><line x1="46" y1="20.00" x2="742" y2="20.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><text x="10" y="243.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">0</text><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><text x="10" y="243.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">0</text><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="#1A1A1A" stroke-width="1.75" stroke-dasharray="5 4" /><path d="M 46.00 229.02 L 65.33 228.77 L 84.67 228.51 L 104.00 228.25 L 123.33 228.00 L 142.67 227.74 L 162.00 227.48 L 181.33 227.23 L 200.67 226.97 L 220.00 226.72 L 239.33 226.46 L 258.67 225.18 L 278.00 223.89 L 297.33 222.61 L 316.67 221.33 L 336.00 220.05 L 355.33 218.76 L 374.67 217.48 L 394.00 216.20 L 413.33 214.92 L 432.67 181.58 L 452.00 175.16 L 471.33 171.32 L 490.67 167.47 L 510.00 164.91 L 529.33 162.34 L 548.67 159.78 L 568.00 157.21 L 587.33 155.93 L 606.67 136.69 L 626.00 53.34 L 645.33 20.00 L 664.67 25.13 L 684.00 40.52 L 703.33 48.21 L 722.67 55.91 L 742.00 62.32 L 742.00 238.00 L 46.00 238.00 Z" fill="rgba(245,225,0,0.55)" stroke="none" /><path d="M 46.00 229.02 L 65.33 228.77 L 84.67 228.51 L 104.00 228.25 L 123.33 228.00 L 142.67 227.74 L 162.00 227.48 L 181.33 227.23 L 200.67 226.97 L 220.00 226.72 L 239.33 226.46 L 258.67 225.18 L 278.00 223.89 L 297.33 222.61 L 316.67 221.33 L 336.00 220.05 L 355.33 218.76 L 374.67 217.48 L 394.00 216.20 L 413.33 214.92 L 432.67 181.58 L 452.00 175.16 L 471.33 171.32 L 490.67 167.47 L 510.00 164.91 L 529.33 162.34 L 548.67 159.78 L 568.00 157.21 L 587.33 155.93 L 606.67 136.69 L 626.00 53.34 L 645.33 20.00 L 664.67 25.13 L 684.00 40.52 L 703.33 48.21 L 722.67 55.91 L 742.00 62.32" fill="none" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /><circle cx="46.00" cy="229.02" r="2.6" fill="#1A1A1A" /><circle cx="65.33" cy="228.77" r="2.6" fill="#1A1A1A" /><circle cx="84.67" cy="228.51" r="2.6" fill="#1A1A1A" /><circle cx="104.00" cy="228.25" r="2.6" fill="#1A1A1A" /><circle cx="123.33" cy="228.00" r="2.6" fill="#1A1A1A" /><circle cx="142.67" cy="227.74" r="2.6" fill="#1A1A1A" /><circle cx="162.00" cy="227.48" r="2.6" fill="#1A1A1A" /><circle cx="181.33" cy="227.23" r="2.6" fill="#1A1A1A" /><circle cx="200.67" cy="226.97" r="2.6" fill="#1A1A1A" /><circle cx="220.00" cy="226.72" r="2.6" fill="#1A1A1A" /><circle cx="239.33" cy="226.46" r="2.6" fill="#1A1A1A" /><circle cx="258.67" cy="225.18" r="2.6" fill="#1A1A1A" /><circle cx="278.00" cy="223.89" r="2.6" fill="#1A1A1A" /><circle cx="297.33" cy="222.61" r="2.6" fill="#1A1A1A" /><circle cx="316.67" cy="221.33" r="2.6" fill="#1A1A1A" /><circle cx="336.00" cy="220.05" r="2.6" fill="#1A1A1A" /><circle cx="355.33" cy="218.76" r="2.6" fill="#1A1A1A" /><circle cx="374.67" cy="217.48" r="2.6" fill="#1A1A1A" /><circle cx="394.00" cy="216.20" r="2.6" fill="#1A1A1A" /><circle cx="413.33" cy="214.92" r="2.6" fill="#1A1A1A" /><circle cx="432.67" cy="181.58" r="2.6" fill="#1A1A1A" /><circle cx="452.00" cy="175.16" r="2.6" fill="#1A1A1A" /><circle cx="471.33" cy="171.32" r="2.6" fill="#1A1A1A" /><circle cx="490.67" cy="167.47" r="2.6" fill="#1A1A1A" /><circle cx="510.00" cy="164.91" r="2.6" fill="#1A1A1A" /><circle cx="529.33" cy="162.34" r="2.6" fill="#1A1A1A" /><circle cx="548.67" cy="159.78" r="2.6" fill="#1A1A1A" /><circle cx="568.00" cy="157.21" r="2.6" fill="#1A1A1A" /><circle cx="587.33" cy="155.93" r="2.6" fill="#1A1A1A" /><circle cx="606.67" cy="136.69" r="2.6" fill="#1A1A1A" /><circle cx="626.00" cy="53.34" r="2.6" fill="#1A1A1A" /><circle cx="645.33" cy="20.00" r="2.6" fill="#1A1A1A" /><circle cx="664.67" cy="25.13" r="2.6" fill="#1A1A1A" /><circle cx="684.00" cy="40.52" r="2.6" fill="#1A1A1A" /><circle cx="703.33" cy="48.21" r="2.6" fill="#1A1A1A" /><circle cx="722.67" cy="55.91" r="2.6" fill="#1A1A1A" /><circle cx="742.00" cy="62.32" r="2.6" fill="#1A1A1A" /><text x="46.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">1990</text><text x="220.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">1999</text><text x="394.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2008</text><text x="568.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2017</text><text x="742.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2026</text></svg>
+        </figure>
+
+        <div class="md-regime-nav-wrap"><nav class="md-regime-nav" aria-label="regime navigation"><a class="md-regime-chip" href="#regime-pre-gfc"><span class="md-regime-chip-title">pre-GFC flat footprint</span><span class="md-regime-chip-range">1990 to 2007</span></a><a class="md-regime-chip" href="#regime-gfc-surge"><span class="md-regime-chip-title">2008 to 2012 surge</span><span class="md-regime-chip-range">2008 to 2012</span></a><a class="md-regime-chip" href="#regime-2013-2019-taper"><span class="md-regime-chip-title">2013 to 2019 taper and roll</span><span class="md-regime-chip-range">2013 to 2019</span></a><a class="md-regime-chip" href="#regime-2020-shock"><span class="md-regime-chip-title">2020 liquidity shock</span><span class="md-regime-chip-range">2020 to 2021</span></a><a class="md-regime-chip" href="#regime-2022-qt"><span class="md-regime-chip-title">2022 to 2026 QT</span><span class="md-regime-chip-range">2022 to 2026</span></a></nav></div>
+        <article class="md-regime-card" id="regime-pre-gfc"><header class="md-regime-head"><div><h2 class="md-regime-title">pre-GFC flat footprint</h2><div class="md-regime-range">1990 to 2007</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 37.00 L 100.00 33.25 L 192.00 7.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="33.25" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">balance sheet was small; private credit growth did the heavy lifting.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">1</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-1</text><rect x="73.67" y="64.60" width="103.33" height="32.40" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="60.55" width="103.33" height="36.45" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="32.20" width="103.33" height="64.80" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="56.60" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">0</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1995</text><text x="292.00" y="52.55" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">0</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2000</text><text x="458.67" y="24.20" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">0</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2007</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">fed</span>rates policy dominated.</li><li><span class="md-event-tag">credit</span>shadow banking grew.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>equity cycles ran on private leverage more than reserve abundance.</p></div><blockquote class="md-regime-quotable"><p>Fed assets stayed well below a trillion.</p><cite>Fed H.4.1</cite></blockquote></article><article class="md-regime-card" id="regime-gfc-surge"><header class="md-regime-head"><div><h2 class="md-regime-title">2008 to 2012 surge</h2><div class="md-regime-range">2008 to 2012</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 37.00 L 100.00 13.86 L 192.00 7.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="13.86" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">QE absorbs risk the private sector cannot hold.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">2</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-2</text><rect x="73.67" y="70.52" width="103.33" height="26.48" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="28.46" width="103.33" height="68.54" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="62.52" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">0</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2008</text><text x="292.00" y="20.46" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">2</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2010</text><text x="458.67" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">2</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2012</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">fed</span>asset purchases and swaps.</li><li><span class="md-event-tag">market</span>function restored slowly.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>when private market makers step back, the central bank becomes marginal price setter.</p></div><blockquote class="md-regime-quotable"><p>balance sheet jumped into the multi-trillion range.</p><cite>Fed</cite></blockquote></article><article class="md-regime-card" id="regime-2013-2019-taper"><header class="md-regime-head"><div><h2 class="md-regime-title">2013 to 2019 taper and roll</h2><div class="md-regime-range">2013 to 2019</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 37.00 L 100.00 28.82 L 192.00 7.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="28.82" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">taper tantrum, then slow growth of sheet; repo spike in 2019.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">3</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-3</text><rect x="73.67" y="38.56" width="103.33" height="58.44" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="32.41" width="103.33" height="64.59" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="30.56" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">2</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2014</text><text x="292.00" y="24.41" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">3</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2017</text><text x="458.67" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">3</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2019</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">fed</span>taper then gradual unwind.</li><li><span class="md-event-tag">funding</span>sept 2019 repo stress.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>QT at wrong pace versus bill supply can break calm markets.</p></div><blockquote class="md-regime-quotable"><p>assets drifted lower before 2020 shock.</p><cite>NY Fed</cite></blockquote></article><article class="md-regime-card" id="regime-2020-shock"><header class="md-regime-head"><div><h2 class="md-regime-title">2020 liquidity shock</h2><div class="md-regime-range">2020 to 2021</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 37.00 L 192.00 7.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">violent expansion to backstop markets and facilitate transfers.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">8</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-8</text><rect x="89.50" y="28.39" width="155.00" height="68.61" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="339.50" y="16.00" width="155.00" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="167.00" y="20.39" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">7</text><text x="167.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2020</text><text x="417.00" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">8</text><text x="417.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2021</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">fed</span>massive buys.</li><li><span class="md-event-tag">fiscal</span>transfers drained into balances.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>liquidity fixes price; solvency still needs earnings.</p></div><blockquote class="md-regime-quotable"><p>balance sheet stepped up sharply.</p><cite>Fed</cite></blockquote></article><article class="md-regime-card" id="regime-2022-qt"><header class="md-regime-head"><div><h2 class="md-regime-title">2022 to 2026 QT</h2><div class="md-regime-range">2022 to 2026</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 100.00 22.00 L 192.00 37.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="22.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">inflation mandate drove hikes plus balance-sheet runoff.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">8</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-8</text><rect x="73.67" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="21.86" width="103.33" height="75.14" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="27.71" width="103.33" height="69.29" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">8</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2022</text><text x="292.00" y="13.86" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">7</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2023</text><text x="458.67" y="19.71" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">7</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2025</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">fed</span>QT resumes tightening beyond rates.</li><li><span class="md-event-tag">treasury</span>heavy coupon supply.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>reserve scarcity shows up in money markets before equities admit it.</p></div><blockquote class="md-regime-quotable"><p>assets rolled off from peaks but stayed historically large.</p><cite>Fed</cite></blockquote></article>
+        <p>update with official H.4.1 — stylized series here illustrate regime shifts only.</p><p>watch TGA swings and bill issuance — fiscal can dominate short-term liquidity.</p>
+      </article>
+
+      <aside class="pa-aside md-aside" aria-label="signal card">
+        <div class="pa-score pa-score--editorial md-score">
+          <div class="pa-score-label">balance sheet</div>
+          <div class="pa-pulse-stat">the Fed's balance sheet stepped up by orders of magnitude after 2008 and again in 2020 — changing the baseline for 'normal' liquidity.</div>
+          <div class="pa-score-label pa-kill-heading">why it matters</div>
+          <p class="pa-verdict">liquidity is not just 'money printing' — it is who holds reserves, how collateral circulates, and whether dealers can warehouse risk.</p>
+          <div class="pa-score-label pa-verdict-heading">verdict</div>
+          <p class="pa-verdict">equities feel liquidity through risk appetite, buybacks enabled by credit, and volatility surfaces — not a single aggregate.</p>
+          <a href="/pulse/" class="pa-score-cta">more pulse research →</a>
+        </div>
+      </aside>
+    </div>
+
+    <div class="pa-geo-wrap">
+      <section class="pa-geo-takeaways" aria-label="key takeaways"><h2 class="pa-geo-h" id="takeaways">key takeaways</h2><ul class="pa-geo-takeaways-list"><li>balance sheet size matters with Treasury and RRP context.</li><li>ample reserves can still misprice risk.</li><li>QT is not linear in market impact.</li><li>fiscal + Fed + private credit = full liquidity picture.</li><li>use official releases — stylized charts teach regimes.</li></ul></section>
+      <section class="pa-geo-faq" aria-label="frequently asked questions"><h2 class="pa-geo-h" id="faq">faq</h2><div class="pa-geo-faq-items"><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">does QE directly buy stocks?</h3><p class="pa-geo-faq-a">not in the US baseline — it lowers risk-free rates and absorbs duration, lifting other assets indirectly.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">what broke in Sept 2019 repo?</h3><p class="pa-geo-faq-a">reserve distribution and Treasury issuance collided — not just &#x27;low reserves&#x27; headline.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">RRP draining means what?</h3><p class="pa-geo-faq-a">cash moving from Fed facility into bills or private assets — nuance needed.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">is SVB 2023 a liquidity episode?</h3><p class="pa-geo-faq-a">partly — duration mismatches met depositor runs; policy response mattered.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">best single Fed release?</h3><p class="pa-geo-faq-a">H.4.1 factors affecting reserve balances.</p></div></div></section>
+      <section class="md-sources" aria-labelledby="md-sources-h"><h2 class="pa-geo-h" id="md-sources-h">sources</h2><ol class="md-sources-list"><li><a href="https://www.federalreserve.gov/releases/h41/current/">Fed H.4.1</a></li><li><a href="https://www.newyorkfed.org/markets">NY Fed: Open market operations</a></li><li><a href="https://www.bis.org/publ/qtrpdf/r_qt2206_market.htm">BIS: Market plumbing</a></li></ol></section>
+    </div>
+
+    <div class="pa-cta-row">
+      <a href="/pulse/" class="pa-cta is-primary">back to the pulse →</a>
+      <a href="/stacks/" class="pa-cta">the stacks →</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807"></script>
+<script src="/js/gate.js?v=1776081807" defer></script>
+</body>
+</html>

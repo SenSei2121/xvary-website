@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>xvary — methodology</title>
+<meta name="description" content="How XVARY builds reports: the research pipeline, the report structure, and the composite scoring framework.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://xvary.com/methodology/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="xvary — methodology">
+<meta property="og:description" content="The research pipeline, the report structure, and the composite scoring framework.">
+<meta property="og:url" content="https://xvary.com/methodology/">
+<meta property="og:image" content="https://xvary.com/assets/og-default.png">
+<meta property="og:site_name" content="XVARY">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="xvary — methodology">
+<meta name="twitter:description" content="How XVARY builds reports and scores composite.">
+<meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "XVARY Methodology",
+  "description": "How XVARY builds reports: the research pipeline, the report structure, and the composite scoring framework.",
+  "url": "https://xvary.com/methodology/",
+  "publisher": { "@type": "Organization", "name": "xvary", "url": "https://xvary.com" },
+  "mainEntityOfPage": "https://xvary.com/methodology/"
+}
+</script>
+<style>
+  .method-shell {
+    max-width: var(--max-w-wide);
+    margin: 0 auto;
+    padding: 0 24px 72px;
+  }
+  .method-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+  .method-card {
+    background: rgba(255, 255, 255, .65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--radius-card);
+    padding: 24px;
+  }
+  .method-card h2,
+  .method-card h3 {
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: lowercase;
+    margin-bottom: 10px;
+  }
+  .method-card p,
+  .method-card li {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text2);
+    text-transform: lowercase;
+  }
+  .method-card ul,
+  .method-card ol {
+    padding-left: 18px;
+    margin-top: 10px;
+  }
+  .method-card li + li {
+    margin-top: 6px;
+  }
+  .score-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .score-pill {
+    background: rgba(255,255,255,.08);
+    border-radius: var(--radius-card);
+    padding: 18px 16px;
+  }
+  .score-pill h3 {
+    margin-bottom: 6px;
+    color: var(--yel);
+  }
+  .quote-box {
+    margin-top: 16px;
+    border-radius: var(--radius-card);
+    background: rgba(255,229,0,.12);
+    padding: 18px 20px;
+    font-size: 18px;
+    font-weight: 700;
+    line-height: 1.3;
+    text-transform: lowercase;
+  }
+  @media (max-width: 900px) {
+    .method-grid,
+    .score-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#content">skip to content</a>
+
+
+<div class="grain"></div>
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content">
+  <div class="page-header">
+    <h1>methodology</h1>
+    <p>how the research is made, what the score is trying to measure, and why the reports are structured the way they are.</p>
+  </div>
+
+  <div class="method-shell">
+    <div class="dark-card dark-card--inline" style="margin-bottom:16px">
+      <div class="dc-eyebrow">the pipeline</div>
+      <div class="dc-label" style="color:rgba(255,255,255,.8);font-size:18px;font-weight:700">xvary uses a multi-stage pipeline to process filings, earnings calls, competitive context, and valuation work into a consistent research product.</div>
+      <div class="dc-context">the job of the system is not to sound smart. the job is to surface what matters, show the evidence, and force a view.</div>
+      <div class="score-grid">
+        <div class="score-pill"><h3>source</h3><p>sec filings, earnings calls, investor decks, and company disclosures.</p></div>
+        <div class="score-pill"><h3>structure</h3><p>evidence is routed into repeatable modules so every report has a comparable spine.</p></div>
+        <div class="score-pill"><h3>stress test</h3><p>valuations, catalysts, and bear cases are checked against competing narratives.</p></div>
+        <div class="score-pill"><h3>score</h3><p>composite is assigned only after the thesis, kill criteria, and asymmetry are explicit.</p></div>
+        <div class="score-pill"><h3>edit</h3><p>humans verify, rewrite, and decide what deserves publication.</p></div>
+      </div>
+      <div style="margin-top:16px;text-align:center">
+        <a class="btn-dark btn-sm" href="/methodology/pipeline/" style="display:inline-block">watch the pipeline run</a>
+      </div>
+    </div>
+
+    <div class="method-grid">
+      <section class="method-card">
+        <h2>the report spine</h2>
+        <p>the exact module count can change by company. what stays consistent is the analytical spine, so every xvary deep dive can be compared across time, sectors, and market regimes.</p>
+        <ul>
+          <li>thesis and variant view</li>
+          <li>valuation and scenario work</li>
+          <li>risk framework and kill criteria</li>
+          <li>financial analysis and capital allocation</li>
+          <li>competitive position and market structure</li>
+          <li>products, technology, and supply chain</li>
+          <li>street expectations and earnings evidence</li>
+          <li>signals, history, and management quality</li>
+        </ul>
+      </section>
+
+      <section class="method-card">
+        <h2>what composite is trying to measure</h2>
+        <p>composite is not a recommendation label. it is our shorthand for how strong the setup looks after the evidence is laid out. higher scores require both a strong thesis and a clear path for the market to be wrong.</p>
+        <ul>
+          <li><strong>momentum:</strong> is the business or stock setup getting stronger or weaker right now?</li>
+          <li><strong>financial health:</strong> do the balance sheet, margins, and cash flows support the thesis?</li>
+          <li><strong>competitive position:</strong> is there a real moat, or just a temporary narrative premium?</li>
+          <li><strong>stability:</strong> how fragile is the setup if one assumption breaks?</li>
+          <li><strong>valuation upside:</strong> how much modeled upside or downside exists versus current expectations?</li>
+        </ul>
+        <p>the exact recipe can vary slightly by company because bad data, capital intensity, and special situations demand judgment.</p>
+      </section>
+
+      <section class="method-card">
+        <h2>why the reports are long</h2>
+        <p>a one-line target is easy to publish and impossible to audit. xvary reports are long because the work needs to show its seams: where the thesis came from, what could break it, how the valuation was built, and where the market story diverges from the evidence.</p>
+      </section>
+
+      <section class="method-card">
+        <h2>transparency level</h2>
+        <p>we publish the ingredients, the evidence, and the outputs. we do not publish every internal weight, prompt, or decision heuristic.</p>
+        <div class="quote-box">we show the ingredients and evidence. we protect the recipe and weights.</div>
+      </section>
+    </div>
+
+    <div class="cards-section" style="padding:40px 0 0;max-width:none">
+      <h2>where to audit us</h2>
+      <div class="cards-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="content-card">
+          <div class="cc-title">the stacks <span class="cc-tag">public</span></div>
+          <div class="cc-body">the stacks keep every published call visible with its composite score, direction, and report context. it is the fastest way to audit what has actually been published.</div>
+          <div style="margin-top:14px"><a class="btn-dark btn-sm" href="/stacks/">open the stacks</a></div>
+        </div>
+        <div class="content-card">
+          <div class="cc-title">pipeline replay <span class="cc-tag">interactive</span></div>
+          <div class="cc-body">watch the research pipeline run from start to finish: evidence collection, multi-module analysis, synthesis, and report generation — in real time.</div>
+          <div style="margin-top:14px"><a class="btn-dark btn-sm" href="/methodology/pipeline/">watch the pipeline</a></div>
+        </div>
+        <div class="content-card">
+          <div class="cc-title">sample report <span class="cc-tag">ungated</span></div>
+          <div class="cc-body">the stacks are open so you can see the structure, composite sorting, and coverage breadth before signing up. that is the best way to judge the product.</div>
+          <div style="margin-top:14px"><a class="btn-dark btn-sm" href="/stacks/#filter=all&sort=composite&view=cards">open the stacks</a></div>
+        </div>
+        <div class="content-card">
+          <div class="cc-title">how we analyze stocks <span class="cc-tag">guide</span></div>
+          <div class="cc-body">the six-step framework xvary uses to evaluate every company — from understanding the business to scoring the composite. a plain-english walkthrough.</div>
+          <div style="margin-top:14px"><a class="btn-dark btn-sm" href="/methodology/how-we-analyze-stocks/">read the guide</a></div>
+        </div>
+        <div class="content-card">
+          <div class="cc-title">best ai for stock analysis <span class="cc-tag">comparison</span></div>
+          <div class="cc-body">how chatgpt, claude, gemini, perplexity, and purpose-built platforms like xvary compare for equity research — an honest breakdown.</div>
+          <div style="margin-top:14px"><a class="btn-dark btn-sm" href="/methodology/best-ai-stock-analysis/">read the comparison</a></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+<script src="/js/site-chrome.js?v=1776081807"></script>
+</body>
+</html>

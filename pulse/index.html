@@ -1,0 +1,549 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>xvary — the pulse</title>
+<meta name="description" content="the pulse from XVARY: score changes, earnings reactions, and market notes in a brutalist editorial layout.">
+<link rel="canonical" href="https://xvary.com/pulse/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="xvary — the pulse">
+<meta property="og:description" content="Composite changes, earnings reactions, and market notes from XVARY.">
+<meta property="og:url" content="https://xvary.com/pulse/">
+<meta property="og:image" content="https://xvary.com/assets/og-default.png">
+<meta property="og:site_name" content="XVARY">
+<meta name="robots" content="index, follow">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="xvary — the pulse">
+<meta name="twitter:description" content="Composite changes, earnings reactions, and market notes from XVARY.">
+<meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+<link rel="stylesheet" href="/css/pulse-page.css?v=1776081807">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Blog",
+  "name": "The Pulse — XVARY",
+  "description": "Score changes, earnings reactions, and research notes from the XVARY desk.",
+  "url": "https://xvary.com/pulse/",
+  "publisher": { "@type": "Organization", "name": "xvary", "url": "https://xvary.com" }
+}
+</script>
+
+<link rel="stylesheet" href="/css/pulse-feed.css?v=1776081807">
+</head>
+<body>
+<a class="skip-link" href="#content">skip to content</a>
+
+<div class="grain"></div>
+
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="active nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content">
+
+  <!-- ═══ HERO ═══ -->
+  <section class="pulse-hero">
+    <div class="pulse-kicker"><span class="pulse-kicker-dot"></span> live research notes</div>
+    <h1>the pulse</h1>
+    <p class="pulse-hero-sub">score changes, earnings reactions, and research notes from the xvary desk. 5 minutes. before your first meeting.</p>
+    <div data-xvary-email-cta>
+      <form class="pulse-hero-form" data-xvary-email-form>
+        <input class="pulse-hero-input" type="email" name="email" placeholder="you@example.com" required aria-label="email address">
+        <button class="pulse-hero-btn" type="submit">send me the notes</button>
+      </form>
+      <div class="pulse-hero-msg" data-xvary-msg></div>
+    </div>
+    <div class="pulse-hero-proof">read before the opening bell</div>
+    <div class="pulse-hero-meta">
+      <span class="pulse-hero-pill">weekday notes</span>
+      <span class="pulse-hero-pill">monday digest</span>
+      <span class="pulse-hero-pill">earnings reactions</span>
+    </div>
+  </section>
+
+  <!-- ═══ PREVIEW (shown when no data) ═══ -->
+  <section class="pulse-preview" id="coming-soon" aria-label="preview of upcoming pulse content">
+    <div class="pulse-section-label">recent highlights</div>
+
+    <div class="pulse-preview-grid">
+
+      <!-- Preview 1: score change (links to canonical pulse article URL) -->
+      <div class="pulse-card border-down" onclick="window.location.href='/pulse/nvda-composite-drops-7-8/'">
+        <div class="pulse-card-body">
+          <div class="pulse-card-top">
+            <span class="pulse-card-type score-change">score change</span>
+            <span class="pulse-card-date">mar 25, 2026</span>
+          </div>
+          <h3><a href="/pulse/nvda-composite-drops-7-8/">nvda composite drops to 7.8 after datacenter margin miss</a></h3>
+          <p class="pulse-card-text">datacenter revenue grew 41% but gross margins compressed 180bps. full note on its own URL for search and sharing.</p>
+        </div>
+        <div class="pulse-card-footer">
+          <div class="pulse-card-tags">
+            <span class="pulse-card-tag ticker">NVDA</span>
+            <span class="pulse-card-tag">score change</span>
+          </div>
+          <div class="score-pill">
+            <span class="from">8.4</span><span class="arrow">→</span><span class="to down">7.8</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview 2: Earnings Reaction -->
+      <div class="pulse-card border-neutral">
+        <div class="pulse-card-body">
+          <div class="pulse-card-top">
+            <span class="pulse-card-type">earnings reaction</span>
+            <span class="pulse-card-date">mar 12, 2026</span>
+          </div>
+          <h3>AAPL: beat on everything. stock barely moved.</h3>
+          <p class="pulse-card-text">Q1 FY2026: revenue $124.3B (+4%), EPS $2.40 (+10%). Services margin crossed 75% for the first time. the market priced in perfection and got it.</p>
+        </div>
+        <div class="pulse-card-footer">
+          <div class="pulse-card-tags">
+            <span class="pulse-card-tag ticker">AAPL</span>
+            <span class="pulse-card-tag">earnings</span>
+            <span class="pulse-card-tag">services</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview 3: Weekly Digest -->
+      <div class="pulse-card border-neutral">
+        <div class="pulse-card-body">
+          <div class="pulse-card-top">
+            <span class="pulse-card-type">weekly digest</span>
+            <span class="pulse-card-date">mar 17, 2026</span>
+          </div>
+          <h3>the monday morning summary</h3>
+          <p class="pulse-card-text">score notes, earnings reactions, and new coverage posts roll up here when the weekly summary is assembled from the live feed.</p>
+        </div>
+        <div class="pulse-card-footer">
+          <div class="pulse-card-tags">
+            <span class="pulse-card-tag">digest</span>
+            <span class="pulse-card-tag">weekly</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Preview 4: New Coverage -->
+      <div class="pulse-card border-neutral">
+        <div class="pulse-card-body">
+          <div class="pulse-card-top">
+            <span class="pulse-card-type">new coverage</span>
+            <span class="pulse-card-date">mar 10, 2026</span>
+          </div>
+          <h3>new coverage lands here</h3>
+          <p class="pulse-card-text">first-time names show the opening score only after the canonical snapshot data is available, so the feed never invents a composite.</p>
+        </div>
+        <div class="pulse-card-footer">
+          <div class="pulse-card-tags">
+            <span class="pulse-card-tag ticker">CROX</span>
+            <span class="pulse-card-tag">new coverage</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ═══ LIVE FEED (shown when data exists) ═══ -->
+  <div class="pulse-feed" id="pulse-feed" style="display:none">
+    <div class="pulse-section-label">browse the feed</div>
+    <div class="pulse-filter-bar" id="filter-tabs"></div>
+    <section class="pulse-articles" id="blog-articles" aria-label="pulse articles"></section>
+  </div>
+
+  <!-- ═══ SUBSCRIBE (BOTTOM) ═══ -->
+  <section class="pulse-subscribe" data-xvary-email-cta>
+    <div class="pulse-subscribe-panel">
+      <div class="pulse-subscribe-copy">
+        <div class="pulse-section-label">inbox version</div>
+        <h2>get the pulse in your inbox</h2>
+        <p>weekday composite notes and the monday digest. built for the first five minutes of the day.</p>
+        <div class="pulse-subscribe-perks" aria-label="newsletter perks">
+          <span class="pulse-subscribe-perk">weekday pulse</span>
+          <span class="pulse-subscribe-perk">monday digest</span>
+          <span class="pulse-subscribe-perk">earnings alerts</span>
+          <span class="pulse-subscribe-perk">no filler</span>
+        </div>
+      </div>
+      <div class="pulse-subscribe-form">
+        <div class="pulse-section-label">join the list</div>
+        <form class="pulse-sub-form" data-xvary-email-form>
+          <input class="pulse-sub-input" type="email" name="email" placeholder="you@example.com" required aria-label="email address">
+          <button class="pulse-sub-btn" type="submit">send me the notes</button>
+        </form>
+        <div class="pulse-sub-msg" data-xvary-msg></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="pulse-mobile-cta" id="mobile-cta" data-xvary-email-cta>
+    <form data-xvary-email-form>
+      <input type="email" name="email" placeholder="you@example.com" required aria-label="email address">
+      <button type="submit">send me the notes</button>
+    </form>
+  </div>
+
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/vendor/pretext.js?v=1776081807"></script>
+<script src="/js/pretext-utils.js?v=1776081807"></script>
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/blog-data.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807"></script>
+<script src="/js/gate.js?v=1776081807" defer></script>
+<script>
+(function(){
+  var data = window.XVARY_BLOG_DATA;
+  if (!data || !data.length) return;
+
+  var cs = document.getElementById('coming-soon');
+  var feed = document.getElementById('pulse-feed');
+  var tabs = document.getElementById('filter-tabs');
+  var el = document.getElementById('blog-articles');
+  if (!el) return;
+
+  cs.style.display = 'none';
+  feed.style.display = 'block';
+
+  var TYPE_LABELS = {
+    score_change: 'score change',
+    new_coverage: 'new coverage',
+    research_update: 'research update',
+    daily_pulse: 'daily pulse',
+    earnings: 'earnings reaction',
+    pulse_editorial: 'pulse note'
+  };
+
+  var FILTER_LABELS = {
+    all: 'all',
+    score_change: 'score changes',
+    new_coverage: 'new coverage',
+    earnings: 'earnings',
+    research_update: 'research updates',
+    daily_pulse: 'daily pulse',
+    pulse_editorial: 'pulse notes'
+  };
+
+  var FILTER_ORDER = ['all', 'new_coverage', 'score_change', 'earnings', 'research_update', 'pulse_editorial', 'daily_pulse'];
+
+  var typesInData = {};
+  data.forEach(function(p) { if (p.type) typesInData[p.type] = true; });
+
+  var tabsHtml = '';
+  FILTER_ORDER.forEach(function(key) {
+    if (key !== 'all' && !typesInData[key]) return;
+    var label = FILTER_LABELS[key] || key;
+    var active = key === 'all' ? ' active' : '';
+    tabsHtml += '<button class="pulse-filter-btn' + active + '" data-filter="' + key + '">' + label + '</button>';
+  });
+  tabs.innerHTML = tabsHtml;
+
+  function tickerUrl(post) {
+    if (post.url) return post.url;
+    return post.ticker ? '/stock/' + post.ticker.toLowerCase() + '/snapshot/' : '';
+  }
+
+  function getFreshness(publishedAt, dateStr) {
+    var ts = publishedAt || dateStr;
+    if (!ts) return '';
+    var pub = new Date(ts);
+    if (Number.isNaN(pub.getTime())) return '';
+    if (!publishedAt && ts.length === 10) {
+      var today = new Date();
+      var todayStr = today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0');
+      if (ts === todayStr) return 'today';
+      var yesterday = new Date(today); yesterday.setDate(yesterday.getDate()-1);
+      var yStr = yesterday.getFullYear() + '-' + String(yesterday.getMonth()+1).padStart(2,'0') + '-' + String(yesterday.getDate()).padStart(2,'0');
+      if (ts === yStr) return 'yesterday';
+      return '';
+    }
+    var diff = Math.floor((new Date() - pub) / (1000 * 60 * 60));
+    if (diff < 0) diff = 0;
+    if (diff < 1) return 'just now';
+    if (diff < 24) return diff + 'h ago';
+    if (diff < 48) return 'yesterday';
+    return '';
+  }
+
+  function formatDate(dateStr) {
+    if (!dateStr) return '';
+    var d = new Date(dateStr + 'T00:00:00');
+    if (Number.isNaN(d.getTime())) return dateStr;
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function getReadTime(text) {
+    if (!text) return '';
+    var words = text.split(/\s+/).length;
+    var secs = Math.round(words / 200 * 60);
+    if (secs < 60) return '~' + Math.max(15, Math.round(secs / 5) * 5) + ' sec';
+    return '~' + Math.ceil(secs / 60) + ' min';
+  }
+
+  function cleanBody(raw) {
+    if (!raw) return '';
+    return raw
+      .replace(/^```\w*\n?/, '')
+      .replace(/\n?```\s*$/, '')
+      .replace(/<(div|p|span)[^>]*\sstyle="[^"]*"[^>]*>/gi, function(m, tag) {
+        return '<' + tag + '>';
+      });
+  }
+
+  /** First paragraph becomes the deck (conviction line) when more HTML follows — clearer hierarchy. */
+  function splitBody(html) {
+    var s = (html || '').trim();
+    if (!s) return { deck: '', body: '' };
+    var m = s.match(/^<p(\s[^>]*)?>([\s\S]*?)<\/p>/i);
+    if (!m) return { deck: '', body: s };
+    var rest = s.slice(m[0].length).trim();
+    if (!rest) return { deck: '', body: s };
+    return { deck: m[0], body: rest };
+  }
+
+  function renderCard(p, isFeatured) {
+    var tickRaw = (p.ticker != null && p.ticker !== '') ? String(p.ticker) : '';
+    var tick = tickRaw ? tickRaw.toUpperCase() : '';
+    var tags = (p.tags || []).map(function(t) {
+      var isTickerTag = tick && String(t).toUpperCase() === tick;
+      return '<span class="pulse-card-tag' + (isTickerTag ? ' ticker' : '') + '">' + t + '</span>';
+    }).join('');
+
+    var label = p.pulse_kicker || TYPE_LABELS[p.type] || p.type;
+    var isScoreChange = p.type === 'score_change';
+    var isNewCoverage = p.type === 'new_coverage';
+    var borderClass = '';
+    if (isScoreChange && p.score_from && p.score_to) {
+      borderClass = p.score_to > p.score_from ? 'border-up' : 'border-down';
+    } else if (isNewCoverage && p.score_to) {
+      borderClass = 'border-neutral';
+    } else if (p.type === 'research_update') {
+      borderClass = 'border-neutral';
+    } else if (p.type === 'pulse_editorial') {
+      borderClass = 'border-neutral';
+    }
+
+    var typeClass = isScoreChange ? ' score-change' : '';
+    if (p.type === 'pulse_editorial') {
+      typeClass += p.pulse_kicker === 'macro pulse' ? ' pulse-type-macro' : ' pulse-type-note';
+    }
+    var freshness = getFreshness(p.published_at, p.date);
+    var dateDisplay = isFeatured ? (freshness || formatDate(p.date)) : formatDate(p.date);
+    var url = tickerUrl(p);
+
+    var scorePill = '';
+    if (isScoreChange && p.score_from && p.score_to) {
+      var dir = p.score_to > p.score_from ? 'up' : 'down';
+      scorePill = '<div class="score-pill"><span class="from">' + p.score_from + '</span><span class="arrow">→</span><span class="to ' + dir + '">' + p.score_to + '</span></div>';
+    } else if (isNewCoverage && p.score_to) {
+      scorePill = '<div class="score-pill"><span class="to up">' + p.score_to + '</span></div>';
+    }
+
+    var scorecard = '';
+    if (isFeatured && (isScoreChange || isNewCoverage) && p.score_to) {
+      var change = p.score_from ? p.score_to - p.score_from : 0;
+      var shiftDir = change > 0 ? 'up' : 'down';
+      var shiftHtml = p.score_from ? '<div class="featured-shift"><span class="from">' + p.score_from + '</span>to<span class="to ' + shiftDir + '">' + p.score_to + '</span></div>' : '';
+      scorecard = '<div class="featured-scorecard"><div class="featured-scorecard-label">current score</div><div class="featured-scorecard-value"><strong>' + p.score_to + '</strong><span>composite</span></div>' + shiftHtml + '</div>';
+    }
+
+    var titleHtml = url
+      ? '<a href="' + url + '">' + (p.title || '') + '</a>'
+      : (p.title || '');
+
+    var readTime = getReadTime(p.body);
+    var readTimeHtml = readTime ? '<span class="pulse-card-read-time">' + readTime + '</span>' : '';
+    var footerAside = '<div class="pulse-card-footer-aside">' + readTimeHtml + scorePill + '</div>';
+
+    var cleaned = cleanBody(p.body);
+    var split = splitBody(cleaned);
+    var deckHtml = split.deck ? '<div class="pulse-card-deck">' + split.deck + '</div>' : '';
+    var bodyHtml = '<div class="pulse-card-text">' + (split.body || cleaned) + '</div>';
+
+    var safeUrl = url ? url.replace(/'/g, "\\'") : '';
+    if (isFeatured) {
+      return '<article class="pulse-card featured ' + borderClass + '" data-type="' + (p.type || '') + '"' + (safeUrl ? ' onclick="window.location.href=\'' + safeUrl + '\'"' : '') + '>'
+        + '<div class="pulse-card-body">'
+        + '<div class="pulse-card-top"><span class="pulse-card-type' + typeClass + '">' + label + '</span><span class="pulse-card-date">' + dateDisplay + '</span></div>'
+        + '<div class="featured-layout"><div><h3>' + titleHtml + '</h3>' + deckHtml + bodyHtml + '</div>' + scorecard + '</div>'
+        + '</div>'
+        + '<div class="pulse-card-footer"><div class="pulse-card-tags">' + tags + '</div>' + footerAside + '</div>'
+        + '</article>';
+    }
+
+    var freshBadge = freshness ? '<span class="pulse-card-date" style="color:var(--green);background:var(--green-bg);padding:3px 10px;border-radius:100px">' + freshness + '</span>' : '<span class="pulse-card-date">' + dateDisplay + '</span>';
+
+    return '<article class="pulse-card ' + borderClass + '" data-type="' + (p.type || '') + '"' + (safeUrl ? ' onclick="window.location.href=\'' + safeUrl + '\'"' : '') + '>'
+      + '<div class="pulse-card-body">'
+      + '<div class="pulse-card-top"><span class="pulse-card-type' + typeClass + '">' + label + '</span>' + freshBadge + '</div>'
+      + '<h3>' + titleHtml + '</h3>'
+      + deckHtml
+      + bodyHtml
+      + '</div>'
+      + '<div class="pulse-card-footer"><div class="pulse-card-tags">' + tags + '</div>' + footerAside + '</div>'
+      + '</article>';
+  }
+
+  var PU = window.PretextUtils;
+  var _masonryReady = false;
+  var _resizeTimer = null;
+
+  function applyMasonry() {
+    if (!PU || !_masonryReady) return;
+    var cards = el.querySelectorAll('.pulse-card');
+    if (!cards.length) { el.style.height = ''; el.classList.remove('pulse-masonry'); return; }
+
+    var cols = window.innerWidth > 900 ? 2 : 1;
+    var gapPx = parseFloat(getComputedStyle(el).getPropertyValue('--pulse-grid-gap')) || 24;
+    var containerW = el.offsetWidth;
+    var colW = cols > 1 ? (containerW - gapPx * (cols - 1)) / cols : containerW;
+
+    el.classList.add('pulse-masonry');
+
+    // Pass 1: set widths so browser can compute natural heights
+    for (var i = 0; i < cards.length; i++) {
+      var card = cards[i];
+      var isFeatured = card.classList.contains('featured');
+      var span = (isFeatured && cols > 1) ? cols : 1;
+      card.style.width = span > 1 ? '100%' : colW + 'px';
+      card.style.height = '';
+    }
+
+    // Pass 2: read actual heights, compute positions
+    var colHeights = [];
+    for (var c = 0; c < cols; c++) colHeights.push(0);
+
+    for (var j = 0; j < cards.length; j++) {
+      var card2 = cards[j];
+      var isFeat = card2.classList.contains('featured');
+      var span2 = (isFeat && cols > 1) ? cols : 1;
+      var h = card2.offsetHeight;
+
+      if (span2 > 1) {
+        var maxCol = Math.max.apply(null, colHeights);
+        card2.style.top = maxCol + 'px';
+        card2.style.left = '0';
+        for (var c2 = 0; c2 < cols; c2++) colHeights[c2] = maxCol + h + gapPx;
+      } else {
+        var shortest = 0;
+        for (var c3 = 1; c3 < cols; c3++) {
+          if (colHeights[c3] < colHeights[shortest]) shortest = c3;
+        }
+        card2.style.top = colHeights[shortest] + 'px';
+        card2.style.left = cols > 1 ? (shortest * (colW + gapPx)) + 'px' : '0';
+        colHeights[shortest] += h + gapPx;
+      }
+    }
+
+    el.style.height = Math.max.apply(null, colHeights) + 'px';
+  }
+
+  if (PU) {
+    PU.onReady(function() {
+      _masonryReady = true;
+      applyMasonry();
+    });
+    window.addEventListener('resize', function() {
+      clearTimeout(_resizeTimer);
+      _resizeTimer = setTimeout(applyMasonry, 120);
+    });
+  }
+
+  function render(filter) {
+    var filtered = data;
+    if (filter && filter !== 'all') {
+      filtered = data.filter(function(p) { return p.type === filter; });
+    }
+
+    if (!filtered.length) {
+      el.classList.remove('pulse-masonry');
+      el.style.height = '';
+      el.innerHTML = '<div class="pulse-empty">'
+        + '<span class="egg-duck ed-sm" aria-hidden="true" style="margin:0 auto 16px">'
+        + '<span class="ed-egg"></span><span class="ed-head"></span><span class="ed-bill"></span>'
+        + '<span class="ed-eye l"></span><span class="ed-eye r"></span></span>'
+        + '<div style="text-transform:lowercase;font-size:14px;opacity:.6">no posts in this category yet.</div>'
+        + '</div>';
+      return;
+    }
+
+    var html = '';
+    filtered.forEach(function(p, i) {
+      html += renderCard(p, i === 0 && filter === 'all');
+    });
+    el.classList.remove('fade-in');
+    el.innerHTML = html;
+    void el.offsetWidth;
+    el.classList.add('fade-in');
+    requestAnimationFrame(applyMasonry);
+  }
+
+  tabs.querySelectorAll('.pulse-filter-btn').forEach(function(btn) {
+    btn.addEventListener('click', function() {
+      tabs.querySelectorAll('.pulse-filter-btn').forEach(function(b) { b.classList.remove('active'); });
+      btn.classList.add('active');
+      render(btn.dataset.filter);
+    });
+  });
+
+  render('all');
+
+  if (data.length) {
+    document.title = 'xvary \u2014 the pulse | ' + (data[0].title || '');
+  }
+
+  var mobileCta = document.getElementById('mobile-cta');
+  var heroForm = document.querySelector('.pulse-hero-form');
+  if (mobileCta && heroForm && window.matchMedia('(max-width: 768px)').matches) {
+    mobileCta.style.display = 'block';
+    var obs = new IntersectionObserver(function(entries) {
+      mobileCta.classList.toggle('visible', !entries[0].isIntersecting);
+    }, { threshold: 0 });
+    obs.observe(heroForm);
+  }
+})();
+</script>
+</body>
+</html>

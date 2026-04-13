@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>08 sticky toc — momentum revive demo</title>
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+  <link rel="stylesheet" href="demo-timeline.css?v=1776081807">
+  <style>
+    .hub { font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; text-transform: lowercase; padding: 20px clamp(16px,3vw,32px) 0; max-width: 1200px; margin: 0 auto; }
+    .hub a { color: var(--dark); }
+    .page { display: grid; grid-template-columns: 220px 1fr; gap: clamp(24px,4vw,48px); max-width: 1100px; margin: 0 auto; padding: 16px clamp(16px,3vw,32px) 80px; align-items: start; }
+    @media (max-width: 800px) { .page { grid-template-columns: 1fr; } }
+    .toc { position: sticky; top: 108px; border: 2px solid var(--dark); border-radius: var(--radius-card); padding: 16px; background: var(--white); max-height: calc(90vh - 100px); overflow-y: auto; }
+    @media (max-width: 800px) { .toc { position: relative; top: 0; max-height: none; } }
+    .toc h2 { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: .1em; text-transform: lowercase; margin: 0 0 14px; color: var(--muted); }
+    .toc ol { margin: 0; padding: 0 0 0 18px; }
+    .toc li { margin-bottom: 10px; font-family: var(--font-primary); font-size: 15px; line-height: 1.4; font-weight: 500; }
+    .toc a { color: var(--dark); text-transform: lowercase; }
+    main h1 { font-size: clamp(28px,5vw,44px); text-transform: lowercase; margin: 0 0 12px; }
+    main .deck { font-family: var(--font-primary); font-size: clamp(16px, 1.8vw, 18px); font-weight: 500; color: var(--text2); text-transform: lowercase; margin-bottom: 40px; line-height: 1.6; max-width: 48ch; }
+    article { margin-bottom: 48px; scroll-margin-top: 24px; }
+    article h2 { font-size: clamp(20px,3vw,26px); text-transform: lowercase; margin: 0 0 8px; }
+    .range { font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--muted); margin-bottom: 20px; text-transform: lowercase; }
+    .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    @media (max-width: 700px) { .grid { grid-template-columns: 1fr; } }
+    .panel { border: 2px solid var(--dark); border-radius: var(--radius-card-lg); padding: 18px; }
+    .panel h3 { font-family: var(--font-mono); font-size: 12px; font-weight: 600; text-transform: lowercase; color: var(--muted); margin: 0 0 14px; letter-spacing: .1em; }
+    .dark { background: var(--dark); color: var(--white); box-shadow: 5px 5px 0 var(--yel); }
+    .dark h3 { color: rgba(255,255,255,.5); }
+    ul { margin: 0; padding: 0; list-style: none; }
+    li { font-family: var(--font-primary); font-size: 16px; line-height: 1.65; text-transform: lowercase; padding: 10px 0; border-top: 1px solid rgba(0,0,0,.08); }
+    .dark li { border-color: rgba(255,255,255,.1); }
+    li:first-child { border-top: none; padding-top: 0; }
+    .tag { font-family: var(--font-mono); font-size: 12px; letter-spacing: .05em; color: var(--muted); margin-right: 8px; }
+    .dark .tag { color: rgba(255,255,255,.45); }
+    .stat { font-family: var(--font-primary); font-size: 16px; margin-bottom: 14px; line-height: 1.6; text-transform: lowercase; }
+    .stat b { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: .06em; display: block; color: rgba(255,255,255,.5); margin-bottom: 6px; }
+  </style>
+</head>
+<body>
+  <p class="hub"><a href="index.html">← all layouts</a></p>
+  <div class="page">
+    <aside class="toc" aria-label="chapter index">
+      <h2>index</h2>
+      <ol id="toc-list"></ol>
+    </aside>
+    <main>
+      <h1 id="hero-title"></h1>
+      <p class="deck" id="hero-deck"></p>
+      <div id="demo-timeline-mount" class="demo-timeline-mount" data-variant="toc-spine"></div>
+      <div id="root"></div>
+    </main>
+  </div>
+  <script src="data.js?v=1776081807"></script>
+  <script src="demo-timeline.js?v=1776081807"></script>
+  <script>
+(function () {
+  var R = window.MR_DEMO_DATA;
+  function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  document.getElementById('hero-title').textContent = R.displayName + ' · sticky toc';
+  document.getElementById('hero-deck').textContent = R.windowLabel + ' — left nav jumps to chapters; main column scrolls.';
+  var toc = '';
+  var html = '';
+  R.chapters.forEach(function (ch, i) {
+    var id = 'ch-' + (i + 1);
+    toc += '<li><a href="#' + id + '">' + esc(ch.title) + '</a></li>';
+    var ev = ch.events.map(function (e) {
+      return '<li><span class="tag">' + esc(e.tag) + '</span>' + esc(e.text) + '</li>';
+    }).join('');
+    var tp = '';
+    if (ch.tape) {
+      tp = '<div class="stat"><b>stock</b>' + esc(ch.tape.stock) + '</div>' +
+        '<div class="stat"><b>indices</b>' + esc(ch.tape.index) + '</div>' +
+        '<div class="stat"><b>relative</b>' + esc(ch.tape.rel) + '</div>';
+    }
+    html += '<article id="' + id + '"><h2>' + esc(ch.title) + '</h2><div class="range">chapter ' + (i + 1) + ' · ' + esc(ch.range) + '</div>' +
+      '<div class="grid"><div class="panel"><h3>what was moving</h3><ul>' + ev + '</ul></div>' +
+      '<div class="panel dark"><h3>tape</h3>' + tp + '</div></div></article>';
+  });
+  document.getElementById('toc-list').innerHTML = toc;
+  document.getElementById('root').innerHTML = html;
+  window.initDemoTimeline();
+})();
+  </script>
+</body>
+</html>

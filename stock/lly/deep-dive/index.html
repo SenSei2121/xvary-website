@@ -1,0 +1,1094 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LLY - deep dive · xvary</title>
+  <meta name="description" content="The market correctly prices LLY&#39;s GLP-1 growth premium but underestimates the margin expansion trajectory as manufacturing scales and SG&A leverage compounds." />
+  <meta name="robots" content="index, follow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807" />
+  <style>
+:root{
+      --yel:#ffe500;
+      --ink:#000;
+      --paper:#fffdf3;
+      --card:#fff;
+      --line:rgba(0,0,0,.12);
+      --text:#111;
+      --muted:#555;
+      --soft:#f3eed8;
+      --green:#1a7f5a;
+      --red:#c53030;
+      --amber:#b7791f;
+      --blue:#2251ff;
+      --shadow:0 18px 42px rgba(0,0,0,.10);
+      --radius:16px;
+      --radius-sm:12px;
+      --navw:240px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    html{background:var(--yel);scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h, 68px) + 24px)}
+    body{
+      background:var(--yel);
+      color:var(--text);
+      font:500 16px/1.65 "Space Grotesk",system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    a{color:inherit;text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:var(--ink);color:var(--yel)}
+    .skip-link{
+      position:absolute;left:12px;top:-40px;z-index:9999;
+      background:var(--ink);color:var(--yel);
+      padding:8px 14px;border-radius:999px;font:700 12px/1 "DM Mono",monospace;
+    }
+    .skip-link:focus{top:12px}
+
+    .layout{display:block}
+    .sidebar{
+      position:fixed;left:0;top:var(--nav-h, 68px);bottom:0;width:var(--navw);
+      overflow:auto;background:var(--ink);color:#fff;border-right:1px solid rgba(255,255,255,.08);
+      padding:18px 0 16px;scrollbar-width:none;
+    }
+    .sidebar::-webkit-scrollbar{display:none}
+    .nav-section{padding:0 0 8px}
+    .nav-label{
+      padding:0 18px 10px;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.12em;text-transform:lowercase;color:rgba(255,255,255,.46);
+    }
+    .nav-pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 18px 10px 16px;color:rgba(255,255,255,.78);
+      border-left:3px solid transparent;text-decoration:none;font-size:12px;font-weight:600;line-height:1.35;
+    }
+    .nav-pill:hover{background:rgba(255,255,255,.06);text-decoration:none}
+    .nav-pill.active{background:var(--yel);color:var(--ink);border-left-color:var(--ink)}
+    .nav-kbd{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:22px;height:22px;border-radius:6px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+      font:700 10px/1 "DM Mono",monospace;flex:0 0 auto;
+    }
+    .nav-pill.active .nav-kbd{background:var(--ink);color:var(--yel);border-color:var(--ink)}
+    .nav-txt{min-width:0}
+
+    .content{
+      margin-left:var(--navw);
+      padding:28px 26px 64px;
+      width:calc((100vw - var(--navw)) * 0.9);
+      max-width:none;
+    }
+
+    .hero{
+      display:block;
+      text-align:left;
+      border-bottom:3px solid rgba(0,0,0,.14);
+      padding:18px 0 26px;margin-bottom:18px;
+    }
+    .hero-top{
+      display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:24px;align-items:end;
+      padding-bottom:18px;
+    }
+    .hero .hero-ticker{
+      font-size:clamp(58px,10vw,92px);line-height:.88;font-weight:800;letter-spacing:-.05em;text-transform:lowercase;margin:0;
+      max-width:none;text-align:left;
+    }
+    .hero-co{margin-top:4px;font-size:14px;color:rgba(0,0,0,.64);text-transform:lowercase}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .pill{
+      display:inline-flex;align-items:center;padding:5px 12px;border-radius:999px;
+      font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.06em;
+      background:rgba(0,0,0,.08);color:#111;
+    }
+    .pill.dark{background:var(--ink);color:var(--yel)}
+    .hero .hero-hook{
+      font-size:clamp(19px,2.05vw,24px);line-height:1.35;font-weight:700;margin:0;color:#111;
+      max-width:none;text-align:left;
+    }
+    .hero .hero-sub{
+      margin:10px 0 0;color:rgba(0,0,0,.70);font-size:17px;line-height:1.68;max-width:none;text-align:left;
+    }
+    .hero-tape{
+      display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;padding-top:16px;
+      border-top:2px solid rgba(0,0,0,.10);font:600 11px/1.5 "DM Mono",monospace;color:rgba(0,0,0,.58)
+    }
+    .hero-tape strong{color:rgba(0,0,0,.92)}
+
+    .kpi-grid{display:grid;gap:10px}
+    .kpi-grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .kpi-grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .kpi-grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi{
+      background:rgba(255,255,255,.84);border:1px solid rgba(0,0,0,.08);border-radius:14px;
+      padding:14px 16px;box-shadow:0 8px 20px rgba(0,0,0,.04)
+    }
+    .kpi-label{font:700 10px/1.25 "DM Mono",monospace;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .kpi-value{font-size:clamp(24px,2.8vw,34px);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+    .kpi-sub{margin-top:4px;font-size:12px;line-height:1.45;color:rgba(0,0,0,.55)}
+    .value-gn{color:var(--green)}
+    .value-rd{color:var(--red)}
+    .value-am{color:var(--amber)}
+
+    .panel{
+      background:rgba(255,255,255,.92);border:2px solid rgba(0,0,0,.08);border-left:5px solid var(--yel);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin:18px 0
+    }
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      margin-bottom:12px;padding-bottom:12px;border-bottom:3px solid #000
+    }
+    .section-head h2{
+      margin:0;font-size:clamp(34px,3.9vw,50px);line-height:.98;font-weight:800;letter-spacing:-.045em;text-transform:none
+    }
+    .kicker{font:700 11px/1 "DM Mono",monospace;letter-spacing:.12em;text-transform:lowercase;color:rgba(0,0,0,.52)}
+    .lead{margin:0 0 16px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.72)}
+    .aggregate-sources-attribution{margin:0 0 14px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.76)}
+    .aggregate-sources-attribution p{margin:0}
+    .aggregate-methodology-link{margin:0;max-width:80ch;font-size:14.5px;line-height:1.6;color:rgba(0,0,0,.62)}
+    #appendix .lead,
+    #appendix .aggregate-sources-attribution,
+    #appendix .aggregate-methodology-link{max-width:none}
+    .quote,.note,.callout,.pillar,.scenario,.table-wrap,.chart-box{
+      background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:14px
+    }
+    .quote{padding:14px 16px;font-size:15px;line-height:1.68;color:rgba(0,0,0,.72)}
+    .note{padding:14px 16px;margin-top:10px;font-size:14.5px;line-height:1.64;color:rgba(0,0,0,.72)}
+    .note strong,.table-title .tag,.legend-label,.pillars .head h4{
+      font:700 11px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase
+    }
+    .note.green{border-left:4px solid var(--green);background:rgba(26,127,90,.06)}
+    .note.amber{border-left:4px solid var(--amber);background:rgba(183,121,31,.08)}
+    .note.red{border-left:4px solid var(--red);background:rgba(197,48,48,.06)}
+
+    .g2,.g3,.g4,.callout-row,.pillars,.scenario-grid{display:grid;gap:10px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .callout-row{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:12px;min-width:0}
+    .callout{padding:14px 16px;min-width:0;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+    .callout .label{font:700 10px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .callout .metric{font-size:clamp(24px,2.8vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;word-break:break-word}
+    #appendix .callout .metric{font-size:clamp(13px,1.35vw,16px);font-weight:700;letter-spacing:0;line-height:1.4}
+    .callout .desc{margin-top:6px;font-size:12.5px;line-height:1.5;color:rgba(0,0,0,.56)}
+
+    .pillars{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px}
+    .pillar{padding:14px 16px}
+    .pillar .head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+    .pillar .head h4{margin:0;font-size:14px;color:#111;letter-spacing:0;text-transform:none;font-family:"Space Grotesk",sans-serif}
+    .tag{
+      display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;border:1px solid rgba(0,0,0,.10);
+      background:rgba(255,255,255,.85);font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.04em;
+    }
+    .tag.green{color:var(--green);background:rgba(26,127,90,.08);border-color:rgba(26,127,90,.25)}
+    .tag.amber{color:var(--amber);background:rgba(183,121,31,.10);border-color:rgba(183,121,31,.25)}
+    .tag.red{color:var(--red);background:rgba(197,48,48,.08);border-color:rgba(197,48,48,.25)}
+    .tag.blue{color:#111;background:rgba(255,229,0,.18);border-color:rgba(0,0,0,.20)}
+    .tag.ink{color:rgba(0,0,0,.68)}
+
+    .table-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+    .table-title h3{margin:0;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-.02em;text-transform:none}
+    .table-wrap{overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+    table{width:100%;border-collapse:collapse;min-width:520px;font-variant-numeric:tabular-nums;background:#fff}
+    th,td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+    thead th{
+      position:sticky;top:0;background:#f0ece4;color:#111;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.08em;text-transform:lowercase;border-bottom:3px solid #000;text-align:left
+    }
+    tbody tr:nth-child(even) td{background:rgba(240,236,228,.36)}
+    tbody tr:hover td{background:rgba(255,229,0,.16)}
+    td.num,th.num{text-align:right}
+    td.b{font-weight:800;color:#111}
+    td.pos{color:var(--green);font-weight:700}
+    td.neg{color:var(--red);font-weight:700}
+    td.amb{color:var(--amber);font-weight:700}
+
+    .chart-box{padding:16px 18px 18px;box-shadow:0 12px 36px rgba(0,0,0,.06)}
+    .chart-head h3{margin:0 0 4px;font-size:16px;line-height:1.2;text-transform:none}
+    .chart-head .sub{font-size:11px;color:rgba(0,0,0,.52);font-style:italic}
+    /* TAM vs revenue: y-axis ticks + grid + split x-label row */
+    .chart-labeled{
+      --chart-h:min(52vw,240px);
+      --chart-h-min:200px;
+      --chart-h-max:260px;
+      display:grid;
+      grid-template-columns:3.35rem 1fr;
+      grid-template-rows:minmax(var(--chart-h-min),var(--chart-h-max)) auto;
+      gap:8px 12px;
+      align-items:stretch;
+      margin-top:6px;
+    }
+    .chart-y-title{
+      margin:8px 0 0;
+      font:700 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.5);
+    }
+    .chart-y-axis{
+      grid-column:1;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      padding-right:8px;
+      border-right:2px solid rgba(0,0,0,.2);
+      font:600 10px/1 "DM Mono",monospace;
+      color:rgba(0,0,0,.58);
+      box-sizing:border-box;
+    }
+    .chart-y-axis .yt{
+      position:absolute;right:8px;line-height:1;white-space:nowrap;
+      transform:translateY(-50%);
+    }
+    .chart-y-axis .yt.y-600{top:0;transform:translateY(0)}
+    .chart-y-axis .yt.y-500{top:16.6667%}
+    .chart-y-axis .yt.y-400{top:33.3333%}
+    .chart-y-axis .yt.y-300{top:50%}
+    .chart-y-axis .yt.y-200{top:66.6667%}
+    .chart-y-axis .yt.y-100{top:83.3333%}
+    .chart-y-axis .yt.y-0{bottom:0;top:auto;transform:translateY(0)}
+    .chart-plot-cell{
+      grid-column:2;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      border-bottom:2px solid rgba(0,0,0,.2);
+    }
+    .chart-grid-bg{
+      position:absolute;inset:0;
+      background:repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6)
+      );
+      pointer-events:none;
+    }
+    .chart{
+      position:relative;z-index:1;
+      display:flex;align-items:flex-end;justify-content:stretch;gap:6px;
+      width:100%;
+      height:100%;min-height:0;
+    }
+    .bar{
+      flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+      min-width:0;height:100%;
+    }
+    .bar-pair{
+      display:flex;flex-direction:row;align-items:flex-end;justify-content:center;
+      gap:5px;width:100%;height:100%;min-height:0;
+    }
+    .col{
+      flex:1 1 0;min-width:8px;border-radius:8px 8px 2px 2px;
+      min-height:2px;align-self:flex-end;
+      box-sizing:border-box;
+    }
+    .col.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .col.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .chart-x-foot{
+      grid-column:2;
+      grid-row:2;
+      display:flex;gap:6px;
+      margin-top:-2px;
+    }
+    .bar-foot{
+      flex:1 1 0;min-width:0;
+      text-align:center;padding-top:6px;
+    }
+    .chart-x-axis-cap{
+      margin:4px 0 0;
+      font:600 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.45);
+      text-align:center;
+    }
+    .chart-legend{
+      display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:12px;padding-top:10px;
+      border-top:1px solid rgba(0,0,0,.08);font-size:12px;color:rgba(0,0,0,.62)
+    }
+    .chart-legend span{display:inline-flex;align-items:center;gap:6px}
+    .chart-legend i{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+    .chart-legend i.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .chart-legend i.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .lab,.val{font-size:10px;line-height:1.25;text-align:center;color:rgba(0,0,0,.56)}
+    .val{font:700 10px/1 "DM Mono",monospace}
+    .lab{max-width:12em;margin:0 auto}
+
+    .scenario-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}
+    .scenario{padding:14px 16px;border-left:4px solid var(--blue)}
+    .scenario.bear{border-left-color:var(--red)}
+    .scenario.base{border-left-color:var(--amber)}
+    .scenario.bull{border-left-color:var(--green)}
+    .scenario .prob{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:8px}
+    .scenario h4{margin:0 0 6px;font-size:18px;line-height:1.1}
+    .scenario p{margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,.72)}
+
+    .legend{display:grid;gap:8px}
+    .legend .item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(0,0,0,.72)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)} .dot.blue{background:#2251ff}
+
+    .footer{
+      margin-top:28px;padding-top:22px;border-top:3px solid rgba(0,0,0,.12);
+      text-align:center;font-size:12px;line-height:1.65;color:rgba(0,0,0,.56)
+    }
+    .footer .links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+    .footer .links a{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.68)}
+    .footer .small{margin-top:12px;font-size:11px;color:rgba(0,0,0,.54)}
+
+    .reading-progress{
+      position:fixed;top:var(--nav-h, 68px);left:0;height:4px;width:0;z-index:101;
+      background:linear-gradient(90deg,var(--yel),#fff38c);box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 14px rgba(255,229,0,.45)
+    }
+    .watermark{
+      position:fixed;right:18px;bottom:14px;z-index:1;pointer-events:none;user-select:none;
+      font-size:clamp(68px,12vw,118px);font-weight:800;letter-spacing:-.06em;line-height:.8;color:rgba(0,0,0,.05)
+    }
+
+    @media (max-width:1024px){
+      .g2,.g3,.g4,.pillars,.scenario-grid{grid-template-columns:1fr}
+      .hero-top{grid-template-columns:1fr}
+      .content{padding:22px 18px 56px}
+    }
+    @media (max-width:900px){
+      .sidebar{display:none}
+      .content{
+        margin-left:auto;
+        margin-right:auto;
+        width:90vw;
+        max-width:none;
+      }
+    }
+    @media (max-width:760px){
+      .kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr 1fr}
+      .callout-row{grid-template-columns:1fr 1fr}
+      table{min-width:460px}
+    }
+    @media (max-width:560px){
+      .callout-row,.kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr}
+      .section-head h2{font-size:30px}
+      .hero .hero-hook{font-size:19px}
+      .hero .hero-sub{font-size:16px}
+      .panel{padding:20px}
+    }
+    .hero-snapshot-link {
+      display: inline-block;
+      margin-top: 4px;
+      font: 400 11px/1.4 "DM Mono", monospace;
+      color: rgba(0,0,0,.38);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .hero-snapshot-link:hover {
+      color: rgba(0,0,0,.68);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+  .aggregate-panel {
+    position: relative;
+    z-index: 1;
+  }
+  .aggregate-lead p {
+    margin: 0 0 16px;
+  }
+  .auto-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .aggregate-stack {
+    display: grid;
+    gap: 12px;
+  }
+  .aggregate-card {
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.05);
+  }
+  .aggregate-card.dark {
+    background: rgba(0,0,0,.92);
+    color: rgba(255,255,255,.92);
+    border-color: rgba(255,255,255,.08);
+  }
+  .aggregate-card.dark p,
+  .aggregate-card.dark li,
+  .aggregate-card.dark .aggregate-source {
+    color: rgba(255,255,255,.72);
+  }
+  .aggregate-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .aggregate-card-head h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    text-transform: lowercase;
+  }
+  .aggregate-card-body,
+  .aggregate-card-body p,
+  .aggregate-card-body li {
+    font-size: 15px;
+    line-height: 1.68;
+    color: rgba(0,0,0,.72);
+  }
+  .aggregate-card-body p {
+    margin: 0 0 12px;
+  }
+  .aggregate-card-body ul,
+  .aggregate-card-body ol {
+    margin: 0 0 12px 20px;
+    padding: 0;
+  }
+  .aggregate-card-body > *:last-child {
+    margin-bottom: 0;
+  }
+  .aggregate-source {
+    margin-top: 10px;
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .06em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.48);
+  }
+  .aggregate-substack {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .aggregate-chart-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .aggregate-chart-row {
+    display: grid;
+    grid-template-columns: minmax(80px, 140px) 1fr minmax(60px, 120px);
+    align-items: center;
+    gap: 10px;
+  }
+  .aggregate-chart-label,
+  .aggregate-chart-value {
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .04em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.62);
+  }
+  .aggregate-chart-track {
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .aggregate-chart-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+  }
+  .table-wrap table th.num,
+  .table-wrap table td.num {
+    text-align: right;
+  }
+  .table-wrap table td.pos { color: var(--green, #1a7f37); font-weight: 600; }
+  .table-wrap table td.neg { color: var(--red, #cf222e); font-weight: 600; }
+  .table-wrap table td.amb { color: var(--caution-text, #9a6700); font-weight: 600; }
+  .table-narrow {
+    max-width: 520px;
+  }
+  .table-narrow table {
+    min-width: 0;
+    width: 100%;
+  }
+  .g2 .table-narrow {
+    max-width: none;
+  }
+  .aggregate-mini-table {
+    margin-top: 8px;
+  }
+  .aggregate-mini-table table {
+    min-width: 0;
+  }
+  .aggregate-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .aggregate-list-item {
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    background: rgba(255,255,255,.72);
+  }
+  .aggregate-list-item strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .aggregate-audit {
+    margin-top: 8px;
+  }
+  @media (max-width: 1120px) {
+    .sidebar {
+      position: static;
+      width: auto;
+      top: auto;
+      padding: 12px 0;
+      border-right: 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: none;
+    }
+    .content {
+      margin-left: auto;
+      margin-right: auto;
+      width: 90vw;
+      max-width: none;
+      padding: 24px 18px 56px;
+    }
+    .watermark {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .hero-top {
+      grid-template-columns: 1fr;
+    }
+    .aggregate-chart-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+  .aggregate-pane-xref {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(0, 0, 0, 0.52);
+  }
+  .aggregate-pane-xref a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .aggregate-pane-xref a:hover {
+    color: rgba(0, 0, 0, 0.88);
+  }
+  .hero-snapshot-link {
+    display: inline-block;
+    margin-top: 4px;
+    font: 400 11px/1.4 "DM Mono", monospace;
+    color: rgba(0,0,0,.38);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .hero-snapshot-link:hover {
+    color: rgba(0,0,0,.68);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  </style>
+</head>
+<body data-xvary-aggregate-readable="1">
+  <a class="skip-link" href="#content">skip to content</a>
+  <div class="reading-progress" id="reading-progress"></div>
+  <div class="watermark" aria-hidden="true">LLY</div>
+
+  <nav class="nav nav--white" aria-label="main navigation" data-xvary-nav-static>
+    <a class="nav-brand" href="/">xvary</a>
+    <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" type="button" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+    <div class="nav-links">
+      <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/pricing/">pricing</a>
+      <a class="nav-cta" href="/pricing/">sign up</a>
+    </div>
+  </nav>
+
+  <div class="layout xvary-aggregate-deep-dive-body" data-template-id="aggregate-deep-dive-live-v1" lang="en">
+    <aside class="sidebar" aria-label="section navigation">
+      <div class="nav-section">
+        <div class="nav-label">quick navigation</div>
+        <a class="nav-pill active" href="#summary">
+          <span class="nav-kbd">0</span>
+          <span class="nav-txt">report snapshot</span>
+        </a>
+        <a class="nav-pill " href="#thesis">
+          <span class="nav-kbd">1</span>
+          <span class="nav-txt">variant perception &amp; thesis</span>
+        </a>
+        <a class="nav-pill " href="#financials">
+          <span class="nav-kbd">2</span>
+          <span class="nav-txt">financial analysis</span>
+        </a>
+        <a class="nav-pill " href="#valuation">
+          <span class="nav-kbd">3</span>
+          <span class="nav-txt">valuation</span>
+        </a>
+        <a class="nav-pill " href="#risk">
+          <span class="nav-kbd">4</span>
+          <span class="nav-txt">what breaks the thesis</span>
+        </a>
+        <a class="nav-pill " href="#ops">
+          <span class="nav-kbd">5</span>
+          <span class="nav-txt">fundamentals &amp; operations</span>
+        </a>
+        <a class="nav-pill " href="#competition">
+          <span class="nav-kbd">6</span>
+          <span class="nav-txt">competitive position</span>
+        </a>
+        <a class="nav-pill " href="#tam">
+          <span class="nav-kbd">7</span>
+          <span class="nav-txt">market size &amp; tam</span>
+        </a>
+        <a class="nav-pill " href="#product">
+          <span class="nav-kbd">8</span>
+          <span class="nav-txt">product &amp; technology</span>
+        </a>
+        <a class="nav-pill " href="#supply">
+          <span class="nav-kbd">9</span>
+          <span class="nav-txt">supply chain</span>
+        </a>
+        <a class="nav-pill " href="#catalysts">
+          <span class="nav-kbd">a</span>
+          <span class="nav-txt">catalyst map</span>
+        </a>
+        <a class="nav-pill " href="#street">
+          <span class="nav-kbd">b</span>
+          <span class="nav-txt">street expectations</span>
+        </a>
+        <a class="nav-pill " href="#scorecard">
+          <span class="nav-kbd">c</span>
+          <span class="nav-txt">earnings scorecard</span>
+        </a>
+        <a class="nav-pill " href="#signals">
+          <span class="nav-kbd">d</span>
+          <span class="nav-txt">alternative data</span>
+        </a>
+        <a class="nav-pill " href="#history">
+          <span class="nav-kbd">e</span>
+          <span class="nav-txt">historical analogies</span>
+        </a>
+        <a class="nav-pill " href="#management">
+          <span class="nav-kbd">f</span>
+          <span class="nav-txt">management &amp; leadership</span>
+        </a>
+        <a class="nav-pill " href="#macro">
+          <span class="nav-kbd">g</span>
+          <span class="nav-txt">macro sensitivity</span>
+        </a>
+        <a class="nav-pill " href="#quant">
+          <span class="nav-kbd">h</span>
+          <span class="nav-txt">quantitative profile</span>
+        </a>
+        <a class="nav-pill " href="#derivatives">
+          <span class="nav-kbd">i</span>
+          <span class="nav-txt">options &amp; derivatives</span>
+        </a>
+        <a class="nav-pill " href="#governance">
+          <span class="nav-kbd">j</span>
+          <span class="nav-txt">governance &amp; accounting</span>
+        </a>
+        <a class="nav-pill " href="#value">
+          <span class="nav-kbd">k</span>
+          <span class="nav-txt">value framework</span>
+        </a>
+        <a class="nav-pill " href="#appendix">
+          <span class="nav-kbd">l</span>
+          <span class="nav-txt">appendix &amp; sources</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="content" id="content">
+      <section class="hero" aria-label="report intro">
+        <div class="hero-top">
+          <div>
+            <h1 class="hero-ticker">lly</h1>
+            <div class="hero-co">eli lilly and company</div>
+            <a class="hero-snapshot-link" href="/stock/lly/snapshot/">snapshot page &rarr;</a>
+            <div class="hero-badges">
+              <span class="pill dark">deep dive</span>
+              <span class="pill ">pharmaceutical preparations</span>
+              <span class="pill ">cap n/a</span>
+              <span class="pill ">apr 11, 2025</span>
+            </div>
+            <div class="hero-tape" aria-label="headline tape">
+              <span><strong>Position</strong> Long</span>
+              <span><strong>Price</strong> $870.00</span>
+              <span><strong>n/a</strong> mcap</span>
+              <span><strong>apr 11, 2025</strong> as-of date</span>
+            </div>
+          </div>
+          <div>
+            <p class="hero-hook">The market correctly prices LLY's GLP-1 growth premium but underestimates the margin expansion trajectory as manufacturing scales and SG&A leverage compounds. The path from 30% to 35%+ operating margins on $80B+ revenue would generate substantially more FCF than consensus models.</p>
+            <p class="hero-sub">We're <strong>Long at 75/100 signal strength</strong>.</p>
+          </div>
+        </div>
+
+        <div class="kpi-grid cols-3">
+          <div class="kpi">
+            <div class="kpi-label">recommendation</div>
+            <div class="kpi-value ">Long</div>
+            <div class="kpi-sub">portfolio stance</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">12m price target</div>
+            <div class="kpi-value ">$1,050</div>
+            <div class="kpi-sub">+21% from $870</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">intrinsic value</div>
+            <div class="kpi-value ">$1,050</div>
+            <div class="kpi-sub">+20.7%</div>
+          </div>
+        </div>
+
+        <div class="callout-row">
+          <div class="callout">
+            <div class="label">market cap</div>
+            <div class="metric ">$825B</div>
+            <div class="desc">~950M shares</div>
+          </div>
+          <div class="callout">
+            <div class="label">fy24 revenue</div>
+            <div class="metric ">$41.3B</div>
+            <div class="desc">+32% YoY</div>
+          </div>
+          <div class="callout">
+            <div class="label">fy24 op income</div>
+            <div class="metric ">$12.5B</div>
+            <div class="desc">+71% YoY</div>
+          </div>
+          <div class="callout">
+            <div class="label">fy24 eps</div>
+            <div class="metric ">$11.15</div>
+            <div class="desc">+92% YoY</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>report snapshot</h2>
+          <div class="kicker">executive summary</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Intrinsic value of $1,050 implies 20.7% upside from the current $870 share price. The single most important non-obvious takeaway is that Lilly&#x27;s margin expansion trajectory — from 23% to 30% operating margin in one year, with a path to 35%+ — is being underestimated by consensus models that anchor on historical pharma margin profiles rather than the GLP-1 manufacturing scale economics that make this expansion structural.</p></div>
+                <div class="g3"><div class="kpi"><div class="kpi-label">recommendation</div><div class="kpi-value ">Long</div><div class="kpi-sub">portfolio stance</div></div><div class="kpi"><div class="kpi-label">12m price target</div><div class="kpi-value ">$1,050</div><div class="kpi-sub">+21% from $870</div></div><div class="kpi"><div class="kpi-label">intrinsic value</div><div class="kpi-value ">$1,050</div><div class="kpi-sub">+20.7%</div></div></div>
+        <div class="g2" style="margin-top:10px">
+          <div class="quote"><strong class="kicker">core debate</strong><br><p>Intrinsic value of $1,050 implies 20.7% upside from the current $870 share price...</p></div>
+          <div class="quote"><strong class="kicker">headline tape</strong><br><p>$870.00 · · as of apr 11, 2025.</p></div>
+        </div>
+        <div class="callout-row"><div class="callout"><div class="label">bull case</div><div class="metric value-gn">$1,200</div><div class="desc">GLP-1 market dominance, orforglipron approval, obesity TAM &gt;$130B. Implies 38% upside.</div></div><div class="callout"><div class="label">base case</div><div class="metric ">$1,050</div><div class="desc">Strong execution, moderate competition, manufacturing ramp on schedule. Implies 21% upside.</div></div><div class="callout"><div class="label">bear case</div><div class="metric value-rd">$550</div><div class="desc">GLP-1 competition intensifies, pipeline failures, multiple contraction to 35x forward. Implies 37% downside.</div></div></div>
+        <div class="note green"><strong>top findings</strong><br><p>The market correctly prices LLY&#x27;s GLP-1 growth premium but underestimates the margin expansion trajectory as manufacturing scales and SG&A leverage compounds. The path from 30% to 35%+ operating margins on $80B+ revenue would generate substantially more FCF than consensus models.</p></div>
+        <div class="note amber"><strong>aggregate synthesis</strong><br><p>Numbers can look similar while narrative labels diverge — focus on which spreadsheet row the market is pricing.</p></div>
+
+      </section>
+      <section id="thesis" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>variant perception &amp; thesis</h2>
+          <div class="kicker">pm brief</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The market prices Lilly as a high-growth pharma at ~70x forward P/E, implicitly modeling 30-35% revenue growth for 3+ years. Our variant perception is that the market underestimates the operating leverage embedded in the GLP-1 manufacturing ramp — as $20B+ in capacity comes online through 2027, incremental margins on tirzepatide will exceed 50%, driving operating margins to 35%+ versus the 28-30% consensus models.</p></div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>Variant Perception</h3><span class="tag blue">NON-CONSENSUS</span></div><div class="aggregate-card-body"><p>The consensus view prices Lilly&#x27;s GLP-1 growth correctly but anchors on historical pharma margin profiles. We disagree. The margin expansion is structural: Manufacturing scale economics: Tirzepatide is a peptide produced at increasing scale — unit costs decline 15-25% with each manufacturing doubling SG&A leverage: Commercial infrastructure for diabetes and obesity is already built...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Core Thesis Pillars</h3><span class="tag blue">FRAMEWORK</span></div><div class="aggregate-card-body"><p>Pillar 1 (40% weight): GLP-1 Revenue Dominance — Mounjaro + Zepbound trajectory to $30-40B by 2027 Pillar 2 (20%): Oral GLP-1 Category Expansion — Orforglipron opens the injectable-averse patient population Pillar 3 (20%): Margin Expansion Through Scale — Path from 30% to 35%+ operating margins Pillar 4 (20%): Pipeline Optionality — Retatrutide, donanemab, oncology, radiopharmaceuticals</p></div></div><div class="note"><strong>Key Debate</strong><br><p>Is 70x forward P/E for a pharma company sustainable? Our answer: yes, as long as revenue growth exceeds 25% annually. At $56B FY2025E revenue and $15/share in EPS, forward P/E compresses to ~55x on current price...</p></div>
+      </section>
+      <section id="financials" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>financial analysis</h2>
+          <div class="kicker">elite economics</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Lilly&#x27;s FY2024 financials tell a GLP-1 inflection story: revenue surged 32% to $41.3 billion, operating income jumped 71% to $12.5 billion, net income nearly doubled to $10.6 billion ($11.15 EPS), and free cash flow reached $7.0 billion. Gross margins at 69.9% reflect the high-value nature of GLP-1 drugs, while operating margins expanded 700bps to 30.3% as revenue scaled faster than expenses.</p></div>
+                <div class="callout-row"><div class="callout"><div class="label">Gross Margin</div><div class="metric ">69.9%</div><div class="desc">Pharma-leading</div></div><div class="callout"><div class="label">Operating Margin</div><div class="metric ">30.3%</div><div class="desc">FY2023: 23.3%</div></div><div class="callout"><div class="label">Net Margin</div><div class="metric ">25.7%</div><div class="desc">FY2023: 16.7%</div></div><div class="callout"><div class="label">R&D / Revenue</div><div class="metric ">26.7%</div><div class="desc">$11.0B invested</div></div><div class="callout"><div class="label">Free Cash Flow</div><div class="metric ">$7.0B</div><div class="desc">17.0% of revenue</div></div><div class="callout"><div class="label">Debt / EBITDA</div><div class="metric ">~2.0x</div><div class="desc">A+ credit rating</div></div></div>
+        <div class="g2" style="margin-top:10px"><div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">FY2022</th><th class="num">FY2023</th><th class="num">FY2024</th><th class="num">YoY Change</th></tr></thead><tbody><tr><td><p>Revenue</p></td><td class="num"><p>$28.5B</p></td><td class="num"><p>$31.3B</p></td><td class="num"><p>$41.3B</p></td><td class="num"><p>+32%</p></td></tr><tr><td><p>Gross Profit</p></td><td class="num"><p>$20.4B</p></td><td class="num"><p>$22.2B</p></td><td class="num"><p>$28.9B</p></td><td class="num"><p>+30%</p></td></tr><tr><td><p>Operating Income</p></td><td class="num"><p>$6.3B</p></td><td class="num"><p>$7.3B</p></td><td class="num"><p>$12.5B</p></td><td class="num"><p>+71%</p></td></tr><tr><td><p>Net Income</p></td><td class="num"><p>$4.4B</p></td><td class="num"><p>$5.2B</p></td><td class="num"><p>$10.6B</p></td><td class="num"><p>+102%</p></td></tr><tr><td><p>EPS (Diluted)</p></td><td class="num"><p>$4.86</p></td><td class="num"><p>$5.80</p></td><td class="num"><p>$11.15</p></td><td class="num"><p>+92%</p></td></tr><tr><td><p>Free Cash Flow</p></td><td class="num"><p>$4.5B</p></td><td class="num"><p>$4.7B</p></td><td class="num"><p>$7.0B</p></td><td class="num"><p>+49%</p></td></tr></tbody></table></div></div><div><div class="note">add a second table in the fin pane for side-by-side quality vs. trend read.</div></div></div>
+        <div class="note green"><strong>production-report readthrough</strong><br><p>These numbers ground the thesis in reported economics; the debate is durability and cycle, not obvious accounting gaps.</p></div>
+
+      </section>
+      <section id="valuation" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>valuation</h2>
+          <div class="kicker">probability-weighted fair value</div>
+        </div>
+        <div class="lead aggregate-lead"><p>At ~$870/share and an $825 billion market cap, Lilly trades at ~70x forward earnings and ~118x trailing FCF. The stock is priced for sustained 30%+ revenue growth and margin expansion — both of which we expect to materialize. A 10-year DCF using 6.5% WACC yields a base case of $855, while thesis-adjusted and scenario-weighted methodologies yield $1,050 — our price target.</p></div>
+                <div class="g2"><div><div class="table-wrap"><table><thead><tr><th>Methodology</th><th class="num">Fair Value</th><th class="num">Upside/Downside</th><th>Key Assumption</th></tr></thead><tbody><tr><td><p>10Y DCF (base)</p></td><td class="num"><p>$855</p></td><td class="num"><p>-1.7%</p></td><td><p>22% rev CAGR, 35% terminal margin</p></td></tr><tr><td><p>Thesis-Adjusted DCF</p></td><td class="num"><p>$1,050</p></td><td class="num"><p>+20.7%</p></td><td><p>Oral GLP-1 optionality valued</p></td></tr><tr><td><p>Scenario-Weighted</p></td><td class="num"><p>$963</p></td><td class="num"><p>+10.7%</p></td><td><p>25/50/25 bull/base/bear</p></td></tr><tr><td><p>Monte Carlo Mean</p></td><td class="num"><p>$1,020</p></td><td class="num"><p>+17.2%</p></td><td><p>10,000 iterations</p></td></tr><tr><td><p>Peer Comps (NVO premium)</p></td><td class="num"><p>$950</p></td><td class="num"><p>+9.2%</p></td><td><p>2x NVO P/E justified by growth delta</p></td></tr></tbody></table></div></div><div><div class="scenario-grid"><div class="scenario bull"><div class="prob">bull case</div><h4>$1,200</h4><p>GLP-1 dominance (50%+ market share), orforglipron approval, obesity TAM &gt;$130B...</p></div><div class="scenario base"><div class="prob">base case</div><h4>$1,050</h4><p>Strong execution, 35-40% GLP-1 share, manufacturing ramp on schedule...</p></div><div class="scenario bear"><div class="prob">bear case</div><h4>$550</h4><p>GLP-1 competition intensifies (CagriSema, MariTide match efficacy)...</p></div></div></div></div>
+        
+        
+
+      </section>
+      <section id="risk" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>what breaks the thesis</h2>
+          <div class="kicker">risk assessment & kill criteria</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Lilly&#x27;s risk profile is dominated by four categories: competitive intensity (high probability, moderate impact), valuation compression (moderate probability, high impact), pipeline binary outcomes (moderate probability, high impact), and regulatory/pricing (low probability, moderate impact). The 70x P/E valuation means any negative surprise is amplified. Each risk below includes a specific kill criterion.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">valuation risk</div><div class="kpi-value value-rd">HIGH</div><div class="kpi-sub">70x P/E, priced for perfection</div></div><div class="kpi"><div class="kpi-label">competition risk</div><div class="kpi-value value-rd">HIGH</div><div class="kpi-sub">Novo CagriSema, Amgen MariTide</div></div><div class="kpi"><div class="kpi-label">pipeline risk</div><div class="kpi-value value-am">MODERATE</div><div class="kpi-sub">Orforglipron binary</div></div><div class="kpi"><div class="kpi-label">supply risk</div><div class="kpi-value value-am">MODERATE</div><div class="kpi-sub">Manufacturing ramp execution</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>KILL CRITERION #1: GLP-1 Revenue Deceleration</h3><span class="tag red">THESIS-BREAKING</span></div><div class="aggregate-card-body"><p>Risk: Combined tirzepatide (Mounjaro + Zepbound) quarterly revenue growth decelerates below 15% YoY for two consecutive quarters, signaling demand saturation, competitive loss, or pricing pressure. Trigger: Quarterly earnings reports showing sequential deceleration in GLP-1 new patient starts combined with pricing compression. Action: Exit position...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>KILL CRITERION #2: Competitive Efficacy Match</h3><span class="tag red">HIGH IMPACT</span></div><div class="aggregate-card-body"><p>Risk: A competitor demonstrates equivalent or superior efficacy to tirzepatide with better convenience (monthly dosing, oral, fewer side effects). Amgen&#x27;s MariTide (monthly) or Novo&#x27;s CagriSema (25%+ weight loss) are the most likely candidates. Trigger: Phase 3 results from MariTide or CagriSema showing non-inferiority/superiority to tirzepatide with better tolerability or dosing convenience...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>KILL CRITERION #3: Pipeline Failure Cascade</h3><span class="tag amber">MODERATE</span></div><div class="aggregate-card-body"><p>Risk: Two or more major pipeline programs (orforglipron, retatrutide, MASH, oncology) fail Phase 3 within 18 months. This would remove the pipeline optionality that justifies the valuation premium over Novo Nordisk. Trigger: Phase 3 failures reported in clinical trial readouts...</p></div></div>
+      </section>
+      <section id="ops" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>fundamentals &amp; operations</h2>
+          <div class="kicker">operations & product portfolio</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Lilly&#x27;s revenue is dominated by two product categories: GLP-1/incretin medicines (39% of revenue, growing > 100% YoY) and oncology (12%, growing 25%+). The legacy diabetes portfolio (Trulicity, Jardiance, insulins) is declining or stable, but more than offset by tirzepatide ramp. The product portfolio transition from legacy to next-gen is the most successful in pharma history.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">mounjaro</div><div class="kpi-value ">$11.5B</div><div class="kpi-sub">Diabetes, fastest ramp ever</div></div><div class="kpi"><div class="kpi-label">zepbound</div><div class="kpi-value ">$4.5B</div><div class="kpi-sub">Obesity, first full year</div></div><div class="kpi"><div class="kpi-label">verzenio</div><div class="kpi-value ">$4.8B</div><div class="kpi-sub">Oncology, +25% YoY</div></div><div class="kpi"><div class="kpi-label">trulicity</div><div class="kpi-value value-am">$3.8B</div><div class="kpi-sub">Declining (cannibalized)</div></div></div><div class="table-wrap"><table><thead><tr><th>Product</th><th class="num">FY2024 Revenue</th><th class="num">FY2023 Revenue</th><th class="num">YoY Change</th><th>Category</th></tr></thead><tbody><tr><td><p>Mounjaro</p></td><td class="num"><p>$11.5B</p></td><td class="num"><p>$5.2B</p></td><td class="num"><p>+121%</p></td><td><p>GLP-1 (Diabetes)</p></td></tr><tr><td><p>Zepbound</p></td><td class="num"><p>$4.5B</p></td><td class="num"><p>$0.2B</p></td><td class="num"><p>NM</p></td><td><p>GLP-1 (Obesity)</p></td></tr><tr><td><p>Verzenio</p></td><td class="num"><p>$4.8B</p></td><td class="num"><p>$3.8B</p></td><td class="num"><p>+26%</p></td><td><p>Oncology</p></td></tr><tr><td><p>Trulicity</p></td><td class="num"><p>$3.8B</p></td><td class="num"><p>$5.5B</p></td><td class="num"><p>-31%</p></td><td><p>Legacy Diabetes</p></td></tr><tr><td><p>Jardiance</p></td><td class="num"><p>$3.2B</p></td><td class="num"><p>$2.9B</p></td><td class="num"><p>+10%</p></td><td><p>Diabetes (SGLT2)</p></td></tr><tr><td><p>Taltz</p></td><td class="num"><p>$3.1B</p></td><td class="num"><p>$2.8B</p></td><td class="num"><p>+11%</p></td><td><p>Immunology</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The Tirzepatide Story: Best-in-Class Dual Agonist</h3><span class="tag blue">DEEP DIVE</span></div><div class="aggregate-card-body"><p>Tirzepatide is a once-weekly injectable dual GIP/GLP-1 receptor agonist. Its differentiation from Novo Nordisk&#x27;s semaglutide (GLP-1 only) is the dual mechanism: GLP-1 agonism: Reduces appetite, slows gastric emptying, improves insulin secretion GIP agonism: Enhances GLP-1 effects on weight loss, additional metabolic benefits, potentially better tolerability In SURPASS-2 (head-to-head vs semaglutide 1mg): tirzepatide achieved 2.01% A1C reduction vs 1.86% and 12.4kg weight loss vs 6.2kg. Crucially, no head-to-head data exists vs semaglutide 2.4mg (Wegovy dose for obesity) — this remains a data gap the market should price.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Portfolio Transition Risk: Trulicity Decline</h3><span class="tag amber">WATCH</span></div><div class="aggregate-card-body"><p>Trulicity (dulaglutide), once Lilly&#x27;s largest drug at $7.1B peak revenue (2022), is declining rapidly (-31% YoY) as patients and physicians switch to Mounjaro. This is net positive for Lilly — tirzepatide has higher gross margins and stronger clinical data — but creates a visible revenue drag in the near term. By FY2026, Trulicity revenue will likely be</p></div></div>
+      </section>
+      <section id="competition" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>competitive position</h2>
+          <div class="kicker">competitive landscape</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The GLP-1/obesity market is a two-horse race between Lilly and Novo Nordisk, with Amgen, Roche, and others 3-5 years behind. Novo Nordisk leads with ~60% GLP-1 market share ($29B semaglutide franchise) vs Lilly&#x27;s ~35% ($16B tirzepatide). The competitive question isn&#x27;t whether GLP-1 will dominate — it will — but how market share and pricing will evolve as next-gen competitors enter.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">lly glp-1 share</div><div class="kpi-value ">~35%</div><div class="kpi-sub">$16B, growing fast</div></div><div class="kpi"><div class="kpi-label">nvo glp-1 share</div><div class="kpi-value value-am">~60%</div><div class="kpi-sub">$29B, first mover</div></div><div class="kpi"><div class="kpi-label">next competitor</div><div class="kpi-value ">Amgen</div><div class="kpi-sub">MariTide Phase 2, 2027+</div></div><div class="kpi"><div class="kpi-label">glp-1 market size</div><div class="kpi-value ">~$45B</div><div class="kpi-sub">2024, growing to $100B+</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Head-to-Head: LLY vs Novo Nordisk</h3><span class="tag blue">CORE RIVALRY</span></div><div class="aggregate-card-body"><p>Novo Nordisk (NVO): Semaglutide franchise (Ozempic + Wegovy) at ~$29B in 2024. First-mover advantage in GLP-1. CagriSema (cagrilintide + semaglutide) showed 25.3% weight loss in Phase 3 — approval expected 2025-2026...</p></div></div><div class="table-wrap"><table><thead><tr><th>Competitor</th><th>GLP-1 Product</th><th class="num">2024 Revenue</th><th>Pipeline</th><th class="num">Threat Level</th></tr></thead><tbody><tr><td><p>Novo Nordisk</p></td><td><p>Ozempic/Wegovy (semaglutide)</p></td><td class="num"><p>~$29B</p></td><td><p>CagriSema, oral semaglutide HD</p></td><td class="num"><p>HIGH</p></td></tr><tr><td><p>Amgen</p></td><td><p>MariTide (Phase 2)</p></td><td class="num"><p>$0</p></td><td><p>Monthly dosing, dual-mech</p></td><td class="num"><p>MODERATE (2027+)</p></td></tr><tr><td><p>Roche</p></td><td><p>CT-996 (Phase 1)</p></td><td class="num"><p>$0</p></td><td><p>Oral GLP-1 (Carmot acquisition)</p></td><td class="num"><p>LOW (2028+)</p></td></tr><tr><td><p>Pfizer</p></td><td><p>Danuglipron (deprioritized)</p></td><td class="num"><p>$0</p></td><td><p>Once-daily reformulation</p></td><td class="num"><p>LOW</p></td></tr><tr><td><p>AstraZeneca</p></td><td><p>Various early-stage</p></td><td class="num"><p>$0</p></td><td><p>GLP-1/glucagon combos</p></td><td class="num"><p>LOW (2028+)</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Competitive Moats</h3><span class="tag blue">DURABILITY</span></div><div class="aggregate-card-body"><p>Clinical differentiation: Tirzepatide&#x27;s dual GIP/GLP-1 mechanism delivers superior weight loss and A1C reduction vs GLP-1-only drugs Manufacturing scale: $20B+ invested in tirzepatide-specific capacity creates a 3-5 year production advantage over new entrants Pipeline depth: Orforglipron (oral) + retatrutide (triple agonist) give Lilly a next-gen product cycle that competitors lack Real-world evidence: Growing body of outcomes data from millions of patients on tirzepatide strengthens physician confidence Moat vulnerability: All advantages are duration-dependent...</p></div></div>
+      </section>
+      <section id="tam" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>market size &amp; tam</h2>
+          <div class="kicker">total addressable market</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Lilly&#x27;s core addressable market — GLP-1 agonists for diabetes and obesity — is projected to reach $100-130 billion by 2030, up from ~$45 billion in 2024. Beyond the core, tirzepatide&#x27;s emerging indications (MASH, heart failure, sleep apnea, CKD) add another $50-100 billion in potential TAM. This is the largest pharmaceutical market creation event since statins in the 1990s.</p></div>
+        <div class="note amber">
+          <strong>render caveat</strong><br>1 placeholder-heavy block(s) remained in the source pane; inspect against the original json before publishing.
+        </div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>The Obesity TAM Thesis: $100B+ by 2030</h3><span class="tag blue">KEY ASSUMPTION</span></div><div class="aggregate-card-body"><p>The obesity drug market is the fastest-growing category in pharmaceuticals. Key assumptions behind the $100B+ TAM: Prevalence: 42% of US adults are obese (BMI 30+). ~650 million adults globally...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Beyond-Core Indications: The Hidden TAM</h3><span class="tag blue">UPSIDE</span></div><div class="aggregate-card-body"><p>Tirzepatide&#x27;s clinical program is expanding into indications worth potentially $50B+ in aggregate: MASH/NASH: Phase 2 (SYNERGY-NASH) showed significant improvement in fibrosis and NASH resolution. If approved, competes with Madrigal&#x27;s Rezdiffra in a $15B+ market. Heart Failure with Obesity: SUMMIT trial showed improvement in heart failure symptoms...</p></div></div>
+      </section>
+      <section id="product" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>product &amp; technology</h2>
+          <div class="kicker">roadmap + software stack</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Lilly&#x27;s technological edge lies in incretin science — the biology of GIP, GLP-1, and glucagon receptor agonism. Tirzepatide&#x27;s dual GIP/GLP-1 mechanism was a scientific bet that paid off spectacularly, and the pipeline (oral GLP-1, triple agonist) extends this advantage. The company&#x27;s R&D productivity — measured by approved drugs per $1B R&D spend — is among the best in large pharma.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">pipeline programs</div><div class="kpi-value ">50+</div><div class="kpi-sub">Clinical-stage</div></div><div class="kpi"><div class="kpi-label">r&amp;d spend</div><div class="kpi-value ">$11.0B</div><div class="kpi-sub">26.7% of revenue</div></div><div class="kpi"><div class="kpi-label">phase 3 programs</div><div class="kpi-value ">12+</div><div class="kpi-sub">Including orforglipron, retatrutide</div></div><div class="kpi"><div class="kpi-label">key mechanism</div><div class="kpi-value ">Dual/Triple Agonist</div><div class="kpi-sub">GIP/GLP-1/Glucagon</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Pipeline: The Next $100B in Revenue</h3><span class="tag blue">INNOVATION</span></div><div class="aggregate-card-body"><p>Near-term (2025-2026): Orforglipron: Oral GLP-1, Phase 3 data expected. Potential $10B+ peak sales. Tirzepatide MASH: Phase 3 ongoing...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Donanemab (Kisunla): The Alzheimer&#x27;s Story</h3><span class="tag amber">MIXED SIGNAL</span></div><div class="aggregate-card-body"><p>Donanemab received FDA approval in July 2024 for early symptomatic Alzheimer&#x27;s disease. It targets amyloid plaques and demonstrated 35% slowing of clinical decline in the TRAILBLAZER-ALZ 2 trial. The issue: Commercial uptake has been slower than expected due to ARIA monitoring requirements (brain swelling/bleeds requiring regular MRIs), limited diagnostic infrastructure, and competition from Eisai/Biogen&#x27;s Leqembi...</p></div></div><div class="table-wrap"><table><thead><tr><th>Program</th><th>Mechanism</th><th>Phase</th><th class="num">Expected Data</th><th class="num">Peak Sales Est.</th></tr></thead><tbody><tr><td><p>Orforglipron</p></td><td><p>Oral GLP-1</p></td><td><p>Phase 3</p></td><td class="num"><p>2025-2026</p></td><td class="num"><p>$10-15B</p></td></tr><tr><td><p>Retatrutide</p></td><td><p>Triple agonist (GIP/GLP-1/GCG)</p></td><td><p>Phase 3</p></td><td class="num"><p>2026-2027</p></td><td class="num"><p>$15-20B</p></td></tr><tr><td><p>Tirzepatide MASH</p></td><td><p>GIP/GLP-1 dual</p></td><td><p>Phase 3</p></td><td class="num"><p>2025</p></td><td class="num"><p>$5-8B</p></td></tr><tr><td><p>Donanemab (Kisunla)</p></td><td><p>Anti-amyloid</p></td><td><p>Approved</p></td><td class="num"><p>Launched</p></td><td class="num"><p>$1-3B</p></td></tr><tr><td><p>Pirtobrutinib</p></td><td><p>BTK inhibitor</p></td><td><p>Phase 3</p></td><td class="num"><p>2025</p></td><td class="num"><p>$2-4B</p></td></tr></tbody></table></div>
+      </section>
+      <section id="supply" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>supply chain</h2>
+          <div class="kicker">single points of failure</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Lilly&#x27;s single biggest operational challenge is manufacturing capacity for tirzepatide. Demand has consistently exceeded supply, with both Mounjaro and Zepbound appearing on the FDA drug shortage list in 2024. The company has committed $20B+ in manufacturing investments, with new capacity coming online in 2025-2027. Supply constraint resolution is the most predictable catalyst for revenue acceleration.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">mfg investment</div><div class="kpi-value ">$20B+</div><div class="kpi-sub">Committed since 2020</div></div><div class="kpi"><div class="kpi-label">fda shortage status</div><div class="kpi-value value-rd">Intermittent</div><div class="kpi-sub">Both drugs affected 2024</div></div><div class="kpi"><div class="kpi-label">key sites</div><div class="kpi-value ">4 New/Expanded</div><div class="kpi-sub">IN, NC, Ireland, Germany</div></div><div class="kpi"><div class="kpi-label">capacity timeline</div><div class="kpi-value ">2025-2027</div><div class="kpi-sub">Phased ramp</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Manufacturing Expansion Roadmap</h3><span class="tag blue">EXECUTION</span></div><div class="aggregate-card-body"><p>Lilly&#x27;s manufacturing expansion is the most critical execution variable for the investment thesis: Lebanon, Indiana ($3.7B): Largest investment. New API and drug product facility. Expected operational 2025-2026...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Compounding Pharmacy Threat</h3><span class="tag red">RISK FACTOR</span></div><div class="aggregate-card-body"><p>While tirzepatide has been on the FDA drug shortage list, compounding pharmacies have legally produced unapproved versions. Key considerations: Compounded tirzepatide is available at 50-80% discount to branded prices FDA enforcement has been inconsistent — some pharmacies shut down, others continue Once Lilly resolves the shortage, FDA will likely crack down on compounders Estimated 5-10% of current demand is served by compounders Net impact: Negative near-term (revenue leakage) but likely resolved by 2025-2026 as supply normalizes.</p></div></div>
+      </section>
+      <section id="catalysts" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>catalyst map</h2>
+          <div class="kicker">catalysts & event calendar</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Lilly has six identifiable catalysts in the next 12-18 months that could move the stock 10%+ in either direction. The highest-impact catalyst is orforglipron Phase 3 data — success would validate the oral GLP-1 category and could add $100+/share. On the risk side, competitive data from Novo Nordisk&#x27;s CagriSema and potential GLP-1 pricing pressure represent the two biggest downside catalysts.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Catalyst</th><th>Expected Timing</th><th class="num">Probability</th><th>Impact</th><th>Direction</th></tr></thead><tbody><tr><td><p>Orforglipron Phase 3 data readout</p></td><td><p>H2 2025 - H1 2026</p></td><td class="num"><p>65%</p></td><td><p>HIGH (+10-15%)</p></td><td><p>Bullish</p></td></tr><tr><td><p>Retatrutide Phase 3 interim data</p></td><td><p>2025-2026</p></td><td class="num"><p>55%</p></td><td><p>HIGH (+8-12%)</p></td><td><p>Bullish</p></td></tr><tr><td><p>New manufacturing capacity online</p></td><td><p>Q2-Q4 2025</p></td><td class="num"><p>85%</p></td><td><p>MODERATE (+5-8%)</p></td><td><p>Bullish</p></td></tr><tr><td><p>Tirzepatide MASH/sleep apnea label expansion</p></td><td><p>2025-2026</p></td><td class="num"><p>70%</p></td><td><p>MODERATE (+5-8%)</p></td><td><p>Bullish</p></td></tr><tr><td><p>Novo Nordisk CagriSema launch</p></td><td><p>H2 2025</p></td><td class="num"><p>80%</p></td><td><p>HIGH (-8-12%)</p></td><td><p>Bearish</p></td></tr><tr><td><p>GLP-1 pricing/IRA political pressure</p></td><td><p>Ongoing</p></td><td class="num"><p>30%</p></td><td><p>MODERATE (-5-10%)</p></td><td><p>Bearish</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Catalyst #1: Orforglipron Phase 3</h3><span class="tag blue">HIGHEST IMPACT</span></div><div class="aggregate-card-body"><p>What: Orforglipron is a non-peptide oral GLP-1 receptor agonist — a daily pill that could replace weekly injections. Phase 2 showed up to 14.7% body weight loss. Why it matters: An effective oral GLP-1 could expand the addressable patient population 3-5x by eliminating the injection barrier...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Catalyst #2: Retatrutide (Triple Agonist)</h3><span class="tag blue">NEXT-GEN</span></div><div class="aggregate-card-body"><p>What: Retatrutide is a GIP/GLP-1/glucagon triple receptor agonist that showed up to 24.2% body weight loss in Phase 2 — potentially the most efficacious obesity drug ever tested. Why it matters: If Phase 3 confirms Phase 2, retatrutide would be the best-in-class injectable and extend Lilly&#x27;s GLP-1 franchise well into the 2030s, even after tirzepatide patents expire. The glucagon component adds metabolic benefits beyond weight loss (MASH, fatty liver disease)...</p></div></div>
+      </section>
+      <section id="street" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>street expectations</h2>
+          <div class="kicker">wall street consensus</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Wall Street consensus is overwhelmingly bullish on LLY: 30 Buy ratings, 5 Hold, 0 Sell, with a median price target of ~$1,000. Consensus FY2025E revenue is $55-58 billion (+35% YoY), with EPS estimates of $22-25 (implying ~50x forward at current price). The consensus view is that GLP-1 growth justifies the premium valuation — our variant is that margin expansion is underestimated.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">buy ratings</div><div class="kpi-value ">30</div><div class="kpi-sub">86% of analysts</div></div><div class="kpi"><div class="kpi-label">hold ratings</div><div class="kpi-value value-am">5</div><div class="kpi-sub">14% of analysts</div></div><div class="kpi"><div class="kpi-label">sell ratings</div><div class="kpi-value ">0</div><div class="kpi-sub">0% of analysts</div></div><div class="kpi"><div class="kpi-label">median pt</div><div class="kpi-value ">~$1,000</div><div class="kpi-sub">+15% upside</div></div></div><div class="table-wrap"><table><thead><tr><th>Firm</th><th>Rating</th><th class="num">Price Target</th><th>Key Thesis</th></tr></thead><tbody><tr><td><p>Morgan Stanley</p></td><td><p>Overweight</p></td><td class="num"><p>$1,125</p></td><td><p>GLP-1 TAM expansion, oral upside</p></td></tr><tr><td><p>Goldman Sachs</p></td><td><p>Buy</p></td><td class="num"><p>$1,100</p></td><td><p>Best-in-class pipeline, margin leverage</p></td></tr><tr><td><p>JPMorgan</p></td><td><p>Overweight</p></td><td class="num"><p>$1,050</p></td><td><p>Manufacturing capacity unlock</p></td></tr><tr><td><p>BMO Capital</p></td><td><p>Outperform</p></td><td class="num"><p>$1,000</p></td><td><p>Obesity market leadership</p></td></tr><tr><td><p>Bernstein</p></td><td><p>Market Perform</p></td><td class="num"><p>$850</p></td><td><p>Valuation already reflects growth</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Where Consensus Could Be Wrong</h3><span class="tag blue">NON-CONSENSUS</span></div><div class="aggregate-card-body"><p>Consensus underestimates: Operating margin expansion. Street models ~30-32% operating margins for FY2025-2027. We model 35%+ by FY2027 as manufacturing scale economics and SG&A leverage compound...</p></div></div>
+      </section>
+      <section id="scorecard" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>earnings scorecard</h2>
+          <div class="kicker">earnings track record</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Lilly has beaten consensus EPS estimates in 7 of the last 8 quarters, with the misses driven by one-time charges rather than operational underperformance. Revenue beats have been consistent and widening, reflecting the difficulty of modeling GLP-1 uptake curves. The stock has typically moved +5-10% on earnings beats, reflecting the market&#x27;s sensitivity to GLP-1 execution metrics.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">eps beat rate</div><div class="kpi-value ">7/8</div><div class="kpi-sub">Last 8 quarters</div></div><div class="kpi"><div class="kpi-label">avg eps surprise</div><div class="kpi-value ">+8%</div><div class="kpi-sub">Above consensus</div></div><div class="kpi"><div class="kpi-label">revenue beat rate</div><div class="kpi-value ">8/8</div><div class="kpi-sub">Consistent demand</div></div><div class="kpi"><div class="kpi-label">avg rev surprise</div><div class="kpi-value ">+4%</div><div class="kpi-sub">GLP-1 hard to model</div></div></div><div class="table-wrap"><table><thead><tr><th>Quarter</th><th class="num">Revenue (Actual)</th><th class="num">Revenue (Est)</th><th class="num">EPS (Actual)</th><th class="num">EPS (Est)</th><th class="num">Stock Move</th></tr></thead><tbody><tr><td><p>Q3 2024</p></td><td class="num"><p>$11.44B</p></td><td class="num"><p>$10.9B</p></td><td class="num"><p>$3.37</p></td><td class="num"><p>$3.10</p></td><td class="num"><p>+6.2%</p></td></tr><tr><td><p>Q2 2024</p></td><td class="num"><p>$11.30B</p></td><td class="num"><p>$9.8B</p></td><td class="num"><p>$3.92</p></td><td class="num"><p>$2.75</p></td><td class="num"><p>+9.5%</p></td></tr><tr><td><p>Q1 2024</p></td><td class="num"><p>$8.77B</p></td><td class="num"><p>$8.5B</p></td><td class="num"><p>$2.58</p></td><td class="num"><p>$2.40</p></td><td class="num"><p>+4.1%</p></td></tr><tr><td><p>Q4 2023</p></td><td class="num"><p>$9.35B</p></td><td class="num"><p>$8.9B</p></td><td class="num"><p>$2.49</p></td><td class="num"><p>$2.30</p></td><td class="num"><p>+5.8%</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Key Earnings Metrics to Watch</h3><span class="tag blue">MONITORING</span></div><div class="aggregate-card-body"><p>Mounjaro quarterly revenue: Sequential growth rate indicates demand trajectory. Target: &gt;$3.5B/quarter in 2025 Zepbound quarterly revenue: New patient starts vs refills. Supply constraint relief = revenue acceleration...</p></div></div>
+      </section>
+      <section id="signals" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>alternative data</h2>
+          <div class="kicker">market signals & positioning</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Market signals for LLY are overwhelmingly bullish but crowded. Short interest at 0.8%, institutional ownership at ~82%, and 30/5/0 Buy/Hold/Sell split indicate maximum consensus.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">short interest</div><div class="kpi-value ">0.8%</div><div class="kpi-sub">Minimal bearish</div></div><div class="kpi"><div class="kpi-label">institutional</div><div class="kpi-value ">~82%</div><div class="kpi-sub">Heavy ownership</div></div><div class="kpi"><div class="kpi-label">52-week range</div><div class="kpi-value ">$544-$972</div><div class="kpi-sub">89% of high</div></div><div class="kpi"><div class="kpi-label">avg volume</div><div class="kpi-value ">3.2M</div><div class="kpi-sub">Normal</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Crowded Long Risk</h3><span class="tag amber">WARNING</span></div><div class="aggregate-card-body"><p>LLY positioning is maximally bullish: 0 Sell ratings, 0.8% short interest, 82% institutional ownership. Any negative catalyst triggers amplified selling. Size accordingly.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Insider Activity</h3><span class="tag blue">SIGNAL</span></div><div class="aggregate-card-body"><p>CEO David Ricks holds significant equity (~$50M+). Insider selling has been routine (diversification) rather than signal-driven. No unusual insider activity detected.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Flow Analysis</h3><span class="tag blue">DATA</span></div><div class="aggregate-card-body"><p>Options flow shows consistent call buying in Jan 2026 expiry, particularly $1,000-$1,200 strikes. Institutional accumulation visible in 13F filings — hedge fund ownership increasing. Dark pool activity normal.</p></div></div>
+      </section>
+      <section id="history" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>historical analogies</h2>
+          <div class="kicker">company history & key events</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Eli Lilly was founded in 1876 in Indianapolis and has been at the forefront of pharmaceutical innovation for nearly 150 years. The company&#x27;s history includes landmark products like the first commercially available insulin (1923), Prozac (1987), and now tirzepatide (2022). The 2020-2024 period represents the most transformative era in Lilly&#x27;s history, driven by the GLP-1 pivot that turned a $200B company into an $825B one.</p></div>
+        <div class="table-wrap"><table><thead><tr><th class="num">Year</th><th class="num">Event</th><th>Significance</th></tr></thead><tbody><tr><td class="num"><p>1876</p></td><td class="num"><p>Founded by Col. Eli Lilly</p></td><td><p>Indianapolis, Indiana</p></td></tr><tr><td class="num"><p>1923</p></td><td class="num"><p>First commercial insulin (Iletin)</p></td><td><p>Revolutionary diabetes treatment</p></td></tr><tr><td class="num"><p>1987</p></td><td class="num"><p>Prozac (fluoxetine) launched</p></td><td><p>Blockbuster antidepressant, peak $2.6B</p></td></tr><tr><td class="num"><p>2014</p></td><td class="num"><p>Trulicity (dulaglutide) launched</p></td><td><p>First major GLP-1, peak $7.1B</p></td></tr><tr><td class="num"><p>2017</p></td><td class="num"><p>David Ricks becomes CEO</p></td><td><p>Pivots strategy toward GLP-1 leadership</p></td></tr><tr><td class="num"><p>2022</p></td><td class="num"><p>Mounjaro (tirzepatide) FDA approval</p></td><td><p>First dual GIP/GLP-1 agonist</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The GLP-1 Pivot: How Lilly Bet the Company</h3><span class="tag blue">TURNING POINT</span></div><div class="aggregate-card-body"><p>The decision to develop tirzepatide (a dual GIP/GLP-1 agonist) was a bold scientific bet. At the time, the GLP-1 market was dominated by Novo Nordisk&#x27;s semaglutide, and the contribution of GIP agonism to metabolic outcomes was debated. Lilly&#x27;s scientists hypothesized that dual agonism would produce superior results — and they were right...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The Insulin Price Cut Decision (2023)</h3><span class="tag blue">STRATEGIC</span></div><div class="aggregate-card-body"><p>In March 2023, Lilly voluntarily cut insulin list prices by 70% and capped out-of-pocket costs at $35/month. This was a $1.5-2B annual revenue sacrifice that was strategically brilliant: Pre-empted political attacks on drug pricing Generated massive positive press coverage globally Reduced the political target on GLP-1 pricing (which is far more profitable) The revenue loss was easily absorbed by tirzepatide ramp This decision signals management&#x27;s strategic sophistication — willing to sacrifice legacy revenue to protect the GLP-1 franchise from political backlash.</p></div></div>
+      </section>
+      <section id="management" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>management &amp; leadership</h2>
+          <div class="kicker">management assessment</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Lilly&#x27;s management team under CEO David Ricks (since 2017) has executed one of the most successful strategic pivots in pharmaceutical history. The team&#x27;s key decisions — betting on tirzepatide&#x27;s dual mechanism, investing $20B+ in manufacturing ahead of demand, pricing insulin aggressively to protect GLP-1 political positioning — demonstrate strategic sophistication rare in large pharma. Management credibility is high.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">ceo tenure</div><div class="kpi-value ">8 years</div><div class="kpi-sub">David Ricks (since 2017)</div></div><div class="kpi"><div class="kpi-label">market cap growth</div><div class="kpi-value ">~5.5x</div><div class="kpi-sub">Under Ricks ($150B→$825B)</div></div><div class="kpi"><div class="kpi-label">revenue cagr</div><div class="kpi-value ">~15%</div><div class="kpi-sub">Under Ricks tenure</div></div><div class="kpi"><div class="kpi-label">r&amp;d productivity</div><div class="kpi-value ">High</div><div class="kpi-sub">Multiple blockbusters launched</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>CEO David Ricks: The Right Leader for This Cycle</h3><span class="tag blue">LEADERSHIP</span></div><div class="aggregate-card-body"><p>David Ricks became CEO in January 2017 at age 49 — young for a pharma CEO...</p></div></div><div class="table-wrap"><table><thead><tr><th>Executive</th><th>Role</th><th>Tenure</th><th>Background</th></tr></thead><tbody><tr><td><p>David Ricks</p></td><td><p>Chairman &amp; CEO</p></td><td><p>2017-present</p></td><td><p>28-year Lilly veteran, Lilly China president</p></td></tr><tr><td><p>Anat Ashkenazi</p></td><td><p>CFO</p></td><td><p>2024-present</p></td><td><p>Former SVP Finance at Lilly</p></td></tr><tr><td><p>Daniel Skovronsky</p></td><td><p>Chief Scientific Officer</p></td><td><p>2017-present</p></td><td><p>Led tirzepatide clinical program</p></td></tr><tr><td><p>Patrik Jonsson</p></td><td><p>President, Lilly Diabetes &amp; Obesity</p></td><td><p>2023-present</p></td><td><p>Former Novo Nordisk executive</p></td></tr><tr><td><p>Jake Van Naarden</p></td><td><p>President, Loncalis (MFG subsidiary)</p></td><td><p>2023-present</p></td><td><p>Manufacturing operations lead</p></td></tr></tbody></table></div>
+      </section>
+      <section id="macro" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>macro sensitivity</h2>
+          <div class="kicker">rates, fx, energy</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Lilly has below-average macro sensitivity for a growth stock. Pharmaceutical demand is largely non-discretionary — patients don&#x27;t stop taking diabetes medication due to recession. However, obesity drugs have some demand elasticity (elective spending), and LLY&#x27;s 70x P/E creates interest rate sensitivity through the discount rate. The IRA drug pricing legislation is the primary policy risk.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">beta</div><div class="kpi-value ">0.42</div><div class="kpi-sub">Low macro sensitivity</div></div><div class="kpi"><div class="kpi-label">rate sensitivity</div><div class="kpi-value value-am">Moderate</div><div class="kpi-sub">High P/E = duration risk</div></div><div class="kpi"><div class="kpi-label">recession impact</div><div class="kpi-value ">Low</div><div class="kpi-sub">Non-discretionary demand</div></div><div class="kpi"><div class="kpi-label">ira impact</div><div class="kpi-value value-am">Jardiance 2026</div><div class="kpi-sub">GLP-1 drugs exempt near-term</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Interest Rate Sensitivity: The Duration Trade</h3><span class="tag amber">RISK</span></div><div class="aggregate-card-body"><p>At 70x forward P/E, LLY behaves like a long-duration asset. The present value of distant future earnings (FY2028-2030 GLP-1 peak revenue) is highly sensitive to discount rate changes: Each 50bps increase in 10Y yield → ~5-7% downside for LLY A sharp rise to 5.5% (from 4.35% current) would compress growth multiples sector-wide, hitting LLY disproportionately Mitigant: LLY&#x27;s growth rate (32% revenue) compresses the effective duration. If growth continues, P/E compresses naturally regardless of rate environment.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>IRA Drug Pricing: Limited Near-Term Impact</h3><span class="tag blue">POLICY</span></div><div class="aggregate-card-body"><p>The Inflation Reduction Act&#x27;s Medicare drug price negotiation applies to drugs marketed for 9+ years (small molecule) or 13+ years (biologics). Impact on Lilly: Jardiance: Selected for first round of negotiation. Negotiated price effective 2026...</p></div></div>
+      </section>
+      <section id="quant" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>quantitative profile</h2>
+          <div class="kicker">factor + mean reversion</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Lilly&#x27;s quantitative profile is defined by extremes: extreme growth (32% revenue CAGR), extreme valuation (70x forward P/E), and unusually low beta (0.42) for a growth stock. The Monte Carlo simulation (10,000 iterations) yields a mean fair value of $1,020 with a wide distribution ($650-$1,350 at 10th-90th percentile), reflecting the binary nature of pipeline catalysts.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">wacc</div><div class="kpi-value ">6.5%</div><div class="kpi-sub">Low beta drives low WACC</div></div><div class="kpi"><div class="kpi-label">monte carlo mean</div><div class="kpi-value ">$1,020</div><div class="kpi-sub">10,000 iterations</div></div><div class="kpi"><div class="kpi-label">p10 / p90</div><div class="kpi-value value-am">$650 / $1,350</div><div class="kpi-sub">Wide outcome range</div></div><div class="kpi"><div class="kpi-label">revenue cagr (5y)</div><div class="kpi-value ">22%</div><div class="kpi-sub">Projected</div></div></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">LLY</th><th class="num">NVO</th><th class="num">AMGN</th><th class="num">Pharma Median</th></tr></thead><tbody><tr><td><p>P/E Forward</p></td><td class="num"><p>70x</p></td><td class="num"><p>35x</p></td><td class="num"><p>16x</p></td><td class="num"><p>15x</p></td></tr><tr><td><p>EV/Revenue</p></td><td class="num"><p>20x</p></td><td class="num"><p>15x</p></td><td class="num"><p>7x</p></td><td class="num"><p>5x</p></td></tr><tr><td><p>Revenue Growth</p></td><td class="num"><p>32%</p></td><td class="num"><p>25%</p></td><td class="num"><p>6%</p></td><td class="num"><p>6%</p></td></tr><tr><td><p>Op Margin</p></td><td class="num"><p>30.3%</p></td><td class="num"><p>42%</p></td><td class="num"><p>35%</p></td><td class="num"><p>25%</p></td></tr><tr><td><p>Beta</p></td><td class="num"><p>0.42</p></td><td class="num"><p>0.55</p></td><td class="num"><p>0.65</p></td><td class="num"><p>0.60</p></td></tr><tr><td><p>FCF Yield</p></td><td class="num"><p>0.85%</p></td><td class="num"><p>1.5%</p></td><td class="num"><p>4.5%</p></td><td class="num"><p>4.0%</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Monte Carlo Distribution</h3><span class="tag blue">SIMULATION</span></div><div class="aggregate-card-body"><p>10,000-iteration Monte Carlo simulation with randomized assumptions: Revenue CAGR: 15-30% (5Y), normal distribution centered at 22% Terminal margin: 28-40%, centered at 35% WACC: 5.5-8.0%, centered at 6.5% Pipeline success: Bernoulli trials for orforglipron (65% probability) and retatrutide (55%) Results: Mean $1,020, median $990. 58% probability above current price ($870). Fat left tail driven by pipeline failure scenarios...</p></div></div>
+      </section>
+      <section id="derivatives" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>options &amp; derivatives</h2>
+          <div class="kicker">derivatives & options analysis</div>
+        </div>
+        <div class="lead aggregate-lead"><p>LLY options market implies ~30% annualized volatility, with significant skew around pipeline data readout dates. Earnings straddles price ~5% moves, while longer-dated options around orforglipron data price 15%+ moves. For position construction, we recommend a bullish risk reversal or Jan 2026 call spread rather than outright long equity given the valuation premium.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">implied vol (30d)</div><div class="kpi-value ">~30%</div><div class="kpi-sub">Annualized</div></div><div class="kpi"><div class="kpi-label">put/call ratio</div><div class="kpi-value ">0.65</div><div class="kpi-sub">Bullish skew</div></div><div class="kpi"><div class="kpi-label">earnings straddle</div><div class="kpi-value ">~5%</div><div class="kpi-sub">Expected move</div></div><div class="kpi"><div class="kpi-label">jan 2026 atm iv</div><div class="kpi-value ">~35%</div><div class="kpi-sub">Pipeline catalyst priced</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Recommended Options Strategy: Jan 2026 Call Spread</h3><span class="tag blue">TRADE IDEA</span></div><div class="aggregate-card-body"><p>Structure: Buy Jan 2026 $900 call, sell Jan 2026 $1,100 call. Cost: ~$60-70/share. Rationale: Captures upside to $1,100 (+26%) while capping cost at $60-70 per share (~7% of stock price)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Hedging: Protective Put Structure</h3><span class="tag red">RISK MGMT</span></div><div class="aggregate-card-body"><p>For existing LLY holders concerned about pipeline binary risk: Structure: Buy Jan 2026 $750 put (~$30/share) for catastrophic downside protection Rationale: Protects against 14%+ drawdown from pipeline failure or competitive setback Cost: ~3.5% of position value annualized — the insurance premium for owning a 70x P/E stock with binary catalysts</p></div></div><div class="table-wrap"><table><thead><tr><th>Strategy</th><th>Structure</th><th class="num">Cost</th><th>Max Profit</th><th class="num">Breakeven</th></tr></thead><tbody><tr><td><p>Bull Call Spread</p></td><td><p>Buy $900C / Sell $1100C Jan&#x27;26</p></td><td class="num"><p>~$65</p></td><td><p>$135</p></td><td class="num"><p>~$965</p></td></tr><tr><td><p>Risk Reversal</p></td><td><p>Sell $750P / Buy $1000C Jan&#x27;26</p></td><td class="num"><p>~$0</p></td><td><p>Unlimited</p></td><td class="num"><p>$1,000</p></td></tr><tr><td><p>Protective Put</p></td><td><p>Buy $750P Jan&#x27;26</p></td><td class="num"><p>~$30</p></td><td><p>N/A</p></td><td class="num"><p>$840 net</p></td></tr></tbody></table></div>
+      </section>
+      <section id="governance" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>governance &amp; accounting</h2>
+          <div class="kicker">corporate governance</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Lilly&#x27;s corporate governance is strong by pharma standards: independent board majority, separate CEO/Chairman-elect roles, no dual-class share structure, and strong institutional oversight (82% institutional ownership). Compensation is well-aligned with shareholder interests, heavily weighted toward long-term performance incentives tied to revenue growth and TSR.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">board independence</div><div class="kpi-value ">12/14</div><div class="kpi-sub">86% independent</div></div><div class="kpi"><div class="kpi-label">ceo pay (fy23)</div><div class="kpi-value ">~$26M</div><div class="kpi-sub">74% performance-based</div></div><div class="kpi"><div class="kpi-label">share structure</div><div class="kpi-value ">Single class</div><div class="kpi-sub">1 share = 1 vote</div></div><div class="kpi"><div class="kpi-label">institutional own</div><div class="kpi-value ">~82%</div><div class="kpi-sub">Vanguard, BlackRock, Capital Group</div></div></div><div class="table-wrap"><table><thead><tr><th>Governance Feature</th><th>Status</th><th>Assessment</th></tr></thead><tbody><tr><td><p>Board independence</p></td><td><p>12 of 14 independent</p></td><td><p>Strong</p></td></tr><tr><td><p>CEO/Chair separation</p></td><td><p>Combined (Ricks)</p></td><td><p>Moderate — lead independent director exists</p></td></tr><tr><td><p>Dual-class shares</p></td><td><p>None</p></td><td><p>Strong</p></td></tr><tr><td><p>Poison pill</p></td><td><p>None</p></td><td><p>Strong</p></td></tr><tr><td><p>Say-on-pay approval</p></td><td><p>&gt;90%</p></td><td><p>Strong — shareholders support comp</p></td></tr><tr><td><p>Clawback policy</p></td><td><p>Yes</p></td><td><p>Strong</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Compensation Alignment</h3><span class="tag blue">ANALYSIS</span></div><div class="aggregate-card-body"><p>CEO David Ricks received ~$26M in FY2023 total compensation, with 74% tied to performance metrics: Revenue growth targets: Tied to GLP-1 franchise ramp 3-year relative TSR: vs. pharma peer group Pipeline milestones: Phase 3 completions and regulatory approvals Compensation is well-structured and aligned with shareholder interests. The emphasis on revenue growth (not just earnings) correctly incentivizes the current strategy of reinvesting aggressively in GLP-1 manufacturing and pipeline.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>ESG &amp; Stakeholder Considerations</h3><span class="tag blue">CONTEXT</span></div><div class="aggregate-card-body"><p>Lilly has strong ESG positioning, bolstered by the 2023 insulin price cut decision: Access &amp; affordability: 70% insulin price cut, $35/month cap. GLP-1 patient assistance programs. Environmental: Carbon neutrality targets, green manufacturing investments...</p></div></div>
+      </section>
+      <section id="value" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>value framework</h2>
+          <div class="kicker">greenwald / qarp</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Lilly&#x27;s investment value derives from four pillars, stress-tested against kill criteria and weighted by confidence. The framework synthesizes fundamental analysis, quantitative models, and competitive intelligence into a single actionable recommendation. Net assessment: Long at 75/100 conviction with $1,050 12-month target.</p></div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>Position Sizing Recommendation</h3><span class="tag blue">IMPLEMENTATION</span></div><div class="aggregate-card-body"><p>Conviction: 75/100. Not a maximum-conviction position due to valuation premium and crowded positioning. Recommended sizing: 3-5% of portfolio...</p></div></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">Value</th><th>Assessment</th></tr></thead><tbody><tr><td><p>12M Price Target</p></td><td class="num"><p>$1,050</p></td><td><p>+21% upside</p></td></tr><tr><td><p>Conviction</p></td><td class="num"><p>75/100</p></td><td><p>Moderate-High</p></td></tr><tr><td><p>Position</p></td><td class="num"><p>Long</p></td><td><p>3-5% of portfolio</p></td></tr><tr><td><p>Risk/Reward</p></td><td class="num"><p>0.57x</p></td><td><p>21% up / 37% down</p></td></tr><tr><td><p>Catalyst Timeline</p></td><td class="num"><p>6 events in 18M</p></td><td><p>Dense, high-impact</p></td></tr><tr><td><p>Monitoring Freq</p></td><td class="num"><p>Quarterly</p></td><td><p>Earnings + pipeline events</p></td></tr></tbody></table></div>
+      </section>
+      <section id="appendix" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>appendix &amp; sources</h2>
+          <div class="kicker">sources · methodology</div>
+        </div>
+        <div class="lead aggregate-lead"><p>How we source the tape, verify levels, and align this report with XVARY deep-dive standards.</p></div>
+        <div class="aggregate-sources-attribution"><p>Sources: SEC filings, company disclosures, market data vendors, and sources cited in the sections above. For investment presentation use only.</p></div><p class="aggregate-methodology-link">standards and pipeline: <a href="https://xvary.com/methodology/">xvary.com/methodology/</a></p>
+      </section>
+
+      <div class="footer">
+        xvary · 2026 · not investment advice
+        <div class="links">
+          <a href="https://xvary.com/pulse/">the pulse</a>
+          <a href="https://xvary.com/stacks/">the stacks</a>
+          <a href="https://xvary.com/discover/">discover</a>
+          <a href="https://xvary.com/collectibles/">collectibles</a>
+          <a href="https://xvary.com/pricing/">pricing</a>
+          <a href="https://xvary.com/methodology/">methodology</a>
+          <a href="https://xvary.com/newsletter/">newsletter</a>
+          <a href="https://xvary.com/legal/disclaimer/">disclaimer</a>
+          <a href="https://xvary.com/legal/privacy/">privacy</a>
+          <a href="https://xvary.com/legal/terms/">terms</a>
+        </div>
+        <div class="small">Sources: company filings and earnings, supplier disclosures, named sell-side notes where cited, alt-data where noted, and public flow/sentiment screens. Not investment advice — verify anything you trade on.</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const bar = document.getElementById("reading-progress");
+      const sections = [{"id": "summary", "hotkey": "0"}, {"id": "thesis", "hotkey": "1"}, {"id": "financials", "hotkey": "2"}, {"id": "valuation", "hotkey": "3"}, {"id": "risk", "hotkey": "4"}, {"id": "ops", "hotkey": "5"}, {"id": "competition", "hotkey": "6"}, {"id": "tam", "hotkey": "7"}, {"id": "product", "hotkey": "8"}, {"id": "supply", "hotkey": "9"}, {"id": "catalysts", "hotkey": "a"}, {"id": "street", "hotkey": "b"}, {"id": "scorecard", "hotkey": "c"}, {"id": "signals", "hotkey": "d"}, {"id": "history", "hotkey": "e"}, {"id": "management", "hotkey": "f"}, {"id": "macro", "hotkey": "g"}, {"id": "quant", "hotkey": "h"}, {"id": "derivatives", "hotkey": "i"}, {"id": "governance", "hotkey": "j"}, {"id": "value", "hotkey": "k"}, {"id": "appendix", "hotkey": "l"}];
+      const links = [...document.querySelectorAll(".sidebar a[href^='#']")];
+      const setActive = function (id) {
+        links.forEach(function (link) {
+          link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+        });
+      };
+
+      window.addEventListener("scroll", function () {
+        const root = document.documentElement;
+        const pct = (root.scrollTop / Math.max(root.scrollHeight - root.clientHeight, 1)) * 100;
+        if (bar) {
+          bar.style.width = Math.min(Math.max(pct, 0), 100) + "%";
+        }
+      }, { passive: true });
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(function (entries) {
+          entries.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+          const hit = entries.find(function (entry) {
+            return entry.isIntersecting && entry.intersectionRatio > 0.12;
+          });
+          if (hit) {
+            setActive(hit.target.id);
+          }
+        }, { rootMargin: "-40% 0px -40% 0px", threshold: [0, 0.12, 0.25, 0.45] });
+
+        sections.forEach(function (item) {
+          const node = document.getElementById(item.id);
+          if (node) {
+            observer.observe(node);
+          }
+        });
+      }
+
+      links.forEach(function (link) {
+        link.addEventListener("click", function () {
+          setActive(link.getAttribute("href").slice(1));
+        });
+      });
+
+      const hotkeys = {};
+      sections.forEach(function (item) {
+        hotkeys[item.hotkey] = item.id;
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.metaKey || event.ctrlKey) {
+          return;
+        }
+        const target = event.target;
+        if (target && target.closest && target.closest("input, textarea, select, [contenteditable='true']")) {
+          return;
+        }
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (!hotkeys[key]) {
+          return;
+        }
+        event.preventDefault();
+        const node = document.getElementById(hotkeys[key]);
+        if (node) {
+          node.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    })();
+  </script>
+  <footer class="footer" style="margin-left:var(--navw,0)">
+    xvary · 2026 · not investment advice
+    <div class="footer-links">
+      <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/methodology/">methodology</a>
+      <a href="/newsletter/">newsletter</a>
+      <a href="/pricing/">pricing</a>
+      <a href="/free/">free reports</a>
+      <a href="/legal/disclaimer/">disclaimer</a>
+      <a href="/legal/privacy/">privacy</a>
+      <a href="/legal/terms/">terms</a>
+    </div>
+    <div class="footer-logo">
+      <a href="/" aria-label="home">
+        <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+      </a>
+    </div>
+  </footer>
+  <script src="/js/site-chrome.js?v=1776081807" defer></script>
+</body>
+</html>

@@ -1,0 +1,718 @@
+
+
+
+<div id="p-val" class="pane">
+    <!-- ── section: section_title ── -->
+    <div class="dd-section">
+
+  <h2 class="sec-title">valuation</h2>
+
+
+
+    </div>
+    <!-- ── section: section_lead ── -->
+    <div class="dd-section">
+
+  <p class="sec-lead">Valuation analysis applies multiple methodologies — DCF, comparable companies, scenario modeling, and reverse-engineering — to triangulate JPMorgan Chase & Co's intrinsic value. Current price: $286.56. Our probability-weighted estimate: $265.00 (-6.5%).</p>
+
+
+    </div>
+    <!-- ── section: kpi_grid ── -->
+    <div class="dd-section">
+
+  <div class="kpi-grid">
+  <div class="kpi gl">
+    <div class="kpi-lbl">prob-wtd fv</div>
+    <div class="kpi-val">$298</div>
+<div class="kpi-sub">vs $286.56 current</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">p/e ratio</div>
+    <div class="kpi-val">14.2x</div>
+<div class="kpi-sub">vs 12x sector avg</div>  </div>
+  <div class="kpi gl">
+    <div class="kpi-lbl">p/b ratio</div>
+    <div class="kpi-val">2.1x</div>
+<div class="kpi-sub">vs 1.3x bac, 1.0x c</div>  </div>
+  <div class="kpi gl">
+    <div class="kpi-lbl">roe spread</div>
+    <div class="kpi-val">630 bps</div>
+<div class="kpi-sub">15.7% roe vs 9.4% coe</div>  </div>
+  <div class="kpi gl">
+    <div class="kpi-lbl">upside/downside</div>
+    <div class="kpi-val">+5.1%</div>
+<div class="kpi-sub">to $298 prob-wtd target</div>  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: note_box ── -->
+    <div class="dd-section">
+
+  <div class="n n-bl"><strong>The DCF model's negative output ($265) is a methodological artifact, not a signal.</strong> Banks generate value through earnings and book value growth, not free cash flow; the -$147.78B operating cash flow reflects regulatory cash requirements and lending activity. The market's $286.56 price at 14.2x earnings and 2.1x book implicitly assumes mid-teens ROTCE persistence—achievable but demanding continued execution on the $15B+ technology investment program.</div>
+
+
+
+    </div>
+    <!-- ── section: chart ── -->
+    <div class="dd-section">
+
+  <div class="ch">
+<div class="chart-title">valuation range by method</div>  <canvas id="ch-d3-football-field"></canvas>
+</div>
+
+
+
+    </div>
+    <!-- ── section: card ── -->
+    <div class="dd-section">
+
+<div class="c">
+  <div class="c-head">
+    <h3>dcf & earnings-based model assumptions</h3>
+<span class="c-tag c-tag-am">bank-adjusted</span>  </div>
+      <p class="ts-sm"><strong>Standard DCF is inappropriate for JPM.</strong> The model output of <strong>$265 per share</strong> reflects fundamental misspecification: banks do not generate distributable free cash flow in the conventional sense. Operating cash flow of <strong>-$147.78 billion</strong> captures regulatory liquidity requirements, loan growth funding, and deposit movements—not operational failure. We disregard this output and construct an earnings-based valuation framework.</p><p class="ts-sm"><strong>WACC of 10.1%</strong> is reasonable for a G-SIB, incorporating 0.94 beta, 4.25% risk-free rate, and 5.5% equity risk premium. The <strong>9.4% cost of equity</strong> appropriately captures JPM's lower systematic risk versus the market. However, terminal growth assumptions are problematic for financials; we use <strong>3.0% terminal growth</strong> as a conservative long-run nominal GDP proxy.</p><p class="ts-sm"><strong>Competitive advantage assessment:</strong> JPM exhibits <em>position-based competitive advantage</em> through customer captivity (corporate banking relationships, deposit franchise) and economies of scale (lowest unit costs in G-SIB peer set). This supports maintaining current 31.3% net margins versus industry mean-reversion, provided technology spend generates operating leverage. The <strong>$15B+ annual technology investment</strong> [strategic framing] must demonstrate ROI through deposit growth and efficiency gains to justify premium multiples. Without this capability-based advantage converting to position-based captivity, margins compress toward 28-29% peer averages.</p><p class="ts-sm"><strong>Base case earnings projection:</strong> $20.02 EPS (2025) growing at 4% annually through 2029, reflecting normalized revenue growth (+3-4%), stable net margins (30-31%), and continued capital return. This yields Gordon growth fair value of <strong>$315</strong> and residual income value of <strong>$305</strong>, bracketing our probability-weighted target.</p>
+
+</div>
+
+
+    </div>
+    <!-- ── section: scenario_cards ── -->
+    <div class="dd-section">
+
+  <div class="sc-grid">
+  <div class="sc bear">
+    <div class="sc-hd">Bear Case</div>
+    <div class="sc-val">$235</div>
+    <div class="sc-body">Credit cycle deterioration drives net charge-offs to 75bps, compressing net margin to 28%. Investment banking revenue falls 15% on deal flow collapse. P/B compresses to 1.75x on ROE decline to 12%. CCAR 2026 restricts buybacks to $15B. EPS drops to $18.50 in 2026.</div>
+  </div>
+  <div class="sc base">
+    <div class="sc-hd">Base Case</div>
+    <div class="sc-val">$298</div>
+    <div class="sc-body">Soft landing achieved with Fed funds rate stabilizing 3.5-4.0%. Revenue grows 4% annually, net margin holds 30-31%. Investment banking normalizes, offsetting NIM pressure. ROTCE sustains 15%+, supporting 2.0x P/B. $25B annual capital return continues. EPS reaches $21 by 2027.</div>
+  </div>
+  <div class="sc bull">
+    <div class="sc-hd">Bull Case</div>
+    <div class="sc-val">$355</div>
+    <div class="sc-body">M&A and IPO markets rebound sharply; investment banking revenue up 25%. Deposit beta remains contained, NIM expands 10bps. Technology spend generates visible operating leverage, efficiency ratio improves 200bps. P/B expands to 2.4x on 17% ROE. EPS reaches $23 by 2027.</div>
+  </div>
+  <div class="sc super_bull">
+    <div class="sc-hd">Super-Bull</div>
+    <div class="sc-val">$410</div>
+    <div class="sc-body">Rate cuts stimulate credit demand without impairing yields. JPM gains 200bps market share in corporate banking via First Republic integration success. Wealth management inflows accelerate; AUM grows 15% annually. P/B reaches 2.7x on 18% ROE. EPS exceeds $25 by 2027.</div>
+  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: card ── -->
+    <div class="dd-section">
+
+<div class="c">
+  <div class="c-head">
+    <h3>reverse dcf: what the market implies</h3>
+<span class="c-tag c-tag-bl">market implied</span>  </div>
+      <p class="ts-sm"><strong>The $283.44 market price implies specific expectations that we can reverse-engineer.</strong> Using a Gordon growth framework with 9.4% cost of equity, the market embeds approximately <strong>3.5% terminal growth</strong> and assumes <strong>$20.02 base earnings</strong> are sustainable with modest growth. This is reasonable but not conservative.</p><p class="ts-sm"><strong>Implied FCF margin of 31.3%</strong> matches current net margin, suggesting the market expects no mean reversion. For a bank, this is aggressive—historical net margins for money-center banks cluster 25-28%. The 300+ basis point premium to history requires continuous execution on technology-driven efficiency and pricing power.</p><p class="ts-sm"><strong>The implied ROTCE is 15%+</strong>, consistent with current 15.7% ROE. This is the critical assumption: if JPM cannot sustain mid-teens returns on tangible equity, the 2.1x P/B multiple compresses toward 1.5-1.7x peer averages, implying 20-30% downside. The market is pricing JPM as a structurally superior franchise, not a cyclically elevated one.</p><p class="ts-sm"><strong>Reasonableness assessment:</strong> The implied expectations are <em>achievable but demanding</em>. They require: (1) no credit cycle deterioration through 2027, (2) successful technology ROI conversion to operating leverage, (3) continued G-SIB regulatory forbearance on capital requirements, and (4) investment banking recovery without trading volatility collapse. Each assumption has 60-70% individual probability; combined, perhaps 40-45% joint probability. This suggests the market price embeds optimism, not exuberance.</p>
+
+</div>
+
+
+    </div>
+    <!-- ── section: note_box ── -->
+    <div class="dd-section">
+
+  <div class="n n-bl"><strong>Target $298 vs. fair value range $235-$410.</strong> The probability-weighted target sits 5.1% above current price, offering modest upside with balanced risk-reward. The gap to analyst consensus ($330-$345) reflects our higher probability weight on bear/base cases (70% combined) versus sell-side optimism. Conviction level: <strong>60/100</strong>—quality franchise at fair price, not compelling discount. Position: <strong>NEUTRAL/HOLD</strong> for new capital; existing holders should trim on strength above $310.</div>
+
+
+
+    </div>
+    <!-- ── section: scenario_cards ── -->
+    <div class="dd-section">
+
+  <div class="sc-grid">
+  <div class="sc bull">
+    <div class="sc-hd">Bull Case</div>
+    <div class="sc-val">$408.00</div>
+    <div class="sc-body">Soft landing sustains NII at $95B+, credit costs remain benign below 50bps, and JPM executes $25B+ annual buybacks; ROTCE expands to 19% and multiple re-rates to 13x forward EPS, driving stock to $380+ (35% upside) as the bank consolidates share in weakened competitor markets.</div>
+  </div>
+  <div class="sc base">
+    <div class="sc-hd">Base Case</div>
+    <div class="sc-val">$285.00</div>
+    <div class="sc-body">Moderate growth environment with NII stabilizing ~$90B, credit costs normalizing to 55-60bps, and ROTCE sustaining 16-17%; JPM returns $20B+ annually via buybacks/dividends, growing TBVPS 8% annually. Stock earns 12x $28 EPS = $336, plus dividends, delivering ~22% total return.</div>
+  </div>
+  <div class="sc bear">
+    <div class="sc-hd">Bear Case</div>
+    <div class="sc-val">$200</div>
+    <div class="sc-body">Hard recession drives unemployment to 6.5%, net charge-offs surge to 75bps+, and NII falls to $85B; combined with aggressive Basel III implementation, ROTCE compresses to 13% and stock trades to 9x earnings on $22 EPS, implying ~$200 (30% downside) with book value growth stalled.</div>
+  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: kpi_grid ── -->
+    <div class="dd-section">
+
+  <div class="kpi-grid">
+  <div class="kpi bl">
+    <div class="kpi-lbl">mc median</div>
+    <div class="kpi-val">$250</div>
+<div class="kpi-sub">10,000 simulations</div>  </div>
+  <div class="kpi tl">
+    <div class="kpi-lbl">mc mean</div>
+    <div class="kpi-val">$250</div>
+  </div>
+  <div class="kpi al">
+    <div class="kpi-lbl">5th percentile</div>
+    <div class="kpi-val">$250</div>
+<div class="kpi-sub">downside tail</div>  </div>
+  <div class="kpi gl">
+    <div class="kpi-lbl">95th percentile</div>
+    <div class="kpi-val">$250</div>
+<div class="kpi-sub">upside tail</div>  </div>
+  <div class="kpi al">
+    <div class="kpi-lbl">p(upside)</div>
+    <div class="kpi-val">0%</div>
+<div class="kpi-sub">vs $286.56</div>  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+<div class="exhibit-label">Exhibit 1: Intrinsic Value Methods Comparison</div>
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>method</th>
+      <th>fair value</th>
+      <th>vs current</th>
+      <th>key assumption</th>
+      <th>reliability</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>p/e multiple (14x)</td>
+      <td class="r ts-num">$280</td>
+      <td class="rd r ts-num">-2.3%</td>
+      <td>2026 eps $20.00, peer avg multiple</td>
+      <td><span class="badge">HIGH</span></td>
+    </tr>
+    <tr>
+      <td>p/b multiple (2.0x)</td>
+      <td class="r ts-num">$268</td>
+      <td class="rd r ts-num">-6.5%</td>
+      <td>tangible book ~$134, slight premium compression…</td>
+      <td><span class="badge">HIGH</span></td>
+    </tr>
+    <tr>
+      <td>gordon growth model</td>
+      <td class="r ts-num">$315</td>
+      <td class="grn r ts-num">+9.9%</td>
+      <td>$20.02 base eps, 4% growth, 9.4% coe</td>
+      <td><span class="badge">MEDIUM</span></td>
+    </tr>
+    <tr>
+      <td>residual income model</td>
+      <td class="r ts-num">$305</td>
+      <td class="grn r ts-num">+6.4%</td>
+      <td>15.7% roe, 3% growth, 9.4% coe</td>
+      <td><span class="badge">MEDIUM</span></td>
+    </tr>
+    <tr>
+      <td>reverse dcf (market implied)</td>
+      <td class="r ts-num">$283</td>
+      <td class="bl r ts-num">-1.2%</td>
+      <td>implies 3.5% terminal growth, 10.1% wacc…</td>
+      <td>benchmark</td>
+    </tr>
+    <tr>
+      <td>dcf (standard fcf)</td>
+      <td class="rd r ts-num">$265</td>
+      <td class="rd r ts-num">-7.5%</td>
+      <td>model misspecified for banks—disregard</td>
+      <td>not applicable</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>metric</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>pe</td>
+      <td class="r ts-num">$855.91</td>
+    </tr>
+    <tr>
+      <td>cash flow</td>
+      <td>$147.78 billion</td>
+    </tr>
+    <tr>
+      <td>wacc of</td>
+      <td class="r ts-num">10.1%</td>
+    </tr>
+    <tr>
+      <td>+ annual technology investment</td>
+      <td class="r ts-num">$15b</td>
+    </tr>
+    <tr>
+      <td>fair value</td>
+      <td class="r ts-num">$315</td>
+    </tr>
+    <tr>
+      <td>fair value</td>
+      <td class="r ts-num">$305</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+<div class="exhibit-label">Exhibit 2: Peer Valuation Comparison</div>
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>company</th>
+      <th>p/e</th>
+      <th>p/s</th>
+      <th>revenue growth</th>
+      <th>net margin</th>
+      <th>roe</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>jpmorgan chase (jpm)</td>
+      <td class="r ts-num">14.2x</td>
+      <td class="r ts-num">4.2x</td>
+      <td class="grn r ts-num">+2.8%</td>
+      <td class="grn r ts-num">31.3%</td>
+      <td class="grn r ts-num">15.7%</td>
+    </tr>
+    <tr>
+      <td>bank of america (bac)</td>
+      <td class="r ts-num">~12.0x</td>
+      <td class="r ts-num">~2.8x</td>
+      <td></td>
+      <td class="r ts-num">~25%</td>
+      <td class="r ts-num">~11%</td>
+    </tr>
+    <tr>
+      <td>citigroup (c)</td>
+      <td class="r ts-num">~16.0x</td>
+      <td class="r ts-num">~1.5x</td>
+      <td></td>
+      <td class="r ts-num">~18%</td>
+      <td class="r ts-num">~8%</td>
+    </tr>
+    <tr>
+      <td>wells fargo (wfc)</td>
+      <td class="r ts-num">~14.0x</td>
+      <td class="r ts-num">~2.2x</td>
+      <td></td>
+      <td class="r ts-num">~22%</td>
+      <td class="r ts-num">~10%</td>
+    </tr>
+    <tr>
+      <td>goldman sachs (gs)</td>
+      <td class="r ts-num">~13.0x</td>
+      <td class="r ts-num">~3.0x</td>
+      <td></td>
+      <td class="r ts-num">~20%</td>
+      <td class="r ts-num">~12%</td>
+    </tr>
+    <tr>
+      <td>morgan stanley (ms)</td>
+      <td class="r ts-num">~14.0x</td>
+      <td class="r ts-num">~3.5x</td>
+      <td></td>
+      <td class="r ts-num">~24%</td>
+      <td class="r ts-num">~13%</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+<div class="exhibit-label">Exhibit 3: Mean Reversion Analysis</div>
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>metric</th>
+      <th>current</th>
+      <th>5yr mean</th>
+      <th>std dev</th>
+      <th>implied value</th>
+      <th>reversion signal</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>p/e ratio</td>
+      <td class="r ts-num">14.2x</td>
+      <td class="r ts-num">~13.0x</td>
+      <td class="r ts-num">~1.5x</td>
+      <td class="r ts-num">$260</td>
+      <td><span class="badge">CAUTION</span> mild overvalued</td>
+    </tr>
+    <tr>
+      <td>p/b ratio</td>
+      <td class="r ts-num">2.1x</td>
+      <td class="r ts-num">~1.6x</td>
+      <td class="r ts-num">~0.4x</td>
+      <td class="r ts-num">$215</td>
+      <td><span class="badge">ELEVATED</span> overvalued</td>
+    </tr>
+    <tr>
+      <td>net margin</td>
+      <td class="r ts-num">31.3%</td>
+      <td class="r ts-num">~28.0%</td>
+      <td class="r ts-num">~2.5%</td>
+      <td class="r ts-num">$255</td>
+      <td><span class="badge">CAUTION</span> above trend</td>
+    </tr>
+    <tr>
+      <td>roe</td>
+      <td class="r ts-num">15.7%</td>
+      <td class="r ts-num">~13.5%</td>
+      <td class="r ts-num">~2.0%</td>
+      <td class="r ts-num">$295</td>
+      <td><span class="badge">SUPPORTED</span> sustainable</td>
+    </tr>
+    <tr>
+      <td>ev/revenue</td>
+      <td class="r ts-num">4.1x</td>
+      <td class="r ts-num">~3.2x</td>
+      <td class="r ts-num">~0.8x</td>
+      <td class="r ts-num">$220</td>
+      <td><span class="badge">ELEVATED</span></td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: calculator ── -->
+    <div class="dd-section">
+
+  <div class="c calc-box" id="calc-calc-jpm-scenarios" data-calc-id="calc-jpm-scenarios" data-formula="weighted_average" data-shares="2.697">
+  <div class="c-head"><h3>Scenario Weight Sensitivity</h3>
+    <div><button class="calc-reset c-tag c-tag-bl" onclick="calcReset('calc-jpm-scenarios')">Reset</button></div>
+  </div>
+  <div class="calc-sliders">
+<div class="calc-row">
+      <label class="ts-sm" for="bear_wt">Bear Weight</label>
+      <input type="range" id="bear_wt" min="0" max="50" value="25" data-default="25" data-value-label="" data-scenario-value="" oninput="calcUpdate('calc-jpm-scenarios')">
+      <span class="calc-val ts-md" id="bear_wt-val">25</span>
+    </div>
+<div class="calc-row">
+      <label class="ts-sm" for="base_wt">Base Weight</label>
+      <input type="range" id="base_wt" min="0" max="70" value="45" data-default="45" data-value-label="" data-scenario-value="" oninput="calcUpdate('calc-jpm-scenarios')">
+      <span class="calc-val ts-md" id="base_wt-val">45</span>
+    </div>
+<div class="calc-row">
+      <label class="ts-sm" for="bull_wt">Bull Weight</label>
+      <input type="range" id="bull_wt" min="0" max="50" value="25" data-default="25" data-value-label="" data-scenario-value="" oninput="calcUpdate('calc-jpm-scenarios')">
+      <span class="calc-val ts-md" id="bull_wt-val">25</span>
+    </div>
+<div class="calc-row">
+      <label class="ts-sm" for="superbull_wt">Super-Bull Weight</label>
+      <input type="range" id="superbull_wt" min="0" max="20" value="5" data-default="5" data-value-label="" data-scenario-value="" oninput="calcUpdate('calc-jpm-scenarios')">
+      <span class="calc-val ts-md" id="superbull_wt-val">5</span>
+    </div>
+    <div class="calc-total ts-xs" id="calc-jpm-scenarios-total">Total: —</div>
+  </div>
+  <div class="calc-outputs">
+    <div class="kpi-grid">
+      <div class="kpi bl">
+        <div class="kpi-lbl">Probability-Weighted FV</div>
+        <div class="kpi-val" id="prob_fv" data-calc-output="true" data-format="dollar">—</div>
+      </div>
+      <div class="kpi bl">
+        <div class="kpi-lbl">Upside/Downside</div>
+        <div class="kpi-val" id="upside_pct" data-calc-output="true" data-format="percent">—</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+<div class="exhibit-label">Exhibit: WACC Derivation (CAPM)</div>
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>component</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>beta</td>
+      <td class="r ts-num">0.94</td>
+    </tr>
+    <tr>
+      <td>risk-free rate</td>
+      <td class="r ts-num">4.25%</td>
+    </tr>
+    <tr>
+      <td>equity risk premium</td>
+      <td class="r ts-num">5.5%</td>
+    </tr>
+    <tr>
+      <td>cost of equity</td>
+      <td class="r ts-num">9.4%</td>
+    </tr>
+    <tr>
+      <td>d/e ratio (market-cap)</td>
+      <td class="r ts-num">0.44</td>
+    </tr>
+    <tr>
+      <td>dynamic wacc</td>
+      <td class="r ts-num">10.1%</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: data_table ── -->
+    <div class="dd-section">
+
+<div class="exhibit-label">Exhibit: Kalman Growth Estimator</div>
+  <div class="c">
+<div class="ovx">
+<table class="t">
+  <thead>
+    <tr>
+      <th>metric</th>
+      <th>value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>current growth rate</td>
+      <td class="r ts-num">9.2%</td>
+    </tr>
+    <tr>
+      <td>growth uncertainty</td>
+      <td>±14.6pp</td>
+    </tr>
+    <tr>
+      <td>observations</td>
+      <td class="r ts-num">13</td>
+    </tr>
+    <tr>
+      <td>year 1 projected</td>
+      <td class="r ts-num">7.9%</td>
+    </tr>
+    <tr>
+      <td>year 2 projected</td>
+      <td class="r ts-num">6.8%</td>
+    </tr>
+    <tr>
+      <td>year 3 projected</td>
+      <td class="r ts-num">6.0%</td>
+    </tr>
+    <tr>
+      <td>year 4 projected</td>
+      <td class="r ts-num">5.3%</td>
+    </tr>
+    <tr>
+      <td>year 5 projected</td>
+      <td class="r ts-num">4.7%</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: chart ── -->
+    <div class="dd-section">
+
+  <div class="ch">
+<div class="chart-title">monte carlo fair value range</div>  <canvas id="ch-det-mc-range"></canvas>
+</div>
+
+
+
+    </div>
+    <!-- ── section: chart ── -->
+    <div class="dd-section">
+
+  <div class="ch">
+<div class="chart-title">valuation multiples</div>  <canvas id="ch-det-multiples"></canvas>
+</div>
+
+
+
+    </div>
+    <!-- ── section: waterfall_bars ── -->
+    <div class="dd-section">
+
+  <div class="c">
+  <div class="wf-stack">
+    <div class="wf-row">
+      <span class="wf-label">Current Price</span>
+      <div class="wf-bar" style="background:var(--accent);width:0%">
+        <span class="wf-bar-val">283.44</span>
+      </div>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label">DCF Adjustment ($265)</span>
+      <div class="wf-bar" style="background:var(--accent);width:0%">
+        <span class="wf-bar-val">1139.35</span>
+      </div>
+    </div>
+    <div class="wf-row">
+      <span class="wf-label">MC Median ($250)</span>
+      <div class="wf-bar" style="background:var(--accent);width:0%">
+        <span class="wf-bar-val">496.27</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: note_box ── -->
+    <div class="dd-section">
+
+  <div class="n n-rd"><strong>Biggest valuation risk: P/B multiple compression on ROE disappointment.</strong> The 2.1x P/B assumes 15.7% ROE persists; if 2026 stress tests or credit normalization compress ROE to 12%, fair value drops to ~$215 (-24%). The $140B Q4 2025 balance sheet contraction ($4.56T to $4.42T) may signal early deposit pressure or active liquidity management—monitor Q1 2026 for trend confirmation.</div>
+
+
+
+    </div>
+    <!-- ── section: note_box ── -->
+    <div class="dd-section">
+
+  <div class="n n-am"><strong>Mean reversion signals are mixed.</strong> P/B at 2.1x sits 1.25 standard deviations above 5-year mean, suggesting 15-20% downside risk if premium compresses. However, ROE of 15.7% is only 1.1 standard deviations above trend, indicating the earnings power justifies elevated multiples. The divergence between book-based and earnings-based reversion signals reflects JPM's successful shift toward higher-ROE businesses (asset management, investment banking) and technology-driven efficiency.</div>
+
+
+
+    </div>
+    <!-- ── section: note_box ── -->
+    <div class="dd-section">
+
+  <div class="n n-am">1 finding(s) removed during verification due to unsupported claims (impossible_financial).</div>
+
+
+
+    </div>
+    <!-- ── section: kpi_grid ── -->
+    <div class="dd-section">
+
+  <div class="kpi-grid">
+  <div class="kpi bl">
+    <div class="kpi-lbl">price / earnings</div>
+    <div class="kpi-val">14.2x</div>
+<div class="kpi-sub">fy2025</div>  </div>
+  <div class="kpi tl">
+    <div class="kpi-lbl">price / book</div>
+    <div class="kpi-val">2.1x</div>
+<div class="kpi-sub">fy2025</div>  </div>
+  <div class="kpi bl">
+    <div class="kpi-lbl">price / sales</div>
+    <div class="kpi-val">4.2x</div>
+<div class="kpi-sub">fy2025</div>  </div>
+  <div class="kpi tl">
+    <div class="kpi-lbl">ev/rev</div>
+    <div class="kpi-val">4.1x</div>
+<div class="kpi-sub">fy2025</div>  </div>
+</div>
+
+
+
+    </div>
+    <!-- ── section: note_box ── -->
+    <div class="dd-section">
+
+  <div class="n n-gn"><strong>JPM commands a 60-100% P/B premium to money-center peers.</strong> The 2.1x P/B reflects 15.7% ROE against 9.4% cost of equity—a 630 basis point spread that creates genuine economic value. This spread exceeds BAC (~200 bps), C (negative), and WFC (~100 bps), justifying the quality premium. On P/E (14.2x), JPM trades in-line with peers (BAC ~12x, C ~16x, WFC ~14x), indicating the premium is concentrated in franchise value rather than earnings multiples. The ROE spread has compressed from peak 2022-2023 levels when rate hikes supercharged NIM.</div>
+
+
+
+    </div>
+    <!-- ── section: note_box ── -->
+    <div class="dd-section">
+
+  <div class="n n-view">JPM's 2.1x P/B premium is justified by 630bps ROE-COE spread, but the spread is compressing—2025 net income fell -2.4% despite +2.8% revenue growth, and Q4 implied EPS of ~$4.60 was down sequentially from Q3's $5.07. This is <strong>neutral-to-cautious</strong> for the thesis: the bank is executing well but cycling from exceptional to normal. We would turn bullish on a pullback to $250-260 (13x P/E, 1.9x P/B) or evidence that technology spend is driving deposit share gains versus BAC/WFC. We would turn bearish on ROE compression below 14% or CCAR restrictions limiting buybacks to <$20B annually.</div>
+
+
+
+    </div>
+    <!-- ── section: cross_ref ── -->
+    <div class="dd-section">
+
+<div class="ts-xs mt8 xref" onclick="go('fin', this)">See financial analysis</div>
+
+
+    </div>
+    <!-- ── section: cross_ref ── -->
+    <div class="dd-section">
+
+<div class="ts-xs mt8 xref" onclick="go('compete', this)">See competitive position</div>
+
+
+    </div>
+    <!-- ── section: cross_ref ── -->
+    <div class="dd-section">
+
+<div class="ts-xs mt8 xref" onclick="go('risk', this)">See risk assessment</div>
+
+
+    </div>
+
+</div><!-- end p-val -->

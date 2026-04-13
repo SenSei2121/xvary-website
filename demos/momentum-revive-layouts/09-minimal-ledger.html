@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>09 minimal ledger — momentum revive demo</title>
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+  <link rel="stylesheet" href="demo-timeline.css?v=1776081807">
+  <style>
+    .wrap { max-width: 640px; margin: 0 auto; padding: 48px clamp(20px,4vw,40px) 100px; }
+    .hub { font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; text-transform: lowercase; margin-bottom: 40px; }
+    .hub a { color: var(--dark); }
+    .eyebrow { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 16px; }
+    h1 { font-size: clamp(40px,8vw,72px); font-weight: 800; text-transform: lowercase; letter-spacing: -.06em; line-height: .9; margin: 0 0 20px; }
+    .deck { font-family: var(--font-primary); font-size: clamp(17px, 2vw, 20px); font-weight: 500; color: var(--text2); text-transform: lowercase; line-height: 1.6; margin-bottom: 72px; max-width: 36ch; }
+    .entry { margin-bottom: 72px; }
+    .num { font-size: clamp(48px,12vw,96px); font-weight: 800; line-height: 1; letter-spacing: -.06em; color: rgba(0,0,0,.08); margin-bottom: 8px; }
+    .entry h2 { font-size: clamp(18px,3vw,22px); font-weight: 600; text-transform: lowercase; margin: 0 0 6px; letter-spacing: -.02em; }
+    .range { font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; color: var(--muted); margin-bottom: 28px; text-transform: lowercase; }
+    .stream { border-top: 1px solid var(--dark); padding-top: 24px; }
+    .stream p { font-family: var(--font-primary); font-size: 16px; line-height: 1.65; text-transform: lowercase; margin: 0 0 18px; max-width: 52ch; }
+    .stream .tag { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: .05em; color: var(--muted); display: inline-block; min-width: 80px; margin-right: 8px; vertical-align: top; }
+    .tape-block { margin-top: 32px; padding: 24px 0; border-top: 1px dashed rgba(0,0,0,.2); border-bottom: 1px dashed rgba(0,0,0,.2); font-family: var(--font-primary); font-size: 16px; line-height: 1.6; color: var(--text2); text-transform: lowercase; }
+    .tape-block b { font-family: var(--font-mono); font-size: 12px; font-weight: 600; color: var(--dark); display: block; margin-bottom: 8px; letter-spacing: .08em; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <p class="hub"><a href="index.html">← all layouts</a></p>
+    <p class="eyebrow">momentum revive · nvda</p>
+    <h1 id="hero-title"></h1>
+    <p class="deck" id="hero-deck"></p>
+    <div id="demo-timeline-mount" class="demo-timeline-mount" data-variant="ledger-marks"></div>
+    <div id="root"></div>
+  </div>
+  <script src="data.js?v=1776081807"></script>
+  <script src="demo-timeline.js?v=1776081807"></script>
+  <script>
+(function () {
+  var R = window.MR_DEMO_DATA;
+  function esc(s) { var d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  document.getElementById('hero-title').textContent = R.displayName;
+  document.getElementById('hero-deck').textContent = R.windowLabel + ' — oversized index numbers, single stream, minimal chrome.';
+  var html = '';
+  R.chapters.forEach(function (ch, i) {
+    var paras = ch.events.map(function (e) {
+      return '<p><span class="tag">' + esc(e.tag) + '</span>' + esc(e.text) + '</p>';
+    }).join('');
+    var tp = '';
+    if (ch.tape) {
+      tp = '<div class="tape-block"><b>tape · stock</b>' + esc(ch.tape.stock) +
+        '<br><br><b>tape · indices</b>' + esc(ch.tape.index) +
+        '<br><br><b>tape · relative</b>' + esc(ch.tape.rel) + '</div>';
+    }
+    html += '<section class="entry" id="ch-' + (i + 1) + '"><div class="num">' + String(i + 1).padStart(2, '0') + '</div>' +
+      '<h2>' + esc(ch.title) + '</h2><div class="range">' + esc(ch.range) + '</div>' +
+      '<div class="stream">' + paras + tp + '</div></section>';
+  });
+  document.getElementById('root').innerHTML = html;
+  window.initDemoTimeline();
+})();
+  </script>
+</body>
+</html>

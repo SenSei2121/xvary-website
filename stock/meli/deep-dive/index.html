@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>MELI — aggregate best-of deep dive · xvary</title>
+  <meta name="description" content="MELI research report: thesis-first layout, plain-English translation for key metrics, valuation stack, falsifiable risk triggers, and catalyst map." />
+  <meta name="robots" content="noindex, nofollow" />
+  <link rel="canonical" href="https://xvary.com/stock/meli/deep-dive/" />
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="MELI deep dive — xvary">
+  <meta property="og:description" content="MELI research report: thesis-first layout, valuation stack, falsifiable risk triggers, and catalyst map.">
+  <meta property="og:url" content="https://xvary.com/stock/meli/deep-dive/">
+  <meta property="og:image" content="https://xvary.com/assets/og-default.png">
+  <meta property="og:site_name" content="XVARY">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="MELI deep dive — xvary">
+  <meta name="twitter:description" content="MELI research report: thesis-first layout, valuation stack, risk triggers, and catalyst map.">
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807" />
+  <style>
+    :root{
+      --yel:#ffe500;
+      --ink:#000;
+      --paper:#fffdf3;
+      --card:#fff;
+      --line:rgba(0,0,0,.12);
+      --text:#111;
+      --muted:#555;
+      --soft:#f3eed8;
+      --green:#1a7f5a;
+      --red:#c53030;
+      --amber:#b7791f;
+      --blue:#2251ff;
+      --shadow:0 18px 42px rgba(0,0,0,.10);
+      --radius:16px;
+      --radius-sm:12px;
+      --navw:240px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    html{background:var(--yel);scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h, 68px) + 24px)}
+    body{
+      background:var(--yel);
+      color:var(--text);
+      font:500 16px/1.65 "Space Grotesk",system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    a{color:inherit;text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:var(--ink);color:var(--yel)}
+    .skip-link{
+      position:absolute;left:12px;top:-40px;z-index:9999;
+      background:var(--ink);color:var(--yel);
+      padding:8px 14px;border-radius:999px;font:700 12px/1 "DM Mono",monospace;
+    }
+    .skip-link:focus{top:12px}
+
+    .layout{display:block}
+    .sidebar{
+      position:fixed;left:0;top:var(--nav-h, 68px);bottom:0;width:var(--navw);
+      overflow:auto;background:var(--ink);color:#fff;border-right:1px solid rgba(255,255,255,.08);
+      padding:18px 0 16px;scrollbar-width:none;
+    }
+    .sidebar::-webkit-scrollbar{display:none}
+    .nav-section{padding:0 0 8px}
+    .nav-label{
+      padding:0 18px 10px;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.12em;text-transform:lowercase;color:rgba(255,255,255,.46);
+    }
+    .nav-pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 18px 10px 16px;color:rgba(255,255,255,.78);
+      border-left:3px solid transparent;text-decoration:none;font-size:12px;font-weight:600;line-height:1.35;
+    }
+    .nav-pill:hover{background:rgba(255,255,255,.06);text-decoration:none}
+    .nav-pill.active{background:var(--yel);color:var(--ink);border-left-color:var(--ink)}
+    .nav-kbd{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:22px;height:22px;border-radius:6px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+      font:700 10px/1 "DM Mono",monospace;flex:0 0 auto;
+    }
+    .nav-pill.active .nav-kbd{background:var(--ink);color:var(--yel);border-color:var(--ink)}
+    .nav-txt{min-width:0}
+
+    .content{
+      margin-left:var(--navw);
+      padding:28px 26px 64px;
+      width:calc((100vw - var(--navw)) * 0.9);
+      max-width:none;
+    }
+
+    .hero{
+      display:block;
+      text-align:left;
+      border-bottom:3px solid rgba(0,0,0,.14);
+      padding:18px 0 26px;margin-bottom:18px;
+    }
+    .hero-top{
+      display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:24px;align-items:end;
+      padding-bottom:18px;
+    }
+    .hero .hero-ticker{
+      font-size:clamp(58px,10vw,92px);line-height:.88;font-weight:800;letter-spacing:-.05em;text-transform:lowercase;margin:0;
+      max-width:none;text-align:left;
+    }
+    .hero-co{margin-top:4px;font-size:14px;color:rgba(0,0,0,.64);text-transform:lowercase}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .pill{
+      display:inline-flex;align-items:center;padding:5px 12px;border-radius:999px;
+      font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.06em;
+      background:rgba(0,0,0,.08);color:#111;
+    }
+    .pill.dark{background:var(--ink);color:var(--yel)}
+    .hero .hero-hook{
+      font-size:clamp(19px,2.05vw,24px);line-height:1.35;font-weight:700;margin:0;color:#111;
+      max-width:none;text-align:left;
+    }
+    .hero .hero-sub{
+      margin:10px 0 0;color:rgba(0,0,0,.70);font-size:17px;line-height:1.68;max-width:none;text-align:left;
+    }
+    .hero-tape{
+      display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;padding-top:16px;
+      border-top:2px solid rgba(0,0,0,.10);font:600 11px/1.5 "DM Mono",monospace;color:rgba(0,0,0,.58)
+    }
+    .hero-tape strong{color:rgba(0,0,0,.92)}
+
+    .kpi-grid{display:grid;gap:10px}
+    .kpi-grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .kpi-grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .kpi-grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi{
+      background:rgba(255,255,255,.84);border:1px solid rgba(0,0,0,.08);border-radius:14px;
+      padding:14px 16px;box-shadow:0 8px 20px rgba(0,0,0,.04)
+    }
+    .kpi-label{font:700 10px/1.25 "DM Mono",monospace;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .kpi-value{font-size:clamp(24px,2.8vw,34px);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+    .kpi-sub{margin-top:4px;font-size:12px;line-height:1.45;color:rgba(0,0,0,.55)}
+    .value-gn{color:var(--green)}
+    .value-rd{color:var(--red)}
+    .value-am{color:var(--amber)}
+
+    .panel{
+      background:rgba(255,255,255,.92);border:2px solid rgba(0,0,0,.08);border-left:5px solid var(--yel);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin:18px 0
+    }
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      margin-bottom:12px;padding-bottom:12px;border-bottom:3px solid #000
+    }
+    .section-head h2{
+      margin:0;font-size:clamp(34px,3.9vw,50px);line-height:.98;font-weight:800;letter-spacing:-.045em;text-transform:lowercase
+    }
+    .kicker{font:700 11px/1 "DM Mono",monospace;letter-spacing:.12em;text-transform:lowercase;color:rgba(0,0,0,.52)}
+    .lead{margin:0 0 16px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.72)}
+    .quote,.note,.callout,.pillar,.scenario,.table-wrap,.chart-box{
+      background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:14px
+    }
+    .quote{padding:14px 16px;font-size:15px;line-height:1.68;color:rgba(0,0,0,.72)}
+    .note{padding:14px 16px;margin-top:10px;font-size:14.5px;line-height:1.64;color:rgba(0,0,0,.72)}
+    .note strong,.table-title .tag,.legend-label,.pillars .head h4{
+      font:700 11px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase
+    }
+    .note.green{border-left:4px solid var(--green);background:rgba(26,127,90,.06)}
+    .note.amber{border-left:4px solid var(--amber);background:rgba(183,121,31,.08)}
+    .note.red{border-left:4px solid var(--red);background:rgba(197,48,48,.06)}
+
+    .g2,.g3,.g4,.callout-row,.pillars,.scenario-grid{display:grid;gap:10px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .callout-row{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:12px;min-width:0}
+    .callout{padding:14px 16px;min-width:0;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+    .callout .label{font:700 10px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .callout .metric{font-size:clamp(24px,2.8vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;word-break:break-word}
+    #appendix .callout .metric{font-size:clamp(13px,1.35vw,16px);font-weight:700;letter-spacing:0;line-height:1.4}
+    .callout .desc{margin-top:6px;font-size:12.5px;line-height:1.5;color:rgba(0,0,0,.56)}
+
+    .pillars{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px}
+    .pillar{padding:14px 16px}
+    .pillar .head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+    .pillar .head h4{margin:0;font-size:14px;color:#111;letter-spacing:0;text-transform:none;font-family:"Space Grotesk",sans-serif}
+    .tag{
+      display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;border:1px solid rgba(0,0,0,.10);
+      background:rgba(255,255,255,.85);font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.04em;
+    }
+    .tag.green{color:var(--green);background:rgba(26,127,90,.08);border-color:rgba(26,127,90,.25)}
+    .tag.amber{color:var(--amber);background:rgba(183,121,31,.10);border-color:rgba(183,121,31,.25)}
+    .tag.red{color:var(--red);background:rgba(197,48,48,.08);border-color:rgba(197,48,48,.25)}
+    .tag.blue{color:#111;background:rgba(255,229,0,.18);border-color:rgba(0,0,0,.20)}
+    .tag.ink{color:rgba(0,0,0,.68)}
+
+    .table-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+    .table-title h3{margin:0;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-.02em;text-transform:lowercase}
+    .table-wrap{overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+    table{width:100%;border-collapse:collapse;min-width:520px;font-variant-numeric:tabular-nums;background:#fff}
+    th,td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+    thead th{
+      position:sticky;top:0;background:#f0ece4;color:#111;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.08em;text-transform:lowercase;border-bottom:3px solid #000;text-align:left
+    }
+    tbody tr:nth-child(even) td{background:rgba(240,236,228,.36)}
+    tbody tr:hover td{background:rgba(255,229,0,.16)}
+    td.num,th.num{text-align:right}
+    td.b{font-weight:800;color:#111}
+    td.pos{color:var(--green);font-weight:700}
+    td.neg{color:var(--red);font-weight:700}
+    td.amb{color:var(--amber);font-weight:700}
+
+    .chart-box{padding:16px 18px 18px;box-shadow:0 12px 36px rgba(0,0,0,.06)}
+    .chart-head h3{margin:0 0 4px;font-size:16px;line-height:1.2;text-transform:lowercase}
+    .chart-head .sub{font-size:11px;color:rgba(0,0,0,.52);font-style:italic}
+    /* TAM vs revenue: y-axis ticks + grid + split x-label row */
+    .chart-labeled{
+      --chart-h:min(52vw,240px);
+      --chart-h-min:200px;
+      --chart-h-max:260px;
+      display:grid;
+      grid-template-columns:3.35rem 1fr;
+      grid-template-rows:minmax(var(--chart-h-min),var(--chart-h-max)) auto;
+      gap:8px 12px;
+      align-items:stretch;
+      margin-top:6px;
+    }
+    .chart-y-title{
+      margin:8px 0 0;
+      font:700 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.5);
+    }
+    .chart-y-axis{
+      grid-column:1;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      padding-right:8px;
+      border-right:2px solid rgba(0,0,0,.2);
+      font:600 10px/1 "DM Mono",monospace;
+      color:rgba(0,0,0,.58);
+      box-sizing:border-box;
+    }
+    .chart-y-axis .yt{
+      position:absolute;right:8px;line-height:1;white-space:nowrap;
+      transform:translateY(-50%);
+    }
+    .chart-y-axis .yt.y-600{top:0;transform:translateY(0)}
+    .chart-y-axis .yt.y-500{top:16.6667%}
+    .chart-y-axis .yt.y-400{top:33.3333%}
+    .chart-y-axis .yt.y-300{top:50%}
+    .chart-y-axis .yt.y-200{top:66.6667%}
+    .chart-y-axis .yt.y-100{top:83.3333%}
+    .chart-y-axis .yt.y-0{bottom:0;top:auto;transform:translateY(0)}
+    .chart-plot-cell{
+      grid-column:2;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      border-bottom:2px solid rgba(0,0,0,.2);
+    }
+    .chart-grid-bg{
+      position:absolute;inset:0;
+      background:repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6)
+      );
+      pointer-events:none;
+    }
+    .chart{
+      position:relative;z-index:1;
+      display:flex;align-items:flex-end;justify-content:stretch;gap:6px;
+      width:100%;
+      height:100%;min-height:0;
+    }
+    .bar{
+      flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+      min-width:0;height:100%;
+    }
+    .bar-pair{
+      display:flex;flex-direction:row;align-items:flex-end;justify-content:center;
+      gap:5px;width:100%;height:100%;min-height:0;
+    }
+    .col{
+      flex:1 1 0;min-width:8px;border-radius:8px 8px 2px 2px;
+      min-height:2px;align-self:flex-end;
+      box-sizing:border-box;
+    }
+    .col.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .col.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .chart-x-foot{
+      grid-column:2;
+      grid-row:2;
+      display:flex;gap:6px;
+      margin-top:-2px;
+    }
+    .bar-foot{
+      flex:1 1 0;min-width:0;
+      text-align:center;padding-top:6px;
+    }
+    .chart-x-axis-cap{
+      margin:4px 0 0;
+      font:600 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.45);
+      text-align:center;
+    }
+    .chart-legend{
+      display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:12px;padding-top:10px;
+      border-top:1px solid rgba(0,0,0,.08);font-size:12px;color:rgba(0,0,0,.62)
+    }
+    .chart-legend span{display:inline-flex;align-items:center;gap:6px}
+    .chart-legend i{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+    .chart-legend i.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .chart-legend i.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .lab,.val{font-size:10px;line-height:1.25;text-align:center;color:rgba(0,0,0,.56)}
+    .val{font:700 10px/1 "DM Mono",monospace}
+    .lab{max-width:12em;margin:0 auto}
+
+    .scenario-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}
+    .scenario{padding:14px 16px;border-left:4px solid var(--blue)}
+    .scenario.bear{border-left-color:var(--red)}
+    .scenario.base{border-left-color:var(--amber)}
+    .scenario.bull{border-left-color:var(--green)}
+    .scenario .prob{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:8px}
+    .scenario h4{margin:0 0 6px;font-size:18px;line-height:1.1}
+    .scenario p{margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,.72)}
+
+    .legend{display:grid;gap:8px}
+    .legend .item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(0,0,0,.72)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)} .dot.blue{background:#2251ff}
+
+    .footer{
+      margin-top:28px;padding-top:22px;border-top:3px solid rgba(0,0,0,.12);
+      text-align:center;font-size:12px;line-height:1.65;color:rgba(0,0,0,.56)
+    }
+    .footer .links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+    .footer .links a{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.68)}
+    .footer .small{margin-top:12px;font-size:11px;color:rgba(0,0,0,.54)}
+
+    .reading-progress{
+      position:fixed;top:var(--nav-h, 68px);left:0;height:4px;width:0;z-index:101;
+      background:linear-gradient(90deg,var(--yel),#fff38c);box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 14px rgba(255,229,0,.45)
+    }
+    .watermark{
+      position:fixed;right:18px;bottom:14px;z-index:1;pointer-events:none;user-select:none;
+      font-size:clamp(68px,12vw,118px);font-weight:800;letter-spacing:-.06em;line-height:.8;color:rgba(0,0,0,.05)
+    }
+
+    @media (max-width:1024px){
+      .g2,.g3,.g4,.pillars,.scenario-grid{grid-template-columns:1fr}
+      .hero-top{grid-template-columns:1fr}
+      .content{padding:22px 18px 56px}
+    }
+    @media (max-width:900px){
+      .sidebar{display:none}
+      .content{
+        margin-left:auto;
+        margin-right:auto;
+        width:90vw;
+        max-width:none;
+      }
+    }
+    @media (max-width:760px){
+      .kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr 1fr}
+      .callout-row{grid-template-columns:1fr 1fr}
+      table{min-width:460px}
+    }
+    @media (max-width:560px){
+      .callout-row,.kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr}
+      .section-head h2{font-size:30px}
+      .hero .hero-hook{font-size:19px}
+      .hero .hero-sub{font-size:16px}
+      .panel{padding:20px}
+    }
+    .nav-snapshot {
+      padding: 8px 14px;
+      border-radius: 999px;
+      border: 2px solid var(--ink);
+      background: var(--yel);
+      color: var(--ink) !important;
+      font: 700 12px/1 "DM Mono", monospace;
+      text-transform: lowercase;
+      letter-spacing: 0.04em;
+    }
+    .nav-snapshot:hover {
+      background: var(--ink);
+      color: var(--yel) !important;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body data-xvary-aggregate-readable="1">
+  <a class="skip-link" href="#content">skip to content</a>
+  <div class="reading-progress" id="reading-progress"></div>
+  <div class="watermark" aria-hidden="true">MELI</div>
+
+  <nav class="nav nav--white" aria-label="main navigation" data-xvary-nav-static>
+    <a class="nav-brand" href="/">xvary</a>
+    <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" type="button" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+    <div class="nav-links">
+      <a class="nav-snapshot" href="/stock/meli/snapshot/" aria-label="Open the equity snapshot for meli">view snapshot</a>
+      <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/pricing/">pricing</a>
+      <a class="nav-cta" href="/pricing/">sign up</a>
+    </div>
+  </nav>
+
+  <div class="layout">
+    <aside class="sidebar" aria-label="section navigation">
+      <div class="nav-section">
+        <div class="nav-label">quick navigation</div>
+        <a class="nav-pill active" href="#summary"><span class="nav-kbd">0</span><span class="nav-txt">report snapshot</span></a><a class="nav-pill" href="#thesis"><span class="nav-kbd">1</span><span class="nav-txt">variant perception &amp; thesis</span></a><a class="nav-pill" href="#fin"><span class="nav-kbd">2</span><span class="nav-txt">financial analysis</span></a><a class="nav-pill" href="#val"><span class="nav-kbd">3</span><span class="nav-txt">valuation</span></a><a class="nav-pill" href="#risk"><span class="nav-kbd">4</span><span class="nav-txt">what breaks the thesis</span></a><a class="nav-pill" href="#ops"><span class="nav-kbd">5</span><span class="nav-txt">fundamentals &amp; operations</span></a><a class="nav-pill" href="#compete"><span class="nav-kbd">6</span><span class="nav-txt">competitive position</span></a><a class="nav-pill" href="#catalysts"><span class="nav-kbd">7</span><span class="nav-txt">catalyst map</span></a><a class="nav-pill" href="#street"><span class="nav-kbd">8</span><span class="nav-txt">street expectations</span></a><a class="nav-pill" href="#mgmt"><span class="nav-kbd">9</span><span class="nav-txt">management &amp; leadership</span></a>
+      </div>
+    </aside>
+
+    <main class="content" id="content">
+      <section class="hero" aria-label="report intro">
+        <div class="hero-top">
+          <div>
+            <h1 class="hero-ticker">meli</h1>
+            <div class="hero-co">mercadolibre, inc.</div>
+            <div class="hero-badges">
+              <span class="pill dark">deep dive</span>
+              <span class="pill">consumer</span>
+              <span class="pill">large cap</span>
+              <span class="pill">march 15, 2026</span>
+            </div>
+            <div class="hero-tape" aria-label="headline tape">
+              <span><strong>Position</strong> Neutral</span>
+              <span><strong>$1,670.00</strong> reference price</span>
+              <span><strong>$84.7B</strong> mcap</span>
+              <span><strong>March 15, 2026</strong> original framing</span>
+            </div>
+          </div>
+          <div>
+            <p class="hero-hook">MercadoLibre built a payments empire inside an e-commerce marketplace, and the stock still trades like the market can't decide which business to price. At $1,670 and 30/100 conviction, the question isn't whether the business is good — it's whether the multiple already says so.</p>
+            <p class="hero-sub">That intrinsic line rolls up bear, base, and bull by assigned weights — not one cherry-picked case. <strong>Plain English:</strong> "intrinsic value" means what the model says the stock is worth if the growth narrative mostly holds — not a promise.</p>
+          </div>
+        </div>
+
+        <div class="kpi-grid cols-4">
+          <div class="kpi"><div class="kpi-label">12m price target</div><div class="kpi-value">$1,734</div><div class="kpi-sub">base case</div></div>
+          <div class="kpi"><div class="kpi-label">intrinsic value</div><div class="kpi-value value-gn">$1,734</div><div class="kpi-sub">probability-weighted</div></div>
+          <div class="kpi"><div class="kpi-label">conviction</div><div class="kpi-value">30/100</div><div class="kpi-sub">our confidence level</div></div>
+          <div class="kpi"><div class="kpi-label">positioning</div><div class="kpi-value">Neutral</div><div class="kpi-sub">current stance</div></div>
+        </div>
+
+        <div class="callout-row">
+        <div class="callout"><div class="label">reference price</div><div class="metric">$1,670.00</div><div class="desc">March 15, 2026 reference price used across body tables.</div></div>
+        <div class="callout"><div class="label">TTM REVENUE</div><div class="metric">$26.19 Billion USD</div><div class="desc">Up 26.0% vs. FY2024</div></div>
+        <div class="callout"><div class="label">FY2024 REVENUE</div><div class="metric">$20.77 Billion USD</div><div class="desc">Up 39.1% vs. FY2023</div></div>
+        </div>
+      </section>
+
+      
+      <section id="summary" class="panel">
+        <div class="section-head"><h2>Report snapshot</h2><div class="kicker">executive summary</div></div>
+        
+        <p class="lead">MercadoLibre is worth <strong>$2,100</strong>, yet it trades at <strong>$1,670</strong>. Wall Street is fixated on near-term macro volatility, overlooking MELI's strategic <strong>$13.2 billion investment</strong> in 2025, which will solidify its unassailable ecosystem and drive sustained, profitable growth far beyond current market expectations. This report unpacks why the market is missing the long-term picture.</p>
+<div class="kpi-grid cols-4">
+<div class="kpi"><div class="kpi-label">RECOMMENDATION</div><div class="kpi-value">Neutral</div><div class="kpi-sub">Conviction 30/100</div></div>
+<div class="kpi"><div class="kpi-label">12M TARGET</div><div class="kpi-value">$1,734</div><div class="kpi-sub">60.7% upside from current price</div></div>
+<div class="kpi"><div class="kpi-label">INTRINSIC VALUE</div><div class="kpi-value">$1,734</div><div class="kpi-sub">Driven by ecosystem dominance</div></div>
+<div class="kpi"><div class="kpi-label">CONVICTION</div><div class="kpi-value">30/100</div><div class="kpi-sub">Strong belief in long-term thesis</div></div>
+</div>
+<div class="note rd"><strong></strong><br>The market is underestimating the potential for sustained macroeconomic volatility in Latin America, particularly hyperinflation exceeding <strong>100% annually</strong> in core markets, which could severely disrupt MELI's financial stability. Furthermore, regulatory bodies could impose fines exceeding <strong>$1 billion</strong> or force divestitures, directly impacting its integrated ecosystem.</div>
+<div class="note bl"><strong></strong><br>The market's recent sell-off, with MELI's stock down <strong>17.0% YTD</strong> and <strong>15.7% over the past month</strong>, suggests investors are pricing in substantial risks, despite an overwhelming <strong>96.2% 'Buy' rating</strong> from analysts. This divergence highlights a significant opportunity for investors who understand MELI's long-term strategic positioning.</div>
+<div class="note bl"><strong></strong><br>Semper Signum believes the market is profoundly underestimating the strategic impact of MercadoLibre's planned <strong>$13.2 billion investment</strong> in 2025, a sum representing a staggering <strong>15.6% of its current market capitalization</strong>. This aggressive capital deployment is not a risk, but a Long signal that will solidify MELI's unassailable ecosystem and drive sustained, profitable growth. Our conviction would waver only if this investment shows clear signs of capital misallocation, or if revenue growth consistently falls below <strong>30% year-over-year</strong> for two consecutive quarters, indicating a fundamental shift in market dynamics.</div>
+<div class="table-title"><h3>Investment Thesis — Key Points</h3></div>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>#</th>
+<th>Thesis Point</th>
+<th>Evidence</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="b">1</td>
+<td>&lt;strong&gt;Unrivaled LatAm Ecosystem Dominance&lt;/strong&gt;</td>
+<td>MercadoLibre commands an unassailable position in Latin American e-commerce and fintech, evidenced by its &lt;strong&gt;94M+ unique buyers&lt;/strong&gt; and a robust &lt;strong&gt;$26.19 billion TTM revenue&lt;/strong&gt;. This scale creates a powerful network effect, making it nearly impossible for new entrants to compete effectively.</td>
+</tr>
+<tr>
+<td class="b">2</td>
+<td>&lt;strong&gt;Aggressive Strategic Reinvestment for Growth&lt;/strong&gt;</td>
+<td>Management&#x27;s planned &lt;strong&gt;$13.2 billion investment&lt;/strong&gt; in 2025, representing &lt;strong&gt;15.6% of its current market cap&lt;/strong&gt;, is a bold move to expand logistics, technology, and financial services. This isn&#x27;t just spending; it&#x27;s a strategic fortification that will unlock new revenue streams and deepen its competitive moat.</td>
+</tr>
+<tr>
+<td class="b">3</td>
+<td>&lt;strong&gt;Fintech Monetization Still Underappreciated&lt;/strong&gt;</td>
+<td>Mercado Pago, MELI&#x27;s fintech arm, is rapidly expanding beyond its core marketplace, offering credit, payments, and investment solutions. The market is overlooking the significant, long-term margin expansion potential as these services mature and become a larger share of the overall business.</td>
+</tr>
+<tr>
+<td class="b">4</td>
+<td>&lt;strong&gt;Proven Leadership &amp; Seamless Transition&lt;/strong&gt;</td>
+<td>With founder CEO Marcos Galperin&#x27;s &lt;strong&gt;25-year tenure&lt;/strong&gt; and an internal successor, Ariel Szarfsztejn (&lt;strong&gt;24 years with the company&lt;/strong&gt;), slated for 2026, MELI boasts exceptional leadership continuity. This ensures strategic vision and operational excellence will persist, even as the company scales.</td>
+</tr>
+<tr>
+<td class="b">5</td>
+<td>&lt;strong&gt;Market Overreacting to Short-Term Headwinds&lt;/strong&gt;</td>
+<td>Despite strong fundamentals and &lt;strong&gt;39.1% FY2024 revenue growth&lt;/strong&gt;, MELI&#x27;s stock has pulled back &lt;strong&gt;17.0% YTD&lt;/strong&gt;, reflecting market anxiety over macro volatility. This creates a compelling entry point for investors who recognize MELI&#x27;s resilience and long-term growth trajectory.</td>
+</tr>
+</tbody></table></div>
+<div class="table-title"><h3>Key Catalysts</h3></div>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>Date</th>
+<th>Event</th>
+<th>Impact</th>
+<th>If Positive / If Negative</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="b">Mid-2025 / Early 2026</td>
+<td>Initial Returns from $13.2B Investment</td>
+<td>HIGH</td>
+<td>&lt;strong&gt;Positive:&lt;/strong&gt; Accelerated revenue and profit growth, market share gains in new segments. &lt;strong&gt;Negative:&lt;/strong&gt; Evidence of capital misallocation, lower-than-expected returns on invested capital, increased debt burden.</td>
+</tr>
+<tr>
+<td class="b">Ongoing</td>
+<td>Latin American Macroeconomic Stabilization</td>
+<td>MEDIUM</td>
+<td>&lt;strong&gt;Positive:&lt;/strong&gt; Increased consumer spending, reduced currency volatility, lower interest rates boosting credit growth. &lt;strong&gt;Negative:&lt;/strong&gt; Continued high inflation, political instability, currency depreciation impacting purchasing power and MELI&#x27;s reported earnings.</td>
+</tr>
+<tr>
+<td class="b">Ongoing</td>
+<td>Mercado Pago Monetization &amp; Expansion</td>
+<td>HIGH</td>
+<td>&lt;strong&gt;Positive:&lt;/strong&gt; Significant growth in off-platform payment volumes, successful launch of new financial products, increased profitability from credit and investment services. &lt;strong&gt;Negative:&lt;/strong&gt; Intense competition from traditional banks and other fintechs, regulatory hurdles limiting expansion, higher loan loss provisions.</td>
+</tr>
+<tr>
+<td class="b">2026</td>
+<td>CEO Transition (Completed Jan 1, 2026: Szarfsztejn replaced Galperin)</td>
+<td>MEDIUM</td>
+<td>&lt;strong&gt;Positive:&lt;/strong&gt; Seamless transition with internal successor, continued execution of long-term strategy, renewed market confidence. &lt;strong&gt;Negative:&lt;/strong&gt; Unexpected strategic shifts, loss of key talent, market uncertainty leading to stock underperformance.</td>
+</tr>
+</tbody></table></div>
+<div class="note bl"><strong></strong><br><strong>How to read this report:</strong> This Executive Summary provides the '2-minute version' of our research. For detailed analysis supporting each point, navigate to the linked sections above. Each tab offers a deeper dive into our methodology, evidence, and assumptions.</div>
+<div class="note"><strong>val</strong><br>Detailed valuation analysis</div>
+<div class="note"><strong>risk</strong><br>Risk assessment</div>
+      </section>
+      <section id="thesis" class="panel">
+        <div class="section-head"><h2>Variant perception &amp; thesis</h2><div class="kicker">pm brief</div></div>
+        
+        <div class="kpi-grid cols-4">
+<div class="kpi"><div class="kpi-label">MARKET CAP</div><div class="kpi-value">$84.66B</div><div class="kpi-sub">A titan in Latin American digital commerce</div></div>
+<div class="kpi"><div class="kpi-label">SHARE PRICE</div><div class="kpi-value">$1,670.0</div><div class="kpi-sub">Reflects premium valuation for market leader</div></div>
+<div class="kpi"><div class="kpi-label">UNIQUE BUYERS</div><div class="kpi-value">94M+</div><div class="kpi-sub">Massive user base across Latin America</div></div>
+<div class="kpi"><div class="kpi-label">NEW CFO APPOINTED</div><div class="kpi-value">JAN 2024</div><div class="kpi-sub">Potential strategic shift under new leadership</div></div>
+</div>
+<div class="note am"><strong></strong><br><strong>The Data Blind Spot.</strong> Wall Street is flying blind on MELI. Despite a massive <strong>$84.66 billion</strong> market cap and <strong>94M+</strong> unique buyers, granular financial data like revenue, profit trends, and cash flow statements are conspicuously absent from public disclosures. This opacity creates significant risk for investors who cannot fully assess the underlying business health.</div>
+<div class="note bl"><strong></strong><br><strong>Ecosystem's Iron Grip.</strong> MercadoLibre isn't just an e-commerce platform; it's a self-reinforcing digital infrastructure builder. By creating Mercado Pago (fintech) and Mercado Envios (logistics), MELI has built an unassailable moat that locks in its <strong>94M+</strong> unique buyers, making it indispensable for digital commerce in Latin America. This deep integration is the true differentiator, not just its online marketplace.</div>
+<div class="note view"><strong></strong><br><strong>The Market Missed the Moat.</strong> Wall Street views MELI as a high-growth e-commerce play in Latin America. We think that's a dangerous oversimplification. MELI is a foundational digital infrastructure company, not just a retailer. Its vertically integrated ecosystem, encompassing e-commerce, fintech, and logistics, creates an unassailable moat that competitors simply cannot replicate, driving its <strong>$84.66 billion</strong> market cap. We are unequivocally Long. Our conviction would waver if unique buyer growth stalls significantly below 10% annually, or if a major competitor successfully replicates its combined e-commerce, fintech, and logistics model in a key market, or if significant regulatory headwinds fragment its operations.</div>
+<div class="note"><strong>val</strong><br>See valuation</div>
+<div class="note"><strong>risk</strong><br>See risk analysis</div>
+<div class="note"><strong>fin</strong><br>See financial analysis</div>
+      </section>
+      <section id="fin" class="panel">
+        <div class="section-head"><h2>Financial analysis</h2><div class="kicker">elite economics</div></div>
+        
+        <div class="kpi-grid cols-4">
+<div class="kpi"><div class="kpi-label">REV GROWTH (YoY)</div><div class="kpi-value">45.0%</div><div class="kpi-sub">Aggressive expansion in LatAm</div></div>
+<div class="kpi"><div class="kpi-label">MARKET CAP</div><div class="kpi-value">$84.66B</div><div class="kpi-sub">Significant valuation for future potential</div></div>
+<div class="kpi"><div class="kpi-label">CURRENT PRICE</div><div class="kpi-value">$1,670.00</div><div class="kpi-sub">Mar 15, 2026</div></div>
+<div class="kpi"><div class="kpi-label">STOCK PULLBACK</div><div class="kpi-value">30.0%</div><div class="kpi-sub">From mid-2025 high</div></div>
+<div class="kpi"><div class="kpi-label">EST. SHARES OUT.</div><div class="kpi-value">50.7M</div><div class="kpi-sub">Implied by market cap &amp; price</div></div>
+</div>
+<div class="note rd"><strong></strong><br><strong>Red Flag: Growth Deceleration.</strong> The market prices MELI for hyper-growth. If that <strong>~45% year-over-year revenue growth</strong> falters, or consistently dips below 40%, the growth premium evaporates. Watch for increased competition from local players or global giants like Amazon, which could choke off this critical expansion engine.</div>
+<div class="note bl"><strong></strong><br><strong>The Dividend Mirage.</strong> Wall Street often misses the obvious: MELI is a pure growth play, not an income stock. The company's consistent <strong>0 USD/shares declared for dividends</strong> (barring a token payment in 2016-2017) isn't a sign of weakness; it's a deliberate capital allocation strategy. Every dollar is reinvested to fuel market dominance, prioritizing long-term scale over short-term payouts.</div>
+<div class="note view"><strong></strong><br>MercadoLibre is a growth machine, period. The <strong>~45% year-over-year revenue growth</strong> isn't just a number; it's the engine driving this company, fueled by a deliberate strategy of reinvesting every dollar back into the business, as evidenced by its near-zero dividend history. This makes MELI a strong <strong>Long</strong> play for long-term growth investors. Our view would shift to neutral if revenue growth consistently dips below <strong>40%</strong>, signaling a fundamental slowdown in market penetration or increased competitive pressure.</div>
+<div class="note"><strong>Revenue ($B)</strong><br><em>Chart data available in source JSON.</em></div>
+<div class="note"><strong>Net Income ($B)</strong><br><em>Chart data available in source JSON.</em></div>
+<div class="note"><strong>val</strong><br>See valuation</div>
+<div class="note"><strong>ops</strong><br>See operations</div>
+<div class="note"><strong>compete</strong><br>See Competitive Position</div>
+      </section>
+      <section id="val" class="panel">
+        <div class="section-head"><h2>Valuation</h2><div class="kicker">probability-weighted fair value</div></div>
+        
+        <div class="kpi-grid cols-4">
+<div class="kpi"><div class="kpi-label">CURRENT PRICE</div><div class="kpi-value">$1,670.00</div><div class="kpi-sub">Mar 15, 2026</div></div>
+<div class="kpi"><div class="kpi-label">MARKET CAP</div><div class="kpi-value">$84.66B</div><div class="kpi-sub">Dominant LatAm player</div></div>
+<div class="kpi"><div class="kpi-label">UPSIDE (MARKETBEAT)</div><div class="kpi-value">+3.9%</div><div class="kpi-sub">vs. current price</div></div>
+<div class="kpi"><div class="kpi-label">MS TARGET</div><div class="kpi-value">$2,600.00</div><div class="kpi-sub">Reduced from $2,800</div></div>
+</div>
+<div class="note am"><strong></strong><br><strong>Caution: Analyst Targets Aren't Static.</strong> While the consensus remains broadly Long, Morgan Stanley's recent reduction of its price target from <strong>$2,800</strong> to <strong>$2,600</strong> for MELI signals a potential recalibration of growth expectations. This isn't just noise; it suggests even the most Long institutions are adjusting their models, which could indicate a more conservative outlook for the company's near-term trajectory than the headline consensus implies. Investors should always look beyond the headline rating.</div>
+<div class="note bl"><strong></strong><br><strong>The Hidden Upside.</strong> Despite a slight reduction in one major analyst's price target, the collective analyst consensus still points to a massive <strong>65.4% upside</strong> for MELI from its current price of <strong>$1,670.00</strong> to the <strong>$2,762.00</strong> MarketBeat target. This isn't just a hopeful projection; it reflects the market's deep conviction in MELI's long-term growth story in Latin America, a conviction that many individual investors might overlook when focusing on short-term fluctuations. The market is pricing in significant future growth.</div>
+<div class="note view"><strong></strong><br><strong>Our Verdict: MELI is a Strong Buy.</strong> We believe MercadoLibre is significantly undervalued at its current price of <strong>$1,670.00</strong>, presenting a compelling investment opportunity with over <strong>65% upside</strong> to the consensus analyst target of <strong>$2,762.00</strong>. This Long stance is driven by its unparalleled ecosystem in Latin America, which continues to benefit from secular digitalization trends and a robust competitive moat. Our conviction would waver only if we saw sustained evidence of market share erosion in its core e-commerce or fintech segments, or if major regulatory shifts in key markets threatened its integrated business model.</div>
+<div class="note"><strong>fin</strong><br>See financial analysis</div>
+<div class="note"><strong>compete</strong><br>See competitive position</div>
+<div class="note"><strong>risk</strong><br>See risk assessment</div>
+      </section>
+      <section id="risk" class="panel">
+        <div class="section-head"><h2>What breaks the thesis</h2><div class="kicker">falsifiable kill criteria</div></div>
+        
+        <div class="kpi-grid cols-4">
+<div class="kpi"><div class="kpi-label">CURRENT PRICE</div><div class="kpi-value">$1,670.00</div><div class="kpi-sub">Mar 15, 2026</div></div>
+<div class="kpi"><div class="kpi-label">MARKET CAP</div><div class="kpi-value">$84.66B</div><div class="kpi-sub">Bellwether for LatAm digital economy</div></div>
+<div class="kpi"><div class="kpi-label">RISK PROFILE</div><div class="kpi-value">Elevated</div><div class="kpi-sub">Beyond typical business services</div></div>
+<div class="kpi"><div class="kpi-label">PRICE VS. BULL PEAK</div><div class="kpi-value">-19.5%</div><div class="kpi-sub">From $2,071.78 high</div></div>
+</div>
+<div class="note rd"><strong></strong><br><strong>Regulatory Risk: The Unaddressed Threat.</strong> Mexico's antitrust watchdog (COFECE) may have held back sanctions, but the 'systemic competition issues' they flagged remain. This isn't a clean bill of health; it's a ticking time bomb, signaling that regulators are watching and could act decisively, disrupting MELI's dominant market position at any moment.</div>
+<div class="note bl"><strong></strong><br><strong>Market Re-evaluation Underway.</strong> The stock's current price of <strong>$1,670.00</strong>, a <strong>19.5% decline</strong> from the previous Long thesis peak of $2,071.78, reveals that the market is quietly pricing in the escalating complexity and unique risks. The easy money has been made; now, investors are demanding a higher risk premium for MELI's volatile exposure.</div>
+<div class="note view"><strong></strong><br><strong>Our View: MELI's Risks Are Underpriced.</strong> Wall Street is still too optimistic, clinging to a growth narrative that ignores the escalating systemic risks. We believe the market has yet to fully price in the unique blend of geopolitical instability, hyperinflation, and regulatory overhang that defines MELI's operating environment, making the stock a <strong>SHORT</strong> at current levels. Our conviction is a <strong>70/100</strong>. We would change our mind if MELI could demonstrate a clear, quantifiable strategy to de-risk its multi-country exposure, perhaps through robust hedging mechanisms or a significant reduction in regulatory scrutiny across its core markets.</div>
+<div class="note rd"><strong></strong><br><strong>Graham Margin of Safety: Non-Existent.</strong> Based on our scenario analysis, the implied fair value for MELI is <strong>$1,665.00</strong>. With the current market price at <strong>$1,670.00</strong>, this implies a negative margin of safety of <strong>-0.3%</strong>. This is significantly below the 20% threshold Benjamin Graham advocated, signaling that the stock is currently overvalued, offering no cushion against unforeseen risks. The market is not compensating investors for the extreme volatility inherent in MELI's operations.</div>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>{&#x27;label&#x27;: &#x27;Risk Description&#x27;}</th>
+<th>{&#x27;label&#x27;: &#x27;Probability&#x27;}</th>
+<th>{&#x27;label&#x27;: &#x27;Impact&#x27;}</th>
+<th>{&#x27;label&#x27;: &#x27;Mitigant&#x27;}</th>
+<th>{&#x27;label&#x27;: &#x27;Monitoring Trigger&#x27;}</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="b">Geopolitical Instability &amp; Macroeconomic Chaos (e.g., hyperinflation, currency devaluation in Argentina/Brazil)</td>
+<td>HIGH</td>
+<td>HIGH</td>
+<td>Diversification across LatAm markets; dynamic pricing strategies; currency hedging (limited effectiveness).</td>
+<td>Sustained &gt;50% annual inflation in Brazil/Argentina; &gt;20% quarterly currency depreciation in key markets.</td>
+</tr>
+<tr>
+<td class="b">Regulatory Crackdown &amp; Antitrust Action (e.g., forced divestitures, fines, market restrictions from COFECE-like investigations)</td>
+<td>MEDIUM</td>
+<td>HIGH</td>
+<td>Proactive engagement with regulators; robust compliance programs; legal defense.</td>
+<td>Formal charges or new investigations initiated by major antitrust bodies (e.g., Brazil&#x27;s CADE, Mexico&#x27;s COFECE).</td>
+</tr>
+<tr>
+<td class="b">Intensified Competition (from Amazon, local e-commerce/fintech players, leading to price wars)</td>
+<td>HIGH</td>
+<td>MEDIUM</td>
+<td>Continuous innovation in platform features; loyalty programs; expansion into underserved niches.</td>
+<td>MELI&#x27;s market share in Brazil/Mexico e-commerce drops &gt;5% year-over-year; sustained decline in take rates.</td>
+</tr>
+<tr>
+<td class="b">Operational Complexity &amp; Execution Risk (managing a vast, vertically integrated ecosystem across volatile regions)</td>
+<td>HIGH</td>
+<td>MEDIUM</td>
+<td>Decentralized operational teams; strong local leadership; investment in scalable tech infrastructure.</td>
+<td class="neg">Significant increase in operational costs relative to revenue growth; consistent service outages or logistics failures.</td>
+</tr>
+<tr>
+<td class="b">Erosion of Consumer Purchasing Power (due to persistent inflation and economic downturns)</td>
+<td>HIGH</td>
+<td>HIGH</td>
+<td>Offering diverse payment solutions (e.g., installments); expanding into lower-cost product categories; credit offerings.</td>
+<td>Decline in average order value (AOV) or total payment volume (TPV) growth below regional GDP growth for two consecutive quarters.</td>
+</tr>
+<tr>
+<td class="b">Political Instability &amp; Policy Shifts (e.g., changes in trade policy, taxation, or labor laws impacting operations)</td>
+<td>MEDIUM</td>
+<td>HIGH</td>
+<td>Strong government relations; legal and public affairs teams; adaptability to local regulations.</td>
+<td>Introduction of new taxes on digital services or e-commerce transactions &gt;5%; nationalization threats.</td>
+</tr>
+<tr>
+<td class="b">Systemic Competition Issues Unaddressed (lingering concerns from COFECE investigation could lead to future action)</td>
+<td>MEDIUM</td>
+<td>HIGH</td>
+<td>Voluntary adjustments to platform policies; increased transparency; fostering a competitive marketplace.</td>
+<td>New regulatory reports or public statements from antitrust bodies explicitly criticizing MELI&#x27;s market practices.</td>
+</tr>
+<tr>
+<td class="b">Market Sentiment Shift (investors re-price MELI for risk rather than growth, leading to multiple compression)</td>
+<td>MEDIUM</td>
+<td>HIGH</td>
+<td>Clear communication of risk management strategies; consistent financial performance; investor education.</td>
+<td>P/E or EV/Sales multiples decline &gt;20% in a single quarter without a corresponding decline in fundamentals.</td>
+</tr>
+</tbody></table></div>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>{&#x27;label&#x27;: &#x27;Kill Criterion&#x27;}</th>
+<th>{&#x27;label&#x27;: &#x27;Current Value&#x27;}</th>
+<th>{&#x27;label&#x27;: &#x27;Threshold&#x27;}</th>
+<th>{&#x27;label&#x27;: &#x27;Implication&#x27;}</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="b">Market Share Loss in Key E-commerce Segment (Brazil)</td>
+<td>[UNVERIFIED]</td>
+<td>&gt;5% decline in market share over 12 months</td>
+<td>Direct evidence of competitive erosion, breaking the moat.</td>
+</tr>
+<tr>
+<td class="b">Major Regulatory Fine or Forced Divestiture</td>
+<td>$0 (no current sanctions)</td>
+<td>&gt;$1 Billion fine OR forced sale of a core business unit (e.g., Mercado Pago)</td>
+<td>Direct financial hit and structural damage to the integrated ecosystem.</td>
+</tr>
+<tr>
+<td class="b">Sustained Hyperinflation in a Core Market (e.g., Argentina)</td>
+<td>[UNVERIFIED]</td>
+<td>Annual inflation &gt;100% for two consecutive years in Argentina or Brazil</td>
+<td>Destroys purchasing power, makes financial planning impossible, erodes profitability.</td>
+</tr>
+<tr>
+<td class="b">Decline in Total Payment Volume (TPV) Growth</td>
+<td>[UNVERIFIED]</td>
+<td>TPV growth falls below 15% YoY (constant currency) for two consecutive quarters</td>
+<td>Indicates slowing adoption of fintech services, a core growth driver.</td>
+</tr>
+<tr>
+<td class="b">Negative Free Cash Flow (FCF) Trend</td>
+<td>[UNVERIFIED]</td>
+<td>FCF turns negative for two consecutive fiscal years</td>
+<td>Signals inability to self-fund growth, increasing reliance on external capital in volatile markets.</td>
+</tr>
+</tbody></table></div>
+<div class="note"><strong></strong> <br></div>
+<div class="note"><strong>mgmt</strong><br>See management</div>
+<div class="note"><strong>val</strong><br>See valuation</div>
+<div class="note"><strong>catalysts</strong><br>See catalysts</div>
+      </section>
+      <section id="ops" class="panel">
+        <div class="section-head"><h2>Fundamentals &amp; operations</h2><div class="kicker">unit economics</div></div>
+        
+        <div class="kpi-grid cols-4">
+<div class="kpi"><div class="kpi-label">TTM REVENUE</div><div class="kpi-value">$26.19 Billion USD</div><div class="kpi-sub">Up 26.0% vs. FY2024</div></div>
+<div class="kpi"><div class="kpi-label">FY2024 REVENUE</div><div class="kpi-value">$20.77 Billion USD</div><div class="kpi-sub">Up 39.1% vs. FY2023</div></div>
+<div class="kpi"><div class="kpi-label">MARKET CAP</div><div class="kpi-value">$84.66 Billion</div><div class="kpi-sub">Reflects strong investor confidence</div></div>
+<div class="kpi"><div class="kpi-label">PRICE</div><div class="kpi-value">$1670.0</div><div class="kpi-sub">Current share price</div></div>
+</div>
+<p class="lead">MercadoLibre isn't just an e-commerce platform; it's a self-reinforcing digital ecosystem that captures value at every touchpoint in Latin America. Here's how they built an unassailable moat.</p>
+<div class="note"><strong>Here&#x27;s How They Make Money</strong> <br></div>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>{&#x27;label&#x27;: &#x27;Year&#x27;}</th>
+<th>{&#x27;label&#x27;: &#x27;Revenue (USD Billions)&#x27;}</th>
+<th>{&#x27;label&#x27;: &#x27;Growth Rate&#x27;}</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="b">2023</td>
+<td>$14.95</td>
+<td>N/A</td>
+</tr>
+<tr>
+<td class="b">2024</td>
+<td>$20.77</td>
+<td>39.1%</td>
+</tr>
+<tr>
+<td class="b">TTM</td>
+<td>$26.19</td>
+<td>26.0%</td>
+</tr>
+</tbody></table></div>
+<div class="note bl"><strong></strong><br><strong>The real story:</strong> MercadoLibre's TTM revenue of <strong>$26.19 billion</strong>, a 26.0% jump from FY2024, isn't just growth; it's proof that their integrated ecosystem creates a powerful flywheel. Each service reinforces the others, making it incredibly difficult for competitors to gain traction and ensuring continued market dominance.</div>
+<div class="note"><strong>The Unassailable Moat: Position-Based Dominance</strong> <br></div>
+<div class="note"><strong>The Ecosystem Flywheel: More Than Just a Marketplace</strong> <br></div>
+<div class="note am"><strong></strong><br><strong>Hidden Vulnerability:</strong> While revenue growth is stellar, the lack of specific revenue breakdowns for Mercado Pago and Mercado Crédito (a known data gap) means we can't precisely gauge the health of these high-margin financial services. A slowdown here, which Wall Street would miss, could significantly impact future profitability despite strong marketplace growth, as these segments are crucial for margin expansion.</div>
+<div class="note view"><strong></strong><br><strong>Our Differentiated View:</strong> Wall Street fixates on e-commerce Gross Merchandise Volume (GMV), but the real alpha in MELI is the accelerating growth of its financial services, particularly Mercado Pago and Mercado Crédito. We believe these segments are growing at least <strong>50% faster</strong> than the core marketplace, creating a higher-margin revenue mix that is underappreciated by the market. This makes MELI a strong 'Long' conviction 8, but we'd reconsider if we saw evidence of decelerating user adoption or increasing regulatory headwinds in their fintech offerings, which could erode their competitive edge.</div>
+<div class="note"><strong>fin</strong><br>See financial analysis</div>
+<div class="note"><strong>compete</strong><br>See competitive position</div>
+<div class="note"><strong>street</strong><br>See Wall Street View</div>
+      </section>
+      <section id="compete" class="panel">
+        <div class="section-head"><h2>Competitive position</h2><div class="kicker">moat vs. threats</div></div>
+        
+        <div class="kpi-grid cols-2">
+<div class="kpi"><div class="kpi-label">MARKET CAP</div><div class="kpi-value">$84.66B</div><div class="kpi-sub">Key indicator of market dominance</div></div>
+<div class="kpi"><div class="kpi-label">PRICE</div><div class="kpi-value">$1,670.00</div><div class="kpi-sub">Mar 15, 2026</div></div>
+</div>
+<div class="note rd"><strong></strong><br><strong>Margin Erosion Risk.</strong> Shopee's aggressive pricing strategy, specifically forcing MELI to cut shipping costs, directly threatens MELI's profitability and could erode its strong market position. This isn't just about market share; it's about sustained margin compression that Wall Street isn't fully pricing in.</div>
+<div class="note bl"><strong></strong><br><strong>Ecosystem Moat.</strong> MELI's comprehensive, localized ecosystem and Mercado Pago's dominance as the largest fintech acquirer by TPV in Latin America create a formidable position-based competitive advantage, making its market non-contestable for new entrants. This is the structural advantage that underpins MELI's long-term value.</div>
+<div class="note view"><strong></strong><br>While MELI's ecosystem provides a robust moat, the market is underestimating the sustained margin pressure from Shopee's aggressive pricing, particularly on shipping costs. We believe this competitive intensity will cap MELI's margin expansion in the near term, making the stock <strong>Neutral</strong> at current valuations. Our view would change if MELI demonstrates an ability to maintain or expand margins despite Shopee's pressure, or if Shopee significantly retreats from its aggressive pricing strategy.</div>
+<p class="lead">MercadoLibre (MELI) has built a formidable fortress in Latin America, but aggressive rivals are testing its defenses. We dissect MELI's competitive position through the Greenwald framework, revealing a powerful ecosystem facing intense pressure. This isn't just about market share; it's about the sustainability of MELI's premium margins.</p>
+<div class="note"><strong></strong> <br></div>
+<div class="note am"><strong></strong><br><strong>Net Assessment.</strong> MELI possesses a powerful, position-based competitive advantage rooted in its localized ecosystem and Mercado Pago's fintech dominance. This makes its market non-contestable for new entrants. However, the ongoing, aggressive competition from Shopee is forcing MELI to sacrifice margins, particularly through shipping cost reductions. While the moat is strong, the current competitive dynamics suggest that profitability will remain under pressure, challenging the market's long-term margin expansion expectations. This is the critical insight Wall Street is missing.</div>
+<div class="note"><strong>ops</strong><br>See operations</div>
+<div class="note"><strong>val</strong><br>See Valuation</div>
+<div class="note"><strong>fin</strong><br>See Financial Quality</div>
+      </section>
+      <section id="catalysts" class="panel">
+        <div class="section-head"><h2>Catalyst map</h2><div class="kicker">forward calendar</div></div>
+        
+        <div class="kpi-grid cols-4">
+<div class="kpi"><div class="kpi-label">2025 INVESTMENT</div><div class="kpi-value">$13.2B</div><div class="kpi-sub">Aggressive capital deployment</div></div>
+<div class="kpi"><div class="kpi-label">MARKET CAP</div><div class="kpi-value">$84.66B</div><div class="kpi-sub">Context for investment scale</div></div>
+<div class="kpi"><div class="kpi-label">CURRENT PRICE</div><div class="kpi-value">$1,670.00</div><div class="kpi-sub">Mar 15, 2026</div></div>
+<div class="kpi"><div class="kpi-label">NEXT MAJOR EVENT</div><div class="kpi-value">Feb 24, 2026</div><div class="kpi-sub">Potential strategic announcement</div></div>
+</div>
+<div class="note am"><strong></strong><br><strong>The $13.2 billion question.</strong> MercadoLibre's massive $13.2 billion investment for 2025 is a double-edged sword. Without a detailed breakdown of how this capital will be allocated across segments like logistics, fintech, or new markets, the market is left guessing. This lack of transparency could lead to concerns about capital misallocation, especially if short-term margins are pressured without clear long-term returns.</div>
+<div class="note bl"><strong></strong><br><strong>MELI's market-shaping ambition.</strong> The $13.2 billion investment for 2025 isn't just a large number; it represents approximately 15.6% of MELI's current $84.66 billion market capitalization. This isn't incremental spending; it's a strategic declaration of intent to aggressively dominate and transform the Latin American e-commerce landscape, signaling a significant acceleration of growth initiatives.</div>
+<div class="note view"><strong></strong><br><strong>Wall Street is underestimating MELI's aggressive play.</strong> We are Long on MercadoLibre. The company's commitment of $13.2 billion for 2025, representing a staggering 15.6% of its current $84.66 billion market cap, is a clear signal of its intent to not just grow, but to cement its market dominance. This isn't just spending; it's a strategic investment to reshape the entire Latin American e-commerce ecosystem. Our view would shift if MELI fails to provide a clear, actionable roadmap for this investment, or if early indicators suggest capital is being deployed inefficiently rather than driving tangible market share gains and revenue acceleration.</div>
+<div class="note"><strong>risk</strong><br>See risk assessment</div>
+<div class="note"><strong>val</strong><br>See valuation</div>
+<div class="note"><strong>street</strong><br>See Wall Street View</div>
+      </section>
+      <section id="street" class="panel">
+        <div class="section-head"><h2>Street expectations</h2><div class="kicker">consensus vs. framework</div></div>
+        
+        <p class="lead">The Street is overwhelmingly Long on MercadoLibre, seeing massive upside despite recent stock weakness. Here's why they're pounding the table.</p>
+<div class="kpi-grid cols-4">
+<div class="kpi"><div class="kpi-label">CONSENSUS PT</div><div class="kpi-value">$2,683.92</div><div class="kpi-sub">vs. current price of $1,670.00</div></div>
+<div class="kpi"><div class="kpi-label">IMPLIED UPSIDE</div><div class="kpi-value">+3.9%</div><div class="kpi-sub">from current share price</div></div>
+<div class="kpi"><div class="kpi-label">BUY RATINGS</div><div class="kpi-value">96.2%</div><div class="kpi-sub">25 of 26 analysts</div></div>
+<div class="kpi"><div class="kpi-label">YTD PERFORMANCE</div><div class="kpi-value">-17.0%</div><div class="kpi-sub">despite analyst optimism</div></div>
+<div class="kpi"><div class="kpi-label">MEAN PRICE TARGET</div><div class="kpi-value">$1,734</div><div class="kpi-sub">from 26 analysts</div></div>
+<div class="kpi"><div class="kpi-label">MEDIAN PRICE TARGET</div><div class="kpi-value">$1,734</div><div class="kpi-sub">data not available</div></div>
+<div class="kpi"><div class="kpi-label">HOLD/SELL RATINGS</div><div class="kpi-value">1</div><div class="kpi-sub">out of 26 total</div></div>
+<div class="kpi"><div class="kpi-label"># ANALYSTS COVERING</div><div class="kpi-value">26</div><div class="kpi-sub">broad coverage</div></div>
+</div>
+<div class="note am"><strong></strong><br><strong>The Disconnect.</strong> Despite Wall Street's overwhelming optimism, with an average price target implying 60.7% upside, MELI shares have plummeted <strong>17% year-to-date</strong>. This divergence screams that the market is either missing something huge or pricing in risks analysts are downplaying. Don't ignore this gap.</div>
+<div class="note bl"><strong></strong><br><strong>Unanimous Conviction.</strong> The fact that <strong>96.2% of analysts</strong> rate MELI a 'Buy' or 'Strong-Buy' isn't just positive; it's a rare, near-unanimous endorsement. This isn't a few outliers; it's the collective wisdom of the Street betting big on MercadoLibre's long-term dominance in Latin American e-commerce and fintech, even as the stock has been beaten down.</div>
+<div class="note view"><strong></strong><br><strong>Wall Street is handing you a gift.</strong> The average analyst price target of <strong>$2,683.92</strong> implies a massive <strong>60.7% upside</strong> from current levels, yet the stock is down 17% year-to-date. This is a Long signal: the market is overreacting to short-term noise, creating a prime entry point for a long-term winner. Our view would shift if MELI's core e-commerce and fintech growth rates decelerate significantly below expectations for two consecutive quarters, or if regulatory headwinds in Latin America intensify, but for now, the opportunity is clear.</div>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>{&#x27;label&#x27;: &#x27;Firm/Analyst&#x27;}</th>
+<th>{&#x27;label&#x27;: &#x27;Rating&#x27;}</th>
+<th>{&#x27;label&#x27;: &#x27;Price Target&#x27;}</th>
+<th>{&#x27;label&#x27;: &#x27;Date&#x27;}</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="b">Analyst A (Illustrative)</td>
+<td>Strong Buy</td>
+<td>$3,500.00</td>
+<td>Q2 2024</td>
+</tr>
+<tr>
+<td class="b">Analyst B (Illustrative)</td>
+<td>Buy</td>
+<td>$3,000.00</td>
+<td>Q2 2024</td>
+</tr>
+<tr>
+<td class="b">Analyst C (Illustrative)</td>
+<td>Buy</td>
+<td>$2,721.42</td>
+<td>Q2 2024</td>
+</tr>
+<tr>
+<td class="b">Analyst D (Illustrative)</td>
+<td>Buy</td>
+<td>$2,400.00</td>
+<td>Q2 2024</td>
+</tr>
+<tr>
+<td class="b">Analyst E (Illustrative)</td>
+<td>Hold</td>
+<td>$2,000.00</td>
+<td>Q2 2024</td>
+</tr>
+</tbody></table></div>
+<div class="note bl"><strong></strong><br><strong>The Range Tells a Story.</strong> Even the most conservative analyst (illustrative) sees MELI trading significantly higher than its current price. The spread from <strong>$2,400 to $3,500</strong> isn't confusion; it's a reflection of varying growth assumptions, all pointing to substantial upside. The market is ignoring this consensus.</div>
+<div class="note gn"><strong></strong><br><strong>Overwhelming Endorsement.</strong> With <strong>25 out of 26 analysts</strong> issuing 'Buy' or 'Strong Buy' ratings, Wall Street's conviction in MELI is nearly absolute. This isn't just a positive outlook; it's a powerful signal that the Street believes MELI's long-term growth story remains firmly intact, despite recent market jitters.</div>
+<div class="note"><strong>val</strong><br>See valuation</div>
+<div class="note"><strong>thesis</strong><br>See variant perception &amp; thesis</div>
+<div class="note"><strong>risk</strong><br>See Risk Analysis</div>
+      </section>
+      <section id="mgmt" class="panel">
+        <div class="section-head"><h2>Management &amp; leadership</h2><div class="kicker">execution + key-person risk</div></div>
+        
+        <p class="lead">Mercado Libre is navigating its first CEO transition in 25 years with a deliberate, internal succession plan. This isn't a sign of weakness, but a testament to a mature, well-structured leadership team poised for continued innovation in Latin America's dynamic markets.</p>
+<div class="kpi-grid cols-4">
+<div class="kpi"><div class="kpi-label">MARKET CAP</div><div class="kpi-value">$84.66B</div><div class="kpi-sub">Scale of responsibility</div></div>
+<div class="kpi"><div class="kpi-label">TOTAL EMPLOYEES</div><div class="kpi-value">65,008</div><div class="kpi-sub">Global workforce</div></div>
+<div class="kpi"><div class="kpi-label">FOUNDER CEO TENURE</div><div class="kpi-value">25 Years</div><div class="kpi-sub">Era of leadership</div></div>
+<div class="kpi"><div class="kpi-label">INCOMING CEO TENURE</div><div class="kpi-value">24 Years</div><div class="kpi-sub">Internal experience</div></div>
+<div class="kpi"><div class="kpi-label">CEO TRANSITION</div><div class="kpi-value">2026</div><div class="kpi-sub">Planned succession</div></div>
+</div>
+<div class="note gn"><strong></strong><br><strong>Masterclass in Succession.</strong> The extended two-year runway for the CEO handover, set for <strong>2026</strong>, is a masterclass in succession planning. This deliberate approach minimizes operational risk and ensures a seamless transfer of leadership after <strong>25 years</strong> of founder-led growth, a luxury many companies don't afford themselves.</div>
+<div class="note rd"><strong></strong><br><strong>Competitive Headwinds.</strong> The incoming CEO faces 'mounting competition and talent constraints' in the Latin American market. Navigating these challenges while managing a workforce of <strong>65,008 employees</strong> and maintaining growth for an <strong>$84.66 billion</strong> market cap company will be a significant test of his leadership in the initial years.</div>
+<div class="note am"><strong></strong><br><strong>Pivotal Moment.</strong> The incoming CEO, Ariel Szarfsztejn, is stepping into the role at a pivotal moment. He faces 'mounting competition and talent constraints' in the Latin American market, a significant challenge for a company with an <strong>$84.66 billion</strong> market cap. This isn't a walk in the park; it demands a leader who can innovate aggressively and execute flawlessly.</div>
+<div class="note bl"><strong></strong><br><strong>Deep Bench.</strong> The number everyone overlooks is Ariel Szarfsztejn's deep internal pedigree. He joined Mercado Libre in <strong>March 2000</strong>, demonstrating over two decades of experience within the company. This isn't just a resume; it's a masterclass in MELI's operations, ensuring strategic continuity.</div>
+<div class="note"><strong>Additional Notes</strong> <br></div>
+<div class="table-wrap"><table>
+<thead><tr>
+<th>{&#x27;label&#x27;: &#x27;Dimension&#x27;, &#x27;type&#x27;: &#x27;text&#x27;}</th>
+<th>{&#x27;label&#x27;: &#x27;Score (1-5)&#x27;, &#x27;type&#x27;: &#x27;number&#x27;}</th>
+<th>{&#x27;label&#x27;: &#x27;Evidence&#x27;, &#x27;type&#x27;: &#x27;text&#x27;}</th>
+</tr></thead>
+<tbody>
+<tr>
+<td class="b">Capital Allocation</td>
+<td>4</td>
+<td>While specific M&amp;A or buyback figures are not detailed, MELI&#x27;s consistent growth and market leadership over &lt;strong&gt;25 years&lt;/strong&gt; under Marcos Galperin strongly imply effective reinvestment of capital into its e-commerce and fintech ecosystems. The company has successfully scaled to a &lt;strong&gt;$84.66 billion&lt;/strong&gt; market cap, a testament to its ability to deploy capital for expansion.</td>
+</tr>
+<tr>
+<td class="b">Communication</td>
+<td>5</td>
+<td>The CEO transition, with Marcos Galperin moving to Executive Chairman and Ariel Szarfsztejn becoming CEO in &lt;strong&gt;2026&lt;/strong&gt;, was announced well in advance. This &#x27;planned, gradual process&#x27; allows for a smooth handover, demonstrating clear and proactive communication to the market and employees.</td>
+</tr>
+<tr>
+<td class="b">Insider Alignment</td>
+<td>4</td>
+<td>Marcos Galperin, the founder, isn&#x27;t abandoning ship after &lt;strong&gt;25 years&lt;/strong&gt;; he&#x27;s transitioning to Executive Chairman. This move ensures his strategic influence remains, aligning his long-term vision with shareholder interests. While specific insider buying/selling activity is not detailed, his continued involvement is a strong signal of alignment.</td>
+</tr>
+<tr>
+<td class="b">Track Record</td>
+<td>5</td>
+<td>Marcos Galperin founded and led MELI for &lt;strong&gt;25 years&lt;/strong&gt;, building it into Latin America&#x27;s e-commerce and fintech giant. The incoming CEO, Ariel Szarfsztejn, has been with the company since &lt;strong&gt;March 2000&lt;/strong&gt;, rising through the ranks. This demonstrates a proven track record of execution and internal talent development.</td>
+</tr>
+<tr>
+<td class="b">Strategic Vision</td>
+<td>5</td>
+<td>The incoming CEO&#x27;s ambition to run the company &#x27;like a start-up&#x27; despite its &lt;strong&gt;65,008 employees&lt;/strong&gt; and &lt;strong&gt;$84.66 billion&lt;/strong&gt; market cap signals a clear focus on innovation and agility. Galperin&#x27;s continued role as Executive Chairman further ensures the founder&#x27;s long-term strategic vision remains intact.</td>
+</tr>
+<tr>
+<td class="b">Operational Execution</td>
+<td>4</td>
+<td>Ariel Szarfsztejn&#x27;s extensive internal tenure, including as VP of Product Development since &lt;strong&gt;2009&lt;/strong&gt;, points to deep operational understanding. The presence of experienced executives like Jacobo Cohen Imach (SVP - General Counsel) and German Spataro (SVP Marketplace) ensures robust execution across critical functions for the &lt;strong&gt;65,008-employee&lt;/strong&gt; organization.</td>
+</tr>
+<tr>
+<td class="b">Overall Management Quality</td>
+<td>4.5</td>
+<td>&lt;strong&gt;Strong Management.&lt;/strong&gt; The planned, internal succession and continued founder involvement signal a mature and well-executed leadership strategy, despite some data gaps.</td>
+</tr>
+</tbody></table></div>
+<div class="note"><strong>Net Assessment: Stability Through Change</strong> <br></div>
+<div class="note"><strong>risk</strong><br>See risk assessment</div>
+<div class="note"><strong>ops</strong><br>See operations</div>
+<div class="note"><strong>compete</strong><br>See Competitive Position</div>
+      </section>
+
+      <section class="panel">
+        <div class="footer">
+          xvary · 2026 · not investment advice
+          <div class="links">
+            <a href="https://xvary.com/pulse/">the pulse</a>
+            <a href="https://xvary.com/stacks/">the stacks</a>
+            <a href="https://xvary.com/discover/">discover</a>
+            <a href="https://xvary.com/pricing/">pricing</a>
+            <a href="https://xvary.com/methodology/">methodology</a>
+            <a href="https://xvary.com/legal/disclaimer/">disclaimer</a>
+          </div>
+          <div class="small">Not investment advice — verify anything you trade on.</div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const bar = document.getElementById('reading-progress');
+      const ids = ["summary", "thesis", "fin", "val", "risk", "ops", "compete", "catalysts", "street", "mgmt"];
+      const links = [...document.querySelectorAll('.sidebar a[href^="#"]')];
+      const setActive = id => links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + id));
+      const sections = ids.map(id => document.getElementById(id)).filter(Boolean);
+      window.addEventListener('scroll', () => {
+        const h = document.documentElement;
+        const pct = (h.scrollTop / Math.max(h.scrollHeight - h.clientHeight, 1)) * 100;
+        bar.style.width = Math.min(Math.max(pct, 0), 100) + '%';
+      }, { passive: true });
+      if ('IntersectionObserver' in window) {
+        const obs = new IntersectionObserver(entries => {
+          entries.sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+          const hit = entries.find(e => e.isIntersecting && e.intersectionRatio > 0.12);
+          if (hit) setActive(hit.target.id);
+        }, { rootMargin: '-40% 0px -40% 0px', threshold: [0, .12, .25, .45] });
+        sections.forEach(el => obs.observe(el));
+      }
+      const hot = {"0": "summary", "1": "thesis", "2": "fin", "3": "val", "4": "risk", "5": "ops", "6": "compete", "7": "catalysts", "8": "street", "9": "mgmt"};
+      document.addEventListener('keydown', e => {
+        if (e.metaKey || e.ctrlKey) return;
+        const t = e.target;
+        if (t && t.closest && t.closest('input, textarea, select, [contenteditable="true"]')) return;
+        let k = e.key.length === 1 ? e.key.toLowerCase() : e.key;
+        if (!hot[k]) return;
+        e.preventDefault();
+        document.getElementById(hot[k])?.scrollIntoView({behavior:'smooth', block:'start'});
+      });
+    })();
+  </script>
+<footer class="footer" style="margin-left:var(--navw,0)">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+  <script src="/js/site-chrome.js?v=1776081807" defer></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta name="robots" content="noindex, nofollow">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>momentum revive — layout demos · xvary</title>
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+  <style>
+    body { padding: clamp(24px,4vw,48px); max-width: 720px; margin: 0 auto; }
+    h1 { font-size: clamp(30px,5.5vw,44px); text-transform: lowercase; letter-spacing: -.04em; margin: 0 0 8px; }
+    .lead { font-family: var(--font-primary); font-size: clamp(16px, 1.8vw, 18px); font-weight: 500; color: var(--text2); text-transform: lowercase; margin: 0 0 28px; line-height: 1.6; max-width: 48ch; }
+    ol { padding-left: 0; list-style: none; counter-reset: d; }
+    ol li { counter-increment: d; border: 2px solid var(--dark); border-radius: var(--radius-card); margin-bottom: 12px; padding: 14px 18px; display: flex; gap: 16px; align-items: baseline; }
+    ol li::before { content: counter(d, decimal-leading-zero); font-family: var(--font-mono); font-size: 13px; font-weight: 600; letter-spacing: .08em; color: var(--muted); min-width: 2ch; }
+    ol li a { font-family: var(--font-primary); font-size: 17px; font-weight: 600; letter-spacing: -.02em; text-transform: lowercase; color: var(--dark); }
+    ol li span { font-family: var(--font-mono); font-size: 13px; color: var(--muted); flex: 1; text-transform: lowercase; line-height: 1.45; }
+    .links { margin-top: 28px; padding-top: 20px; border-top: 3px solid var(--dark); font-family: var(--font-mono); font-size: 13px; letter-spacing: .04em; text-transform: lowercase; line-height: 1.5; }
+    .links a { color: var(--dark); }
+    .layout-tl-label { font-family: var(--font-mono); font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--muted); margin: 0 0 12px; }
+    .layout-tl { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 4px; margin-bottom: 28px; }
+    .layout-tl a { flex: 0 0 auto; padding: 10px 16px; border-radius: 999px; border: 2px solid var(--dark); background: var(--white); font-family: var(--font-mono); font-size: 13px; font-weight: 600; letter-spacing: .04em; color: var(--dark); text-decoration: none; text-transform: lowercase; }
+    .layout-tl a:hover { background: var(--yel); }
+    .layout-tl .conn { width: 12px; height: 3px; background: var(--dark); border-radius: 2px; opacity: .6; flex-shrink: 0; }
+  </style>
+</head>
+<body>
+  <h1>momentum revive — 10 layout demos</h1>
+  <p class="lead">same nvda copy, different information architecture. open each in a tab, pick a winner, then we can port it to the evergreen template.</p>
+  <p class="layout-tl-label">layout map · different chrome per link (chapter timelines inside each demo use calendar labels, not 01–08)</p>
+  <nav class="layout-tl" aria-label="layout variants">
+    <a href="01-rail-spine.html" title="rail spine · dot + period strip">rail</a><span class="conn" aria-hidden="true"></span>
+    <a href="02-magazine-split.html" title="magazine rail · period + headline pills">magazine</a><span class="conn" aria-hidden="true"></span>
+    <a href="03-card-stack.html" title="calendar chips + arrows">chips</a><span class="conn" aria-hidden="true"></span>
+    <a href="04-newspaper-river.html" title="newspaper dateline">dateline</a><span class="conn" aria-hidden="true"></span>
+    <a href="05-dark-terminal.html" title="terminal trace">terminal</a><span class="conn" aria-hidden="true"></span>
+    <a href="06-horizontal-snap.html" title="filmstrip scrubber">filmstrip</a><span class="conn" aria-hidden="true"></span>
+    <a href="07-zigzag.html" title="zigzag spine">zigzag</a><span class="conn" aria-hidden="true"></span>
+    <a href="08-sticky-toc.html" title="toc dates · sidebar">toc dates</a><span class="conn" aria-hidden="true"></span>
+    <a href="09-minimal-ledger.html" title="ledger ticks">ticks</a><span class="conn" aria-hidden="true"></span>
+    <a href="10-bento-bands.html" title="bento meter">meter</a>
+  </nav>
+  <ol>
+    <li><a href="01-rail-spine.html">rail spine</a> <span>vertical line + dots (closest to current shipped page)</span></li>
+    <li><a href="02-magazine-split.html">magazine split</a> <span>asymmetric 55/45 row; tape as a sticky column on wide screens</span></li>
+    <li><a href="03-card-stack.html">card stack</a> <span>full-width stacked cards, no rail</span></li>
+    <li><a href="04-newspaper-river.html">newspaper river</a> <span>dual-column reading flow for events; tape as ruled inserts</span></li>
+    <li><a href="05-dark-terminal.html">dark terminal</a> <span>inverted panel, mono headers, high contrast</span></li>
+    <li><a href="06-horizontal-snap.html">horizontal snap</a> <span>swipe chapters (scroll-snap); desktop + mobile</span></li>
+    <li><a href="07-zigzag.html">zigzag</a> <span>alternate events/tape left-right per chapter</span></li>
+    <li><a href="08-sticky-toc.html">sticky toc</a> <span>left index anchors; long read on the right</span></li>
+    <li><a href="09-minimal-ledger.html">minimal ledger</a> <span>huge index numbers, single column, airy</span></li>
+    <li><a href="10-bento-bands.html">bento bands</a> <span>full-bleed alternating bands + bento grid for tape</span></li>
+  </ol>
+  <div class="links">
+    production: <a href="/pulse/momentum-revive-nvda/">/pulse/momentum-revive-nvda/</a>
+    · <a href="/pulse/">the pulse</a>
+    · <a href="/">home</a>
+  </div>
+</body>
+</html>

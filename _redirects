@@ -1,0 +1,73 @@
+# Legacy URL redirects to new unified /stock/{ticker}/ structure
+# Old snapshot URLs -> new /stock/{ticker}/snapshot/
+/snapshot/* /stock/:splat/snapshot/ 301
+
+# BEGIN AUTO-MANAGED RELEASE REDIRECTS
+# Old stocks URLs -> new /stock/{ticker}/snapshot/ or /deep-dive/
+# Legacy deep-dive canonicals that previously used /stocks/{ticker}/
+/stocks/jpm /stock/jpm/deep-dive/ 301
+/stocks/jpm/ /stock/jpm/deep-dive/ 301
+/stocks/meli /stock/meli/deep-dive/ 301
+/stocks/meli/ /stock/meli/deep-dive/ 301
+/stocks/msft /stock/msft/deep-dive/ 301
+/stocks/msft/ /stock/msft/deep-dive/ 301
+/stocks/nvda /stock/nvda/deep-dive/ 301
+/stocks/nvda/ /stock/nvda/deep-dive/ 301
+/stocks/pfe /stock/pfe/deep-dive/ 301
+/stocks/pfe/ /stock/pfe/deep-dive/ 301
+
+# Legacy deep-dive subpaths under /stocks/
+/stocks/jpm/deep-dive /stock/jpm/deep-dive/ 301
+/stocks/jpm/deep-dive/ /stock/jpm/deep-dive/ 301
+/stocks/jpm/deep-dive-v2 /stock/jpm/deep-dive/ 301
+/stocks/jpm/deep-dive-v2.html /stock/jpm/deep-dive/ 301
+/stocks/meli/deep-dive /stock/meli/deep-dive/ 301
+/stocks/meli/deep-dive/ /stock/meli/deep-dive/ 301
+/stocks/meli/deep-dive-v2 /stock/meli/deep-dive/ 301
+/stocks/meli/deep-dive-v2.html /stock/meli/deep-dive/ 301
+/stocks/msft/deep-dive /stock/msft/deep-dive/ 301
+/stocks/msft/deep-dive/ /stock/msft/deep-dive/ 301
+/stocks/msft/deep-dive-v2 /stock/msft/deep-dive/ 301
+/stocks/msft/deep-dive-v2.html /stock/msft/deep-dive/ 301
+/stocks/nvda/deep-dive /stock/nvda/deep-dive/ 301
+/stocks/nvda/deep-dive/ /stock/nvda/deep-dive/ 301
+/stocks/nvda/deep-dive-v2 /stock/nvda/deep-dive/ 301
+/stocks/nvda/deep-dive-v2.html /stock/nvda/deep-dive/ 301
+/stocks/pfe/deep-dive /stock/pfe/deep-dive/ 301
+/stocks/pfe/deep-dive/ /stock/pfe/deep-dive/ 301
+/stocks/pfe/deep-dive-v2 /stock/pfe/deep-dive/ 301
+/stocks/pfe/deep-dive-v2.html /stock/pfe/deep-dive/ 301
+/stocks/:ticker/deep-dive /stock/:ticker/snapshot/ 301
+/stocks/:ticker/deep-dive/ /stock/:ticker/snapshot/ 301
+/stocks/:ticker/deep-dive-v2 /stock/:ticker/snapshot/ 301
+/stocks/:ticker/deep-dive-v2.html /stock/:ticker/snapshot/ 301
+
+/stocks/:ticker/* /stock/:ticker/snapshot/ 301
+/stocks/ /stacks/ 301
+
+# Old deepdive URLs -> new /stock/{ticker}/deep-dive/
+/deepdive/jpm /stock/jpm/deep-dive/ 301
+/deepdive/jpm/ /stock/jpm/deep-dive/ 301
+/deepdive/meli /stock/meli/deep-dive/ 301
+/deepdive/meli/ /stock/meli/deep-dive/ 301
+/deepdive/msft /stock/msft/deep-dive/ 301
+/deepdive/msft/ /stock/msft/deep-dive/ 301
+/deepdive/nvda /stock/nvda/deep-dive/ 301
+/deepdive/nvda/ /stock/nvda/deep-dive/ 301
+/deepdive/pfe /stock/pfe/deep-dive/ 301
+/deepdive/pfe/ /stock/pfe/deep-dive/ 301
+/deepdive/* /stock/:splat/snapshot/ 301
+
+# Additional legacy redirects (kept for safety)
+/reports/jpm /stock/jpm/deep-dive/ 301
+/reports/jpm/ /stock/jpm/deep-dive/ 301
+/reports/meli /stock/meli/deep-dive/ 301
+/reports/meli/ /stock/meli/deep-dive/ 301
+/reports/msft /stock/msft/deep-dive/ 301
+/reports/msft/ /stock/msft/deep-dive/ 301
+/reports/nvda /stock/nvda/deep-dive/ 301
+/reports/nvda/ /stock/nvda/deep-dive/ 301
+/reports/pfe /stock/pfe/deep-dive/ 301
+/reports/pfe/ /stock/pfe/deep-dive/ 301
+/reports/* /stock/:splat/snapshot/ 301
+# END AUTO-MANAGED RELEASE REDIRECTS

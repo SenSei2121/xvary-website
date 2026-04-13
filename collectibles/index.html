@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>collectibles — editorial stock issues · xvary</title>
+<meta name="description" content="Published editorial issues built around a weekly stock theme. Read the current collectible, browse the stacks, and open the six picks behind each issue.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://xvary.com/collectibles/">
+<meta property="og:type" content="website">
+<meta property="og:title" content="collectibles — editorial stock issues · xvary">
+<meta property="og:description" content="Published editorial issues built around a weekly stock theme, with six selected picks in each collectible.">
+<meta property="og:url" content="https://xvary.com/collectibles/">
+<meta property="og:image" content="https://xvary.com/assets/og-default.png">
+<meta property="og:site_name" content="XVARY">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="collectibles — editorial stock issues · xvary">
+<meta name="twitter:description" content="Published editorial issues built around a weekly stock theme, with six selected picks in each collectible.">
+<meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "CollectionPage",
+  "name": "Collectibles — Editorial Stock Issues",
+  "description": "Published editorial issues built around a weekly stock theme, with six selected picks in each collectible.",
+  "url": "https://xvary.com/collectibles/",
+  "publisher": { "@type": "Organization", "name": "xvary", "url": "https://xvary.com" }
+}
+</script>
+<style>
+  .stacks-hero {
+    max-width: var(--max-w-wide);
+    margin: 0 auto;
+    padding: 72px 24px 28px;
+    text-align: center;
+  }
+  .stacks-hero h1 {
+    font-size: clamp(48px, 10vw, 96px);
+    font-weight: 700;
+    line-height: .9;
+    letter-spacing: clamp(-1.5px, -0.03em, -3px);
+    text-transform: lowercase;
+    text-wrap: balance;
+    margin-bottom: 16px;
+  }
+  .stacks-hero p {
+    font-size: clamp(15px, 2vw, 18px);
+    color: var(--text2);
+    max-width: 720px;
+    margin: 0 auto;
+    line-height: 1.6;
+    text-transform: lowercase;
+  }
+  .stacks-hero .reveal {
+    opacity: 1;
+    transform: none;
+  }
+  
+  /* Stack Cards */
+  .stacks-grid {
+    max-width: var(--max-w-wide);
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+    gap: 24px;
+  }
+  
+  .stack-card {
+    background: var(--dark);
+    border-radius: var(--radius-card-lg);
+    padding: 0;
+    overflow: hidden;
+    position: relative;
+    transition: transform 0.3s, box-shadow 0.3s;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--white);
+    display: flex;
+    flex-direction: column;
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    mask-image: radial-gradient(white, black);
+  }
+  .stack-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 24px 60px rgba(0,0,0,.25);
+  }
+  .stack-card:focus-visible {
+    outline: 3px solid var(--yel);
+    outline-offset: 4px;
+  }
+
+  .stack-header {
+    padding: 32px 28px 20px;
+    position: relative;
+  }
+  .stack-eyebrow {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    color: rgba(255,255,255,.5);
+    margin-bottom: 8px;
+  }
+  .stack-title {
+    font-size: clamp(24px, 4vw, 32px);
+    font-weight: 700;
+    line-height: 1.1;
+    text-transform: lowercase;
+    margin-bottom: 12px;
+  }
+  .stack-description {
+    font-size: 14px;
+    line-height: 1.6;
+    color: rgba(255,255,255,.8);
+    text-transform: lowercase;
+  }
+  
+  .stack-preview {
+    padding: 0 28px 28px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+  .stack-tickers {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .stack-ticker {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 12px;
+    background: rgba(255,255,255,.1);
+    border-radius: var(--radius-pill);
+    text-transform: uppercase;
+  }
+  .stack-stats {
+    display: flex;
+    gap: 24px;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255,255,255,.1);
+  }
+  .stack-stat {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .stack-stat-val {
+    font-family: 'DM Mono', monospace;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--yel);
+  }
+  .stack-stat-lbl {
+    font-size: 11px;
+    color: rgba(255,255,255,.5);
+    text-transform: lowercase;
+  }
+  
+  /* Expanded Stack View */
+  .stack-detail {
+    max-width: var(--max-w);
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+    display: none;
+  }
+  .stack-detail.active {
+    display: block;
+  }
+  .stack-detail-header {
+    margin-bottom: 40px;
+  }
+  .stack-detail-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: var(--text2);
+    margin-bottom: 12px;
+  }
+  .stack-detail-header h2 {
+    font-size: clamp(32px, 6vw, 48px);
+    font-weight: 700;
+    text-transform: lowercase;
+    margin-bottom: 12px;
+  }
+  .stack-detail-header p {
+    font-size: 16px;
+    color: var(--text2);
+    max-width: 600px;
+    line-height: 1.6;
+    text-transform: lowercase;
+  }
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text2);
+    margin-bottom: 24px;
+    cursor: pointer;
+    text-transform: lowercase;
+    transition: color 0.2s;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: inherit;
+  }
+  .back-link:hover {
+    color: var(--text);
+  }
+  .back-link svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .stack-stocks-grid {
+    display: grid;
+    gap: 16px;
+  }
+  
+  .stack-stock-card {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 20px;
+    align-items: center;
+    background: var(--white);
+    border-radius: var(--radius-card);
+    padding: 24px;
+    text-decoration: none;
+    color: var(--text);
+    border: 1px solid rgba(0,0,0,.06);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+  .stack-stock-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(0,0,0,.08);
+  }
+  .stack-stock-card:focus-visible {
+    outline: 3px solid var(--dark);
+    outline-offset: 2px;
+  }
+  .stack-stock-gauge {
+    width: 60px;
+    height: 60px;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .stack-stock-gauge svg {
+    transform: rotate(-90deg);
+  }
+  .stack-stock-gauge circle {
+    fill: none;
+    stroke-width: 6;
+  }
+  .stack-stock-gauge .gauge-bg {
+    stroke: rgba(0,0,0,.1);
+  }
+  .stack-stock-gauge .gauge-fill {
+    stroke: var(--yel);
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.5s;
+  }
+  .stack-stock-gauge .gauge-val {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .stack-stock-info h3 {
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: lowercase;
+    margin-bottom: 4px;
+  }
+  .stack-stock-info p {
+    font-size: 14px;
+    color: var(--text2);
+    line-height: 1.5;
+    text-transform: lowercase;
+    max-width: 500px;
+  }
+  .stack-stock-meta {
+    text-align: right;
+  }
+  .stack-stock-position {
+    font-size: 13px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: var(--radius-pill);
+    background: rgba(0,0,0,.06);
+    text-transform: lowercase;
+  }
+  .stack-stock-upside {
+    font-family: 'DM Mono', monospace;
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 8px;
+  }
+  
+  /* Criteria Banner */
+  .criteria-banner {
+    background: var(--dark);
+    color: var(--white);
+    border-radius: var(--radius-card);
+    padding: 20px 24px;
+    margin-bottom: 24px;
+  }
+  .criteria-title {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: lowercase;
+    letter-spacing: 1px;
+    color: var(--yel);
+    margin-bottom: 8px;
+  }
+  .criteria-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 16px;
+    font-size: 14px;
+    color: rgba(255,255,255,.8);
+  }
+  .criteria-list span::before {
+    content: '•';
+    color: var(--yel);
+    margin-right: 6px;
+  }
+  
+  /* Featured Stack (Hero) */
+  .featured-stack {
+    max-width: var(--max-w-wide);
+    margin: 0 auto 40px;
+    padding: 0 24px;
+  }
+  .featured-stack-card {
+    background: var(--dark);
+    border-radius: var(--radius-card-lg);
+    padding: 48px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 48px;
+    align-items: center;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+    text-decoration: none;
+    color: var(--white);
+    -webkit-mask-image: -webkit-radial-gradient(white, black);
+    mask-image: radial-gradient(white, black);
+  }
+  .featured-stack-card::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(135deg, transparent 0%, rgba(255,229,0,.05) 100%);
+    pointer-events: none;
+  }
+  .featured-stack-content h2 {
+    font-size: clamp(32px, 5vw, 48px);
+    font-weight: 700;
+    text-transform: lowercase;
+    margin-bottom: 16px;
+    line-height: 1.1;
+  }
+  .featured-stack-content p {
+    font-size: 16px;
+    line-height: 1.7;
+    color: rgba(255,255,255,.75);
+    text-transform: lowercase;
+    max-width: 440px;
+  }
+  .featured-stack-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 24px;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 12px 24px;
+    background: var(--yel);
+    color: var(--dark);
+    border-radius: var(--radius-pill);
+    text-transform: lowercase;
+  }
+  .featured-stack-preview {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 12px;
+  }
+  .featured-mini-card {
+    background: rgba(255,255,255,.08);
+    border-radius: var(--radius-card);
+    padding: 20px;
+  }
+  .featured-mini-ticker {
+    font-family: 'DM Mono', monospace;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--yel);
+    margin-bottom: 4px;
+  }
+  .featured-mini-score {
+    font-size: 12px;
+    color: rgba(255,255,255,.6);
+  }
+  
+  @media (max-width: 900px) {
+    .featured-stack-card {
+      grid-template-columns: 1fr;
+      padding: 32px;
+    }
+    .featured-stack-preview {
+      grid-template-columns: repeat(3, 1fr);
+    }
+    .stack-stock-card {
+      grid-template-columns: auto 1fr;
+    }
+    .stack-stock-meta {
+      grid-column: span 2;
+      text-align: left;
+      display: flex;
+      gap: 12px;
+      margin-top: 8px;
+    }
+  }
+  
+  @media (max-width: 600px) {
+    .stack-stock-card {
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    .stack-stock-gauge {
+      width: 50px;
+      height: 50px;
+    }
+    .stack-stock-meta {
+      grid-column: span 1;
+    }
+    .stacks-grid {
+      grid-template-columns: 1fr;
+    }
+    .featured-stack-preview {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>
+<script>document.documentElement.classList.add('has-js')</script>
+</head>
+<body>
+
+<a class="skip-link" href="#content">skip to content</a>
+
+
+<div class="grain"></div>
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/" class="active">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content">
+<section class="stacks-hero">
+  <h1 class="reveal">collectibles</h1>
+  <p class="reveal" style="transition-delay:.1s">collectibles is our editorial series. each issue takes one market idea, picks six names on purpose, and gives you a cleaner way into the stacks than a giant stock list ever could.</p>
+</section>
+
+<!-- Featured Stack -->
+<section class="featured-stack" id="featuredStack">
+  <!-- Populated by JS -->
+</section>
+
+<!-- All Stacks Grid -->
+<section class="stacks-grid" id="stacksGrid">
+  <!-- Populated by JS -->
+</section>
+
+<!-- Stack Detail View -->
+<section class="stack-detail" id="stackDetail">
+  <div class="stack-detail-header">
+    <button class="back-link" type="button" onclick="showStackGrid()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M19 12H5M12 19l-7-7 7-7"/>
+      </svg>
+      all collectibles
+    </button>
+    <div class="stack-detail-meta" id="detailMeta">published</div>
+    <h2 id="detailTitle">stack name</h2>
+    <p id="detailDescription">stack description</p>
+  </div>
+  <div class="criteria-banner" id="criteriaBanner">
+    <div class="criteria-title" id="criteriaLabel">why these six</div>
+    <div class="criteria-list" id="criteriaList"></div>
+  </div>
+  <div class="criteria-banner">
+    <div class="criteria-title">editor note</div>
+    <div class="criteria-list" id="editorNote"></div>
+  </div>
+  <div class="stack-stocks-grid" id="detailGrid"></div>
+</section>
+
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/library-version.js?v=1776081807"></script>
+<script src="/js/library-loader.js?v=1776081807"></script>
+<script src="/js/library-summary.js?v=1776081807"></script>
+<script src="/js/collectibles-editions.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807" defer></script>
+<script src="/js/collectibles-page.js?v=1776081807"></script>
+</body>
+</html>

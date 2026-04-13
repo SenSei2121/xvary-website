@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>how to analyze a stock — the xvary framework for fundamental analysis</title>
+<meta name="description" content="Learn how to do stock analysis: fundamental analysis, valuation, risk assessment, and composite scoring. The complete framework XVARY uses to analyze 3,300+ companies.">
+<meta name="robots" content="index, follow">
+<link rel="canonical" href="https://xvary.com/methodology/how-we-analyze-stocks/">
+<meta property="og:type" content="article">
+<meta property="og:title" content="how to analyze a stock — the xvary framework">
+<meta property="og:description" content="The complete framework for fundamental stock analysis: financials, valuation, risk, and scoring. Used on 3,300+ companies.">
+<meta property="og:url" content="https://xvary.com/methodology/how-we-analyze-stocks/">
+<meta property="og:image" content="https://xvary.com/assets/og-default.png">
+<meta property="og:site_name" content="XVARY">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="how to analyze a stock — the xvary framework">
+<meta name="twitter:description" content="The complete framework for fundamental stock analysis. Used on 3,300+ companies.">
+<meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+<link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+<link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+<link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=DM+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "How to Analyze a Stock — The XVARY Framework for Fundamental Analysis",
+  "description": "Learn how to do stock analysis: fundamental analysis, valuation, risk assessment, and composite scoring. The complete framework XVARY uses to analyze 3,300+ companies.",
+  "url": "https://xvary.com/methodology/how-we-analyze-stocks/",
+  "datePublished": "2026-03-31",
+  "dateModified": "2026-03-31",
+  "author": { "@type": "Organization", "name": "XVARY", "url": "https://xvary.com" },
+  "publisher": { "@type": "Organization", "name": "XVARY", "logo": { "@type": "ImageObject", "url": "https://xvary.com/assets/xvary-logo.svg" } },
+  "mainEntityOfPage": "https://xvary.com/methodology/how-we-analyze-stocks/"
+}
+</script>
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "How do you analyze a stock?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Stock analysis starts with understanding the business model, then evaluating financials (revenue growth, margins, return on capital), assessing valuation (P/E, DCF, relative multiples), identifying risks, and forming a thesis. XVARY's composite score combines growth, value, risk, and momentum into a single 0-100 rating."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is fundamental analysis in the stock market?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Fundamental analysis evaluates a stock by examining the underlying business: its revenue, earnings, competitive position, management quality, and growth prospects. The goal is to determine whether the stock price reflects the company's intrinsic value. It contrasts with technical analysis, which focuses on price patterns and trading volume."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is the best AI for stock analysis?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "AI tools for stock analysis range from general-purpose models (ChatGPT, Claude, Gemini) to specialized platforms like XVARY that combine AI with structured research frameworks. The best approach uses AI to process large volumes of filings and data, then applies human editorial judgment for thesis formation and risk assessment."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How do you calculate a stock's intrinsic value?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Intrinsic value is typically calculated using a discounted cash flow (DCF) model: project future free cash flows, discount them back to present value using a required rate of return, and add terminal value. Other methods include earnings multiples (P/E), book value, and dividend discount models. No single method is definitive — XVARY cross-checks multiple approaches."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "What is a stock composite score?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "A composite score combines multiple analytical dimensions into a single rating. XVARY's composite score (0-100) weighs growth trajectory, valuation attractiveness, balance sheet risk, and price momentum. Scores above 70 suggest above-average opportunity; below 40 signals elevated risk or poor value."
+      }
+    }
+  ]
+}
+</script>
+<style>
+  .guide-shell {
+    max-width: var(--max-w-wide);
+    margin: 0 auto;
+    padding: 0 24px 72px;
+  }
+  .guide-section {
+    margin-bottom: 40px;
+  }
+  .guide-section h2 {
+    font-size: 22px;
+    font-weight: 700;
+    text-transform: lowercase;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+  .guide-section h3 {
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: lowercase;
+    margin-bottom: 8px;
+    margin-top: 20px;
+  }
+  .guide-section p,
+  .guide-section li {
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text2);
+    text-transform: lowercase;
+  }
+  .guide-section ul,
+  .guide-section ol {
+    padding-left: 18px;
+    margin-top: 10px;
+  }
+  .guide-section li + li {
+    margin-top: 6px;
+  }
+  .step-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 16px;
+  }
+  .step-card {
+    background: rgba(255, 255, 255, .65);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-radius: var(--radius-card);
+    padding: 24px;
+  }
+  .step-card .step-num {
+    font-family: var(--font-mono);
+    font-size: 13px;
+    color: var(--yel);
+    background: var(--ink);
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .step-card h3 {
+    font-size: 17px;
+    font-weight: 700;
+    text-transform: lowercase;
+    margin-bottom: 8px;
+  }
+  .step-card p {
+    font-size: 14px;
+    line-height: 1.65;
+    color: var(--text2);
+    text-transform: lowercase;
+  }
+  .callout {
+    margin-top: 20px;
+    border-radius: var(--radius-card);
+    background: rgba(255,229,0,.12);
+    padding: 18px 20px;
+    font-size: 16px;
+    font-weight: 600;
+    line-height: 1.4;
+    text-transform: lowercase;
+  }
+  .metric-row {
+    display: grid;
+    grid-template-columns: 140px 1fr;
+    gap: 8px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(0,0,0,.06);
+    font-size: 14px;
+    text-transform: lowercase;
+  }
+  .metric-row .metric-name {
+    font-weight: 600;
+  }
+  .metric-row .metric-why {
+    color: var(--text2);
+    line-height: 1.5;
+  }
+  .cta-bar {
+    margin-top: 40px;
+    text-align: center;
+  }
+  .cta-bar a {
+    display: inline-block;
+    margin: 0 8px 8px 0;
+  }
+  @media (max-width: 700px) {
+    .step-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+<a class="skip-link" href="#content">skip to content</a>
+
+<div class="grain"></div>
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content">
+  <div class="page-header">
+    <h1>how to analyze a stock</h1>
+    <p>the complete framework xvary uses to evaluate 3,300+ companies — from first read to composite score.</p>
+  </div>
+
+  <div class="guide-shell">
+
+    <!-- INTRO -->
+    <div class="guide-section">
+      <p>stock analysis is the process of deciding whether a company is worth owning at today's price. it sounds simple. the hard part is building a repeatable framework so you're not just reacting to headlines.</p>
+      <p>this is the framework xvary uses. it's the same process behind every snapshot and deep dive in <a href="/stacks/">the stacks</a>. we're publishing it because the best way to trust a research product is to see how the sausage is made.</p>
+    </div>
+
+    <!-- STEP 1: UNDERSTAND THE BUSINESS -->
+    <div class="guide-section">
+      <h2>step 1 — understand the business</h2>
+      <p>before touching a single number, answer three questions in plain english:</p>
+      <ul>
+        <li><strong>what does this company do?</strong> — one sentence. if you can't explain it simply, you don't understand it yet.</li>
+        <li><strong>how does it get paid?</strong> — revenue model. subscriptions, ads, hardware, licensing, transaction fees. where the money comes from determines how the business behaves.</li>
+        <li><strong>why is it winning (or losing)?</strong> — competitive advantage. moat. switching costs, network effects, cost structure, brand, regulatory capture. this is the single most important question in stock analysis.</li>
+      </ul>
+      <p>every xvary snapshot starts with these three answers in the "start here if you're new" section. they're the foundation everything else is built on.</p>
+    </div>
+
+    <!-- STEP 2: READ THE FINANCIALS -->
+    <div class="guide-section">
+      <h2>step 2 — read the financials</h2>
+      <p>the numbers tell you whether the story is real. here are the metrics that matter most:</p>
+
+      <div class="metric-row"><div class="metric-name">revenue growth</div><div class="metric-why">is the business getting bigger? a company growing 20% year-over-year is in a different universe than one growing 3%.</div></div>
+      <div class="metric-row"><div class="metric-name">gross margin</div><div class="metric-why">money left after making the product. high margin = pricing power. low margin = commodity business fighting on cost.</div></div>
+      <div class="metric-row"><div class="metric-name">operating margin</div><div class="metric-why">what's left after running the whole company. this is where you see whether management is disciplined or bloated.</div></div>
+      <div class="metric-row"><div class="metric-name">free cash flow</div><div class="metric-why">cash the business generates after paying for everything it needs to keep running. the most honest number on the income statement.</div></div>
+      <div class="metric-row"><div class="metric-name">return on capital</div><div class="metric-why">how much profit each dollar invested produces. a 30%+ ROIC means the business is a compounding machine.</div></div>
+      <div class="metric-row"><div class="metric-name">debt / equity</div><div class="metric-why">balance sheet risk. high debt means the company needs things to go right. low debt means it can survive things going wrong.</div></div>
+
+      <p>you can find all of these in a company's 10-K filing (annual report) or 10-Q (quarterly). xvary pulls them automatically and translates the numbers into context — what does 48% gross margin actually <em>mean</em> for this specific company?</p>
+    </div>
+
+    <!-- STEP 3: ASSESS VALUATION -->
+    <div class="guide-section">
+      <h2>step 3 — assess the valuation</h2>
+      <p>a great business at the wrong price is a bad investment. valuation is the bridge between "this company is good" and "this stock is worth buying."</p>
+
+      <h3>the main tools</h3>
+      <ul>
+        <li><strong>p/e ratio</strong> (price-to-earnings) — how many dollars you pay for $1 of profit. a 15x p/e is cheap; a 40x p/e means the market expects a lot of growth.</li>
+        <li><strong>ev/ebitda</strong> — enterprise value divided by operating earnings. more useful than p/e for comparing companies with different debt structures.</li>
+        <li><strong>dcf model</strong> (discounted cash flow) — project future cash flows, discount them back. the most rigorous method, but sensitive to assumptions about growth rates and discount rates.</li>
+        <li><strong>relative valuation</strong> — compare the stock's multiples against peers in the same sector. is it trading at a premium or discount, and is that justified?</li>
+      </ul>
+
+      <div class="callout">a common mistake: comparing a software company's p/e to a bank's p/e. different business models deserve different multiples. always compare within the peer group.</div>
+    </div>
+
+    <!-- STEP 4: IDENTIFY THE RISKS -->
+    <div class="guide-section">
+      <h2>step 4 — identify the risks</h2>
+      <p>every stock has a bear case. the question is whether you're being paid enough for the risk.</p>
+      <p>xvary categorizes risks by severity (high / med / low) and by type:</p>
+      <ul>
+        <li><strong>business risk</strong> — competition, customer concentration, product obsolescence</li>
+        <li><strong>financial risk</strong> — leverage, cash burn, refinancing exposure</li>
+        <li><strong>regulatory risk</strong> — antitrust, compliance costs, policy changes</li>
+        <li><strong>execution risk</strong> — management transitions, integration of acquisitions, technology bets</li>
+        <li><strong>valuation risk</strong> — the stock is priced for perfection and there's no margin of safety</li>
+      </ul>
+      <p>the kill criteria question: what specific event or data point would make you sell? if you can't answer that, you don't have a thesis — you have a hope.</p>
+    </div>
+
+    <!-- STEP 5: FORM A THESIS -->
+    <div class="guide-section">
+      <h2>step 5 — form a thesis</h2>
+      <p>a thesis is not "i think the stock will go up." a thesis has three parts:</p>
+      <ol>
+        <li><strong>the view</strong> — what you believe the market is missing or underweighting.</li>
+        <li><strong>the evidence</strong> — the specific data that supports your view.</li>
+        <li><strong>the kill criteria</strong> — what would prove you wrong.</li>
+      </ol>
+      <p>every xvary deep dive leads with the thesis. the rest of the report is evidence for or against it. this is how institutional investors think — and it's how anyone serious about stock analysis should structure their work.</p>
+    </div>
+
+    <!-- STEP 6: COMPOSITE SCORING -->
+    <div class="guide-section">
+      <h2>step 6 — score it</h2>
+      <p>xvary's composite score (0–100) combines four dimensions into a single number:</p>
+
+      <div class="step-grid">
+        <div class="step-card">
+          <div class="step-num">01</div>
+          <h3>growth</h3>
+          <p>revenue trajectory, margin expansion, TAM penetration. is the business getting bigger and more profitable?</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">02</div>
+          <h3>value</h3>
+          <p>relative and absolute valuation. is the price reasonable given the fundamentals?</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">03</div>
+          <h3>risk</h3>
+          <p>balance sheet strength, competitive threats, regulatory exposure. how much can go wrong?</p>
+        </div>
+        <div class="step-card">
+          <div class="step-num">04</div>
+          <h3>momentum</h3>
+          <p>earnings revisions, institutional flow, price trend. is the market waking up to the story?</p>
+        </div>
+      </div>
+
+      <p style="margin-top:16px">scores above 70 suggest above-average opportunity. below 40 signals elevated risk or poor value. the number is a starting point, not a conclusion — read the report to understand what's driving the score.</p>
+    </div>
+
+    <!-- STEP 7: TRY IT -->
+    <div class="guide-section">
+      <h2>see it in action</h2>
+      <p>every concept on this page is applied to real companies in the stacks. pick any name and you'll see the framework at work — business model, financials, risks, and composite score.</p>
+
+      <div class="cta-bar">
+        <a class="btn-dark btn-sm" href="/stacks/">browse the stacks</a>
+        <a class="btn-dark btn-sm" href="/free/">read a free deep dive</a>
+        <a class="btn-dark btn-sm" href="/compare/">compare two stocks</a>
+        <a class="btn-dark btn-sm" href="/stacks/undervalued/">undervalued stocks</a>
+        <a class="btn-dark btn-sm" href="/methodology/best-ai-stock-analysis/">best ai for stock analysis</a>
+        <a class="btn-dark btn-sm" href="/methodology/">full methodology</a>
+      </div>
+    </div>
+
+  </div>
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/site-chrome.js?v=1776081807"></script>
+</body>
+</html>

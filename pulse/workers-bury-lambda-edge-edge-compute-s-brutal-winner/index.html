@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Workers Bury Lambda@Edge: Edge Compute&#x27;s Brutal Winner — xvary pulse</title>
+  <meta name="description" content="AWS&#x27;s regional serverless is already obsolete against Cloudflare&#x27;s zero-cold-start global edge that slashes latency and bills by orders of magnitude.">
+  <link rel="canonical" href="https://xvary.com/pulse/workers-bury-lambda-edge-edge-compute-s-brutal-winner/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Workers Bury Lambda@Edge: Edge Compute&#x27;s Brutal Winner">
+  <meta property="og:description" content="AWS&#x27;s regional serverless is already obsolete against Cloudflare&#x27;s zero-cold-start global edge that slashes latency and bills by orders of magnitude.">
+  <meta property="og:url" content="https://xvary.com/pulse/workers-bury-lambda-edge-edge-compute-s-brutal-winner/">
+  <meta property="og:image" content="https://xvary.com/assets/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="XVARY">
+  <meta name="robots" content="index, follow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Workers Bury Lambda@Edge: Edge Compute&#x27;s Brutal Winner">
+  <meta name="twitter:description" content="AWS&#x27;s regional serverless is already obsolete against Cloudflare&#x27;s zero-cold-start global edge that slashes latency and bills by orders of magnitude.">
+  <meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-article.css?v=1776081807">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Workers Bury Lambda@Edge: Edge Compute's Brutal Winner",
+  "description": "AWS's regional serverless is already obsolete against Cloudflare's zero-cold-start global edge that slashes latency and bills by orders of magnitude.",
+  "datePublished": "2026-04-10",
+  "dateModified": "2026-04-10",
+  "author": {
+    "@type": "Organization",
+    "name": "xvary"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "xvary",
+    "url": "https://xvary.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://xvary.com/assets/xvary-logo.svg"
+    }
+  },
+  "image": [
+    "https://xvary.com/assets/og-default.png"
+  ],
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [
+      ".pa-headline",
+      ".pa-body"
+    ]
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://xvary.com/pulse/workers-bury-lambda-edge-edge-compute-s-brutal-winner/"
+  },
+  "url": "https://xvary.com/pulse/workers-bury-lambda-edge-edge-compute-s-brutal-winner/"
+}
+  </script>
+</head>
+<body class="pa-article">
+<a class="skip-link" href="#content">skip to content</a>
+
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="active nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content">
+  <div class="pa-wrap">
+    <div class="pa-back"><a href="/pulse/">← back to the pulse</a></div>
+
+    <header class="pa-head">
+      <div class="pa-kicker-row">
+        <span class="pa-type">pulse note</span>
+        <span class="pa-ticker-pill">desk</span>
+      </div>
+      <h1>Workers Bury Lambda@Edge: Edge Compute&#x27;s Brutal Winner</h1>
+      <p class="pa-deck">AWS&#x27;s regional serverless is already obsolete against Cloudflare&#x27;s zero-cold-start global edge that slashes latency and bills by orders of magnitude.</p>
+      <div class="pa-byline">xvary research desk · april 10, 2026 · ~2 min read</div>
+    </header>
+
+    <div class="pa-grid">
+      <article class="pa-body">
+<p>Wall Street still worships AWS Lambda as the default serverless king. Analysts nod along while enterprises bleed on hidden egress, API Gateway taxes, and glacial cold starts. The data says otherwise: Cloudflare Workers is eating Lambda@Edge alive in 2026. The edge isn't coming—it's here, and it's cheaper, faster, and mercilessly superior for any latency-sensitive workload.</p><p>Conventional wisdom claims Lambda@Edge delivers "edge" compute. Reality: it limps along with cold starts of 250-800ms on Node.js and up to 1200ms on Python, punishing global users. Cloudflare Workers, powered by lightweight V8 isolates, deliver sub-1ms cold starts everywhere across 300+ PoPs. Global 95th percentile TTFB clocks in at 40ms for Workers versus 216ms for Lambda@Edge—a 5x gap that translates directly to abandoned carts and frustrated users.</p><p>Pricing exposes the bloodbath. Cloudflare's paid plan starts at $5/month for 10 million requests, then $0.30 per additional million—with CPU-time billing that ignores I/O wait. Lambda@Edge piles on request fees, GB-second duration, and often API Gateway charges that inflate real HTTP workloads 5-8x. One migration case study documented $50,000 annual savings after switching. At 100M+ requests/month, Workers run ~$55 while equivalent Lambda setups hit $120-200. For high-volume HTTP ingestion, Workers prove ~7x cheaper than Lambda plus API Gateway.</p><p>Cloudflare's Q4 2025 revenue hit $614.5 million, up 34% YoY, with the Developer Platform (anchored by Workers) delivering outsized growth amid 4.5 million active developers. FY2025 revenue reached $2.168 billion, up 30%. The flywheel spins: more agents and AI traffic route through the edge, demanding Workers execution that pulls in security and networking spend. Lambda@Edge remains shackled to AWS regions and container overhead that can't match V8's efficiency.</p><p>Enterprise adoption confirms the shift. Shopify routes checkout logic through Workers for sub-50ms global responses at trillions of monthly requests. Benchmarks show first-load times of 838ms on Workers versus 1,519ms on Lambda. No egress fees. No complex regional configuration. Just code that runs where users actually are. AWS can tout SnapStart improvements, but sub-millisecond consistency at true global scale remains impossible on container architecture.</p><p>Critics whine about Workers' execution limits—30 seconds CPU on Unbound versus Lambda's 15 minutes. Irrelevant for the 95% of modern workloads: API endpoints, personalization, A/B testing, real-time decisions. These thrive on speed and proximity, not long-running batch jobs better left to regional Lambda or containers. The remaining 5% won't save Lambda@Edge's market share as edge traffic explodes.</p><p>Cloudflare isn't just competing—it's redefining serverless economics. Predictable flat-rate scaling without surprise bills. Zero cold starts by design. A network that already handles peak 129 million HTTP requests per second. AWS built the original serverless revolution; Cloudflare is finishing it at the edge, where physics and profits align. Enterprises clinging to Lambda@Edge are paying a stupidity tax measured in milliseconds and millions.</p>
+      </article>
+
+      <aside class="pa-aside" aria-label="signal card">
+        <div class="pa-score pa-score--editorial">
+          <div class="pa-score-label">hero stat</div>
+          <div class="pa-pulse-stat">Workers: 40ms p95 global TTFB vs Lambda@Edge 216ms — 5x faster at 1/5th the effective cost</div>
+
+          <div class="pa-score-label pa-kill-heading">kill criteria</div>
+          <ul class="pa-kill-list">
+
+          </ul>
+          <div class="pa-score-label pa-verdict-heading">verdict</div>
+          <p class="pa-verdict">Dump Lambda@Edge. Cloudflare Workers isn&#x27;t an alternative—it&#x27;s the new default for serverless compute in 2026 and beyond. The numbers don&#x27;t lie: superior latency, radically lower costs, and unstoppable momentum make it the only rational choice for global applications. AWS loyalists will watch market share erode as the edge claims the future.</p>
+          <a href="/stacks/" class="pa-score-cta">the stacks · all tickers →</a>
+        </div>
+      </aside>
+    </div>
+
+    <div class="pa-cta-row">
+      <a href="/stacks/" class="pa-cta is-primary">the stacks · all tickers →</a>
+      <a href="/pulse/" class="pa-cta">back to the pulse →</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807"></script>
+<script src="/js/gate.js?v=1776081807" defer></script>
+</body>
+</html>

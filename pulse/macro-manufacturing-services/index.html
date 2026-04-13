@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<!--
+  Evergreen pulse page — macro dissection.
+  Built by: evergreen/build_evergreen.py
+  Template: evergreen/templates/macro-dissection.html
+  Data:     evergreen/data/manufacturing-services.json
+  Ship:     4. Website/dist/pulse/macro-manufacturing-services/index.html
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Manufacturing vs services — PMIs, inventories, and jobs — xvary pulse</title>
+  <meta name="description" content="why manufacturing cycles overshoot, how services employment steered soft-landing debates, and sector rotation lessons.">
+  <link rel="canonical" href="https://xvary.com/pulse/macro-manufacturing-services/">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Manufacturing vs services — macro dissection · xvary">
+  <meta property="og:description" content="why manufacturing cycles overshoot, how services employment steered soft-landing debates, and sector rotation lessons.">
+  <meta property="og:url" content="https://xvary.com/pulse/macro-manufacturing-services/">
+  <meta property="og:image" content="https://xvary.com/assets/og-default.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:locale" content="en_US">
+  <meta property="og:site_name" content="XVARY">
+  <meta name="robots" content="index, follow">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Manufacturing vs services — macro dissection · xvary">
+  <meta name="twitter:description" content="why manufacturing cycles overshoot, how services employment steered soft-landing debates, and sector rotation lessons.">
+  <meta name="twitter:image" content="https://xvary.com/assets/og-default.png">
+  <link rel="icon" type="image/svg+xml" href="/assets/favicon.svg">
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicon-16.png">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700;800&family=DM+Mono:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-article.css?v=1776081807">
+  <link rel="stylesheet" href="/css/pulse-evergreen.css?v=1776081807">
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "Manufacturing vs services — macro dissection · xvary",
+  "description": "why manufacturing cycles overshoot, how services employment steered soft-landing debates, and sector rotation lessons.",
+  "datePublished": "2026-03-25",
+  "dateModified": "2026-03-25",
+  "author": {
+    "@type": "Organization",
+    "name": "xvary"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "xvary",
+    "url": "https://xvary.com",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://xvary.com/assets/xvary-logo.svg"
+    }
+  },
+  "mainEntityOfPage": {
+    "@type": "WebPage",
+    "@id": "https://xvary.com/pulse/macro-manufacturing-services/"
+  },
+  "image": ["https://xvary.com/assets/og-default.png"],
+  "speakable": {
+    "@type": "SpeakableSpecification",
+    "cssSelector": [".pa-headline", ".pa-body"]
+  },
+  "url": "https://xvary.com/pulse/macro-manufacturing-services/"
+}
+  </script>
+  <script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "FAQPage",
+  "@id": "https://xvary.com/pulse/macro-manufacturing-services/#faq",
+  "url": "https://xvary.com/pulse/macro-manufacturing-services/",
+  "mainEntity": [
+    {
+      "@type": "Question",
+      "name": "is PMI below 50 a recession?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "not alone — depth and persistence matter, plus services."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "China PMI vs US?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "linked via supply chains; divergences happen."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "why do stocks rally on bad PMI sometimes?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "cuts pricing and mean reversion trades."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "ISM vs S&P PMI?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "different samples — watch methodology."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "inventory restock playbooks?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "early cyclicals and transports — timing is hard."
+      }
+    }
+  ]
+}
+  </script>
+</head>
+<body class="pa-article">
+<a class="skip-link" href="#content">skip to content</a>
+<div class="grain"></div>
+
+<nav class="nav" aria-label="main navigation">
+  <a class="nav-brand" href="/">xvary</a>
+  <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+  <div class="nav-links">
+    <a href="/pulse/" class="active nav-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/pricing/">pricing</a>
+    <a class="nav-cta" href="/pricing/">sign up</a>
+  </div>
+</nav>
+
+<main id="content" class="md-layout">
+  <div class="pa-wrap md-wrap">
+    <div class="pa-back"><a href="/pulse/">← back to the pulse</a></div>
+
+    <header class="pa-head md-head">
+      <div class="pa-kicker-row">
+        <span class="pa-type">evergreen · macro dissection</span>
+        <span class="pa-ticker-pill">ISM manufacturing and sector cycles</span>
+      </div>
+      <h1>Manufacturing vs services — PMIs, inventories, and jobs</h1>
+      <p class="pa-deck">why manufacturing PMIs overshoot equities during inventory cycles — and how services resilience shaped the post-2020 expansion.</p>
+      <div class="pa-byline">xvary research desk · 2026-03-25 · 1990 to 2026</div>
+    </header>
+
+    <div class="pa-grid md-grid">
+      <article class="pa-body md-body">
+        <section class="md-definitions" aria-labelledby="md-definitions-h"><h2 class="pa-geo-h" id="md-definitions-h">key definitions</h2><dl class="md-definition-list"><div class="md-definition"><dt><dfn>PMI</dfn></dt><dd>purchasing managers&#x27; index — 50 is often the expansion/contraction line.</dd></div><div class="md-definition"><dt><dfn>inventory cycle</dfn></dt><dd>businesses restock and destock amplifying short swings.</dd></div><div class="md-definition"><dt><dfn>goods vs services</dfn></dt><dd>post-pandemic goods boom then mean reversion highlighted the wedge.</dd></div></dl></section>
+        <p>equity sectors rotate with the manufacturing pulse — semis, machinery, transports lead early cycle.</p><p>do not ignore services PMIs when judging labor market durability.</p>
+
+        <figure class="md-master-chart">
+          <figcaption>ISM manufacturing PMI — stylized annual avg</figcaption>
+          <svg viewBox="0 0 760 280" role="img" aria-label="ISM manufacturing PMI — stylized annual avg" xmlns="http://www.w3.org/2000/svg"><rect width="760" height="280" fill="#F4F4F2" rx="20" /><text x="10" y="25.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">60</text><line x1="46" y1="20.00" x2="742" y2="20.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><text x="10" y="243.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">0</text><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><text x="10" y="243.00" font-family="DM Mono, monospace" font-size="16" fill="#666666">0</text><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="rgba(26,26,26,0.12)" stroke-width="1" /><line x1="46" y1="238.00" x2="742" y2="238.00" stroke="#1A1A1A" stroke-width="1.75" stroke-dasharray="5 4" /><path d="M 46.00 99.93 L 65.33 66.51 L 84.67 49.07 L 104.00 41.80 L 123.33 30.90 L 142.67 63.60 L 162.00 70.87 L 181.33 76.32 L 200.67 41.80 L 220.00 34.53 L 239.33 85.40 L 258.67 81.77 L 278.00 67.23 L 297.33 59.97 L 316.67 38.17 L 336.00 41.80 L 355.33 52.70 L 374.67 56.33 L 394.00 96.30 L 413.33 99.93 L 432.67 38.17 L 452.00 41.80 L 471.33 52.70 L 490.67 49.07 L 510.00 38.17 L 529.33 49.07 L 548.67 49.07 L 568.00 30.90 L 587.33 20.00 L 606.67 63.60 L 626.00 81.77 L 645.33 20.00 L 664.67 45.43 L 684.00 67.23 L 703.33 61.78 L 722.67 59.97 L 742.00 56.33 L 742.00 238.00 L 46.00 238.00 Z" fill="rgba(245,225,0,0.55)" stroke="none" /><path d="M 46.00 99.93 L 65.33 66.51 L 84.67 49.07 L 104.00 41.80 L 123.33 30.90 L 142.67 63.60 L 162.00 70.87 L 181.33 76.32 L 200.67 41.80 L 220.00 34.53 L 239.33 85.40 L 258.67 81.77 L 278.00 67.23 L 297.33 59.97 L 316.67 38.17 L 336.00 41.80 L 355.33 52.70 L 374.67 56.33 L 394.00 96.30 L 413.33 99.93 L 432.67 38.17 L 452.00 41.80 L 471.33 52.70 L 490.67 49.07 L 510.00 38.17 L 529.33 49.07 L 548.67 49.07 L 568.00 30.90 L 587.33 20.00 L 606.67 63.60 L 626.00 81.77 L 645.33 20.00 L 664.67 45.43 L 684.00 67.23 L 703.33 61.78 L 722.67 59.97 L 742.00 56.33" fill="none" stroke="#1A1A1A" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" /><circle cx="46.00" cy="99.93" r="2.6" fill="#1A1A1A" /><circle cx="65.33" cy="66.51" r="2.6" fill="#1A1A1A" /><circle cx="84.67" cy="49.07" r="2.6" fill="#1A1A1A" /><circle cx="104.00" cy="41.80" r="2.6" fill="#1A1A1A" /><circle cx="123.33" cy="30.90" r="2.6" fill="#1A1A1A" /><circle cx="142.67" cy="63.60" r="2.6" fill="#1A1A1A" /><circle cx="162.00" cy="70.87" r="2.6" fill="#1A1A1A" /><circle cx="181.33" cy="76.32" r="2.6" fill="#1A1A1A" /><circle cx="200.67" cy="41.80" r="2.6" fill="#1A1A1A" /><circle cx="220.00" cy="34.53" r="2.6" fill="#1A1A1A" /><circle cx="239.33" cy="85.40" r="2.6" fill="#1A1A1A" /><circle cx="258.67" cy="81.77" r="2.6" fill="#1A1A1A" /><circle cx="278.00" cy="67.23" r="2.6" fill="#1A1A1A" /><circle cx="297.33" cy="59.97" r="2.6" fill="#1A1A1A" /><circle cx="316.67" cy="38.17" r="2.6" fill="#1A1A1A" /><circle cx="336.00" cy="41.80" r="2.6" fill="#1A1A1A" /><circle cx="355.33" cy="52.70" r="2.6" fill="#1A1A1A" /><circle cx="374.67" cy="56.33" r="2.6" fill="#1A1A1A" /><circle cx="394.00" cy="96.30" r="2.6" fill="#1A1A1A" /><circle cx="413.33" cy="99.93" r="2.6" fill="#1A1A1A" /><circle cx="432.67" cy="38.17" r="2.6" fill="#1A1A1A" /><circle cx="452.00" cy="41.80" r="2.6" fill="#1A1A1A" /><circle cx="471.33" cy="52.70" r="2.6" fill="#1A1A1A" /><circle cx="490.67" cy="49.07" r="2.6" fill="#1A1A1A" /><circle cx="510.00" cy="38.17" r="2.6" fill="#1A1A1A" /><circle cx="529.33" cy="49.07" r="2.6" fill="#1A1A1A" /><circle cx="548.67" cy="49.07" r="2.6" fill="#1A1A1A" /><circle cx="568.00" cy="30.90" r="2.6" fill="#1A1A1A" /><circle cx="587.33" cy="20.00" r="2.6" fill="#1A1A1A" /><circle cx="606.67" cy="63.60" r="2.6" fill="#1A1A1A" /><circle cx="626.00" cy="81.77" r="2.6" fill="#1A1A1A" /><circle cx="645.33" cy="20.00" r="2.6" fill="#1A1A1A" /><circle cx="664.67" cy="45.43" r="2.6" fill="#1A1A1A" /><circle cx="684.00" cy="67.23" r="2.6" fill="#1A1A1A" /><circle cx="703.33" cy="61.78" r="2.6" fill="#1A1A1A" /><circle cx="722.67" cy="59.97" r="2.6" fill="#1A1A1A" /><circle cx="742.00" cy="56.33" r="2.6" fill="#1A1A1A" /><text x="46.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">1990</text><text x="220.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">1999</text><text x="394.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2008</text><text x="568.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2017</text><text x="742.00" y="268.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="16" fill="#666666">2026</text></svg>
+        </figure>
+
+        <div class="md-regime-nav-wrap"><nav class="md-regime-nav" aria-label="regime navigation"><a class="md-regime-chip" href="#regime-early-90s-slump"><span class="md-regime-chip-title">early-1990s slump</span><span class="md-regime-chip-range">1990 to 1992</span></a><a class="md-regime-chip" href="#regime-mid-90s-2000"><span class="md-regime-chip-title">1995 to 2000 expansion</span><span class="md-regime-chip-range">1995 to 2000</span></a><a class="md-regime-chip" href="#regime-2001-2009"><span class="md-regime-chip-title">2001 recession and GFC</span><span class="md-regime-chip-range">2001 to 2009</span></a><a class="md-regime-chip" href="#regime-2010-2019"><span class="md-regime-chip-title">2010 to 2019 slow grind</span><span class="md-regime-chip-range">2010 to 2019</span></a><a class="md-regime-chip" href="#regime-2020-2026"><span class="md-regime-chip-title">2020 to 2026 whipsaw</span><span class="md-regime-chip-range">2020 to 2026</span></a></nav></div>
+        <article class="md-regime-card" id="regime-early-90s-slump"><header class="md-regime-head"><div><h2 class="md-regime-title">early-1990s slump</h2><div class="md-regime-range">1990 to 1992</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 37.00 L 100.00 17.29 L 192.00 7.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="17.29" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">manufacturing led the cleanup.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">52</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-52</text><rect x="73.67" y="37.81" width="103.33" height="59.19" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="23.48" width="103.33" height="73.52" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="29.81" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">38</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1990</text><text x="292.00" y="15.48" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">47</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1991</text><text x="458.67" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">52</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1992</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">inventory</span>destock.</li><li><span class="md-event-tag">policy</span>easing.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>industrials bottom before services employment.</p></div><blockquote class="md-regime-quotable"><p>PMI troughed under 50.</p><cite>ISM</cite></blockquote></article><article class="md-regime-card" id="regime-mid-90s-2000"><header class="md-regime-head"><div><h2 class="md-regime-title">1995 to 2000 expansion</h2><div class="md-regime-range">1995 to 2000</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 22.00 L 100.00 7.00 L 192.00 37.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="22.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">tech capex lifted manufacturing readings.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">54</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-54</text><rect x="73.67" y="25.00" width="103.33" height="72.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="34.00" width="103.33" height="63.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="17.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">48</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1995</text><text x="292.00" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">54</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">1998</text><text x="458.67" y="26.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">42</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2000</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">capex</span>boom.</li><li><span class="md-event-tag">services</span>strong too.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>late-cycle manufacturing heat can be policy bait.</p></div><blockquote class="md-regime-quotable"><p>PMI cyclically strong into 2000.</p><cite>ISM</cite></blockquote></article><article class="md-regime-card" id="regime-2001-2009"><header class="md-regime-head"><div><h2 class="md-regime-title">2001 recession and GFC</h2><div class="md-regime-range">2001 to 2009</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 25.46 L 100.00 7.00 L 192.00 37.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="25.46" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">double manufacturing recession.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">51</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-51</text><rect x="73.67" y="28.71" width="103.33" height="68.29" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="36.65" width="103.33" height="60.35" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="20.71" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">43</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2001</text><text x="292.00" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">51</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2006</text><text x="458.67" y="28.65" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">38</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2009</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">housing</span>2000s cycle.</li><li><span class="md-event-tag">trade</span>global shock 2008.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>manufacturing weakness + credit stress = avoid cyclicals.</p></div><blockquote class="md-regime-quotable"><p>PMI collapsed into 2009.</p><cite>ISM</cite></blockquote></article><article class="md-regime-card" id="regime-2010-2019"><header class="md-regime-head"><div><h2 class="md-regime-title">2010 to 2019 slow grind</h2><div class="md-regime-range">2010 to 2019</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 7.00 L 100.00 19.86 L 192.00 37.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="100.00" cy="19.86" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">manufacturing patchy; services carried jobs.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">55</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-55</text><rect x="73.67" y="16.00" width="103.33" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="240.33" y="20.42" width="103.33" height="76.58" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="407.00" y="26.31" width="103.33" height="70.69" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="125.33" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">55</text><text x="125.33" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2010</text><text x="292.00" y="12.42" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">52</text><text x="292.00" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2015</text><text x="458.67" y="18.31" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">48</text><text x="458.67" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2019</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">oil</span>2015 shock.</li><li><span class="md-event-tag">dollar</span>2013–2015 headwind.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>flat manufacturing with calm credit can still lift broad indices via tech.</p></div><blockquote class="md-regime-quotable"><p>PMI oscillated near 50–60.</p><cite>ISM</cite></blockquote></article><article class="md-regime-card" id="regime-2020-2026"><header class="md-regime-head"><div><h2 class="md-regime-title">2020 to 2026 whipsaw</h2><div class="md-regime-range">2020 to 2026</div></div><div class="md-regime-spark"><svg viewBox="0 0 200 44" role="img" aria-label="sparkline" xmlns="http://www.w3.org/2000/svg"><rect width="200" height="44" fill="transparent" rx="12" /><path d="M 8.00 37.00 L 69.33 7.00 L 130.67 20.50 L 192.00 16.00" fill="none" stroke="#1A1A1A" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" /><circle cx="8.00" cy="37.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="69.33" cy="7.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="130.67" cy="20.50" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /><circle cx="192.00" cy="16.00" r="2.4" fill="#F5E100" stroke="#1A1A1A" stroke-width="1" /></svg></div></header><p class="md-regime-summary">pandemic collapse, goods boom, normalization.</p><figure class="md-regime-chart"><figcaption>regime snapshot (contextual units — see chart label)</figcaption><svg viewBox="0 0 560 220" role="img" aria-label="regime snapshot (contextual units — see chart label)" xmlns="http://www.w3.org/2000/svg"><rect width="560" height="220" fill="#F4F4F2" rx="18" /><line x1="42" y1="97.00" x2="542" y2="97.00" stroke="#1A1A1A" stroke-width="2" /><text x="10" y="21" font-family="DM Mono, monospace" font-size="14" fill="#666666">53</text><text x="10" y="102.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">0</text><text x="10" y="183.00" font-family="DM Mono, monospace" font-size="14" fill="#666666">-53</text><rect x="65.75" y="31.28" width="77.50" height="65.72" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="190.75" y="16.00" width="77.50" height="81.00" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="315.75" y="22.88" width="77.50" height="74.12" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><rect x="440.75" y="20.58" width="77.50" height="76.42" fill="#F5E100" stroke="#1A1A1A" stroke-width="1.5" /><text x="104.50" y="23.28" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">43</text><text x="104.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2020</text><text x="229.50" y="8.00" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">53</text><text x="229.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2022</text><text x="354.50" y="14.88" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">48</text><text x="354.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2024</text><text x="479.50" y="12.58" text-anchor="middle" font-family="DM Mono, monospace" font-size="15" fill="#666666">50</text><text x="479.50" y="206.00" text-anchor="middle" font-family="Space Grotesk, sans-serif" font-size="16" fill="#1A1A1A">2026</text></svg></figure><ul class="md-event-list"><li><span class="md-event-tag">goods</span>spike then fade.</li><li><span class="md-event-tag">services</span>reopening leader.</li></ul><div class="md-regime-lesson"><span>lesson</span><p>when goods mean-revert, do not confuse with full recession without services confirmation.</p></div><blockquote class="md-regime-quotable"><p>PMI crashed then rebounded before moderating.</p><cite>ISM</cite></blockquote></article>
+        <p>refresh with actual ISM prints — stylized path illustrates typical recessions.</p><p>global manufacturing (China, EU) feeds US multinationals even with domestic services calm.</p>
+      </article>
+
+      <aside class="pa-aside md-aside" aria-label="signal card">
+        <div class="pa-score pa-score--editorial md-score">
+          <div class="pa-score-label">ISM manufacturing</div>
+          <div class="pa-pulse-stat">ISM manufacturing dipped below 40 in the worst recessions — a zone that historically coincided with sharp industrial earnings cuts.</div>
+          <div class="pa-score-label pa-kill-heading">why it matters</div>
+          <p class="pa-verdict">manufacturing is small in US GDP share but loud in cyclicals and equity sentiment.</p>
+          <div class="pa-score-label pa-verdict-heading">verdict</div>
+          <p class="pa-verdict">services dictate employment — the split matters for soft landings.</p>
+          <a href="/pulse/" class="pa-score-cta">more pulse research →</a>
+        </div>
+      </aside>
+    </div>
+
+    <div class="pa-geo-wrap">
+      <section class="pa-geo-takeaways" aria-label="key takeaways"><h2 class="pa-geo-h" id="takeaways">key takeaways</h2><ul class="pa-geo-takeaways-list"><li>manufacturing is high beta to inventories.</li><li>services matter for payrolls.</li><li>global PMIs add context for exporters.</li><li>sector ETFs map cleanly to PMI phases.</li><li>one month ≠ regime.</li></ul></section>
+      <section class="pa-geo-faq" aria-label="frequently asked questions"><h2 class="pa-geo-h" id="faq">faq</h2><div class="pa-geo-faq-items"><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">is PMI below 50 a recession?</h3><p class="pa-geo-faq-a">not alone — depth and persistence matter, plus services.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">China PMI vs US?</h3><p class="pa-geo-faq-a">linked via supply chains; divergences happen.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">why do stocks rally on bad PMI sometimes?</h3><p class="pa-geo-faq-a">cuts pricing and mean reversion trades.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">ISM vs S&amp;P PMI?</h3><p class="pa-geo-faq-a">different samples — watch methodology.</p></div><div class="pa-geo-faq-item"><h3 class="pa-geo-faq-q">inventory restock playbooks?</h3><p class="pa-geo-faq-a">early cyclicals and transports — timing is hard.</p></div></div></section>
+      <section class="md-sources" aria-labelledby="md-sources-h"><h2 class="pa-geo-h" id="md-sources-h">sources</h2><ol class="md-sources-list"><li><a href="https://www.ismworld.org/supply-management-news-and-reports/reports/ism-report-on-business/">ISM: Manufacturing PMI</a></li><li><a href="https://fred.stlouisfed.org/series/NAPM">FRED: NAPM</a></li><li><a href="https://www.federalreserve.gov/monetarypolicy/beigebook.htm">Fed: Beige Book</a></li></ol></section>
+    </div>
+
+    <div class="pa-cta-row">
+      <a href="/pulse/" class="pa-cta is-primary">back to the pulse →</a>
+      <a href="/stacks/" class="pa-cta">the stacks →</a>
+    </div>
+  </div>
+</main>
+
+<footer class="footer">
+  xvary · 2026 · not investment advice
+  <div class="footer-links">
+    <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/config.js?v=1776081807"></script>
+<script src="/js/site-chrome.js?v=1776081807"></script>
+<script src="/js/gate.js?v=1776081807" defer></script>
+</body>
+</html>

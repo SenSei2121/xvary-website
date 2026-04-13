@@ -1,0 +1,533 @@
+/* Pulse article layout (v2j minimal — white reading surface, yellow accents).
+   Load after brutalist.css. Scoped class names use pa- prefix. */
+
+/* Shared rhythm — pulse articles + evergreen (/pulse/*) that load this file after brutalist */
+:root {
+  --pulse-reading-size: 17px;
+  --pulse-reading-line: 1.8;
+  --pulse-reading-color: var(--text2);
+  --pulse-deck-size: 17px;
+  --pulse-deck-line: 1.5;
+  --pulse-deck-weight: 500;
+  --pulse-back-size: 11px;
+  --pulse-back-tracking: 0.08em;
+  --pulse-type-size: 10px;
+  --pulse-type-tracking: 0.1em;
+  --pulse-ticker-size: 10px;
+  --pulse-byline-size: 10px;
+  --pulse-byline-tracking: 0.06em;
+  --pulse-score-label-size: 10px;
+  --pulse-score-label-tracking: 0.12em;
+}
+
+body.pa-article {
+  background: var(--white);
+}
+
+.pa-article .grain {
+  display: none;
+}
+
+.pa-wrap {
+  max-width: var(--max-w-wide);
+  margin: 0 auto;
+  padding: 0 clamp(16px, 3vw, 32px);
+}
+
+.pa-back {
+  padding: clamp(72px, 12vh, 100px) 0 0;
+}
+
+.pa-back a {
+  font-family: var(--font-mono);
+  font-size: var(--pulse-back-size);
+  letter-spacing: var(--pulse-back-tracking);
+  text-transform: lowercase;
+  color: var(--text2);
+  text-decoration: none;
+}
+
+.pa-back a:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.pa-head {
+  padding: 24px 0 20px;
+  margin-bottom: 28px;
+}
+
+.pa-kicker-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.pa-type {
+  font-family: var(--font-mono);
+  font-size: var(--pulse-type-size);
+  font-weight: 600;
+  letter-spacing: var(--pulse-type-tracking);
+  text-transform: lowercase;
+  padding: 6px 14px;
+  border-radius: 100px;
+  background: var(--dark);
+  color: var(--yel);
+}
+
+.pa-ticker-pill {
+  font-family: var(--font-mono);
+  font-size: var(--pulse-ticker-size);
+  font-weight: 700;
+  padding: 6px 14px;
+  border-radius: 100px;
+  background: var(--yel);
+  color: var(--dark);
+}
+
+.pa-head h1 {
+  font-size: clamp(32px, 5vw, 48px);
+  font-weight: 800;
+  line-height: 0.94;
+  letter-spacing: -0.04em;
+  /* authored casing (sentence case + proper nouns); see CAPITALIZATION_GUIDE.md Zone 2 */
+  margin-bottom: 8px;
+  max-width: 22ch;
+  padding-bottom: 14px;
+  border-bottom: 3px solid var(--yel);
+}
+
+.pa-deck {
+  font-size: var(--pulse-deck-size);
+  font-weight: var(--pulse-deck-weight);
+  line-height: var(--pulse-deck-line);
+  max-width: 48ch;
+  color: var(--text2);
+}
+
+.pa-byline {
+  font-family: var(--font-mono);
+  font-size: var(--pulse-byline-size);
+  letter-spacing: var(--pulse-byline-tracking);
+  text-transform: lowercase;
+  color: var(--muted);
+  margin-top: 12px;
+}
+
+.pa-grid {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: clamp(28px, 4vw, 44px);
+  align-items: start;
+  margin-bottom: 48px;
+}
+
+.pa-body {
+  font-size: var(--pulse-reading-size);
+  line-height: var(--pulse-reading-line);
+  color: var(--pulse-reading-color);
+}
+
+.pa-body p {
+  margin: 0 0 1.2em;
+}
+
+/* In-body section rails for long editorials (BLUF + bullets + labeled channels) */
+.pa-body h2.pa-geo-h {
+  margin-top: 2em;
+}
+
+.pa-body h2.pa-geo-h:first-child {
+  margin-top: 0;
+}
+
+/* Editorial HTML bodies — same “marker” emphasis as pulse feed (DESIGN_SYSTEM: yellow = energy) */
+.pa-body strong {
+  font-weight: 800;
+  color: var(--dark);
+  box-shadow: inset 0 -0.38em 0 color-mix(in srgb, var(--yel) 68%, transparent);
+  padding: 0 0.04em;
+}
+
+.pa-body em {
+  font-style: italic;
+  color: var(--dark);
+}
+
+.pa-body a {
+  color: var(--dark);
+  font-weight: 600;
+  text-decoration: none;
+  border-bottom: 2px solid var(--yel);
+  transition: border-color 0.15s ease, color 0.15s ease;
+}
+
+.pa-body a:hover {
+  color: var(--text2);
+  border-bottom-color: var(--dark);
+}
+
+.pa-body a.pa-ticker-link {
+  font-family: var(--font-mono);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.pa-body ul,
+.pa-body ol {
+  margin: 0 0 1.2em;
+  padding-left: 1.25em;
+}
+
+.pa-body li {
+  margin: 0.35em 0;
+}
+
+.pa-body ul li::marker {
+  color: var(--yel);
+  font-weight: 800;
+}
+
+.pa-body ol li::marker {
+  color: var(--dark);
+  font-weight: 700;
+  font-family: var(--font-mono);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pa-body a {
+    transition: none;
+  }
+}
+
+.pa-aside {
+  position: sticky;
+  top: 80px;
+}
+
+.pa-score {
+  background: var(--dark);
+  border-radius: var(--radius-card);
+  padding: 22px;
+  color: var(--white);
+}
+
+.pa-score-label {
+  font-family: var(--font-mono);
+  font-size: var(--pulse-score-label-size);
+  font-weight: 600;
+  letter-spacing: var(--pulse-score-label-tracking);
+  text-transform: lowercase;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 8px;
+}
+
+.pa-score-ticker {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--yel);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.pa-score-value {
+  font-size: 48px;
+  font-weight: 800;
+  letter-spacing: -0.04em;
+  line-height: 1;
+  margin-bottom: 10px;
+}
+
+.pa-score-shift {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 14px;
+}
+
+.pa-score-shift .pill {
+  padding: 4px 12px;
+  border-radius: 100px;
+  font-weight: 700;
+}
+
+.pa-score-shift .from {
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--white);
+}
+
+.pa-score-shift .down {
+  background: var(--red);
+  color: var(--white);
+}
+
+.pa-score-shift .up {
+  background: var(--green, #89e219);
+  color: var(--dark);
+}
+
+.pa-score-rows {
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 10px;
+}
+
+.pa-score-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.55);
+  text-transform: lowercase;
+  padding: 6px 0;
+}
+
+.pa-score-row-val {
+  font-family: var(--font-mono);
+  font-weight: 700;
+  color: var(--white);
+}
+
+.pa-score-row-val.is-accent {
+  color: var(--yel);
+}
+
+.pa-score-cta {
+  display: block;
+  text-align: center;
+  margin-top: 14px;
+  padding: 11px 20px;
+  border-radius: 100px;
+  background: var(--yel);
+  color: var(--dark);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: lowercase;
+  text-decoration: none;
+}
+
+.pa-score-cta:hover {
+  opacity: 0.92;
+}
+
+/* Pulse Engine editorial sidebar (reuse .pa-score shell) */
+.pa-score--editorial .pa-pulse-stat {
+  font-size: clamp(15px, 1.9vw, 18px);
+  font-weight: 700;
+  line-height: 1.35;
+  letter-spacing: -0.02em;
+  color: rgba(255, 255, 255, 0.95);
+  margin-bottom: 14px;
+}
+
+.pa-score--editorial .pa-kill-heading,
+.pa-score--editorial .pa-verdict-heading {
+  margin-top: 16px;
+  margin-bottom: 6px;
+}
+
+.pa-temp {
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  padding-top: 12px;
+  margin-bottom: 4px;
+}
+
+.pa-temp-line {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  color: rgba(255, 255, 255, 0.55);
+  margin-bottom: 8px;
+}
+
+.pa-temp-reading {
+  color: var(--yel);
+  font-weight: 700;
+}
+
+.pa-temp-plain {
+  font-size: 11px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.72);
+  margin: 0;
+}
+
+.pa-kill-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.pa-kill-list li {
+  font-size: 12px;
+  line-height: 1.45;
+  color: rgba(255, 255, 255, 0.7);
+  padding: 8px 0 8px 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  position: relative;
+}
+
+.pa-kill-list li::before {
+  content: "—";
+  position: absolute;
+  left: 0;
+  color: var(--yel);
+}
+
+.pa-verdict {
+  font-size: 13px;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.92);
+  margin: 0 0 4px;
+}
+
+/* GEO blocks (key takeaways + FAQ) — matches optional `geo` on Pulse Engine JSON */
+.pa-geo-wrap {
+  width: 100%;
+  max-width: none;
+  margin: 0 0 clamp(28px, 4vw, 48px);
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(32px, 4.5vw, 48px);
+}
+
+.pa-geo-h {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: lowercase;
+  color: var(--muted);
+  margin: 0 0 16px;
+  padding-bottom: 10px;
+  border-bottom: 3px solid var(--yel);
+  max-width: 28ch;
+  scroll-margin-top: calc(var(--nav-h, 57px) + 16px);
+}
+
+.pa-geo-takeaways {
+  background: color-mix(in srgb, var(--yel) 10%, var(--white) 90%);
+  border: 3px solid var(--dark);
+  border-radius: var(--radius-card-lg);
+  padding: clamp(22px, 3vw, 32px) clamp(24px, 3vw, 36px);
+  box-shadow: 6px 6px 0 var(--dark);
+}
+
+.pa-geo-takeaways-list {
+  margin: 0;
+  padding-left: 1.15em;
+  font-size: 16px;
+  line-height: 1.65;
+  color: var(--text2);
+}
+
+.pa-geo-takeaways-list li {
+  margin: 0.5em 0;
+  padding-left: 0.25em;
+}
+
+.pa-geo-takeaways-list li::marker {
+  color: var(--yel);
+  font-weight: 800;
+}
+
+.pa-geo-faq {
+  padding-top: 0;
+}
+
+.pa-geo-faq-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.pa-geo-faq-item {
+  padding: clamp(20px, 2.5vw, 28px) 0;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.pa-geo-faq-item:first-child {
+  padding-top: 0;
+}
+
+.pa-geo-faq-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.pa-geo-faq-q {
+  font-size: clamp(17px, 2vw, 20px);
+  font-weight: 800;
+  line-height: 1.25;
+  letter-spacing: -0.03em;
+  color: var(--dark);
+  margin: 0 0 10px;
+  max-width: min(42ch, 100%);
+}
+
+.pa-geo-faq-a {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text2);
+  margin: 0;
+  max-width: min(68ch, 100%);
+}
+
+.pa-cta-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding-top: clamp(24px, 3vw, 36px);
+  margin-top: clamp(8px, 2vw, 16px);
+  border-top: 2px solid rgba(0, 0, 0, 0.1);
+  margin-bottom: 48px;
+  clear: both;
+}
+
+.pa-cta {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: lowercase;
+  padding: 12px 24px;
+  border-radius: 100px;
+  border: 2px solid var(--dark);
+  text-decoration: none;
+  color: var(--dark);
+  transition: background 0.12s, color 0.12s;
+}
+
+.pa-cta:hover {
+  background: var(--dark);
+  color: var(--yel);
+}
+
+.pa-cta.is-primary {
+  background: var(--dark);
+  color: var(--yel);
+}
+
+.pa-cta.is-primary:hover {
+  opacity: 0.92;
+}
+
+@media (max-width: 900px) {
+  .pa-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pa-aside {
+    position: static;
+  }
+}

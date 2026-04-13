@@ -1,0 +1,1087 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NKE - deep dive · xvary</title>
+  <meta name="description" content="Deep dive analysis of NIKE, Inc.." />
+  <meta name="robots" content="index, follow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807" />
+  <style>
+:root{
+      --yel:#ffe500;
+      --ink:#000;
+      --paper:#fffdf3;
+      --card:#fff;
+      --line:rgba(0,0,0,.12);
+      --text:#111;
+      --muted:#555;
+      --soft:#f3eed8;
+      --green:#1a7f5a;
+      --red:#c53030;
+      --amber:#b7791f;
+      --blue:#2251ff;
+      --shadow:0 18px 42px rgba(0,0,0,.10);
+      --radius:16px;
+      --radius-sm:12px;
+      --navw:240px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    html{background:var(--yel);scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h, 68px) + 24px)}
+    body{
+      background:var(--yel);
+      color:var(--text);
+      font:500 16px/1.65 "Space Grotesk",system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    a{color:inherit;text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:var(--ink);color:var(--yel)}
+    .skip-link{
+      position:absolute;left:12px;top:-40px;z-index:9999;
+      background:var(--ink);color:var(--yel);
+      padding:8px 14px;border-radius:999px;font:700 12px/1 "DM Mono",monospace;
+    }
+    .skip-link:focus{top:12px}
+
+    .layout{display:block}
+    .sidebar{
+      position:fixed;left:0;top:var(--nav-h, 68px);bottom:0;width:var(--navw);
+      overflow:auto;background:var(--ink);color:#fff;border-right:1px solid rgba(255,255,255,.08);
+      padding:18px 0 16px;scrollbar-width:none;
+    }
+    .sidebar::-webkit-scrollbar{display:none}
+    .nav-section{padding:0 0 8px}
+    .nav-label{
+      padding:0 18px 10px;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.12em;text-transform:lowercase;color:rgba(255,255,255,.46);
+    }
+    .nav-pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 18px 10px 16px;color:rgba(255,255,255,.78);
+      border-left:3px solid transparent;text-decoration:none;font-size:12px;font-weight:600;line-height:1.35;
+    }
+    .nav-pill:hover{background:rgba(255,255,255,.06);text-decoration:none}
+    .nav-pill.active{background:var(--yel);color:var(--ink);border-left-color:var(--ink)}
+    .nav-kbd{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:22px;height:22px;border-radius:6px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+      font:700 10px/1 "DM Mono",monospace;flex:0 0 auto;
+    }
+    .nav-pill.active .nav-kbd{background:var(--ink);color:var(--yel);border-color:var(--ink)}
+    .nav-txt{min-width:0}
+
+    .content{
+      margin-left:var(--navw);
+      padding:28px 26px 64px;
+      width:calc((100vw - var(--navw)) * 0.9);
+      max-width:none;
+    }
+
+    .hero{
+      display:block;
+      text-align:left;
+      border-bottom:3px solid rgba(0,0,0,.14);
+      padding:18px 0 26px;margin-bottom:18px;
+    }
+    .hero-top{
+      display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:24px;align-items:end;
+      padding-bottom:18px;
+    }
+    .hero .hero-ticker{
+      font-size:clamp(58px,10vw,92px);line-height:.88;font-weight:800;letter-spacing:-.05em;text-transform:lowercase;margin:0;
+      max-width:none;text-align:left;
+    }
+    .hero-co{margin-top:4px;font-size:14px;color:rgba(0,0,0,.64);text-transform:lowercase}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .pill{
+      display:inline-flex;align-items:center;padding:5px 12px;border-radius:999px;
+      font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.06em;
+      background:rgba(0,0,0,.08);color:#111;
+    }
+    .pill.dark{background:var(--ink);color:var(--yel)}
+    .hero .hero-hook{
+      font-size:clamp(19px,2.05vw,24px);line-height:1.35;font-weight:700;margin:0;color:#111;
+      max-width:none;text-align:left;
+    }
+    .hero .hero-sub{
+      margin:10px 0 0;color:rgba(0,0,0,.70);font-size:17px;line-height:1.68;max-width:none;text-align:left;
+    }
+    .hero-tape{
+      display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;padding-top:16px;
+      border-top:2px solid rgba(0,0,0,.10);font:600 11px/1.5 "DM Mono",monospace;color:rgba(0,0,0,.58)
+    }
+    .hero-tape strong{color:rgba(0,0,0,.92)}
+
+    .kpi-grid{display:grid;gap:10px}
+    .kpi-grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .kpi-grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .kpi-grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi{
+      background:rgba(255,255,255,.84);border:1px solid rgba(0,0,0,.08);border-radius:14px;
+      padding:14px 16px;box-shadow:0 8px 20px rgba(0,0,0,.04)
+    }
+    .kpi-label{font:700 10px/1.25 "DM Mono",monospace;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .kpi-value{font-size:clamp(24px,2.8vw,34px);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+    .kpi-sub{margin-top:4px;font-size:12px;line-height:1.45;color:rgba(0,0,0,.55)}
+    .value-gn{color:var(--green)}
+    .value-rd{color:var(--red)}
+    .value-am{color:var(--amber)}
+
+    .panel{
+      background:rgba(255,255,255,.92);border:2px solid rgba(0,0,0,.08);border-left:5px solid var(--yel);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin:18px 0
+    }
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      margin-bottom:12px;padding-bottom:12px;border-bottom:3px solid #000
+    }
+    .section-head h2{
+      margin:0;font-size:clamp(34px,3.9vw,50px);line-height:.98;font-weight:800;letter-spacing:-.045em;text-transform:none
+    }
+    .kicker{font:700 11px/1 "DM Mono",monospace;letter-spacing:.12em;text-transform:lowercase;color:rgba(0,0,0,.52)}
+    .lead{margin:0 0 16px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.72)}
+    .aggregate-sources-attribution{margin:0 0 14px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.76)}
+    .aggregate-sources-attribution p{margin:0}
+    .aggregate-methodology-link{margin:0;max-width:80ch;font-size:14.5px;line-height:1.6;color:rgba(0,0,0,.62)}
+    #appendix .lead,
+    #appendix .aggregate-sources-attribution,
+    #appendix .aggregate-methodology-link{max-width:none}
+    .quote,.note,.callout,.pillar,.scenario,.table-wrap,.chart-box{
+      background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:14px
+    }
+    .quote{padding:14px 16px;font-size:15px;line-height:1.68;color:rgba(0,0,0,.72)}
+    .note{padding:14px 16px;margin-top:10px;font-size:14.5px;line-height:1.64;color:rgba(0,0,0,.72)}
+    .note strong,.table-title .tag,.legend-label,.pillars .head h4{
+      font:700 11px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase
+    }
+    .note.green{border-left:4px solid var(--green);background:rgba(26,127,90,.06)}
+    .note.amber{border-left:4px solid var(--amber);background:rgba(183,121,31,.08)}
+    .note.red{border-left:4px solid var(--red);background:rgba(197,48,48,.06)}
+
+    .g2,.g3,.g4,.callout-row,.pillars,.scenario-grid{display:grid;gap:10px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .callout-row{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:12px;min-width:0}
+    .callout{padding:14px 16px;min-width:0;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+    .callout .label{font:700 10px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .callout .metric{font-size:clamp(24px,2.8vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;word-break:break-word}
+    #appendix .callout .metric{font-size:clamp(13px,1.35vw,16px);font-weight:700;letter-spacing:0;line-height:1.4}
+    .callout .desc{margin-top:6px;font-size:12.5px;line-height:1.5;color:rgba(0,0,0,.56)}
+
+    .pillars{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px}
+    .pillar{padding:14px 16px}
+    .pillar .head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+    .pillar .head h4{margin:0;font-size:14px;color:#111;letter-spacing:0;text-transform:none;font-family:"Space Grotesk",sans-serif}
+    .tag{
+      display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;border:1px solid rgba(0,0,0,.10);
+      background:rgba(255,255,255,.85);font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.04em;
+    }
+    .tag.green{color:var(--green);background:rgba(26,127,90,.08);border-color:rgba(26,127,90,.25)}
+    .tag.amber{color:var(--amber);background:rgba(183,121,31,.10);border-color:rgba(183,121,31,.25)}
+    .tag.red{color:var(--red);background:rgba(197,48,48,.08);border-color:rgba(197,48,48,.25)}
+    .tag.blue{color:#111;background:rgba(255,229,0,.18);border-color:rgba(0,0,0,.20)}
+    .tag.ink{color:rgba(0,0,0,.68)}
+
+    .table-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+    .table-title h3{margin:0;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-.02em;text-transform:none}
+    .table-wrap{overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+    table{width:100%;border-collapse:collapse;min-width:520px;font-variant-numeric:tabular-nums;background:#fff}
+    th,td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+    thead th{
+      position:sticky;top:0;background:#f0ece4;color:#111;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.08em;text-transform:lowercase;border-bottom:3px solid #000;text-align:left
+    }
+    tbody tr:nth-child(even) td{background:rgba(240,236,228,.36)}
+    tbody tr:hover td{background:rgba(255,229,0,.16)}
+    td.num,th.num{text-align:right}
+    td.b{font-weight:800;color:#111}
+    td.pos{color:var(--green);font-weight:700}
+    td.neg{color:var(--red);font-weight:700}
+    td.amb{color:var(--amber);font-weight:700}
+
+    .chart-box{padding:16px 18px 18px;box-shadow:0 12px 36px rgba(0,0,0,.06)}
+    .chart-head h3{margin:0 0 4px;font-size:16px;line-height:1.2;text-transform:none}
+    .chart-head .sub{font-size:11px;color:rgba(0,0,0,.52);font-style:italic}
+    /* TAM vs revenue: y-axis ticks + grid + split x-label row */
+    .chart-labeled{
+      --chart-h:min(52vw,240px);
+      --chart-h-min:200px;
+      --chart-h-max:260px;
+      display:grid;
+      grid-template-columns:3.35rem 1fr;
+      grid-template-rows:minmax(var(--chart-h-min),var(--chart-h-max)) auto;
+      gap:8px 12px;
+      align-items:stretch;
+      margin-top:6px;
+    }
+    .chart-y-title{
+      margin:8px 0 0;
+      font:700 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.5);
+    }
+    .chart-y-axis{
+      grid-column:1;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      padding-right:8px;
+      border-right:2px solid rgba(0,0,0,.2);
+      font:600 10px/1 "DM Mono",monospace;
+      color:rgba(0,0,0,.58);
+      box-sizing:border-box;
+    }
+    .chart-y-axis .yt{
+      position:absolute;right:8px;line-height:1;white-space:nowrap;
+      transform:translateY(-50%);
+    }
+    .chart-y-axis .yt.y-600{top:0;transform:translateY(0)}
+    .chart-y-axis .yt.y-500{top:16.6667%}
+    .chart-y-axis .yt.y-400{top:33.3333%}
+    .chart-y-axis .yt.y-300{top:50%}
+    .chart-y-axis .yt.y-200{top:66.6667%}
+    .chart-y-axis .yt.y-100{top:83.3333%}
+    .chart-y-axis .yt.y-0{bottom:0;top:auto;transform:translateY(0)}
+    .chart-plot-cell{
+      grid-column:2;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      border-bottom:2px solid rgba(0,0,0,.2);
+    }
+    .chart-grid-bg{
+      position:absolute;inset:0;
+      background:repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6)
+      );
+      pointer-events:none;
+    }
+    .chart{
+      position:relative;z-index:1;
+      display:flex;align-items:flex-end;justify-content:stretch;gap:6px;
+      width:100%;
+      height:100%;min-height:0;
+    }
+    .bar{
+      flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+      min-width:0;height:100%;
+    }
+    .bar-pair{
+      display:flex;flex-direction:row;align-items:flex-end;justify-content:center;
+      gap:5px;width:100%;height:100%;min-height:0;
+    }
+    .col{
+      flex:1 1 0;min-width:8px;border-radius:8px 8px 2px 2px;
+      min-height:2px;align-self:flex-end;
+      box-sizing:border-box;
+    }
+    .col.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .col.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .chart-x-foot{
+      grid-column:2;
+      grid-row:2;
+      display:flex;gap:6px;
+      margin-top:-2px;
+    }
+    .bar-foot{
+      flex:1 1 0;min-width:0;
+      text-align:center;padding-top:6px;
+    }
+    .chart-x-axis-cap{
+      margin:4px 0 0;
+      font:600 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.45);
+      text-align:center;
+    }
+    .chart-legend{
+      display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:12px;padding-top:10px;
+      border-top:1px solid rgba(0,0,0,.08);font-size:12px;color:rgba(0,0,0,.62)
+    }
+    .chart-legend span{display:inline-flex;align-items:center;gap:6px}
+    .chart-legend i{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+    .chart-legend i.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .chart-legend i.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .lab,.val{font-size:10px;line-height:1.25;text-align:center;color:rgba(0,0,0,.56)}
+    .val{font:700 10px/1 "DM Mono",monospace}
+    .lab{max-width:12em;margin:0 auto}
+
+    .scenario-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}
+    .scenario{padding:14px 16px;border-left:4px solid var(--blue)}
+    .scenario.bear{border-left-color:var(--red)}
+    .scenario.base{border-left-color:var(--amber)}
+    .scenario.bull{border-left-color:var(--green)}
+    .scenario .prob{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:8px}
+    .scenario h4{margin:0 0 6px;font-size:18px;line-height:1.1}
+    .scenario p{margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,.72)}
+
+    .legend{display:grid;gap:8px}
+    .legend .item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(0,0,0,.72)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)} .dot.blue{background:#2251ff}
+
+    .footer{
+      margin-top:28px;padding-top:22px;border-top:3px solid rgba(0,0,0,.12);
+      text-align:center;font-size:12px;line-height:1.65;color:rgba(0,0,0,.56)
+    }
+    .footer .links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+    .footer .links a{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.68)}
+    .footer .small{margin-top:12px;font-size:11px;color:rgba(0,0,0,.54)}
+
+    .reading-progress{
+      position:fixed;top:var(--nav-h, 68px);left:0;height:4px;width:0;z-index:101;
+      background:linear-gradient(90deg,var(--yel),#fff38c);box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 14px rgba(255,229,0,.45)
+    }
+    .watermark{
+      position:fixed;right:18px;bottom:14px;z-index:1;pointer-events:none;user-select:none;
+      font-size:clamp(68px,12vw,118px);font-weight:800;letter-spacing:-.06em;line-height:.8;color:rgba(0,0,0,.05)
+    }
+
+    @media (max-width:1024px){
+      .g2,.g3,.g4,.pillars,.scenario-grid{grid-template-columns:1fr}
+      .hero-top{grid-template-columns:1fr}
+      .content{padding:22px 18px 56px}
+    }
+    @media (max-width:900px){
+      .sidebar{display:none}
+      .content{
+        margin-left:auto;
+        margin-right:auto;
+        width:90vw;
+        max-width:none;
+      }
+    }
+    @media (max-width:760px){
+      .kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr 1fr}
+      .callout-row{grid-template-columns:1fr 1fr}
+      table{min-width:460px}
+    }
+    @media (max-width:560px){
+      .callout-row,.kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr}
+      .section-head h2{font-size:30px}
+      .hero .hero-hook{font-size:19px}
+      .hero .hero-sub{font-size:16px}
+      .panel{padding:20px}
+    }
+    .hero-snapshot-link {
+      display: inline-block;
+      margin-top: 4px;
+      font: 400 11px/1.4 "DM Mono", monospace;
+      color: rgba(0,0,0,.38);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .hero-snapshot-link:hover {
+      color: rgba(0,0,0,.68);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+  .aggregate-panel {
+    position: relative;
+    z-index: 1;
+  }
+  .aggregate-lead p {
+    margin: 0 0 16px;
+  }
+  .auto-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .aggregate-stack {
+    display: grid;
+    gap: 12px;
+  }
+  .aggregate-card {
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.05);
+  }
+  .aggregate-card.dark {
+    background: rgba(0,0,0,.92);
+    color: rgba(255,255,255,.92);
+    border-color: rgba(255,255,255,.08);
+  }
+  .aggregate-card.dark p,
+  .aggregate-card.dark li,
+  .aggregate-card.dark .aggregate-source {
+    color: rgba(255,255,255,.72);
+  }
+  .aggregate-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .aggregate-card-head h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    text-transform: lowercase;
+  }
+  .aggregate-card-body,
+  .aggregate-card-body p,
+  .aggregate-card-body li {
+    font-size: 15px;
+    line-height: 1.68;
+    color: rgba(0,0,0,.72);
+  }
+  .aggregate-card-body p {
+    margin: 0 0 12px;
+  }
+  .aggregate-card-body ul,
+  .aggregate-card-body ol {
+    margin: 0 0 12px 20px;
+    padding: 0;
+  }
+  .aggregate-card-body > *:last-child {
+    margin-bottom: 0;
+  }
+  .aggregate-source {
+    margin-top: 10px;
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .06em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.48);
+  }
+  .aggregate-substack {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .aggregate-chart-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .aggregate-chart-row {
+    display: grid;
+    grid-template-columns: minmax(80px, 140px) 1fr minmax(60px, 120px);
+    align-items: center;
+    gap: 10px;
+  }
+  .aggregate-chart-label,
+  .aggregate-chart-value {
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .04em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.62);
+  }
+  .aggregate-chart-track {
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .aggregate-chart-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+  }
+  .table-wrap table th.num,
+  .table-wrap table td.num {
+    text-align: right;
+  }
+  .table-wrap table td.pos { color: var(--green, #1a7f37); font-weight: 600; }
+  .table-wrap table td.neg { color: var(--red, #cf222e); font-weight: 600; }
+  .table-wrap table td.amb { color: var(--caution-text, #9a6700); font-weight: 600; }
+  .table-narrow {
+    max-width: 520px;
+  }
+  .table-narrow table {
+    min-width: 0;
+    width: 100%;
+  }
+  .g2 .table-narrow {
+    max-width: none;
+  }
+  .aggregate-mini-table {
+    margin-top: 8px;
+  }
+  .aggregate-mini-table table {
+    min-width: 0;
+  }
+  .aggregate-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .aggregate-list-item {
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    background: rgba(255,255,255,.72);
+  }
+  .aggregate-list-item strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .aggregate-audit {
+    margin-top: 8px;
+  }
+  @media (max-width: 1120px) {
+    .sidebar {
+      position: static;
+      width: auto;
+      top: auto;
+      padding: 12px 0;
+      border-right: 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: none;
+    }
+    .content {
+      margin-left: auto;
+      margin-right: auto;
+      width: 90vw;
+      max-width: none;
+      padding: 24px 18px 56px;
+    }
+    .watermark {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .hero-top {
+      grid-template-columns: 1fr;
+    }
+    .aggregate-chart-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+  .aggregate-pane-xref {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(0, 0, 0, 0.52);
+  }
+  .aggregate-pane-xref a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .aggregate-pane-xref a:hover {
+    color: rgba(0, 0, 0, 0.88);
+  }
+  .hero-snapshot-link {
+    display: inline-block;
+    margin-top: 4px;
+    font: 400 11px/1.4 "DM Mono", monospace;
+    color: rgba(0,0,0,.38);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .hero-snapshot-link:hover {
+    color: rgba(0,0,0,.68);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  </style>
+</head>
+<body data-xvary-aggregate-readable="1">
+  <a class="skip-link" href="#content">skip to content</a>
+  <div class="reading-progress" id="reading-progress"></div>
+  <div class="watermark" aria-hidden="true">NKE</div>
+
+  <nav class="nav nav--white" aria-label="main navigation" data-xvary-nav-static>
+    <a class="nav-brand" href="/">xvary</a>
+    <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" type="button" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+    <div class="nav-links">
+      <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/pricing/">pricing</a>
+      <a class="nav-cta" href="/pricing/">sign up</a>
+    </div>
+  </nav>
+
+  <div class="layout xvary-aggregate-deep-dive-body" data-template-id="aggregate-deep-dive-live-v1" lang="en">
+    <aside class="sidebar" aria-label="section navigation">
+      <div class="nav-section">
+        <div class="nav-label">quick navigation</div>
+        <a class="nav-pill active" href="#summary">
+          <span class="nav-kbd">0</span>
+          <span class="nav-txt">report snapshot</span>
+        </a>
+        <a class="nav-pill " href="#thesis">
+          <span class="nav-kbd">1</span>
+          <span class="nav-txt">variant perception &amp; thesis</span>
+        </a>
+        <a class="nav-pill " href="#financials">
+          <span class="nav-kbd">2</span>
+          <span class="nav-txt">financial analysis</span>
+        </a>
+        <a class="nav-pill " href="#valuation">
+          <span class="nav-kbd">3</span>
+          <span class="nav-txt">valuation</span>
+        </a>
+        <a class="nav-pill " href="#risk">
+          <span class="nav-kbd">4</span>
+          <span class="nav-txt">what breaks the thesis</span>
+        </a>
+        <a class="nav-pill " href="#ops">
+          <span class="nav-kbd">5</span>
+          <span class="nav-txt">fundamentals &amp; operations</span>
+        </a>
+        <a class="nav-pill " href="#competition">
+          <span class="nav-kbd">6</span>
+          <span class="nav-txt">competitive position</span>
+        </a>
+        <a class="nav-pill " href="#tam">
+          <span class="nav-kbd">7</span>
+          <span class="nav-txt">market size &amp; tam</span>
+        </a>
+        <a class="nav-pill " href="#product">
+          <span class="nav-kbd">8</span>
+          <span class="nav-txt">product &amp; technology</span>
+        </a>
+        <a class="nav-pill " href="#supply">
+          <span class="nav-kbd">9</span>
+          <span class="nav-txt">supply chain</span>
+        </a>
+        <a class="nav-pill " href="#catalysts">
+          <span class="nav-kbd">a</span>
+          <span class="nav-txt">catalyst map</span>
+        </a>
+        <a class="nav-pill " href="#street">
+          <span class="nav-kbd">b</span>
+          <span class="nav-txt">street expectations</span>
+        </a>
+        <a class="nav-pill " href="#scorecard">
+          <span class="nav-kbd">c</span>
+          <span class="nav-txt">earnings scorecard</span>
+        </a>
+        <a class="nav-pill " href="#signals">
+          <span class="nav-kbd">d</span>
+          <span class="nav-txt">alternative data</span>
+        </a>
+        <a class="nav-pill " href="#history">
+          <span class="nav-kbd">e</span>
+          <span class="nav-txt">historical analogies</span>
+        </a>
+        <a class="nav-pill " href="#management">
+          <span class="nav-kbd">f</span>
+          <span class="nav-txt">management &amp; leadership</span>
+        </a>
+        <a class="nav-pill " href="#macro">
+          <span class="nav-kbd">g</span>
+          <span class="nav-txt">macro sensitivity</span>
+        </a>
+        <a class="nav-pill " href="#quant">
+          <span class="nav-kbd">h</span>
+          <span class="nav-txt">quantitative profile</span>
+        </a>
+        <a class="nav-pill " href="#derivatives">
+          <span class="nav-kbd">i</span>
+          <span class="nav-txt">options &amp; derivatives</span>
+        </a>
+        <a class="nav-pill " href="#governance">
+          <span class="nav-kbd">j</span>
+          <span class="nav-txt">governance &amp; accounting</span>
+        </a>
+        <a class="nav-pill " href="#value">
+          <span class="nav-kbd">k</span>
+          <span class="nav-txt">value framework</span>
+        </a>
+        <a class="nav-pill " href="#appendix">
+          <span class="nav-kbd">l</span>
+          <span class="nav-txt">appendix &amp; sources</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="content" id="content">
+      <section class="hero" aria-label="report intro">
+        <div class="hero-top">
+          <div>
+            <h1 class="hero-ticker">nke</h1>
+            <div class="hero-co">nike, inc.</div>
+            <a class="hero-snapshot-link" href="/stock/nke/snapshot/">snapshot page &rarr;</a>
+            <div class="hero-badges">
+              <span class="pill dark">deep dive</span>
+              <span class="pill ">rubber &amp; plastics footwear</span>
+              <span class="pill ">large cap</span>
+              <span class="pill ">apr 12, 2026</span>
+            </div>
+            <div class="hero-tape" aria-label="headline tape">
+              <span><strong>Position</strong> Long 3%</span>
+              <span><strong>Price</strong> $67.00</span>
+              <span><strong>~$100.5B</strong> mcap</span>
+              <span><strong>apr 12, 2026</strong> as-of date</span>
+            </div>
+          </div>
+          <div>
+            <p class="hero-hook">Deep dive analysis of NIKE, Inc..</p>
+            <p class="hero-sub">We're <strong>Long at {'base_score': 5.5, 'pillar_scores': {'brand-turnaround-execution': 5.0, 'wholesale-channel-reset': 6.0, 'margin-recovery-path': 6.5, 'competitive-position-defense': 5.5, 'china-recovery-optionality': 4.5}, 'weighted_score': 55, 'adjustments': [{'factor': 'CEO credibility premium', 'delta': 5}, {'factor': 'Earnings trough uncertainty', 'delta': -5}, {'factor': 'Asset-light balance sheet safety', 'delta': 3}, {'factor': 'Competitive share loss velocity', 'delta': -3}], 'final_score': 55}/100 signal strength</strong>.</p>
+          </div>
+        </div>
+
+        <div class="kpi-grid cols-3">
+          <div class="kpi">
+            <div class="kpi-label">price</div>
+            <div class="kpi-value ">$67.00</div>
+            <div class="kpi-sub">Apr 2026</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">target (12m)</div>
+            <div class="kpi-value ">$85</div>
+            <div class="kpi-sub">+26.9% upside</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">position</div>
+            <div class="kpi-value ">Long 3%</div>
+            <div class="kpi-sub">Turnaround risk sizing</div>
+          </div>
+        </div>
+
+        <div class="callout-row">
+          <div class="callout">
+            <div class="label">revenue</div>
+            <div class="metric value-am">$51.36B</div>
+            <div class="desc">FY2024; flat YoY, FY2025E declining mid-single-digits</div>
+          </div>
+          <div class="callout">
+            <div class="label">gross margin</div>
+            <div class="metric ">44.6%</div>
+            <div class="desc">Resilient pricing power; mix shift risk from wholesale rebuild</div>
+          </div>
+          <div class="callout">
+            <div class="label">fcf</div>
+            <div class="metric ">$6.56B</div>
+            <div class="desc">12.8% FCF margin; asset-light model sustains through trough</div>
+          </div>
+          <div class="callout">
+            <div class="label">net cash</div>
+            <div class="metric ">$3.7B</div>
+            <div class="desc">$11.6B cash vs $7.9B LT debt — fortress balance sheet</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>report snapshot</h2>
+          <div class="kicker">executive summary</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Long — Nike at $67 prices a trough earnings year while ignoring a credible brand turnaround under CEO Elliott Hill. FY2025 is the reset year: revenue declining mid-single-digits, EPS compressed ~35-40% to ~$2.20-2.40. But the playbook is sound — rebuild wholesale, restore product scarcity, invest in running innovation. At 18x trailing and ~30x trough forward P/E (low end of 10-year range), the risk/reward skews favorably for a 12-month $85 target (+27% upside).</p></div>
+        <div class="kpi-grid cols-3"><div class="kpi"><div class="kpi-label">price</div><div class="kpi-value ">$67.00</div><div class="kpi-sub">Apr 2026</div></div><div class="kpi"><div class="kpi-label">target (12m)</div><div class="kpi-value ">$85</div><div class="kpi-sub">+26.9% upside</div></div><div class="kpi"><div class="kpi-label">position</div><div class="kpi-value ">Long 3%</div><div class="kpi-sub">Turnaround risk sizing</div></div></div><div class="table-wrap"><table><thead><tr><th>Pillar</th><th class="num">Weight</th><th>Assessment</th><th>Confidence</th></tr></thead><tbody><tr><td><p>Brand Turnaround Execution</p></td><td class="num"><p>25%</p></td><td><p>Hill&#x27;s brand-first approach credible but early</p></td><td class="amb"><p>Medium</p></td></tr><tr><td><p>Wholesale Channel Reset</p></td><td class="num"><p>20%</p></td><td><p>Rebuilding with Foot Locker, Dick&#x27;s — 2H FY26 stabilization</p></td><td class="pos"><p>Medium-High</p></td></tr><tr><td><p>Margin Recovery Path</p></td><td class="num"><p>25%</p></td><td><p>44.6% GM with room to expand as markdowns fade</p></td><td class="pos"><p>Medium-High</p></td></tr><tr><td><p>Competitive Position Defense</p></td><td class="num"><p>20%</p></td><td><p>Share losses to On/HOKA/NB are real but addressable</p></td><td class="amb"><p>Medium</p></td></tr><tr><td><p>China Recovery Optionality</p></td><td class="num"><p>10%</p></td><td><p>Geopolitical risk but $7.5B revenue base intact</p></td><td class="amb"><p>Low-Medium</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Variant Perception</h3><span class="tag amber">Contrarian</span></div><div class="aggregate-card-body"><p>Consensus: Nike is a declining brand losing relevance to younger consumers. Competitors like On, HOKA, and New Balance have permanently captured mindshare. The turnaround is years away...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>PM Pitch</h3><span class="tag blue">Turnaround</span></div><div class="aggregate-card-body"><p>Nike at 18x trailing earnings with a new CEO executing a brand-first turnaround. The stock has declined 63% from 2021 highs, pricing in significant pessimism. Catalyst path: wholesale stabilization (2H FY2026), new running platform launches (FY2026), and 2026 FIFA World Cup brand tailwind...</p></div></div>
+      </section>
+      <section id="thesis" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>variant perception &amp; thesis</h2>
+          <div class="kicker">investment thesis & variant perception</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Contrarian Long: Nike at $67 prices in prolonged mediocrity, not brand destruction. At 18x trailing P/E on peak-ish FY2024 earnings and ~30x forward on trough FY2025E, the market has correctly identified the problems (brand heat decline, wholesale erosion, competitive share loss) but overcorrected. Elliott Hill&#x27;s return as CEO after 32 years at Nike is the most credible leadership reset available. With $11.6B cash, $6.5B+ FCF, and an asset-light model, Nike has the runway to execute a 2-year turnaround. Target $85 (27% upside), conviction 55/100.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">revenue (fy2024)</div><div class="kpi-value value-am">$51.4B</div><div class="kpi-sub">Flat YoY; FY2025E declining mid-single-digits</div></div><div class="kpi"><div class="kpi-label">gross margin</div><div class="kpi-value ">44.6%</div><div class="kpi-sub">Resilient despite volume headwinds</div></div><div class="kpi"><div class="kpi-label">p/e (trailing)</div><div class="kpi-value ">18.0x</div><div class="kpi-sub">vs 10-year avg ~28x; forward ~30x on trough</div></div><div class="kpi"><div class="kpi-label">position</div><div class="kpi-value value-am">Long 3%</div><div class="kpi-sub">Conviction 55/100 — turnaround unproven</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The Market Is Pricing Mediocrity, Not Destruction — And That&#x27;s the Opportunity</h3><span class="tag blue">VARIANT VIEW</span></div><div class="aggregate-card-body"><p>Consensus has correctly diagnosed Nike&#x27;s ailments: brand heat decline under Donahoe&#x27;s DTC-first strategy, wholesale channel damage, and share loss to On, HOKA, and New Balance in the premium running segment. Where we disagree is the durability of these problems. At $67 , the reverse DCF implies either ~6.8% perpetual FCF growth or an 11.2% WACC — neither extreme...</p></div></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">Value</th><th>Assessment</th></tr></thead><tbody><tr><td><p>Market Cap</p></td><td class="num"><p>~$100B</p></td><td class="neg"><p>Mid-cap territory for Nike — historically $200B+</p></td></tr><tr><td><p>52-Week Range</p></td><td class="num"><p>$52.28 - $97.07</p></td><td class="amb"><p>Trading lower third of range</p></td></tr><tr><td><p>EV/EBITDA</p></td><td class="num"><p>12.1x</p></td><td class="pos"><p>Below 10-year average of ~18x</p></td></tr><tr><td><p>FCF Yield</p></td><td class="num"><p>6.5%</p></td><td class="pos"><p>Attractive for branded consumer</p></td></tr><tr><td><p>Net Cash</p></td><td class="num"><p>+$3.7B</p></td><td class="pos"><p>No balance sheet risk</p></td></tr><tr><td><p>Dividend Yield</p></td><td class="num"><p>2.1%</p></td><td class="pos"><p>22 consecutive years of increases</p></td></tr></tbody></table></div>
+      </section>
+      <section id="financials" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>financial analysis</h2>
+          <div class="kicker">elite economics</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Nike&#x27;s financial architecture is the turnaround&#x27;s greatest asset. FY2024 delivered $51.36B revenue (flat YoY), 44.6% gross margin, and $6.56B FCF — robust metrics even in a down cycle. FY2025E is the designed trough (revenue declining mid-single-digits, EPS ~$2.20-2.40), but the balance sheet ($11.6B cash, $3.7B net cash) and asset-light model ($870M CapEx) provide multi-year runway for turnaround investment without capital structure risk.</p></div>
+                <div class="callout-row"><div class="callout"><div class="label">Revenue</div><div class="metric value-am">$51.36B</div><div class="desc">FY2024; flat YoY, FY2025E declining mid-single-digits</div></div><div class="callout"><div class="label">Gross Margin</div><div class="metric ">44.6%</div><div class="desc">Resilient pricing power; mix shift risk from wholesale rebuild</div></div><div class="callout"><div class="label">FCF</div><div class="metric ">$6.56B</div><div class="desc">12.8% FCF margin; asset-light model sustains through trough</div></div><div class="callout"><div class="label">Net Cash</div><div class="metric ">$3.7B</div><div class="desc">$11.6B cash vs $7.9B LT debt — fortress balance sheet</div></div></div>
+        <div class="g2" style="margin-top:10px"><div><div class="table-wrap"><table><thead><tr><th>Income Statement</th><th class="num">FY2022</th><th class="num">FY2023</th><th class="num">FY2024</th><th class="num">FY2025E</th></tr></thead><tbody><tr><td><p>Revenue ($B)</p></td><td class="num"><p>$46.7</p></td><td class="num"><p>$51.2</p></td><td class="num"><p>$51.4</p></td><td class="neg num"><p>~$48-49</p></td></tr><tr><td><p>YoY Growth</p></td><td class="num"><p>+5%</p></td><td class="num"><p>+10%</p></td><td class="amb num"><p>~0%</p></td><td class="neg num"><p>~-5%</p></td></tr><tr><td><p>Gross Margin</p></td><td class="num"><p>46.0%</p></td><td class="num"><p>43.5%</p></td><td class="pos num"><p>44.6%</p></td><td class="amb num"><p>~43-44%</p></td></tr><tr><td><p>Op Income ($B)</p></td><td class="num"><p>$6.68</p></td><td class="num"><p>$6.94</p></td><td class="num"><p>$7.08</p></td><td class="neg num"><p>~$5.5-6.0</p></td></tr><tr><td><p>Op Margin</p></td><td class="num"><p>14.3%</p></td><td class="num"><p>13.5%</p></td><td class="num"><p>13.8%</p></td><td class="neg num"><p>~11-12%</p></td></tr><tr><td><p>Net Income ($B)</p></td><td class="num"><p>$5.14</p></td><td class="num"><p>$5.56</p></td><td class="num"><p>$5.70</p></td><td class="neg num"><p>~$3.3-3.6</p></td></tr></tbody></table></div></div><div><div class="table-wrap"><table><thead><tr><th>Balance Sheet (FY2024)</th><th class="num">Value</th><th>Context</th></tr></thead><tbody><tr><td><p>Cash &amp; Equivalents</p></td><td class="pos num"><p>$11.6B</p></td><td><p>Ample liquidity for turnaround investment</p></td></tr><tr><td><p>Long-Term Debt</p></td><td class="num"><p>$7.9B</p></td><td><p>Investment grade (AA-); no near-term maturities of concern</p></td></tr><tr><td><p>Net Cash Position</p></td><td class="pos num"><p>+$3.7B</p></td><td><p>No balance sheet risk; can absorb 2-3 years of reset</p></td></tr><tr><td><p>Inventory</p></td><td class="num"><p>~$7.5B</p></td><td><p>Elevated; Hill working down excess via pullbacks</p></td></tr><tr><td><p>CapEx</p></td><td class="pos num"><p>$870M</p></td><td><p>1.7% of revenue — asset-light model</p></td></tr><tr><td><p>FCF</p></td><td class="pos num"><p>$6.56B</p></td><td><p>12.8% margin; funds buybacks + dividends + investment</p></td></tr></tbody></table></div></div></div>
+        <div class="note green"><strong>production-report readthrough</strong><br><p>These numbers ground the thesis in reported economics; the debate is durability and cycle, not obvious accounting gaps.</p></div>
+
+      </section>
+      <section id="valuation" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>valuation</h2>
+          <div class="kicker">probability-weighted fair value</div>
+        </div>
+        <div class="lead aggregate-lead"><p>DCF analysis yields a $75-85 fair value range, with probability-weighted target of $85. At $67, Nike trades at a meaningful discount to intrinsic value on our base assumptions (WACC 9.5%, terminal growth 3.0%). The reverse DCF implies either ~6.8% perpetual FCF growth or 11.2% WACC — neither extreme, confirming the market prices mediocrity rather than destruction. Scenario analysis spans $50 (bear) to $110 (bull), with asymmetric upside from current levels.</p></div>
+                <div class="g2"><div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">Nike (NKE)</th><th class="num">Adidas (ADDYY)</th><th class="num">VF Corp (VFC)</th><th class="num">Deckers (DECK)</th></tr></thead><tbody><tr><td><p>Market Cap</p></td><td class="num"><p>~$100B</p></td><td class="num"><p>~$45B</p></td><td class="num"><p>~$6B</p></td><td class="num"><p>~$23B</p></td></tr><tr><td><p>Revenue (LTM)</p></td><td class="num"><p>$51.4B</p></td><td class="num"><p>~$24B</p></td><td class="num"><p>~$11B</p></td><td class="num"><p>~$4.3B</p></td></tr><tr><td><p>P/E (Trailing)</p></td><td class="num"><p>18.0x</p></td><td class="num"><p>~35x</p></td><td class="num"><p>NM (loss)</p></td><td class="num"><p>~28x</p></td></tr><tr><td><p>EV/EBITDA</p></td><td class="num"><p>12.1x</p></td><td class="num"><p>~18x</p></td><td class="num"><p>~14x</p></td><td class="num"><p>~19x</p></td></tr><tr><td><p>Gross Margin</p></td><td class="pos num"><p>44.6%</p></td><td class="pos num"><p>~50%</p></td><td class="num"><p>~52%</p></td><td class="pos num"><p>~56%</p></td></tr><tr><td><p>Op Margin</p></td><td class="amb num"><p>13.8%</p></td><td class="neg num"><p>~5%</p></td><td class="neg num"><p>~3%</p></td><td class="pos num"><p>~22%</p></td></tr></tbody></table></div></div><div></div></div>
+        
+        
+
+      </section>
+      <section id="risk" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>what breaks the thesis</h2>
+          <div class="kicker">falsifiable kill criteria</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The central risk is misdiagnosis: what if Nike&#x27;s brand erosion is structural, not cyclical? The thesis assumes Hill can reverse the damage from the Donahoe era — but if consumer preference has permanently shifted toward On, HOKA, and New Balance, Nike&#x27;s premium pricing power may not return. Secondary risks include macro deterioration, geopolitical disruption in China, and FX headwinds compounding the turnaround timeline.</p></div>
+                <div class="note red"><strong>risk framing</strong><br><p>This is not generic macro risk language — it is a short list of observable thresholds that would force us to change the view.</p></div>
+        <div style="margin-top:10px"><div class="table-wrap"><table><thead><tr><th>Risk</th><th class="num">Probability</th><th>Impact</th><th class="num">Risk Score</th><th>Mitigant</th><th>Early Warning</th></tr></thead><tbody><tr><td><p>Brand erosion is structural, not cyclical</p></td><td class="num"><p>30%</p></td><td><p>Very High</p></td><td class="num"><p>Critical</p></td><td><p>Monitoring Gen Z preference surveys; product launch reception; Nike app engagement metrics</p></td><td><p>Two consecutive quarters of declining DTC full-price mix</p></td></tr><tr><td><p>Turnaround takes 3+ years vs 18-24 month thesis</p></td><td class="num"><p>40%</p></td><td><p>High</p></td><td class="num"><p>High</p></td><td><p>Balance sheet provides multi-year runway; position sized at 3% limits damage</p></td><td><p>FY2026 guidance below $3.00 EPS; wholesale partners not re-engaging</p></td></tr><tr><td><p>Competitor share gains accelerate (On, HOKA, NB)</p></td><td class="num"><p>35%</p></td><td><p>High</p></td><td class="num"><p>High</p></td><td><p>Nike&#x27;s $4B+ marketing budget and global distribution still provide structural edge</p></td><td><p>Running category market share dropping below 35%; lifestyle category losing to NB</p></td></tr><tr><td><p>Consumer recession / macro deterioration</p></td><td class="num"><p>20%</p></td><td><p>High</p></td><td class="num"><p>Medium-High</p></td><td><p>Premium brands more resilient; FCF funds operations through downturn</p></td><td><p>Consumer confidence below 60; unemployment above 4.5%</p></td></tr><tr><td><p>China geopolitical disruption</p></td><td class="num"><p>25%</p></td><td><p>Medium-High</p></td><td class="num"><p>Medium-High</p></td><td><p>China is 15% of revenue; diversified geographic base limits single-country risk</p></td><td><p>US-China trade escalation; consumer boycott signals; domestic brand share gains</p></td></tr><tr><td><p>FX headwinds (dollar strengthening)</p></td><td class="num"><p>30%</p></td><td><p>Medium</p></td><td class="num"><p>Medium</p></td><td><p>12-18 month hedge book delays impact; partially offset by input cost benefits</p></td><td><p>DXY above 110; EUR/USD below 1.00</p></td></tr></tbody></table></div></div>
+        <div class="callout-row"><div class="callout"><div class="label">Overall Risk Rating</div><div class="metric value-rd">7.0 / 10</div><div class="desc">Turnaround execution risk dominates the risk profile</div></div><div class="callout"><div class="label">Bear Case Downside</div><div class="metric value-rd">-$17 / -25%</div><div class="desc">Bear target $50 vs current $67</div></div><div class="callout"><div class="label">Probability of Permanent Loss</div><div class="metric value-rd">~25%</div><div class="desc">Brand erosion becomes structural (Under Armour trajectory)</div></div></div>
+        <div class="note amber"><strong>most dangerous zone</strong><br><p>Watch for drawdowns driven by fundamentals where funds de-risk faster than the business narrative updates.</p></div>
+
+      </section>
+      <section id="ops" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>fundamentals &amp; operations</h2>
+          <div class="kicker">operations & channel mix</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Nike is mid-pivot from Donahoe&#x27;s DTC-first strategy back toward wholesale under CEO Elliott Hill. DTC revenue reached ~$21.5B (~45% of Nike brand sales), but the margin benefits came at the cost of wholesale partner alienation and market share erosion. Hill&#x27;s early moves signal a rebalancing toward key wholesale accounts like Foot Locker and Dick&#x27;s Sporting Goods, while preserving Nike.com and SNKRS app as digital flagships.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">dtc revenue</div><div class="kpi-value value-am">~$21.5B</div><div class="kpi-sub">~45% of Nike brand</div></div><div class="kpi"><div class="kpi-label">north america</div><div class="kpi-value ">$21.4B</div><div class="kpi-sub">42% of total rev</div></div><div class="kpi"><div class="kpi-label">emea</div><div class="kpi-value ">$13.6B</div><div class="kpi-sub">26% of total rev</div></div><div class="kpi"><div class="kpi-label">greater china</div><div class="kpi-value value-rd">$7.5B</div><div class="kpi-sub">Geopolitical risk overhang</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>DTC vs. Wholesale Rebalancing</h3><span class="tag amber">Strategic Pivot</span></div><div class="aggregate-card-body"><p>Under Donahoe (2020-2024), Nike aggressively shifted toward DTC, pulling inventory from thousands of wholesale doors. While DTC gross margins run 10-15pp higher than wholesale, the strategy backfired: reduced shelf presence ceded floor space to On, HOKA, and New Balance. Nike&#x27;s share of Foot Locker&#x27;s business dropped from ~75% to ~60%...</p></div></div><div class="table-wrap"><table><thead><tr><th>Region</th><th class="num">FY2024 Rev</th><th class="num">% of Total</th><th>YoY Trend</th><th>Outlook</th></tr></thead><tbody><tr><td><p>North America</p></td><td class="num"><p>$21.4B</p></td><td class="num"><p>42%</p></td><td class="amb"><p>Flat</p></td><td><p>Wholesale reset underway</p></td></tr><tr><td><p>EMEA</p></td><td class="num"><p>$13.6B</p></td><td class="num"><p>26%</p></td><td class="pos"><p>+MSD</p></td><td><p>Strongest region, football cycle</p></td></tr><tr><td><p>Greater China</p></td><td class="num"><p>$7.5B</p></td><td class="num"><p>15%</p></td><td class="amb"><p>Flat</p></td><td><p>Tariff/geopolitical overhang</p></td></tr><tr><td><p>APLA</p></td><td class="num"><p>$6.1B</p></td><td class="num"><p>12%</p></td><td class="pos"><p>+LSD</p></td><td><p>Steady growth, emerging mkts</p></td></tr><tr><td><p>Converse</p></td><td class="num"><p>$2.08B</p></td><td class="num"><p>4%</p></td><td class="neg"><p>-8%</p></td><td><p>Secular decline, strategic review</p></td></tr></tbody></table></div>
+      </section>
+      <section id="competition" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>competitive position</h2>
+          <div class="kicker">competitive landscape</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Nike remains the undisputed #1 in global athletic footwear with ~27-30% market share, but the gap is narrowing fast. On Holding and HOKA have been the primary share takers, each growing 30%+ annually from small bases, while New Balance has quietly built a $6.5B+ business on lifestyle credibility. Adidas is resurgent on Samba/Gazelle retro heat. Nike&#x27;s brand heat among 18-24 consumers has measurably declined, with multiple surveys showing On and New Balance gaining preference share.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">nike global share</div><div class="kpi-value value-rd">~27-30%</div><div class="kpi-sub">Footwear, declining from ~33%</div></div><div class="kpi"><div class="kpi-label">on holding growth</div><div class="kpi-value ">+30% YoY</div><div class="kpi-sub">$2.5B rev, premium running</div></div><div class="kpi"><div class="kpi-label">hoka growth</div><div class="kpi-value ">+30% YoY</div><div class="kpi-sub">$1.8B rev (Deckers segment)</div></div><div class="kpi"><div class="kpi-label">new balance</div><div class="kpi-value ">$6.5B+</div><div class="kpi-sub">Private, lifestyle-led surge</div></div></div><div class="table-wrap"><table><thead><tr><th>Company</th><th class="num">Revenue</th><th class="num">Growth</th><th class="num">Gross Margin</th><th>Key Strength</th><th class="num">Threat Level</th></tr></thead><tbody><tr><td><p>Nike</p></td><td class="num"><p>$51.4B</p></td><td class="amb num"><p>Flat</p></td><td class="num"><p>44.6%</p></td><td><p>Scale, brand legacy, Jordan</p></td><td class="num"><p>—</p></td></tr><tr><td><p>On Holding</p></td><td class="num"><p>$2.5B</p></td><td class="pos num"><p>+30%</p></td><td class="num"><p>60%+</p></td><td><p>Premium running, LightSpray tech</p></td><td class="num"><p>High</p></td></tr><tr><td><p>HOKA</p></td><td class="num"><p>$1.8B</p></td><td class="pos num"><p>+30%</p></td><td class="num"><p>~55%</p></td><td><p>Max cushion, crossover lifestyle</p></td><td class="num"><p>High</p></td></tr><tr><td><p>New Balance</p></td><td class="num"><p>$6.5B+</p></td><td class="num"><p>+20%</p></td><td class="num"><p>~50%E</p></td><td><p>Made in USA, cultural cachet</p></td><td class="num"><p>Medium-High</p></td></tr><tr><td><p>Adidas</p></td><td class="num"><p>EUR 23.7B</p></td><td class="pos num"><p>+11%</p></td><td class="num"><p>50.8%</p></td><td><p>Retro cycle (Samba/Gazelle)</p></td><td class="num"><p>Medium</p></td></tr><tr><td><p>Asics</p></td><td class="num"><p>$4.5B</p></td><td class="pos num"><p>+18%</p></td><td class="num"><p>~52%</p></td><td><p>Performance running credibility</p></td><td class="num"><p>Low-Medium</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Brand Heat Shift Among Younger Consumers</h3><span class="tag red">Headwind</span></div><div class="aggregate-card-body"><p>Multiple consumer surveys (Piper Sandler Taking Stock, DISA Brand Tracker) show Nike&#x27;s mindshare among Gen Z and younger millennials declining. Key dynamics: On Holding has captured the affluent urban runner — Federer partnership, Zendaya campaign, and premium pricing ($150-180 ASPs) signal aspiration. Their LightSpray manufacturing tech could be a genuine innovation moat...</p></div></div>
+      </section>
+      <section id="tam" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>market size &amp; tam</h2>
+          <div class="kicker">total addressable market</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Nike operates in a $400B+ global athletic footwear and apparel market growing at 5-7% CAGR, with athletic footwear alone at $150B+. The secular tailwind from athleisure adoption, health/wellness spending, and casualization of dress codes continues to expand the TAM. Nike realistically addresses ~$200B+ of this market through its footwear, apparel, and equipment segments across performance and lifestyle categories.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">global athletic footwear</div><div class="kpi-value ">$150B+</div><div class="kpi-sub">Growing 6-7% CAGR</div></div><div class="kpi"><div class="kpi-label">total footwear + apparel</div><div class="kpi-value ">$400B+</div><div class="kpi-sub">Growing 5-6% CAGR</div></div><div class="kpi"><div class="kpi-label">nike addressable tam</div><div class="kpi-value ">~$200B+</div><div class="kpi-sub">Footwear + apparel + equipment</div></div><div class="kpi"><div class="kpi-label">nike penetration</div><div class="kpi-value value-am">~25%</div><div class="kpi-sub">Of addressable TAM</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Secular Growth Drivers</h3><span class="tag blue">Tailwind</span></div><div class="aggregate-card-body"><p>Athleisure convergence: The blurring of athletic and casual wear continues to expand the addressable market. Consumers now wear athletic footwear and apparel in settings that previously demanded formal attire — offices, restaurants, travel. This structural shift has added an estimated $50-80B to the market over the past decade and shows no sign of reversing...</p></div></div><div class="table-wrap"><table><thead><tr><th>Market Segment</th><th class="num">Est. Size</th><th class="num">Growth Rate</th><th>Nike Position</th><th class="num">Nike Share</th></tr></thead><tbody><tr><td><p>Performance Running</p></td><td class="num"><p>$35B</p></td><td class="pos num"><p>8-10%</p></td><td><p>Losing ground to On/HOKA</p></td><td class="num"><p>~20%</p></td></tr><tr><td><p>Basketball</p></td><td class="num"><p>$8B</p></td><td class="num"><p>3-5%</p></td><td><p>Dominant (Jordan + Nike)</p></td><td class="num"><p>~60%</p></td></tr><tr><td><p>Lifestyle/Athleisure Footwear</p></td><td class="num"><p>$80B+</p></td><td class="pos num"><p>7-9%</p></td><td><p>Strong but fragmenting</p></td><td class="num"><p>~25%</p></td></tr><tr><td><p>Athletic Apparel</p></td><td class="num"><p>$200B+</p></td><td class="pos num"><p>5-6%</p></td><td><p>Top 3 globally</p></td><td class="num"><p>~10%</p></td></tr><tr><td><p>Football/Soccer</p></td><td class="num"><p>$15B</p></td><td class="num"><p>4-6%</p></td><td><p>Co-leader with Adidas</p></td><td class="num"><p>~30%</p></td></tr><tr><td><p>Training/Fitness</p></td><td class="num"><p>$12B</p></td><td class="pos num"><p>6-8%</p></td><td><p>Competitive with UA, Lulu</p></td><td class="num"><p>~15%</p></td></tr></tbody></table></div>
+      </section>
+      <section id="product" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>product &amp; technology</h2>
+          <div class="kicker">roadmap + software stack</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Nike&#x27;s product engine — once the industry&#x27;s undisputed innovation leader — has lost momentum. The Air Max DN launch delivered mixed commercial results, the running category has ceded credibility to On&#x27;s CloudTec/LightSpray and HOKA&#x27;s max-cushion platforms, and Jordan brand ($7.1B) shows deceleration after years of oversaturation. Hill&#x27;s product reset for FY2026 aims to cut SKUs ~25%, reinvest in performance running, and manage the Jordan lifecycle more carefully.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">jordan brand</div><div class="kpi-value value-rd">$7.1B</div><div class="kpi-sub">Decelerating, oversaturated</div></div><div class="kpi"><div class="kpi-label">converse</div><div class="kpi-value value-rd">$2.08B</div><div class="kpi-sub">Declining ~8% YoY</div></div><div class="kpi"><div class="kpi-label">sku reduction target</div><div class="kpi-value value-am">~25%</div><div class="kpi-sub">Hill&#x27;s simplification plan</div></div><div class="kpi"><div class="kpi-label">air max dn reception</div><div class="kpi-value value-am">Mixed</div><div class="kpi-sub">Below Vapormax launch trajectory</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Running Innovation Gap</h3><span class="tag red">Critical Weakness</span></div><div class="aggregate-card-body"><p>Nike&#x27;s running franchise was historically defined by Vaporfly/Alphafly at the elite end and Pegasus as the workhorse. But the competitive landscape has shifted dramatically: On Holding&#x27;s LightSpray: A spray-on upper manufacturing technology that reduces production steps from ~200 to ~60, enabling mass customization and potentially superior unit economics at scale. This is the most credible manufacturing innovation in footwear in a decade...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Jordan Brand Lifecycle Management</h3><span class="tag amber">Watch Closely</span></div><div class="aggregate-card-body"><p>Jordan at $7.1B is Nike&#x27;s most valuable sub-brand and highest-margin franchise. But the signals are concerning: Oversaturation: Under Donahoe, Jordan colorway releases accelerated dramatically — estimated 2-3x the cadence of 2018-19. Resale premiums on Air Jordan 1s and 4s have collapsed from average 2-3x retail to near-retail or below...</p></div></div><div class="table-wrap"><table><thead><tr><th>Product/Initiative</th><th>Timeline</th><th>Category</th><th>Expected Impact</th><th>Confidence</th></tr></thead><tbody><tr><td><p>Pegasus Premium</p></td><td><p>FY2026 H1</p></td><td><p>Running</p></td><td><p>Re-establish running credibility</p></td><td class="amb"><p>Medium</p></td></tr><tr><td><p>Air Max DN 2.0</p></td><td><p>FY2026 H2</p></td><td><p>Lifestyle</p></td><td><p>Iterate on mixed DN launch</p></td><td class="amb"><p>Low-Medium</p></td></tr><tr><td><p>SKU Rationalization</p></td><td><p>FY2025-26</p></td><td><p>All</p></td><td><p>-25% SKUs, higher avg margin</p></td><td class="pos"><p>High</p></td></tr><tr><td><p>Jordan Release Pullback</p></td><td><p>FY2026</p></td><td><p>Basketball/Lifestyle</p></td><td><p>Short-term rev hit, long-term health</p></td><td class="amb"><p>Medium</p></td></tr><tr><td><p>Blueprint Running Platform</p></td><td><p>FY2026 H2</p></td><td><p>Running</p></td><td><p>New midsole tech platform</p></td><td class="amb"><p>Medium</p></td></tr></tbody></table></div>
+      </section>
+      <section id="supply" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>supply chain</h2>
+          <div class="kicker">single points of failure</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Nike&#x27;s 100% outsourced manufacturing model is both its greatest structural advantage and a concentrated risk. Vietnam (50%), Indonesia (25%), and China (20%) account for ~95% of footwear production. The asset-light model drives industry-leading ROIC (~30%+) by keeping capex at ~3-4% of revenue, but the COVID-era Vietnam factory shutdowns proved the model&#x27;s vulnerability to regional disruption. Current tariff escalation adds a new dimension of risk.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">vietnam share</div><div class="kpi-value value-am">~50%</div><div class="kpi-sub">Primary footwear production</div></div><div class="kpi"><div class="kpi-label">indonesia share</div><div class="kpi-value ">~25%</div><div class="kpi-sub">Secondary hub</div></div><div class="kpi"><div class="kpi-label">china share</div><div class="kpi-value value-rd">~20%</div><div class="kpi-sub">Declining, tariff exposed</div></div><div class="kpi"><div class="kpi-label">capex % of rev</div><div class="kpi-value ">~3-4%</div><div class="kpi-sub">Asset-light, outsourced model</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Asset-Light Model &amp; ROIC Advantage</h3><span class="tag blue">Structural Moat</span></div><div class="aggregate-card-body"><p>Nike&#x27;s decision — made decades ago — to own zero factories is the foundation of its financial profile. By outsourcing all manufacturing to contract partners (Pou Chen, Feng Tay, Chang Shin), Nike converts what would be a capital-intensive manufacturing business into a brand/design/distribution business with fundamentally different economics: ROIC consistently 30%+ vs. vertically integrated competitors at 10-20%...</p></div></div><div class="table-wrap"><table><thead><tr><th>Country</th><th class="num">% of Footwear</th><th>Key Suppliers</th><th>Risk Factor</th><th>Tariff Exposure</th></tr></thead><tbody><tr><td><p>Vietnam</p></td><td class="num"><p>~50%</p></td><td><p>Pou Chen, Chang Shin</p></td><td><p>COVID shutdown precedent</p></td><td class="amb"><p>Medium — trade deal dependent</p></td></tr><tr><td><p>Indonesia</p></td><td class="num"><p>~25%</p></td><td><p>Feng Tay, Pou Chen</p></td><td><p>Political stability risk</p></td><td class="amb"><p>Low-Medium</p></td></tr><tr><td><p>China</p></td><td class="num"><p>~20%</p></td><td><p>Various</p></td><td><p>Geopolitical, tariff escalation</p></td><td class="neg"><p>High — active tariff risk</p></td></tr><tr><td><p>India</p></td><td class="num"><p>~3%</p></td><td><p>Expanding</p></td><td><p>Infrastructure, scale-up</p></td><td class="pos"><p>Low</p></td></tr><tr><td><p>Cambodia/Others</p></td><td class="num"><p>~2%</p></td><td><p>Diversification targets</p></td><td><p>Scale limitations</p></td><td class="pos"><p>Low</p></td></tr></tbody></table></div>
+      </section>
+      <section id="catalysts" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>catalyst map</h2>
+          <div class="kicker">catalysts & timeline</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Five catalysts define the turnaround arc from trough (FY2025) through validation (FY2027). The nearest catalyst is FY2025 earnings in June 2025, which sets the baseline for trough expectations. The 2026 FIFA World Cup is the marquee brand event. Between them, wholesale stabilization, new running platforms, and China recovery provide incremental proof points.</p></div>
+        <div class="table-wrap"><table><thead><tr><th>Catalyst</th><th>Timing</th><th>Impact</th><th class="num">Probability</th></tr></thead><tbody><tr><td><p>FY2025 Q4 Earnings + FY2026 Guidance</p></td><td><p>Jun 2025</p></td><td><p>Sets trough baseline; guidance tone is key signal</p></td><td class="pos num"><p>Certain</p></td></tr><tr><td><p>Wholesale Door Count Recovery</p></td><td><p>H2 FY2026 (Jan-May 2026)</p></td><td><p>Most visible external proof of turnaround</p></td><td class="pos num"><p>Probable</p></td></tr><tr><td><p>New Running Platform Launches</p></td><td><p>Fall 2025 - Spring 2026</p></td><td><p>Product credibility in performance segment</p></td><td class="amb num"><p>Moderate</p></td></tr><tr><td><p>2026 FIFA World Cup</p></td><td><p>Jun-Jul 2026</p></td><td><p>Massive global brand visibility; Nike sponsors 10+ teams</p></td><td class="pos num"><p>Certain</p></td></tr><tr><td><p>China Recovery / Greater China Inflection</p></td><td><p>FY2026-2027</p></td><td><p>Greater China was $7.2B in FY2022; recovery unlocks growth</p></td><td class="amb num"><p>Uncertain</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>FY2025 Earnings (June 2025): Setting the Trough</h3><span class="tag blue">NEAR-TERM</span></div><div class="aggregate-card-body"><p>FY2025 is engineered as a reset year. Revenue is declining mid-single-digits, and EPS is expected at ~$2.20-2.40, well below FY2024&#x27;s $3.73. The absolute numbers will look bad — the market knows this...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>2026 FIFA World Cup: The Brand Moment</h3><span class="tag blue">HIGH IMPACT</span></div><div class="aggregate-card-body"><p>The 2026 World Cup (June-July 2026, hosted by US/Canada/Mexico) is the single largest sporting event in the world and Nike&#x27;s premier marketing platform. Nike sponsors 10+ national teams and the majority of the world&#x27;s top footballers. The expanded 48-team format means more matches, more viewership, and more kit sales than any prior tournament...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>China Recovery: The Swing Factor</h3><span class="tag amber">UNCERTAIN</span></div><div class="aggregate-card-body"><p>Greater China revenue peaked at ~$7.2B in FY2022 and has since declined due to COVID lockdowns, consumer sentiment weakness, and competition from domestic brands (Anta, Li-Ning). Recovery to prior peak would add ~$1.5-2B in revenue and disproportionately lift margins (China is Nike&#x27;s highest-margin geography). This catalyst is outside Nike&#x27;s control — it depends on Chinese consumer confidence, macro policy, and geopolitical dynamics...</p></div></div>
+      </section>
+      <section id="street" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>street expectations</h2>
+          <div class="kicker">wall street consensus</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The Street is cautiously constructive on Nike with a ~$80 average price target, implying ~19% upside from $67. The rating distribution (~15 Buy, 20 Hold, 5 Sell) reflects a &quot;show me&quot; posture — most analysts believe Hill&#x27;s strategy is directionally correct but want to see execution proof in FY2026 wholesale sell-through and margin stabilization before upgrading. Short interest at 2-3% is modest, indicating bears are expressing the trade through options rather than outright shorts.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">avg price target</div><div class="kpi-value ">~$80</div><div class="kpi-sub">+19% upside from $67</div></div><div class="kpi"><div class="kpi-label">pt range</div><div class="kpi-value value-am">$55-$105</div><div class="kpi-sub">Wide dispersion = uncertainty</div></div><div class="kpi"><div class="kpi-label">buy / hold / sell</div><div class="kpi-value value-am">15 / 20 / 5</div><div class="kpi-sub">~38% Buy, 50% Hold</div></div><div class="kpi"><div class="kpi-label">short interest</div><div class="kpi-value ">2-3%</div><div class="kpi-sub">Low — not a crowded short</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Bull vs. Bear Framing</h3><span class="tag blue">Debate</span></div><div class="aggregate-card-body"><p>Bull case ($85-105 PTs): Nike at $67 is a generational brand at a cyclical trough. Hill&#x27;s wholesale reset, SKU rationalization, and product refresh set up a FY2026-27 earnings recovery to $3.50-4.00 EPS. At 22-25x normalized earnings, fair value is $80-100...</p></div></div><div class="table-wrap"><table><thead><tr><th>Firm</th><th>Rating</th><th class="num">Price Target</th><th>Key Thesis</th><th>Catalyst Watched</th></tr></thead><tbody><tr><td><p>Morgan Stanley</p></td><td><p>Overweight</p></td><td class="pos num"><p>$98</p></td><td><p>Brand recovery cycle, Hill execution</p></td><td><p>FY2026 GM inflection</p></td></tr><tr><td><p>Goldman Sachs</p></td><td><p>Buy</p></td><td class="pos num"><p>$92</p></td><td><p>Wholesale channel reset undervalued</p></td><td><p>Foot Locker sell-through data</p></td></tr><tr><td><p>JP Morgan</p></td><td><p>Neutral</p></td><td class="amb num"><p>$78</p></td><td><p>Right direction, needs proof</p></td><td><p>China macro, FY26 guidance</p></td></tr><tr><td><p>Barclays</p></td><td><p>Equal Weight</p></td><td class="amb num"><p>$75</p></td><td><p>Margin pressure through FY2026</p></td><td><p>Inventory levels, promo cadence</p></td></tr><tr><td><p>Bernstein</p></td><td><p>Underperform</p></td><td class="neg num"><p>$58</p></td><td><p>Structural share loss thesis</p></td><td><p>Gen Z brand tracker data</p></td></tr><tr><td><p>UBS</p></td><td><p>Neutral</p></td><td class="amb num"><p>$72</p></td><td><p>Balanced risk/reward at $67</p></td><td><p>Wholesale order books</p></td></tr></tbody></table></div>
+      </section>
+      <section id="scorecard" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>earnings scorecard</h2>
+          <div class="kicker">earnings tracker & scorecard</div>
+        </div>
+        <div class="lead aggregate-lead"><p>FY2025 is a deliberately engineered trough year. Elliott Hill is accepting near-term pain to reset wholesale relationships, clean up inventory, and rebuild product heat. The scorecard framework below tracks whether the turnaround is working — focusing on leading indicators, not headline revenue.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">fy2024 actual eps</div><div class="kpi-value ">$3.73</div><div class="kpi-sub">Revenue $51.36B, NI $5.70B, GM 44.6%</div></div><div class="kpi"><div class="kpi-label">fy2025e eps (trough)</div><div class="kpi-value value-rd">$2.20-2.40</div><div class="kpi-sub">~35-40% decline from FY2024; guided mid-single-digit rev decline</div></div><div class="kpi"><div class="kpi-label">fy2024 fcf</div><div class="kpi-value ">$6.56B</div><div class="kpi-sub">Strong cash generation even during transition</div></div><div class="kpi"><div class="kpi-label">next key report</div><div class="kpi-value value-am">Q4 FY2025 (Jun 2025)</div><div class="kpi-sub">Full-year trough confirmation + FY2026 guide</div></div></div><div class="table-wrap"><table><thead><tr><th>Period</th><th class="num">Revenue</th><th class="num">EPS</th><th class="num">GM</th><th>Beat/Miss</th><th>Key Takeaway</th></tr></thead><tbody><tr><td><p>Q3 FY2025 (Mar 25)</p></td><td class="num"><p>$11.3B</p></td><td class="num"><p>$0.54</p></td><td class="num"><p>43.0%</p></td><td><p>Beat EPS, miss rev</p></td><td><p>Deeper revenue trough but cost discipline improving</p></td></tr><tr><td><p>Q2 FY2025 (Dec 24)</p></td><td class="num"><p>$12.4B</p></td><td class="num"><p>$0.78</p></td><td class="num"><p>43.6%</p></td><td><p>Beat EPS, miss rev</p></td><td><p>Margin ahead of revenue recovery; inventory clean</p></td></tr><tr><td><p>Q1 FY2025 (Sep 24)</p></td><td class="num"><p>$11.6B</p></td><td class="num"><p>$0.70</p></td><td class="num"><p>43.2%</p></td><td><p>Miss on both</p></td><td><p>Hill&#x27;s first quarter; turnaround costs weighed</p></td></tr><tr><td><p>Q4 FY2024 (Jun 24)</p></td><td class="num"><p>$12.6B</p></td><td class="num"><p>$0.99</p></td><td class="num"><p>44.7%</p></td><td><p>Slight beat</p></td><td><p>Inventory normalization; wholesale stabilizing</p></td></tr><tr><td><p>Q3 FY2024 (Mar 24)</p></td><td class="num"><p>$12.4B</p></td><td class="num"><p>$0.77</p></td><td class="num"><p>44.8%</p></td><td><p>In-line</p></td><td><p>China recovery signs; DTC struggles emerging</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Turnaround Scorecard: Key Metrics to Watch</h3><span class="tag blue">Framework</span></div><div class="aggregate-card-body"><p>1. Wholesale Sell-In Trend: The most important leading indicator. Under Donahoe, Nike alienated wholesale partners by pulling product for DTC...</p></div></div>
+      </section>
+      <section id="signals" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>alternative data</h2>
+          <div class="kicker">signals & positioning</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Technical and positioning signals paint a picture of a stock in no-man&#x27;s-land. Down 63% from the November 2021 ATH of $179, NKE sits at $67 — well off the 52-week low of $52 but lacking momentum catalysts. Institutional holders are still present but underweight, shorts are not pressing, and the options market reflects moderate uncertainty.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">distance from ath</div><div class="kpi-value value-rd">-63%</div><div class="kpi-sub">Peak $179 (Nov 2021) to current $67</div></div><div class="kpi"><div class="kpi-label">52-week range position</div><div class="kpi-value value-am">33rd Percentile</div><div class="kpi-sub">Range $52.28 - $97.07; lower third</div></div><div class="kpi"><div class="kpi-label">short interest</div><div class="kpi-value ">~2-3%</div><div class="kpi-sub">Low; bears are avoiding not pressing</div></div><div class="kpi"><div class="kpi-label">institutional ownership</div><div class="kpi-value ">~80%</div><div class="kpi-sub">Broadly held but likely underweight vs benchmark</div></div></div><div class="table-wrap"><table><thead><tr><th class="num">Level</th><th class="num">Price</th><th>Significance</th><th>Action Implication</th></tr></thead><tbody><tr><td class="num"><p>52-Week Low / Major Support</p></td><td class="num"><p>$52</p></td><td><p>Tested Oct 2024; held on Hill appointment news</p></td><td><p>Break below = structural breakdown; re-evaluate thesis</p></td></tr><tr><td class="num"><p>Near-Term Support</p></td><td class="num"><p>$60-62</p></td><td><p>Volume-weighted support zone from Q1 2025 consolidation</p></td><td><p>Potential add zone if thesis intact</p></td></tr><tr><td class="num"><p>Current Price</p></td><td class="num"><p>$67</p></td><td><p>Mid-range; no strong technical signal</p></td><td><p>Holding position at 3% weight</p></td></tr><tr><td class="num"><p>Resistance Zone 1</p></td><td class="num"><p>$75-80</p></td><td><p>Multiple failed rallies have stalled here</p></td><td><p>Breakout above $80 = momentum inflection</p></td></tr><tr><td class="num"><p>Resistance Zone 2</p></td><td class="num"><p>$90-97</p></td><td><p>52-week high area; pre-turnaround selling climax</p></td><td><p>Sustained above $90 = thesis largely validated</p></td></tr><tr><td class="num"><p>Bull Target</p></td><td class="num"><p>$110</p></td><td><p>Requires normalized earnings + re-rating</p></td><td><p>Full position exit zone</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Insider Activity &amp; Institutional Positioning</h3><span class="tag amber">Watch Closely</span></div><div class="aggregate-card-body"><p>Elliott Hill&#x27;s credibility signal: Hill returned to Nike as CEO in October 2024 after a 32-year career at the company. He received a standard CEO compensation package with equity grants, but the market is watching for open-market purchases — buying shares with his own money as a vote of confidence. So far, no significant open-market buys have been reported...</p></div></div>
+      </section>
+      <section id="history" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>historical analogies</h2>
+          <div class="kicker">corporate history</div>
+        </div>
+        <div class="lead aggregate-lead"><p>From a trunk full of Japanese running shoes to a $100B+ enterprise. Nike&#x27;s 60-year arc is defined by relentless brand storytelling, athlete partnerships that redefined sports marketing, and periodic reinvention — punctuated by the current challenge of recovering from a strategic misstep that cut the stock 63% from its all-time high.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">founded</div><div class="kpi-value ">1964</div><div class="kpi-sub">Blue Ribbon Sports, Eugene OR</div></div><div class="kpi"><div class="kpi-label">ipo</div><div class="kpi-value ">Dec 1980</div><div class="kpi-sub">$22M market cap at listing</div></div><div class="kpi"><div class="kpi-label">all-time high</div><div class="kpi-value ">$179.10</div><div class="kpi-sub">Nov 2021</div></div><div class="kpi"><div class="kpi-label">current price</div><div class="kpi-value value-rd">$67</div><div class="kpi-sub">-63% from ATH</div></div></div><div class="table-wrap"><table><thead><tr><th class="num">Year</th><th>Milestone</th><th>Significance</th></tr></thead><tbody><tr><td class="num"><p>1964</p></td><td><p>Blue Ribbon Sports founded</p></td><td><p>Phil Knight and Bill Bowerman begin importing Onitsuka Tiger shoes; Knight sells from his car trunk at track meets</p></td></tr><tr><td class="num"><p>1971</p></td><td><p>Nike brand and Swoosh created</p></td><td><p>Carolyn Davidson designs the Swoosh for $35; the company pivots to its own brand</p></td></tr><tr><td class="num"><p>1972</p></td><td><p>First Nike shoes debut at Olympic Trials</p></td><td><p>Moon Shoe and Waffle Trainer establish Nike&#x27;s innovation identity under Bowerman</p></td></tr><tr><td class="num"><p>1978</p></td><td><p>Blue Ribbon Sports officially renamed Nike, Inc.</p></td><td><p>Revenue surpasses $70M; international expansion begins</p></td></tr><tr><td class="num"><p>1980</p></td><td><p>IPO on NYSE</p></td><td><p>50% US market share in running; public listing funds global ambitions</p></td></tr><tr><td class="num"><p>1984</p></td><td><p>Michael Jordan signs endorsement deal</p></td><td><p>Air Jordan launches 1985; becomes the most successful athlete endorsement in history, eventually a $7.1B sub-brand</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Stock Price Journey</h3><span class="tag red">63% Drawdown</span></div><div class="aggregate-card-body"><p>IPO to 2000 ($0.10 split-adj to $55): Nike compounded at ~30% annually through the 1990s as international expansion and the Jordan brand powered growth. The stock weathered the late-1990s sweatshop controversy, which ultimately led to industry-leading supply chain transparency. 2000-2015 ($25 to $65): Steady compounder through two recessions...</p></div></div>
+      </section>
+      <section id="management" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>management &amp; leadership</h2>
+          <div class="kicker">management assessment</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Nike&#x27;s leadership reset is the single most important catalyst for the stock. The October 2024 appointment of Elliott Hill — a 32-year Nike veteran who ran the commercial organization — signals a decisive return to product-centric, brand-first leadership after the Donahoe era&#x27;s tech-exec missteps. CFO Matthew Friend provides continuity, while Executive Chairman Mark Parker ensures institutional memory at the board level.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">ceo tenure</div><div class="kpi-value ">~18 mo</div><div class="kpi-sub">Elliott Hill, since Oct 2024</div></div><div class="kpi"><div class="kpi-label">cfo tenure</div><div class="kpi-value ">6 years</div><div class="kpi-sub">Matthew Friend, since 2020</div></div><div class="kpi"><div class="kpi-label">insider ownership</div><div class="kpi-value ">~1.2%</div><div class="kpi-sub">Knight family controls via Class B</div></div><div class="kpi"><div class="kpi-label">ceo comp (fy24)</div><div class="kpi-value value-am">~$28M</div><div class="kpi-sub">Heavy equity component</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Elliott Hill — CEO</h3><span class="tag blue">32-Year Veteran</span></div><div class="aggregate-card-body"><p>Background: Hill joined Nike in 1988 as an intern, rising through sales, retail, and commercial leadership. He served as President of Consumer &amp; Marketplace (Nike&#x27;s entire commercial engine) before retiring in 2020. The board pulled him out of retirement to replace Donahoe — a strong signal of urgency and confidence in his operational playbook...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Matthew Friend — CFO</h3><span class="tag amber">Continuity</span></div><div class="aggregate-card-body"><p>Background: Friend joined Nike in 2009 and became CFO in April 2020, navigating the company through COVID, the DTC pivot, and now the turnaround. He previously served as VP of Investor Relations and CFO of Nike&#x27;s operating segments, giving him deep familiarity with the P&L at every level. Assessment: Friend has maintained capital allocation discipline through the downturn — Nike returned ~$10B to shareholders via buybacks and dividends in FY2023-24 while preserving an investment-grade balance sheet (A1/AA-)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Mark Parker — Executive Chairman</h3><span class="tag blue">Innovation Legacy</span></div><div class="aggregate-card-body"><p>Background: Parker served as CEO from 2006-2020, presiding over Nike&#x27;s best innovation era (Flyknit, VaporMax, self-lacing HyperAdapt, React foam). He was promoted to Executive Chairman when Donahoe took over, maintaining board influence and Knight family alignment. Role now: Parker is widely credited with identifying Hill as the right successor and orchestrating the Donahoe exit...</p></div></div>
+      </section>
+      <section id="macro" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>macro sensitivity</h2>
+          <div class="kicker">rates, fx, energy</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Nike is a high-beta consumer discretionary name with outsized FX and trade-policy exposure. With 60% of revenue outside the US, a manufacturing base concentrated in Vietnam and China, and a product mix skewed to non-essential spending, the macro regime matters more for NKE than for most mega-caps.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">consumer discretionary sensitivity</div><div class="kpi-value value-rd">High</div><div class="kpi-sub">Athletic footwear/apparel sees 5-15% volume decline in recession</div></div><div class="kpi"><div class="kpi-label">fx revenue exposure</div><div class="kpi-value value-am">60% Non-US</div><div class="kpi-sub">1% dollar move = ~$350-400M annual revenue impact</div></div><div class="kpi"><div class="kpi-label">tariff exposure</div><div class="kpi-value value-rd">Elevated</div><div class="kpi-sub">~50% of footwear from Vietnam, ~25% from China</div></div><div class="kpi"><div class="kpi-label">interest rate sensitivity</div><div class="kpi-value ">Low Direct</div><div class="kpi-sub">Net cash position; but higher rates pressure consumer spending</div></div></div><div class="table-wrap"><table><thead><tr><th>Scenario</th><th class="num">Revenue Impact</th><th class="num">Margin Impact</th><th class="num">EPS Impact</th><th class="num">Stock Price Estimate</th></tr></thead><tbody><tr><td><p>Soft Landing (Base)</p></td><td class="num"><p>-2% to flat</p></td><td class="num"><p>GM stable ~44-45%</p></td><td class="num"><p>$2.20-2.40 FY25E trough</p></td><td class="num"><p>$80-90</p></td></tr><tr><td><p>Mild Recession (3-6mo)</p></td><td class="num"><p>-5% to -8%</p></td><td class="num"><p>GM contracts 100-150bps from markdowns</p></td><td class="num"><p>$1.80-2.00</p></td><td class="num"><p>$55-65</p></td></tr><tr><td><p>Deep Recession (12mo+)</p></td><td class="num"><p>-10% to -15%</p></td><td class="num"><p>GM contracts 200-300bps; heavy promotional activity</p></td><td class="num"><p>$1.40-1.60</p></td><td class="num"><p>$40-50</p></td></tr><tr><td><p>Stagflation (high inflation + slow growth)</p></td><td class="num"><p>-5% to -10%</p></td><td class="num"><p>Input cost pressure + volume decline; GM down 200bps+</p></td><td class="num"><p>$1.50-1.80</p></td><td class="num"><p>$45-55</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>FX &amp; Trade Policy Deep Dive</h3><span class="tag amber">Key Risk</span></div><div class="aggregate-card-body"><p>Currency: Nike reports in USD but earns ~60% of revenue internationally. EMEA (~27% of revenue), Greater China (~15%), and APLA (~12%) are the key currency zones. A broad dollar rally creates a double hit: translation losses on foreign earnings plus reduced purchasing power in local markets...</p></div></div>
+      </section>
+      <section id="quant" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>quantitative profile</h2>
+          <div class="kicker">factor + mean reversion</div>
+        </div>
+        <div class="lead aggregate-lead"><p>NKE screens as expensive on trailing metrics but potentially cheap on normalized earnings. The 30x forward P/E reflects trough FY2025 earnings, not structural overvaluation. On a normalized basis (FY2027E EPS $4.00-4.50), the stock trades at 15-17x — a steep discount to the 10-year average of 28-32x. The quant signal depends entirely on whether normalization actually happens.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">p/e (trailing 12m)</div><div class="kpi-value ">~18x</div><div class="kpi-sub">Based on FY2024 EPS of $3.73</div></div><div class="kpi"><div class="kpi-label">p/e (forward fy25e)</div><div class="kpi-value value-rd">~28-30x</div><div class="kpi-sub">Trough EPS $2.20-2.40; optically expensive</div></div><div class="kpi"><div class="kpi-label">ev/ebitda (trailing)</div><div class="kpi-value value-am">~14x</div><div class="kpi-sub">EV ~$108B; FY24 EBITDA ~$7.8B</div></div><div class="kpi"><div class="kpi-label">10-year avg p/e</div><div class="kpi-value ">28-32x</div><div class="kpi-sub">Nike historically traded at premium-growth multiples</div></div></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">Current</th><th class="num">5-Year Avg</th><th class="num">10-Year Avg</th><th class="num">Sector Median</th><th>Interpretation</th></tr></thead><tbody><tr><td><p>P/E (Trailing)</p></td><td class="num"><p>18x</p></td><td class="num"><p>32x</p></td><td class="num"><p>30x</p></td><td class="num"><p>22x</p></td><td><p>Cheap vs own history; premium vs sector on trough E</p></td></tr><tr><td><p>P/E (Forward)</p></td><td class="num"><p>28-30x</p></td><td class="num"><p>28x</p></td><td class="num"><p>28x</p></td><td class="num"><p>18x</p></td><td><p>Optically expensive but denominator is trough</p></td></tr><tr><td><p>EV/EBITDA</p></td><td class="num"><p>14x</p></td><td class="num"><p>20x</p></td><td class="num"><p>19x</p></td><td class="num"><p>13x</p></td><td><p>Reasonable; closer to fair value on this metric</p></td></tr><tr><td><p>P/FCF</p></td><td class="num"><p>15x</p></td><td class="num"><p>25x</p></td><td class="num"><p>24x</p></td><td class="num"><p>18x</p></td><td><p>Attractive if FCF normalizes to $6B+</p></td></tr><tr><td><p>PEG Ratio</p></td><td class="num"><p>N/A (neg growth)</p></td><td class="num"><p>1.2x</p></td><td class="num"><p>1.3x</p></td><td class="num"><p>1.5x</p></td><td><p>Not meaningful in trough year; watch FY26-27</p></td></tr><tr><td><p>Price/Sales</p></td><td class="num"><p>1.9x</p></td><td class="num"><p>3.2x</p></td><td class="num"><p>3.0x</p></td><td class="num"><p>1.5x</p></td><td><p>Below own history but still above sector</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Factor Exposures &amp; Correlations</h3><span class="tag blue">Quant Factors</span></div><div class="aggregate-card-body"><p>Value factor: NKE is starting to screen on value screens for the first time in years. At 18x trailing earnings and 1.9x sales, it has shifted from a pure growth/quality name to a GARP/value candidate. This is attracting a different investor base — value-oriented funds that typically would not own Nike...</p></div></div>
+      </section>
+      <section id="derivatives" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>options &amp; derivatives</h2>
+          <div class="kicker">derivatives & options perspective</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The options market is pricing elevated uncertainty with a meaningful put skew. Implied volatility runs above realized, reflecting the binary nature of turnaround outcomes. The term structure steepens into earnings dates, and the skew tells us the market is paying up for downside protection — consistent with institutional hedging rather than speculative positioning.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">30-day atm iv</div><div class="kpi-value value-am">~30-32%</div><div class="kpi-sub">Elevated vs 5-yr avg of ~25%; turnaround uncertainty premium</div></div><div class="kpi"><div class="kpi-label">iv vs realized vol</div><div class="kpi-value value-am">IV Premium ~4-6pts</div><div class="kpi-sub">Implied consistently above realized; hedging demand</div></div><div class="kpi"><div class="kpi-label">put/call open interest ratio</div><div class="kpi-value value-am">~0.85</div><div class="kpi-sub">Slightly put-heavy; institutional hedging visible</div></div><div class="kpi"><div class="kpi-label">options liquidity</div><div class="kpi-value ">Excellent</div><div class="kpi-sub">Tight spreads; deep book across strikes and expirations</div></div></div><div class="table-wrap"><table><thead><tr><th>Expiration</th><th class="num">25-Delta Put IV</th><th class="num">ATM IV</th><th class="num">25-Delta Call IV</th><th>Skew (Put-Call)</th><th>Context</th></tr></thead><tbody><tr><td><p>30-Day</p></td><td class="num"><p>35%</p></td><td class="num"><p>31%</p></td><td class="num"><p>28%</p></td><td><p>+7pts</p></td><td><p>Near-term hedging demand; earnings proximity</p></td></tr><tr><td><p>90-Day</p></td><td class="num"><p>33%</p></td><td class="num"><p>30%</p></td><td class="num"><p>27%</p></td><td><p>+6pts</p></td><td><p>Moderate skew; covers next earnings cycle</p></td></tr><tr><td><p>6-Month</p></td><td class="num"><p>32%</p></td><td class="num"><p>29%</p></td><td class="num"><p>26%</p></td><td><p>+6pts</p></td><td><p>Turnaround timeline pricing; still elevated</p></td></tr><tr><td><p>12-Month (LEAPS)</p></td><td class="num"><p>30%</p></td><td class="num"><p>28%</p></td><td class="num"><p>25%</p></td><td><p>+5pts</p></td><td><p>Longer-dated flattening; market sees resolution</p></td></tr><tr><td><p>18-Month</p></td><td class="num"><p>29%</p></td><td class="num"><p>27%</p></td><td class="num"><p>25%</p></td><td><p>+4pts</p></td><td><p>Skew compresses; binary risk less dominant</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>How the Options Market Prices the Turnaround</h3><span class="tag blue">Key Insight</span></div><div class="aggregate-card-body"><p>The term structure tells the turnaround timeline story. IV is highest in the near-term (30-32%) and declines to ~27-28% at 12-18 months out. This implies the market expects the highest uncertainty in the next 2-3 quarters (FY2025 completion + early FY2026 guide) and progressively more clarity thereafter...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Derivatives Strategy Considerations</h3><span class="tag blue">Tactical</span></div><div class="aggregate-card-body"><p>Collar (protective): Buy $55 puts / sell $90 calls on a 6-12 month basis. This defines the risk/reward at approximately -18% / +34% and costs near-zero given the skew (put premium roughly offsets call premium). Appropriate for a position where you want turnaround exposure with defined downside...</p></div></div>
+      </section>
+      <section id="governance" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>governance &amp; accounting</h2>
+          <div class="kicker">corporate governance</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Nike&#x27;s dual-class share structure concentrates voting power with the Knight family. Phil Knight and his son Travis Knight control approximately 65% of voting power through Class B shares, making Nike effectively a controlled company. This structure enabled the decisive CEO swap but also limits minority shareholder influence on strategic direction.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">board size</div><div class="kpi-value ">12</div><div class="kpi-sub">Diverse expertise mix</div></div><div class="kpi"><div class="kpi-label">knight family voting</div><div class="kpi-value value-am">~65%</div><div class="kpi-sub">Via Class B super-voting shares</div></div><div class="kpi"><div class="kpi-label">independent directors</div><div class="kpi-value ">10 of 12</div><div class="kpi-sub">Hill &amp; Parker are insiders</div></div><div class="kpi"><div class="kpi-label">board avg tenure</div><div class="kpi-value ">~7 yrs</div><div class="kpi-sub">Good mix of fresh and experienced</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Dual-Class Share Structure</h3><span class="tag amber">Key Risk</span></div><div class="aggregate-card-body"><p>Structure: Nike has two classes of common stock. Class A shares (publicly traded as NKE) carry one vote per share. Class B shares carry one vote per share but are convertible to Class A and are primarily held by the Knight family through Swoosh LLC and various trusts...</p></div></div><div class="table-wrap"><table><thead><tr><th>Director</th><th>Role / Expertise</th><th>Key Affiliation</th><th class="num">Since</th></tr></thead><tbody><tr><td><p>Mark Parker</p></td><td><p>Executive Chairman</p></td><td><p>Former Nike CEO (2006-2020)</p></td><td class="num"><p>2006</p></td></tr><tr><td><p>Elliott Hill</p></td><td><p>CEO, Director</p></td><td><p>32-year Nike veteran</p></td><td class="num"><p>2024</p></td></tr><tr><td><p>Cathleen Benko</p></td><td><p>Lead Independent Director</p></td><td><p>Former Deloitte Vice Chairman</p></td><td class="num"><p>2020</p></td></tr><tr><td><p>Timothy Cook</p></td><td><p>Independent Director</p></td><td><p>Apple CEO</p></td><td class="num"><p>2016</p></td></tr><tr><td><p>John Rogers Jr.</p></td><td><p>Independent Director</p></td><td><p>Ariel Investments Chairman</p></td><td class="num"><p>2022</p></td></tr><tr><td><p>Michelle Peluso</p></td><td><p>Independent Director</p></td><td><p>Former CVS Health digital chief</p></td><td class="num"><p>2023</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Compensation &amp; ESG</h3><span class="tag amber">Mixed</span></div><div class="aggregate-card-body"><p>Executive compensation: Hill&#x27;s package includes a $1.5M base salary, target annual bonus of 200% of base, and a substantial equity grant (~$15M in RSUs and performance shares) tied to revenue growth, ROIC, and TSR vs. peers. The structure properly aligns Hill with shareholder outcomes over a 3-year vesting period...</p></div></div>
+      </section>
+      <section id="value" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>value framework</h2>
+          <div class="kicker">greenwald / qarp</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Nike&#x27;s brand moat remains formidable but is under stress. The swoosh is a top-15 global brand valued at ~$33B, yet erosion in product innovation and wholesale relationships under the Donahoe era has narrowed the competitive gap. At $67, the stock prices in significant damage — the question is whether the moat is durable enough to support a recovery to $85+.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">roic (ttm)</div><div class="kpi-value ">24.8%</div><div class="kpi-sub">Above 20% WACC hurdle</div></div><div class="kpi"><div class="kpi-label">brand value</div><div class="kpi-value ">~$33B</div><div class="kpi-sub">Interbrand Top 15</div></div><div class="kpi"><div class="kpi-label">gross margin</div><div class="kpi-value value-am">44.6%</div><div class="kpi-sub">Down from 46%+ peak</div></div><div class="kpi"><div class="kpi-label">fcf yield</div><div class="kpi-value ">6.2%</div><div class="kpi-sub">$6.56B on ~$106B EV</div></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Brand Moat Durability</h3><span class="tag amber">Wide but Pressured</span></div><div class="aggregate-card-body"><p>Nike&#x27;s brand is the most recognized athletic mark globally, reinforced by 40+ years of cultural relevance spanning sport, streetwear, and luxury adjacency. The swoosh carries pricing power — Nike consistently commands 20-40% premiums over comparable products from Adidas, New Balance, and Hoka. However, the Donahoe-era over-rotation to retro silhouettes (Dunks, Air Force 1s) saturated key SKUs, diluting exclusivity...</p></div></div><div class="table-wrap"><table><thead><tr><th>Competitive Advantage</th><th>Strength</th><th>Durability</th><th>Key Risk</th></tr></thead><tbody><tr><td><p>Global Distribution (190+ countries)</p></td><td><p>Very Strong</p></td><td><p>High</p></td><td><p>Wholesale repair needed after DTC over-rotation</p></td></tr><tr><td><p>Athlete Endorsements (~$4B/yr spend)</p></td><td><p>Dominant</p></td><td><p>High</p></td><td><p>Rising cost of top-tier talent</p></td></tr><tr><td><p>Innovation IP (Air, Flyknit, ZoomX, Forward)</p></td><td><p>Strong</p></td><td><p>Medium-High</p></td><td><p>Pipeline stalled 2020-2024; Hill prioritizing R&D restart</p></td></tr><tr><td><p>Scale Economics (&gt;$51B rev)</p></td><td><p>Very Strong</p></td><td><p>High</p></td><td><p>Fixed cost leverage requires volume recovery</p></td></tr><tr><td><p>Digital Ecosystem (SNKRS, Nike App, NTC)</p></td><td><p>Moderate</p></td><td><p>Medium</p></td><td><p>Engagement metrics declining; membership needs refreshing</p></td></tr><tr><td><p>Jordan Brand ($7.1B standalone)</p></td><td><p>Unique</p></td><td><p>High</p></td><td><p>Deceleration from oversaturation of retro releases</p></td></tr></tbody></table></div>
+      </section>
+      <section id="appendix" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>appendix &amp; sources</h2>
+          <div class="kicker">sources · methodology</div>
+        </div>
+        <div class="lead aggregate-lead"><p>How we source the tape, verify levels, and align this report with XVARY deep-dive standards.</p></div>
+        <div class="aggregate-sources-attribution"><p>Sources: SEC filings, company disclosures, market data vendors, and sources cited in the sections above. For investment presentation use only.</p></div><p class="aggregate-methodology-link">standards and pipeline: <a href="https://xvary.com/methodology/">xvary.com/methodology/</a></p>
+      </section>
+
+      <div class="footer">
+        xvary · 2026 · not investment advice
+        <div class="links">
+          <a href="https://xvary.com/pulse/">the pulse</a>
+          <a href="https://xvary.com/stacks/">the stacks</a>
+          <a href="https://xvary.com/discover/">discover</a>
+          <a href="https://xvary.com/collectibles/">collectibles</a>
+          <a href="https://xvary.com/pricing/">pricing</a>
+          <a href="https://xvary.com/methodology/">methodology</a>
+          <a href="https://xvary.com/newsletter/">newsletter</a>
+          <a href="https://xvary.com/legal/disclaimer/">disclaimer</a>
+          <a href="https://xvary.com/legal/privacy/">privacy</a>
+          <a href="https://xvary.com/legal/terms/">terms</a>
+        </div>
+        <div class="small">Sources: company filings and earnings, supplier disclosures, named sell-side notes where cited, alt-data where noted, and public flow/sentiment screens. Not investment advice — verify anything you trade on.</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const bar = document.getElementById("reading-progress");
+      const sections = [{"id": "summary", "hotkey": "0"}, {"id": "thesis", "hotkey": "1"}, {"id": "financials", "hotkey": "2"}, {"id": "valuation", "hotkey": "3"}, {"id": "risk", "hotkey": "4"}, {"id": "ops", "hotkey": "5"}, {"id": "competition", "hotkey": "6"}, {"id": "tam", "hotkey": "7"}, {"id": "product", "hotkey": "8"}, {"id": "supply", "hotkey": "9"}, {"id": "catalysts", "hotkey": "a"}, {"id": "street", "hotkey": "b"}, {"id": "scorecard", "hotkey": "c"}, {"id": "signals", "hotkey": "d"}, {"id": "history", "hotkey": "e"}, {"id": "management", "hotkey": "f"}, {"id": "macro", "hotkey": "g"}, {"id": "quant", "hotkey": "h"}, {"id": "derivatives", "hotkey": "i"}, {"id": "governance", "hotkey": "j"}, {"id": "value", "hotkey": "k"}, {"id": "appendix", "hotkey": "l"}];
+      const links = [...document.querySelectorAll(".sidebar a[href^='#']")];
+      const setActive = function (id) {
+        links.forEach(function (link) {
+          link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+        });
+      };
+
+      window.addEventListener("scroll", function () {
+        const root = document.documentElement;
+        const pct = (root.scrollTop / Math.max(root.scrollHeight - root.clientHeight, 1)) * 100;
+        if (bar) {
+          bar.style.width = Math.min(Math.max(pct, 0), 100) + "%";
+        }
+      }, { passive: true });
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(function (entries) {
+          entries.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+          const hit = entries.find(function (entry) {
+            return entry.isIntersecting && entry.intersectionRatio > 0.12;
+          });
+          if (hit) {
+            setActive(hit.target.id);
+          }
+        }, { rootMargin: "-40% 0px -40% 0px", threshold: [0, 0.12, 0.25, 0.45] });
+
+        sections.forEach(function (item) {
+          const node = document.getElementById(item.id);
+          if (node) {
+            observer.observe(node);
+          }
+        });
+      }
+
+      links.forEach(function (link) {
+        link.addEventListener("click", function () {
+          setActive(link.getAttribute("href").slice(1));
+        });
+      });
+
+      const hotkeys = {};
+      sections.forEach(function (item) {
+        hotkeys[item.hotkey] = item.id;
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.metaKey || event.ctrlKey) {
+          return;
+        }
+        const target = event.target;
+        if (target && target.closest && target.closest("input, textarea, select, [contenteditable='true']")) {
+          return;
+        }
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (!hotkeys[key]) {
+          return;
+        }
+        event.preventDefault();
+        const node = document.getElementById(hotkeys[key]);
+        if (node) {
+          node.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    })();
+  </script>
+  <footer class="footer" style="margin-left:var(--navw,0)">
+    xvary · 2026 · not investment advice
+    <div class="footer-links">
+      <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/methodology/">methodology</a>
+      <a href="/newsletter/">newsletter</a>
+      <a href="/pricing/">pricing</a>
+      <a href="/free/">free reports</a>
+      <a href="/legal/disclaimer/">disclaimer</a>
+      <a href="/legal/privacy/">privacy</a>
+      <a href="/legal/terms/">terms</a>
+    </div>
+    <div class="footer-logo">
+      <a href="/" aria-label="home">
+        <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+      </a>
+    </div>
+  </footer>
+  <script src="/js/site-chrome.js?v=1776081807" defer></script>
+</body>
+</html>

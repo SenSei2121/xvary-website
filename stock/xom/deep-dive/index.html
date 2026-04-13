@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>XOM - deep dive · xvary</title>
+  <meta name="description" content="The market is pricing XOM as a typical integrated oil major at ~13x PE, but the post-Pioneer cost structure — with a $35/bbl full-cycle breakeven — is structurally different..." />
+  <meta name="robots" content="index, follow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/brutalist.css?v=1776081807" />
+  <style>
+:root{
+      --yel:#ffe500;
+      --ink:#000;
+      --paper:#fffdf3;
+      --card:#fff;
+      --line:rgba(0,0,0,.12);
+      --text:#111;
+      --muted:#555;
+      --soft:#f3eed8;
+      --green:#1a7f5a;
+      --red:#c53030;
+      --amber:#b7791f;
+      --blue:#2251ff;
+      --shadow:0 18px 42px rgba(0,0,0,.10);
+      --radius:16px;
+      --radius-sm:12px;
+      --navw:240px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    html{background:var(--yel);scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h, 68px) + 24px)}
+    body{
+      background:var(--yel);
+      color:var(--text);
+      font:500 16px/1.65 "Space Grotesk",system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    a{color:inherit;text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:var(--ink);color:var(--yel)}
+    .skip-link{
+      position:absolute;left:12px;top:-40px;z-index:9999;
+      background:var(--ink);color:var(--yel);
+      padding:8px 14px;border-radius:999px;font:700 12px/1 "DM Mono",monospace;
+    }
+    .skip-link:focus{top:12px}
+
+    .layout{display:block}
+    .sidebar{
+      position:fixed;left:0;top:var(--nav-h, 68px);bottom:0;width:var(--navw);
+      overflow:auto;background:var(--ink);color:#fff;border-right:1px solid rgba(255,255,255,.08);
+      padding:18px 0 16px;scrollbar-width:none;
+    }
+    .sidebar::-webkit-scrollbar{display:none}
+    .nav-section{padding:0 0 8px}
+    .nav-label{
+      padding:0 18px 10px;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.12em;text-transform:lowercase;color:rgba(255,255,255,.46);
+    }
+    .nav-pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 18px 10px 16px;color:rgba(255,255,255,.78);
+      border-left:3px solid transparent;text-decoration:none;font-size:12px;font-weight:600;line-height:1.35;
+    }
+    .nav-pill:hover{background:rgba(255,255,255,.06);text-decoration:none}
+    .nav-pill.active{background:var(--yel);color:var(--ink);border-left-color:var(--ink)}
+    .nav-kbd{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:22px;height:22px;border-radius:6px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+      font:700 10px/1 "DM Mono",monospace;flex:0 0 auto;
+    }
+    .nav-pill.active .nav-kbd{background:var(--ink);color:var(--yel);border-color:var(--ink)}
+    .nav-txt{min-width:0}
+
+    .content{
+      margin-left:var(--navw);
+      padding:28px 26px 64px;
+      width:calc((100vw - var(--navw)) * 0.9);
+      max-width:none;
+    }
+
+    .hero{
+      display:block;
+      text-align:left;
+      border-bottom:3px solid rgba(0,0,0,.14);
+      padding:18px 0 26px;margin-bottom:18px;
+    }
+    .hero-top{
+      display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:24px;align-items:end;
+      padding-bottom:18px;
+    }
+    .hero .hero-ticker{
+      font-size:clamp(58px,10vw,92px);line-height:.88;font-weight:800;letter-spacing:-.05em;text-transform:lowercase;margin:0;
+      max-width:none;text-align:left;
+    }
+    .hero-co{margin-top:4px;font-size:14px;color:rgba(0,0,0,.64);text-transform:lowercase}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .pill{
+      display:inline-flex;align-items:center;padding:5px 12px;border-radius:999px;
+      font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.06em;
+      background:rgba(0,0,0,.08);color:#111;
+    }
+    .pill.dark{background:var(--ink);color:var(--yel)}
+    .hero .hero-hook{
+      font-size:clamp(19px,2.05vw,24px);line-height:1.35;font-weight:700;margin:0;color:#111;
+      max-width:none;text-align:left;
+    }
+    .hero .hero-sub{
+      margin:10px 0 0;color:rgba(0,0,0,.70);font-size:17px;line-height:1.68;max-width:none;text-align:left;
+    }
+    .hero-tape{
+      display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;padding-top:16px;
+      border-top:2px solid rgba(0,0,0,.10);font:600 11px/1.5 "DM Mono",monospace;color:rgba(0,0,0,.58)
+    }
+    .hero-tape strong{color:rgba(0,0,0,.92)}
+
+    .kpi-grid{display:grid;gap:10px}
+    .kpi-grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .kpi-grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .kpi-grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi{
+      background:rgba(255,255,255,.84);border:1px solid rgba(0,0,0,.08);border-radius:14px;
+      padding:14px 16px;box-shadow:0 8px 20px rgba(0,0,0,.04)
+    }
+    .kpi-label{font:700 10px/1.25 "DM Mono",monospace;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .kpi-value{font-size:clamp(24px,2.8vw,34px);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+    .kpi-sub{margin-top:4px;font-size:12px;line-height:1.45;color:rgba(0,0,0,.55)}
+    .value-gn{color:var(--green)}
+    .value-rd{color:var(--red)}
+    .value-am{color:var(--amber)}
+
+    .panel{
+      background:rgba(255,255,255,.92);border:2px solid rgba(0,0,0,.08);border-left:5px solid var(--yel);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin:18px 0
+    }
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      margin-bottom:12px;padding-bottom:12px;border-bottom:3px solid #000
+    }
+    .section-head h2{
+      margin:0;font-size:clamp(34px,3.9vw,50px);line-height:.98;font-weight:800;letter-spacing:-.045em;text-transform:none
+    }
+    .kicker{font:700 11px/1 "DM Mono",monospace;letter-spacing:.12em;text-transform:lowercase;color:rgba(0,0,0,.52)}
+    .lead{margin:0 0 16px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.72)}
+    .aggregate-sources-attribution{margin:0 0 14px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.76)}
+    .aggregate-sources-attribution p{margin:0}
+    .aggregate-methodology-link{margin:0;max-width:80ch;font-size:14.5px;line-height:1.6;color:rgba(0,0,0,.62)}
+    #appendix .lead,
+    #appendix .aggregate-sources-attribution,
+    #appendix .aggregate-methodology-link{max-width:none}
+    .quote,.note,.callout,.pillar,.scenario,.table-wrap,.chart-box{
+      background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:14px
+    }
+    .quote{padding:14px 16px;font-size:15px;line-height:1.68;color:rgba(0,0,0,.72)}
+    .note{padding:14px 16px;margin-top:10px;font-size:14.5px;line-height:1.64;color:rgba(0,0,0,.72)}
+    .note strong,.table-title .tag,.legend-label,.pillars .head h4{
+      font:700 11px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase
+    }
+    .note.green{border-left:4px solid var(--green);background:rgba(26,127,90,.06)}
+    .note.amber{border-left:4px solid var(--amber);background:rgba(183,121,31,.08)}
+    .note.red{border-left:4px solid var(--red);background:rgba(197,48,48,.06)}
+
+    .g2,.g3,.g4,.callout-row,.pillars,.scenario-grid{display:grid;gap:10px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .callout-row{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:12px;min-width:0}
+    .callout{padding:14px 16px;min-width:0;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+    .callout .label{font:700 10px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .callout .metric{font-size:clamp(24px,2.8vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;word-break:break-word}
+    #appendix .callout .metric{font-size:clamp(13px,1.35vw,16px);font-weight:700;letter-spacing:0;line-height:1.4}
+    .callout .desc{margin-top:6px;font-size:12.5px;line-height:1.5;color:rgba(0,0,0,.56)}
+
+    .pillars{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px}
+    .pillar{padding:14px 16px}
+    .pillar .head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+    .pillar .head h4{margin:0;font-size:14px;color:#111;letter-spacing:0;text-transform:none;font-family:"Space Grotesk",sans-serif}
+    .tag{
+      display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;border:1px solid rgba(0,0,0,.10);
+      background:rgba(255,255,255,.85);font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.04em;
+    }
+    .tag.green{color:var(--green);background:rgba(26,127,90,.08);border-color:rgba(26,127,90,.25)}
+    .tag.amber{color:var(--amber);background:rgba(183,121,31,.10);border-color:rgba(183,121,31,.25)}
+    .tag.red{color:var(--red);background:rgba(197,48,48,.08);border-color:rgba(197,48,48,.25)}
+    .tag.blue{color:#111;background:rgba(255,229,0,.18);border-color:rgba(0,0,0,.20)}
+    .tag.ink{color:rgba(0,0,0,.68)}
+
+    .table-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+    .table-title h3{margin:0;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-.02em;text-transform:none}
+    .table-wrap{overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+    table{width:100%;border-collapse:collapse;min-width:520px;font-variant-numeric:tabular-nums;background:#fff}
+    th,td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+    thead th{
+      position:sticky;top:0;background:#f0ece4;color:#111;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.08em;text-transform:lowercase;border-bottom:3px solid #000;text-align:left
+    }
+    tbody tr:nth-child(even) td{background:rgba(240,236,228,.36)}
+    tbody tr:hover td{background:rgba(255,229,0,.16)}
+    td.num,th.num{text-align:right}
+    td.b{font-weight:800;color:#111}
+    td.pos{color:var(--green);font-weight:700}
+    td.neg{color:var(--red);font-weight:700}
+    td.amb{color:var(--amber);font-weight:700}
+
+    .chart-box{padding:16px 18px 18px;box-shadow:0 12px 36px rgba(0,0,0,.06)}
+    .chart-head h3{margin:0 0 4px;font-size:16px;line-height:1.2;text-transform:none}
+    .chart-head .sub{font-size:11px;color:rgba(0,0,0,.52);font-style:italic}
+    /* TAM vs revenue: y-axis ticks + grid + split x-label row */
+    .chart-labeled{
+      --chart-h:min(52vw,240px);
+      --chart-h-min:200px;
+      --chart-h-max:260px;
+      display:grid;
+      grid-template-columns:3.35rem 1fr;
+      grid-template-rows:minmax(var(--chart-h-min),var(--chart-h-max)) auto;
+      gap:8px 12px;
+      align-items:stretch;
+      margin-top:6px;
+    }
+    .chart-y-title{
+      margin:8px 0 0;
+      font:700 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.5);
+    }
+    .chart-y-axis{
+      grid-column:1;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      padding-right:8px;
+      border-right:2px solid rgba(0,0,0,.2);
+      font:600 10px/1 "DM Mono",monospace;
+      color:rgba(0,0,0,.58);
+      box-sizing:border-box;
+    }
+    .chart-y-axis .yt{
+      position:absolute;right:8px;line-height:1;white-space:nowrap;
+      transform:translateY(-50%);
+    }
+    .chart-y-axis .yt.y-600{top:0;transform:translateY(0)}
+    .chart-y-axis .yt.y-500{top:16.6667%}
+    .chart-y-axis .yt.y-400{top:33.3333%}
+    .chart-y-axis .yt.y-300{top:50%}
+    .chart-y-axis .yt.y-200{top:66.6667%}
+    .chart-y-axis .yt.y-100{top:83.3333%}
+    .chart-y-axis .yt.y-0{bottom:0;top:auto;transform:translateY(0)}
+    .chart-plot-cell{
+      grid-column:2;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      border-bottom:2px solid rgba(0,0,0,.2);
+    }
+    .chart-grid-bg{
+      position:absolute;inset:0;
+      background:repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6)
+      );
+      pointer-events:none;
+    }
+    .chart{
+      position:relative;z-index:1;
+      display:flex;align-items:flex-end;justify-content:stretch;gap:6px;
+      width:100%;
+      height:100%;min-height:0;
+    }
+    .bar{
+      flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+      min-width:0;height:100%;
+    }
+    .bar-pair{
+      display:flex;flex-direction:row;align-items:flex-end;justify-content:center;
+      gap:5px;width:100%;height:100%;min-height:0;
+    }
+    .col{
+      flex:1 1 0;min-width:8px;border-radius:8px 8px 2px 2px;
+      min-height:2px;align-self:flex-end;
+      box-sizing:border-box;
+    }
+    .col.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .col.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .chart-x-foot{
+      grid-column:2;
+      grid-row:2;
+      display:flex;gap:6px;
+      margin-top:-2px;
+    }
+    .bar-foot{
+      flex:1 1 0;min-width:0;
+      text-align:center;padding-top:6px;
+    }
+    .chart-x-axis-cap{
+      margin:4px 0 0;
+      font:600 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.45);
+      text-align:center;
+    }
+    .chart-legend{
+      display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:12px;padding-top:10px;
+      border-top:1px solid rgba(0,0,0,.08);font-size:12px;color:rgba(0,0,0,.62)
+    }
+    .chart-legend span{display:inline-flex;align-items:center;gap:6px}
+    .chart-legend i{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+    .chart-legend i.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .chart-legend i.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .lab,.val{font-size:10px;line-height:1.25;text-align:center;color:rgba(0,0,0,.56)}
+    .val{font:700 10px/1 "DM Mono",monospace}
+    .lab{max-width:12em;margin:0 auto}
+
+    .scenario-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}
+    .scenario{padding:14px 16px;border-left:4px solid var(--blue)}
+    .scenario.bear{border-left-color:var(--red)}
+    .scenario.base{border-left-color:var(--amber)}
+    .scenario.bull{border-left-color:var(--green)}
+    .scenario .prob{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:8px}
+    .scenario h4{margin:0 0 6px;font-size:18px;line-height:1.1}
+    .scenario p{margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,.72)}
+
+    .legend{display:grid;gap:8px}
+    .legend .item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(0,0,0,.72)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)} .dot.blue{background:#2251ff}
+
+    .footer{
+      margin-top:28px;padding-top:22px;border-top:3px solid rgba(0,0,0,.12);
+      text-align:center;font-size:12px;line-height:1.65;color:rgba(0,0,0,.56)
+    }
+    .footer .links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+    .footer .links a{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.68)}
+    .footer .small{margin-top:12px;font-size:11px;color:rgba(0,0,0,.54)}
+
+    .reading-progress{
+      position:fixed;top:var(--nav-h, 68px);left:0;height:4px;width:0;z-index:101;
+      background:linear-gradient(90deg,var(--yel),#fff38c);box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 14px rgba(255,229,0,.45)
+    }
+    .watermark{
+      position:fixed;right:18px;bottom:14px;z-index:1;pointer-events:none;user-select:none;
+      font-size:clamp(68px,12vw,118px);font-weight:800;letter-spacing:-.06em;line-height:.8;color:rgba(0,0,0,.05)
+    }
+
+    @media (max-width:1024px){
+      .g2,.g3,.g4,.pillars,.scenario-grid{grid-template-columns:1fr}
+      .hero-top{grid-template-columns:1fr}
+      .content{padding:22px 18px 56px}
+    }
+    @media (max-width:900px){
+      .sidebar{display:none}
+      .content{
+        margin-left:auto;
+        margin-right:auto;
+        width:90vw;
+        max-width:none;
+      }
+    }
+    @media (max-width:760px){
+      .kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr 1fr}
+      .callout-row{grid-template-columns:1fr 1fr}
+      table{min-width:460px}
+    }
+    @media (max-width:560px){
+      .callout-row,.kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr}
+      .section-head h2{font-size:30px}
+      .hero .hero-hook{font-size:19px}
+      .hero .hero-sub{font-size:16px}
+      .panel{padding:20px}
+    }
+    .hero-snapshot-link {
+      display: inline-block;
+      margin-top: 4px;
+      font: 400 11px/1.4 "DM Mono", monospace;
+      color: rgba(0,0,0,.38);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .hero-snapshot-link:hover {
+      color: rgba(0,0,0,.68);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+  .aggregate-panel {
+    position: relative;
+    z-index: 1;
+  }
+  .aggregate-lead p {
+    margin: 0 0 16px;
+  }
+  .auto-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .aggregate-stack {
+    display: grid;
+    gap: 12px;
+  }
+  .aggregate-card {
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.05);
+  }
+  .aggregate-card.dark {
+    background: rgba(0,0,0,.92);
+    color: rgba(255,255,255,.92);
+    border-color: rgba(255,255,255,.08);
+  }
+  .aggregate-card.dark p,
+  .aggregate-card.dark li,
+  .aggregate-card.dark .aggregate-source {
+    color: rgba(255,255,255,.72);
+  }
+  .aggregate-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .aggregate-card-head h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    text-transform: lowercase;
+  }
+  .aggregate-card-body,
+  .aggregate-card-body p,
+  .aggregate-card-body li {
+    font-size: 15px;
+    line-height: 1.68;
+    color: rgba(0,0,0,.72);
+  }
+  .aggregate-card-body p {
+    margin: 0 0 12px;
+  }
+  .aggregate-card-body ul,
+  .aggregate-card-body ol {
+    margin: 0 0 12px 20px;
+    padding: 0;
+  }
+  .aggregate-card-body > *:last-child {
+    margin-bottom: 0;
+  }
+  .aggregate-source {
+    margin-top: 10px;
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .06em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.48);
+  }
+  .aggregate-substack {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .aggregate-chart-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .aggregate-chart-row {
+    display: grid;
+    grid-template-columns: minmax(80px, 140px) 1fr minmax(60px, 120px);
+    align-items: center;
+    gap: 10px;
+  }
+  .aggregate-chart-label,
+  .aggregate-chart-value {
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .04em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.62);
+  }
+  .aggregate-chart-track {
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .aggregate-chart-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+  }
+  .table-wrap table th.num,
+  .table-wrap table td.num {
+    text-align: right;
+  }
+  .table-wrap table td.pos { color: var(--green, #1a7f37); font-weight: 600; }
+  .table-wrap table td.neg { color: var(--red, #cf222e); font-weight: 600; }
+  .table-wrap table td.amb { color: var(--caution-text, #9a6700); font-weight: 600; }
+  .table-narrow {
+    max-width: 520px;
+  }
+  .table-narrow table {
+    min-width: 0;
+    width: 100%;
+  }
+  .g2 .table-narrow {
+    max-width: none;
+  }
+  .aggregate-mini-table {
+    margin-top: 8px;
+  }
+  .aggregate-mini-table table {
+    min-width: 0;
+  }
+  .aggregate-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .aggregate-list-item {
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    background: rgba(255,255,255,.72);
+  }
+  .aggregate-list-item strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .aggregate-audit {
+    margin-top: 8px;
+  }
+  @media (max-width: 1120px) {
+    .sidebar {
+      position: static;
+      width: auto;
+      top: auto;
+      padding: 12px 0;
+      border-right: 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: none;
+    }
+    .content {
+      margin-left: auto;
+      margin-right: auto;
+      width: 90vw;
+      max-width: none;
+      padding: 24px 18px 56px;
+    }
+    .watermark {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .hero-top {
+      grid-template-columns: 1fr;
+    }
+    .aggregate-chart-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+  .aggregate-pane-xref {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(0, 0, 0, 0.52);
+  }
+  .aggregate-pane-xref a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .aggregate-pane-xref a:hover {
+    color: rgba(0, 0, 0, 0.88);
+  }
+  .hero-snapshot-link {
+    display: inline-block;
+    margin-top: 4px;
+    font: 400 11px/1.4 "DM Mono", monospace;
+    color: rgba(0,0,0,.38);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .hero-snapshot-link:hover {
+    color: rgba(0,0,0,.68);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  </style>
+</head>
+<body data-xvary-aggregate-readable="1">
+  <a class="skip-link" href="#content">skip to content</a>
+  <div class="reading-progress" id="reading-progress"></div>
+  <div class="watermark" aria-hidden="true">XOM</div>
+
+  <nav class="nav nav--white" aria-label="main navigation" data-xvary-nav-static>
+    <a class="nav-brand" href="/">xvary</a>
+    <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" type="button" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+    <div class="nav-links">
+      <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/pricing/">pricing</a>
+      <a class="nav-cta" href="/pricing/">sign up</a>
+    </div>
+  </nav>
+
+  <div class="layout xvary-aggregate-deep-dive-body" data-template-id="aggregate-deep-dive-live-v1" lang="en">
+    <aside class="sidebar" aria-label="section navigation">
+      <div class="nav-section">
+        <div class="nav-label">quick navigation</div>
+        <a class="nav-pill active" href="#summary">
+          <span class="nav-kbd">0</span>
+          <span class="nav-txt">report snapshot</span>
+        </a>
+        <a class="nav-pill " href="#thesis">
+          <span class="nav-kbd">1</span>
+          <span class="nav-txt">variant perception &amp; thesis</span>
+        </a>
+        <a class="nav-pill " href="#financials">
+          <span class="nav-kbd">2</span>
+          <span class="nav-txt">financial analysis</span>
+        </a>
+        <a class="nav-pill " href="#valuation">
+          <span class="nav-kbd">3</span>
+          <span class="nav-txt">valuation</span>
+        </a>
+        <a class="nav-pill " href="#risk">
+          <span class="nav-kbd">4</span>
+          <span class="nav-txt">what breaks the thesis</span>
+        </a>
+        <a class="nav-pill " href="#ops">
+          <span class="nav-kbd">5</span>
+          <span class="nav-txt">fundamentals &amp; operations</span>
+        </a>
+        <a class="nav-pill " href="#competition">
+          <span class="nav-kbd">6</span>
+          <span class="nav-txt">competitive position</span>
+        </a>
+        <a class="nav-pill " href="#tam">
+          <span class="nav-kbd">7</span>
+          <span class="nav-txt">market size &amp; tam</span>
+        </a>
+        <a class="nav-pill " href="#product">
+          <span class="nav-kbd">8</span>
+          <span class="nav-txt">product &amp; technology</span>
+        </a>
+        <a class="nav-pill " href="#supply">
+          <span class="nav-kbd">9</span>
+          <span class="nav-txt">supply chain</span>
+        </a>
+        <a class="nav-pill " href="#catalysts">
+          <span class="nav-kbd">a</span>
+          <span class="nav-txt">catalyst map</span>
+        </a>
+        <a class="nav-pill " href="#street">
+          <span class="nav-kbd">b</span>
+          <span class="nav-txt">street expectations</span>
+        </a>
+        <a class="nav-pill " href="#scorecard">
+          <span class="nav-kbd">c</span>
+          <span class="nav-txt">earnings scorecard</span>
+        </a>
+        <a class="nav-pill " href="#signals">
+          <span class="nav-kbd">d</span>
+          <span class="nav-txt">alternative data</span>
+        </a>
+        <a class="nav-pill " href="#history">
+          <span class="nav-kbd">e</span>
+          <span class="nav-txt">historical analogies</span>
+        </a>
+        <a class="nav-pill " href="#management">
+          <span class="nav-kbd">f</span>
+          <span class="nav-txt">management &amp; leadership</span>
+        </a>
+        <a class="nav-pill " href="#macro">
+          <span class="nav-kbd">g</span>
+          <span class="nav-txt">macro sensitivity</span>
+        </a>
+        <a class="nav-pill " href="#quant">
+          <span class="nav-kbd">h</span>
+          <span class="nav-txt">quantitative profile</span>
+        </a>
+        <a class="nav-pill " href="#derivatives">
+          <span class="nav-kbd">i</span>
+          <span class="nav-txt">options &amp; derivatives</span>
+        </a>
+        <a class="nav-pill " href="#governance">
+          <span class="nav-kbd">j</span>
+          <span class="nav-txt">governance &amp; accounting</span>
+        </a>
+        <a class="nav-pill " href="#value">
+          <span class="nav-kbd">k</span>
+          <span class="nav-txt">value framework</span>
+        </a>
+        <a class="nav-pill " href="#appendix">
+          <span class="nav-kbd">l</span>
+          <span class="nav-txt">appendix &amp; sources</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="content" id="content">
+      <section class="hero" aria-label="report intro">
+        <div class="hero-top">
+          <div>
+            <h1 class="hero-ticker">xom</h1>
+            <div class="hero-co">exxon mobil corporation</div>
+            <a class="hero-snapshot-link" href="/stock/xom/snapshot/">snapshot page &rarr;</a>
+            <div class="hero-badges">
+              <span class="pill dark">deep dive</span>
+              <span class="pill ">petroleum refining</span>
+              <span class="pill ">mega cap</span>
+              <span class="pill ">apr 12, 2026</span>
+            </div>
+            <div class="hero-tape" aria-label="headline tape">
+              <span><strong>Position</strong> Long</span>
+              <span><strong>Price</strong> $113.00</span>
+              <span><strong>~$475.0B</strong> mcap</span>
+              <span><strong>apr 12, 2026</strong> as-of date</span>
+            </div>
+          </div>
+          <div>
+            <p class="hero-hook">The market is pricing XOM as a typical integrated oil major at ~13x PE, but the post-Pioneer cost structure — with a $35/bbl full-cycle breakeven — is structurally different from the pre-2024 company. The reverse DCF implies $68/bbl long-run Brent, which is below most structural supply-demand estima</p>
+            <p class="hero-sub">That intrinsic line rolls up bear, base, and bull by assigned weights — not one cherry-picked case. <strong>Plain English:</strong> "intrinsic value" means what the model says the stock is worth if the growth narrative mostly holds — not a promise.</p>
+          </div>
+        </div>
+
+        <div class="kpi-grid cols-3">
+          <div class="kpi">
+            <div class="kpi-label">price</div>
+            <div class="kpi-value ">$113</div>
+            <div class="kpi-sub">NYSE: XOM</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">market cap</div>
+            <div class="kpi-value ">$475B</div>
+            <div class="kpi-sub">~4.2B shares</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">forward p/e</div>
+            <div class="kpi-value ">~13x</div>
+            <div class="kpi-sub">In line with integrated oil peers</div>
+          </div>
+        </div>
+
+        <div class="callout-row">
+          <div class="callout">
+            <div class="label">dividend yield</div>
+            <div class="metric ">3.4%</div>
+            <div class="desc">42-year growth streak (Aristocrat)</div>
+          </div>
+          <div class="callout">
+            <div class="label">net debt/ebitda</div>
+            <div class="metric ">0.5x</div>
+            <div class="desc">Best-in-class balance sheet</div>
+          </div>
+          <div class="callout">
+            <div class="label">target</div>
+            <div class="metric ">$130</div>
+            <div class="desc">Base case — 15% upside</div>
+          </div>
+          <div class="callout">
+            <div class="label">signal strength</div>
+            <div class="metric ">65/100</div>
+            <div class="desc">Asset quality offset by commodity risk</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>report snapshot</h2>
+          <div class="kicker">executive summary</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Exxon Mobil Corporation (XOM) — Long, Conviction 65/100, Target $130. ExxonMobil is the world&#x27;s largest non-state integrated oil company and has undergone a structural transformation through the $60B Pioneer Natural Resources acquisition. Post-Pioneer, XOM has the lowest full-cycle breakeven (~$35/bbl) among super-majors, the largest Permian Basin position , and generates $36B+ of annual free cash flow at $80/bbl Brent. The stock trades at ~13x forward P/E with a 3.4% dividend yield and 42 consecutive years of dividend growth .</p></div>
+                <div class="g3"><div class="kpi"><div class="kpi-label">price</div><div class="kpi-value ">$113</div><div class="kpi-sub">NYSE: XOM</div></div><div class="kpi"><div class="kpi-label">market cap</div><div class="kpi-value ">$475B</div><div class="kpi-sub">~4.2B shares</div></div><div class="kpi"><div class="kpi-label">forward p/e</div><div class="kpi-value ">~13x</div><div class="kpi-sub">In line with integrated oil peers</div></div></div>
+        <div class="g2" style="margin-top:10px">
+          <div class="quote"><strong class="kicker">core debate</strong><br><p>Investment thesis in one sentence: XOM is the lowest-cost integrated oil major with a 7.6% FCF yield, 3.4% growing dividend, and improving cost structure from Pioneer integration — the market&#x27;s ~13x PE reflects commodity skepticism that overstates the near-term risk to a $35/bbl breakeven producer.</p></div>
+          <div class="quote"><strong class="kicker">headline tape</strong><br><p>ExxonMobil is the best-positioned integrated oil major for the next 3-5 years. The combination of $35/bbl breakeven, 7.6% FCF yield, 42-year dividend growth streak, and improving cost structure from Pioneer create an asymmetric opportunity at ~13x PE...</p></div>
+        </div>
+        <div class="callout-row"><div class="callout"><div class="label">bull case</div><div class="metric value-gn">$150</div><div class="desc">Oil &gt;$90, Pioneer synergies $3B+, Guyana at 1.3M boepd, CCS monetization begins.</div></div><div class="callout"><div class="label">base case</div><div class="metric ">$130</div><div class="desc">Oil $75-85, production growth to 4.8M boepd, Pioneer synergies hit $2B target, continued dividend growth.</div></div><div class="callout"><div class="label">bear case</div><div class="metric value-rd">$80</div><div class="desc">Oil &lt;$60, refining downturn, ESG-driven multiple compression, dividend growth slows.</div></div></div>
+        <div class="note green"><strong>top findings</strong><br><p>The market is pricing XOM as a typical integrated oil major at ~13x PE, but the post-Pioneer cost structure — with a $35/bbl full-cycle breakeven — is structurally different from the pre-2024 company. The reverse DCF implies $68/bbl long-run Brent, which is below most structural supply-demand estimates and below the current forward curve. The variant perception is that XOM&#x27;s cost advantage deserves a premium to peers that the market has not yet assigned.</p></div>
+        <div class="note amber"><strong>aggregate synthesis</strong><br><p>Numbers can look similar while narrative labels diverge — focus on which spreadsheet row the market is pricing.</p></div>
+
+      </section>
+      <section id="thesis" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>variant perception &amp; thesis</h2>
+          <div class="kicker">pm brief</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Position: Long. ExxonMobil is the best-positioned integrated oil major entering 2025. At $113 and ~13x forward P/E , the stock prices in oil-price skepticism that overstates the downside risk for a company with a $35/bbl full-cycle breakeven , $36B FCF , and the largest Permian Basin position post-Pioneer. Our conviction is 65/100 : the commodity dependency caps the upside, but the risk/reward is asymmetric to the bull side at current prices.</p></div>
+        <div class="kpi-grid cols-3"><div class="kpi"><div class="kpi-label">position</div><div class="kpi-value ">Long</div><div class="kpi-sub">Lowest-cost integrated major with 3.4% yield + buybacks</div></div><div class="kpi"><div class="kpi-label">12-month target</div><div class="kpi-value ">$130</div><div class="kpi-sub">Probability-weighted: 25% bull $150, 50% base $130, 25% bear $80</div></div><div class="kpi"><div class="kpi-label">intrinsic value</div><div class="kpi-value ">$135</div><div class="kpi-sub">DCF mid-case at $80/bbl Brent and 8.5% WACC</div></div></div><div class="note"><p>Most important non-obvious takeaway. XOM&#x27;s post-Pioneer cost structure is structurally different from pre-2024 XOM. The company&#x27;s full-cycle breakeven dropped to ~$35/bbl, meaning it generates positive FCF even in a severe downturn scenario...</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>The Market Underestimates XOM&#x27;s Post-Pioneer Cost Structure Advantage</h3><span class="tag blue">VARIANT VIEW</span></div><div class="aggregate-card-body"><p>Our variant perception is that the market has not fully priced in how much the Pioneer acquisition changed XOM&#x27;s cost structure and production trajectory. Before Pioneer, XOM was a high-quality but average-cost integrated major. Post-Pioneer, XOM has the lowest full-cycle breakeven (~$35/bbl) among the super-majors and the largest contiguous Permian position with decades of low-cost drilling inventory...</p></div></div><div class="scenario-grid"><div class="scenario bull"><div class="prob">bull case</div><h4>$150</h4><p>Oil sustains &gt;$90/bbl, Pioneer synergies exceed $3B, Guyana ramps to 1.3M boepd, CCS monetization begins, PE re-rates to 15x</p></div><div class="scenario base"><div class="prob">base case</div><h4>$130</h4><p>Oil in $75-85 range, steady production growth to 4.8M boepd, Pioneer synergies hit $2B target, continued dividend growth + buybacks</p></div><div class="scenario bear"><div class="prob">bear case</div><h4>$80</h4><p>Oil falls below $60 on demand destruction or OPEC+ collapse, refining downturn, ESG-driven multiple compression to 8-9x PE</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Position Sizing Rationale</h3><span class="tag blue">SIZING</span></div><div class="aggregate-card-body"><p>We size this as a moderate conviction position at 6.5/10. The asset quality is best-in-class, but the ultimate outcome is heavily commodity-dependent. The 3.4% dividend yield provides a meaningful carry while waiting for the thesis to play out, and the $50B buyback authorization provides share count support...</p></div></div><div class="note"><p>XOM&#x27;s variant perception centers on post-Pioneer cost structure transformation. The market prices XOM as a typical integrated oil major, but the $35/bbl breakeven and 2M+ boepd Permian position represent a step-change in quality. Conviction is bounded by commodity dependence.</p></div>
+      </section>
+      <section id="financials" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>financial analysis</h2>
+          <div class="kicker">elite economics</div>
+        </div>
+        <div class="lead aggregate-lead"><p>FY2024 gross margin was approximately 28.9%, operating margin 14.3%, and net margin 9.8%.</p></div>
+                <div class="callout-row"><div class="callout"><div class="label">Revenue</div><div class="metric ">$344.6B</div><div class="desc">FY2024, roughly flat vs FY2023</div></div><div class="callout"><div class="label">Net Income</div><div class="metric value-am">$33.7B</div><div class="desc">Down from $36.0B in FY2023</div></div><div class="callout"><div class="label">EPS</div><div class="metric ">$8.02</div><div class="desc">Diluted, FY2024</div></div><div class="callout"><div class="label">Operating Cash Flow</div><div class="metric ">$55.4B</div><div class="desc">Robust cash generation despite lower prices</div></div><div class="callout"><div class="label">FCF</div><div class="metric ">$36.0B</div><div class="desc">After $26.3B capex</div></div><div class="callout"><div class="label">Net Debt/EBITDA</div><div class="metric ">0.5x</div><div class="desc">Best-in-class leverage for integrated oil</div></div></div>
+        <div class="g2" style="margin-top:10px"><div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">FY2022</th><th class="num">FY2023</th><th class="num">FY2024</th><th>Trend</th></tr></thead><tbody><tr><td><p>Revenue</p></td><td class="num"><p>$413.7B</p></td><td class="num"><p>$344.6B</p></td><td class="num"><p>$344.6B</p></td><td><p>Stabilizing</p></td></tr><tr><td><p>Net Income</p></td><td class="num"><p>$55.7B</p></td><td class="num"><p>$36.0B</p></td><td class="num"><p>$33.7B</p></td><td><p>Normalizing</p></td></tr><tr><td><p>Operating CF</p></td><td class="num"><p>$76.8B</p></td><td class="num"><p>$55.4B</p></td><td class="num"><p>$55.4B</p></td><td><p>Stable</p></td></tr><tr><td><p>Capex</p></td><td class="num"><p>$22.7B</p></td><td class="num"><p>$25.2B</p></td><td class="num"><p>$26.3B</p></td><td><p>Increasing (growth)</p></td></tr><tr><td><p>FCF</p></td><td class="num"><p>$54.1B</p></td><td class="num"><p>$30.2B</p></td><td class="num"><p>$36.0B</p></td><td><p>Recovering</p></td></tr><tr><td><p>EPS (diluted)</p></td><td class="num"><p>$13.26</p></td><td class="num"><p>$8.89</p></td><td class="num"><p>$8.02</p></td><td><p>Normalizing</p></td></tr></tbody></table></div></div><div><div class="note">add a second table in the fin pane for side-by-side quality vs. trend read.</div></div></div>
+        <div class="note green"><strong>production-report readthrough</strong><br><p>These numbers ground the thesis in reported economics; the debate is durability and cycle, not obvious accounting gaps.</p></div>
+
+      </section>
+      <section id="valuation" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>valuation</h2>
+          <div class="kicker">probability-weighted fair value</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Our base DCF uses Brent crude of $80/bbl for 2025-2027, declining to $75 long-term.</p></div>
+                <div class="g2"><div><div class="table-wrap"><table><thead><tr><th>Method</th><th class="num">Fair Value</th><th class="num">vs Current</th><th>Key Assumption</th></tr></thead><tbody><tr><td><p>DCF — Base Case</p></td><td class="pos num"><p>$135</p></td><td class="pos num"><p>+19.5%</p></td><td><p>Brent $80/bbl, 4.8M boepd by 2027, WACC 8.5%, TGR 1.0%</p></td></tr><tr><td><p>DCF — Bull Case</p></td><td class="pos num"><p>$165</p></td><td class="pos num"><p>+46.0%</p></td><td><p>Brent $90/bbl, Pioneer synergies $3B, Guyana 1.3M boepd</p></td></tr><tr><td><p>DCF — Bear Case</p></td><td class="neg num"><p>$78</p></td><td class="neg num"><p>-31.0%</p></td><td><p>Brent $55/bbl sustained, refining downturn, no multiple expansion</p></td></tr><tr><td><p>Reverse DCF</p></td><td class="num"><p>Implied $68 Brent</p></td><td class="num"><p>—</p></td><td><p>Current price implies market expects long-run Brent of ~$68</p></td></tr><tr><td><p>EV/EBITDA Comp</p></td><td class="pos num"><p>$125</p></td><td class="pos num"><p>+10.6%</p></td><td><p>6.5x 2025E EBITDA vs peer range of 5-7x</p></td></tr><tr><td><p>Dividend Discount</p></td><td class="pos num"><p>$120</p></td><td class="pos num"><p>+6.2%</p></td><td><p>3% DPS growth, 6.5% required return</p></td></tr></tbody></table></div></div><div></div></div>
+        <div class="g2" style="margin-top:10px"><div class="note"><p>Takeaway. XOM&#x27;s 7.6% FCF yield is the most striking valuation metric. In a world where the S&P 500 offers a 3.5% FCF yield, XOM is trading at more than 2x the yield with a balance sheet that is dramatically less levered...</p></div><div class="note amber"><p>Risk. The primary valuation risk is oil price. Our DCF is highly sensitive to the Brent assumption...</p></div></div>
+        
+
+      </section>
+      <section id="risk" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>what breaks the thesis</h2>
+          <div class="kicker">falsifiable kill criteria</div>
+        </div>
+        <div class="lead aggregate-lead"><p>1.</p></div>
+                <div class="note red"><strong>risk framing</strong><br><p>Critical risk. If oil prices fall below $55/bbl for 2+ quarters, the thesis is broken and the position should be exited regardless of other factors. This is the hard kill criterion.</p></div>
+        <div style="margin-top:10px"><div class="table-wrap"><table><thead><tr><th>Kill Criterion</th><th class="num">Trigger Level</th><th class="num">Current Status</th><th>Action</th></tr></thead><tbody><tr><td><p>Brent crude sustained below</p></td><td class="num"><p>$55/bbl for 2+ quarters</p></td><td class="num"><p>~$80 — well clear</p></td><td><p>Exit long position</p></td></tr><tr><td><p>Dividend cut or freeze</p></td><td class="num"><p>Any dividend reduction</p></td><td class="num"><p>Growing 8%+ YoY</p></td><td><p>Exit immediately</p></td></tr><tr><td><p>Pioneer synergies &lt; $1B</p></td><td class="num"><p>Year-2 run-rate miss</p></td><td class="num"><p>Tracking &gt;$1B Year 1</p></td><td><p>Reassess conviction</p></td></tr><tr><td><p>Production decline</p></td><td class="num"><p>Below 4.4M boepd</p></td><td class="num"><p>4.6M and growing</p></td><td><p>Reassess thesis</p></td></tr><tr><td><p>Balance sheet deterioration</p></td><td class="num"><p>ND/EBITDA > 1.5x</p></td><td class="num"><p>0.5x</p></td><td><p>Reassess sizing</p></td></tr></tbody></table></div></div>
+        <div class="callout-row"><div class="callout"><div class="label">Primary Risk</div><div class="metric value-rd">Oil Price</div><div class="desc">Brent below $60 sustained breaks the thesis</div></div><div class="callout"><div class="label">Kill Price</div><div class="metric value-rd">$45/bbl Brent</div><div class="desc">Dividend at risk; stock trades to $60-70</div></div><div class="callout"><div class="label">Transition Risk</div><div class="metric value-rd">Long-term</div><div class="desc">Peak demand 2028-2035; terminal value uncertainty</div></div></div>
+        <div class="note amber"><strong>most dangerous zone</strong><br><p>Watch for drawdowns driven by fundamentals where funds de-risk faster than the business narrative updates.</p></div>
+
+      </section>
+      <section id="ops" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>fundamentals &amp; operations</h2>
+          <div class="kicker">fundamentals</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Risk.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">total production</div><div class="kpi-value ">4.6M boepd</div><div class="kpi-sub">FY2024, up from ~3.7M pre-Pioneer</div></div><div class="kpi"><div class="kpi-label">permian production</div><div class="kpi-value ">~2M boepd</div><div class="kpi-sub">Largest Permian producer post-Pioneer</div></div><div class="kpi"><div class="kpi-label">guyana production</div><div class="kpi-value ">~640K boepd</div><div class="kpi-sub">Stabroek block (45% interest)</div></div><div class="kpi"><div class="kpi-label">full-cycle breakeven</div><div class="kpi-value ">~$35/bbl</div><div class="kpi-sub">Lowest among super-majors</div></div></div><div class="note"><p>Takeaway. XOM&#x27;s operations have been fundamentally transformed by the Pioneer acquisition. The company went from being a good-but-average integrated major to having the lowest-cost production base among super-majors...</p></div><div class="table-wrap"><table><thead><tr><th>Segment</th><th class="num">Revenue ($B)</th><th class="num">% of Total</th><th class="num">Margin Trend</th></tr></thead><tbody><tr><td><p>Upstream</p></td><td class="num"><p>$164.2</p></td><td class="num"><p>47.6%</p></td><td class="num"><p>Improving (lower unit costs)</p></td></tr><tr><td><p>Energy Products (Downstream)</p></td><td class="num"><p>$132.6</p></td><td class="num"><p>38.5%</p></td><td class="num"><p>Normalizing from 2022 peaks</p></td></tr><tr><td><p>Chemical Products</p></td><td class="num"><p>$30.3</p></td><td class="num"><p>8.8%</p></td><td class="num"><p>Recovering (PE margin improvement)</p></td></tr><tr><td><p>Specialty Products</p></td><td class="num"><p>$17.5</p></td><td class="num"><p>5.1%</p></td><td class="num"><p>Stable (high-margin niche)</p></td></tr><tr><td><p>Low Carbon Solutions</p></td><td class="num"><p>De minimis</p></td><td class="num"><p>&lt;0.1%</p></td><td class="num"><p>Pre-revenue; investment phase</p></td></tr></tbody></table></div><div class="note amber"><p>Risk. Operations are exposed to oil price volatility, geopolitical risk in Guyana (border dispute with Venezuela, though currently quiescent), and execution risk on Pioneer integration. Natural gas (~40% of production mix) adds exposure to gas price volatility.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Revenue Drivers: Upstream Dominates, Chemicals Recovering</h3><span class="tag blue">DRIVERS</span></div><div class="aggregate-card-body"><p>The Upstream segment is the primary earnings driver, contributing approximately 48% of revenue and the majority of operating income. Energy Products (refining) is the second-largest segment but operates at much thinner margins. Chemical Products is recovering from a cyclical trough as polyethylene margins improve...</p></div></div><div class="table-wrap"><table><thead><tr><th>Market/Region</th><th class="num">% of Revenue</th><th class="num">Growth Trend</th></tr></thead><tbody><tr><td><p>United States</p></td><td class="num"><p>~40%</p></td><td class="num"><p>Growing (Permian expansion)</p></td></tr><tr><td><p>Europe</p></td><td class="num"><p>~25%</p></td><td class="num"><p>Stable</p></td></tr><tr><td><p>Asia-Pacific</p></td><td class="num"><p>~20%</p></td><td class="num"><p>Growing (China/India demand)</p></td></tr><tr><td><p>Other</p></td><td class="num"><p>~15%</p></td><td class="num"><p>Mixed</p></td></tr></tbody></table></div><div class="table-wrap"><table><thead><tr><th>Production Region</th><th class="num">Volume (K boepd)</th><th class="num">Breakeven</th><th class="num">Growth Outlook</th></tr></thead><tbody><tr><td><p>Permian Basin (US)</p></td><td class="num"><p>~2,000</p></td><td class="num"><p>~$30-35/bbl</p></td><td class="num"><p>Growing 5-7%/yr</p></td></tr><tr><td><p>Guyana (Stabroek)</p></td><td class="num"><p>~640</p></td><td class="num"><p>&lt;$25/bbl</p></td><td class="num"><p>Step-ups via new FPSOs</p></td></tr><tr><td><p>Other US (incl. Bakken)</p></td><td class="num"><p>~600</p></td><td class="num"><p>~$45/bbl</p></td><td class="num"><p>Stable to declining</p></td></tr><tr><td><p>International (LNG, etc.)</p></td><td class="num"><p>~1,360</p></td><td class="num"><p>Varies</p></td><td class="num"><p>Stable</p></td></tr></tbody></table></div>
+      </section>
+      <section id="competition" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>competitive position</h2>
+          <div class="kicker">moat vs. customer-as-competitor</div>
+        </div>
+        <div class="lead aggregate-lead"><p>XOM commands the highest market cap and P/E multiple among integrated peers, reflecting superior operational quality.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">market position</div><div class="kpi-value ">#1 IOC</div><div class="kpi-sub">Largest non-state integrated oil company globally</div></div><div class="kpi"><div class="kpi-label">production advantage</div><div class="kpi-value ">48% &gt; CVX</div><div class="kpi-sub">4.6M vs 3.1M boepd</div></div><div class="kpi"><div class="kpi-label">cost advantage</div><div class="kpi-value ">$35 vs $40-55</div><div class="kpi-sub">Breakeven vs. Chevron, Shell, BP</div></div><div class="kpi"><div class="kpi-label">balance sheet</div><div class="kpi-value ">Best-in-class</div><div class="kpi-sub">0.5x ND/EBITDA vs peer avg 1.0x</div></div></div><div class="note"><p>Takeaway. XOM has separated from the integrated oil peer group on nearly every operational metric post-Pioneer. The closest competitor, Chevron, is 48% smaller by production and has a higher breakeven...</p></div><div class="table-wrap"><table><thead><tr><th>Company</th><th class="num">Mkt Cap ($B)</th><th class="num">Production (M boepd)</th><th class="num">P/E (fwd)</th><th class="num">Div Yield</th><th class="num">ND/EBITDA</th></tr></thead><tbody><tr><td><p>ExxonMobil (XOM)</p></td><td class="num"><p>$475</p></td><td class="num"><p>4.6</p></td><td class="num"><p>13x</p></td><td class="num"><p>3.4%</p></td><td class="num"><p>0.5x</p></td></tr><tr><td><p>Chevron (CVX)</p></td><td class="num"><p>$290</p></td><td class="num"><p>3.1</p></td><td class="num"><p>12x</p></td><td class="num"><p>4.2%</p></td><td class="num"><p>0.7x</p></td></tr><tr><td><p>Shell (SHEL)</p></td><td class="num"><p>$210</p></td><td class="num"><p>2.7</p></td><td class="num"><p>8x</p></td><td class="num"><p>4.0%</p></td><td class="num"><p>1.0x</p></td></tr><tr><td><p>BP (BP)</p></td><td class="num"><p>$95</p></td><td class="num"><p>2.3</p></td><td class="num"><p>7x</p></td><td class="num"><p>5.5%</p></td><td class="num"><p>1.3x</p></td></tr><tr><td><p>TotalEnergies (TTE)</p></td><td class="num"><p>$155</p></td><td class="num"><p>2.8</p></td><td class="num"><p>9x</p></td><td class="num"><p>4.8%</p></td><td class="num"><p>0.8x</p></td></tr><tr><td><p>ConocoPhillips (COP)</p></td><td class="num"><p>$140</p></td><td class="num"><p>1.7</p></td><td class="num"><p>11x</p></td><td class="num"><p>3.0%</p></td><td class="num"><p>0.4x</p></td></tr></tbody></table></div><div class="note"><p>XOM commands the highest market cap and P/E multiple among integrated peers, reflecting superior operational quality. The premium is modest (1-2 P/E turns) relative to the production and cost advantages, suggesting room for further relative outperformance.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Competitive Dynamics: XOM Is Pulling Away</h3><span class="tag blue">DYNAMICS</span></div><div class="aggregate-card-body"><p>The integrated oil competitive landscape has bifurcated: U.S. majors (XOM, CVX) are doubling down on hydrocarbon production, while European majors (Shell, BP, TTE) attempted energy transition pivots that have generally destroyed value and compressed multiples. XOM&#x27;s strategy of investing in the lowest-cost hydrocarbon assets is producing superior returns...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Market Position: Dominant Across the Value Chain</h3><span class="tag blue">POSITION</span></div><div class="aggregate-card-body"><p>XOM holds #1 or #2 positions in every segment it operates: (1) Largest non-state producer globally at 4.6M boepd; (2) One of the largest refiners at 4.6M bpd capacity; (3) Top 3 global chemical company by PE capacity; (4) Leading lubricants brand (Mobil). This breadth provides earnings diversification that pure-play E&Ps lack.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Barriers to Entry: Extremely High</h3><span class="tag blue">BARRIERS</span></div><div class="aggregate-card-body"><p>The barriers to replicating XOM&#x27;s position are prohibitive: (1) Permian acreage is largely allocated; acquiring a comparable position would cost $100B+; (2) Guyana exploration is complete — new entrants would need to discover a comparable basin; (3) Refining and chemical infrastructure requires decades and tens of billions to build; (4) Regulatory permits for new refinery construction are effectively impossible in the US. XOM&#x27;s moat is deep and widening.</p></div></div>
+      </section>
+      <section id="tam" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>market size &amp; tam</h2>
+          <div class="kicker">runway vs. penetration</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Even if global oil demand peaks in 2028-2030, XOM can grow production and revenue through market share gains.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">global oil market</div><div class="kpi-value ">$3.0T+</div><div class="kpi-sub">~103M bpd at ~$80/bbl</div></div><div class="kpi"><div class="kpi-label">demand growth</div><div class="kpi-value ">+1.0-1.2M bpd</div><div class="kpi-sub">2025 forecast (IEA)</div></div><div class="kpi"><div class="kpi-label">peak oil demand</div><div class="kpi-value value-am">2028-2035</div><div class="kpi-sub">Range of forecasts; XOM uses later estimates</div></div><div class="kpi"><div class="kpi-label">xom market share</div><div class="kpi-value ">~4.5%</div><div class="kpi-sub">4.6M of ~103M bpd global production</div></div></div><div class="note"><p>Takeaway. The global oil TAM is enormous (~$3T+ annually) and still growing in absolute terms. Even under aggressive energy transition scenarios, oil demand is expected to exceed 80M bpd through 2040...</p></div><div class="table-wrap"><table><thead><tr><th>Market</th><th class="num">Size (2024)</th><th class="num">Growth Rate</th><th>XOM Position</th></tr></thead><tbody><tr><td><p>Upstream (crude + gas)</p></td><td class="num"><p>$2.5T</p></td><td class="num"><p>+1-2% volume/yr</p></td><td><p>#1 non-state producer</p></td></tr><tr><td><p>Refining</p></td><td class="num"><p>$400B</p></td><td class="num"><p>Flat to +1%</p></td><td><p>Top 3 global refiner</p></td></tr><tr><td><p>Chemicals</p></td><td class="num"><p>$600B</p></td><td class="num"><p>+3-4%/yr</p></td><td><p>Top 5 global (PE focus)</p></td></tr><tr><td><p>CCS Market</p></td><td class="num"><p>$5-10B (nascent)</p></td><td class="num"><p>+30-50%/yr</p></td><td><p>Largest commercial pipeline</p></td></tr><tr><td><p>Lithium</p></td><td class="num"><p>$25B</p></td><td class="num"><p>+15-20%/yr</p></td><td><p>Early entrant (2027 production)</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Addressable Market: XOM Can Grow Within a Flat TAM</h3><span class="tag blue">SIZING</span></div><div class="aggregate-card-body"><p>Even if global oil demand peaks in 2028-2030, XOM can grow production and revenue through market share gains. The reason: as higher-cost producers (deepwater Africa, Canadian oil sands, marginal US shale) decline, the lowest-cost producers capture their share. XOM&#x27;s $35/bbl breakeven positions it as a last-man-standing in a declining demand scenario, which paradoxically improves its competitive position over time.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>New Markets: CCS and Lithium as Future TAM Optionality</h3><span class="tag blue">NEW TAM</span></div><div class="aggregate-card-body"><p>XOM&#x27;s Low Carbon Solutions investments (CCS, hydrogen, lithium) represent call options on new TAMs. CCS is the most advanced: XOM has contracted 6+ MTPA of capture capacity with plans to scale significantly. The lithium project in Arkansas could make XOM one of the largest domestic lithium producers by 2030...</p></div></div><div class="note amber"><p>Risk. Peak oil demand timing is the key TAM risk. If EV adoption and renewable energy deployment accelerate faster than expected, the terminal value of hydrocarbon assets could be significantly lower than modeled...</p></div>
+      </section>
+      <section id="product" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>product &amp; technology</h2>
+          <div class="kicker">roadmap + software stack</div>
+        </div>
+        <div class="lead aggregate-lead"><p>XOM&#x27;s upstream technology is a key competitive advantage that receives insufficient attention.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">r&amp;d spend</div><div class="kpi-value ">$1.8B</div><div class="kpi-sub">FY2024 — focused on upstream tech and CCS</div></div><div class="kpi"><div class="kpi-label">ccs pipeline</div><div class="kpi-value ">6+ MTPA</div><div class="kpi-sub">Contracted capacity by 2030</div></div><div class="kpi"><div class="kpi-label">lithium target</div><div class="kpi-value ">100K tonnes</div><div class="kpi-sub">Lithium carbonate equivalent by 2030</div></div><div class="kpi"><div class="kpi-label">chemical expansion</div><div class="kpi-value ">Baytown</div><div class="kpi-sub">1.5M tonnes PE capacity addition (2025)</div></div></div><div class="note"><p>Takeaway. XOM&#x27;s technology portfolio is evolving from pure hydrocarbon optimization toward a dual track: (1) continued improvement in upstream extraction efficiency (drilling tech, well spacing optimization) and (2) nascent but potentially significant low-carbon technologies (CCS, hydrogen, lithium). The CCS business is the most near-term relevant and could become material revenue contributor by 2028-2030.</p></div><div class="table-wrap"><table><thead><tr><th>Technology Area</th><th>Status</th><th class="num">Revenue Impact</th><th>Strategic Importance</th></tr></thead><tbody><tr><td><p>Upstream drilling/completion tech</p></td><td><p>Mature, improving</p></td><td class="num"><p>Core — drives breakeven</p></td><td><p>Critical</p></td></tr><tr><td><p>Refining process optimization</p></td><td><p>Mature</p></td><td class="num"><p>Margin support</p></td><td><p>Moderate</p></td></tr><tr><td><p>Chemical products (PE, specialties)</p></td><td><p>Expanding (Baytown)</p></td><td class="num"><p>$30B+ segment</p></td><td><p>High</p></td></tr><tr><td><p>Carbon Capture &amp; Storage (CCS)</p></td><td><p>Early commercial</p></td><td class="num"><p>De minimis now; $2-5B by 2030</p></td><td><p>High (strategic)</p></td></tr><tr><td><p>Hydrogen production</p></td><td><p>Pilot/early stage</p></td><td class="num"><p>Minimal</p></td><td><p>Moderate (long-term)</p></td></tr><tr><td><p>Lithium extraction</p></td><td><p>Pre-production</p></td><td class="num"><p>Potential $1-2B by 2030</p></td><td><p>Moderate (diversification)</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Core Upstream Technology: The Secret Weapon</h3><span class="tag blue">TECH</span></div><div class="aggregate-card-body"><p>XOM&#x27;s upstream technology is a key competitive advantage that receives insufficient attention. The company&#x27;s proprietary drilling and completion techniques have enabled: (1) 20%+ improvement in Permian well productivity over the past 3 years; (2) reduced drilling times that lower per-well costs; (3) optimized well spacing that maximizes recovery from existing acreage. These improvements are a key reason the full-cycle breakeven has dropped to $35/bbl.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Low Carbon Solutions: Optionality, Not Core Thesis</h3><span class="tag blue">R&D</span></div><div class="aggregate-card-body"><p>The Low Carbon Solutions segment is best viewed as a portfolio of call options rather than a core thesis driver. CCS is the most advanced, with 6+ MTPA of contracted capacity and a Houston-area hub under development. If carbon pricing reaches $85-100/tonne (from current ~$50 in EU ETS), CCS becomes a high-margin business...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Technology Moat: Deep and Proprietary</h3><span class="tag blue">IP</span></div><div class="aggregate-card-body"><p>XOM holds thousands of patents across upstream extraction, refining processes, and chemical manufacturing. More importantly, the company has extensive proprietary know-how in reservoir management, drilling optimization, and process engineering that is not patentable but is extremely difficult to replicate. This tacit knowledge represents a durable competitive advantage that has taken decades to build.</p></div></div><div class="note amber"><p>Risk. CCS and lithium are early-stage businesses with execution uncertainty. If carbon pricing does not reach levels that make CCS economically viable without subsidies, these investments may not generate adequate returns...</p></div>
+      </section>
+      <section id="supply" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>supply chain</h2>
+          <div class="kicker">single points of failure</div>
+        </div>
+        <div class="lead aggregate-lead"><p>XOM&#x27;s vertical integration means it is largely insulated from supply chain disruptions that affect non-integrated players.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">refining capacity</div><div class="kpi-value ">4.6M bpd</div><div class="kpi-sub">Among the world&#x27;s largest</div></div><div class="kpi"><div class="kpi-label">integration</div><div class="kpi-value ">Fully Integrated</div><div class="kpi-sub">Upstream → Refining → Chemicals → Distribution</div></div><div class="kpi"><div class="kpi-label">supplier concentration</div><div class="kpi-value ">Low</div><div class="kpi-sub">Diversified across basins and service providers</div></div><div class="kpi"><div class="kpi-label">geographic risk</div><div class="kpi-value ">Moderate</div><div class="kpi-sub">Guyana border dispute; Middle East exposure limited</div></div></div><div class="note"><p>Takeaway. XOM&#x27;s fully integrated supply chain is a competitive advantage that reduces working capital needs, provides natural hedging between upstream and downstream, and enables capture of margin across the full value chain. The vertical integration is nearly impossible to replicate from scratch.</p></div><div class="table-wrap"><table><thead><tr><th>Category</th><th>Key Suppliers</th><th>Concentration Risk</th><th>Substitutability</th></tr></thead><tbody><tr><td><p>Oilfield Services</p></td><td><p>Schlumberger, Halliburton, Baker Hughes</p></td><td><p>Low</p></td><td><p>High — multiple providers</p></td></tr><tr><td><p>Crude Supply (internal)</p></td><td><p>Own production (4.6M boepd)</p></td><td><p>None</p></td><td><p>N/A — vertically integrated</p></td></tr><tr><td><p>Shipping/Logistics</p></td><td><p>Diversified fleet</p></td><td><p>Low</p></td><td><p>Moderate</p></td></tr><tr><td><p>Technology/Equipment</p></td><td><p>Caterpillar, NOV, Emerson</p></td><td><p>Low</p></td><td><p>Moderate</p></td></tr></tbody></table></div><div class="table-wrap"><table><thead><tr><th>Customer Segment</th><th class="num">% of Revenue</th><th>Concentration</th><th>Switching Cost</th></tr></thead><tbody><tr><td><p>Wholesale fuel buyers</p></td><td class="num"><p>~40%</p></td><td><p>Very low</p></td><td><p>Low (commodity)</p></td></tr><tr><td><p>Chemical customers</p></td><td class="num"><p>~15%</p></td><td><p>Low</p></td><td><p>Moderate (spec products)</p></td></tr><tr><td><p>Retail (branded stations)</p></td><td class="num"><p>~20%</p></td><td><p>Low</p></td><td><p>Moderate (brand)</p></td></tr><tr><td><p>Government/industrial</p></td><td class="num"><p>~25%</p></td><td><p>Moderate</p></td><td><p>Low to moderate</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Supply Chain Resilience: Vertical Integration as Hedge</h3><span class="tag blue">RESILIENCE</span></div><div class="aggregate-card-body"><p>XOM&#x27;s vertical integration means it is largely insulated from supply chain disruptions that affect non-integrated players. The company sources the majority of its refinery feedstock from its own production, manufactures its own chemical inputs, and has its own distribution network. This integration reduced supply chain vulnerabilities during COVID-19 disruptions and provides ongoing margin stability.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Geographic Concentration: US-Centric With Guyana Growth</h3><span class="tag blue">GEO RISK</span></div><div class="aggregate-card-body"><p>XOM&#x27;s geographic profile has become increasingly US-centric post-Pioneer, with approximately 60% of production now domestic. Guyana is the main international growth asset. The Venezuela-Guyana border dispute remains a theoretical risk but has not materialized into operational disruption...</p></div></div><div class="table-wrap"><table><thead><tr><th>Cost Component</th><th class="num">% of Revenue</th><th>Trend</th><th>XOM Advantage</th></tr></thead><tbody><tr><td><p>Crude oil/feedstock</p></td><td class="num"><p>~55%</p></td><td><p>Commodity-linked</p></td><td><p>Low-cost own production</p></td></tr><tr><td><p>Operating costs</p></td><td class="num"><p>~15%</p></td><td><p>Improving (Pioneer efficiencies)</p></td><td><p>Scale economies</p></td></tr><tr><td><p>DD&A</p></td><td class="num"><p>~8%</p></td><td><p>Rising (Pioneer assets)</p></td><td><p>Lower per-barrel basis</p></td></tr><tr><td><p>SG&A</p></td><td class="num"><p>~3%</p></td><td><p>Stable</p></td><td><p>Overhead reduction from synergies</p></td></tr><tr><td><p>Taxes</p></td><td class="num"><p>~7%</p></td><td><p>Stable at ~26% effective</p></td><td><p>Favorable Guyana terms</p></td></tr></tbody></table></div>
+      </section>
+      <section id="catalysts" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>catalyst map</h2>
+          <div class="kicker">forward calendar</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The catalyst timeline shows a steady drumbeat of operational milestones through 2027.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">next catalyst</div><div class="kpi-value ">Q1 2025 Earnings</div><div class="kpi-sub">Expected late April 2025</div></div><div class="kpi"><div class="kpi-label">major catalyst</div><div class="kpi-value ">Pioneer Synergy Update</div><div class="kpi-sub">Expected with Q2/Q3 2025 results</div></div><div class="kpi"><div class="kpi-label">guyana fpso #5</div><div class="kpi-value ">Uaru Startup</div><div class="kpi-sub">Expected mid-2025</div></div><div class="kpi"><div class="kpi-label">risk catalyst</div><div class="kpi-value value-am">OPEC+ Meeting</div><div class="kpi-sub">June 2025 — production quota decision</div></div></div><div class="note"><p>Takeaway. The catalyst calendar is front-loaded: Q1 earnings, Guyana Uaru FPSO startup, and Pioneer synergy disclosures all cluster in H1 2025. The OPEC+ June meeting is the key risk event...</p></div><div class="table-wrap"><table><thead><tr><th>Catalyst</th><th>Expected Date</th><th>Direction</th><th>Magnitude</th></tr></thead><tbody><tr><td><p>Q1 2025 Earnings</p></td><td><p>Late April 2025</p></td><td><p>Neutral/Positive</p></td><td><p>Moderate</p></td></tr><tr><td><p>Uaru FPSO #5 (Guyana)</p></td><td><p>Mid-2025</p></td><td><p>Positive</p></td><td><p>High — adds ~250K boepd capacity</p></td></tr><tr><td><p>Pioneer Synergy Update</p></td><td><p>Q2/Q3 2025</p></td><td><p>Positive</p></td><td><p>Moderate — $2B+ target confirmation</p></td></tr><tr><td><p>OPEC+ Meeting</p></td><td><p>June 2025</p></td><td><p>Risk</p></td><td><p>High — quota unwinding could pressure oil</p></td></tr><tr><td><p>Baytown Chemical Expansion</p></td><td><p>Late 2025</p></td><td><p>Positive</p></td><td><p>Moderate — adds PE capacity</p></td></tr><tr><td><p>Whiptail FPSO #6 (Guyana)</p></td><td><p>2027</p></td><td><p>Positive</p></td><td><p>High — 1.3M boepd total Guyana</p></td></tr></tbody></table></div><div class="note"><p>The catalyst timeline shows a steady drumbeat of operational milestones through 2027. Guyana is the most impactful: each FPSO adds 200-250K boepd of sub-$25/bbl breakeven production, which is essentially the highest-return incremental production in the industry.</p></div><div class="table-wrap"><table><thead><tr><th>Quarter</th><th class="num">Key Event</th><th>Expected Impact</th></tr></thead><tbody><tr><td><p>Q1 2025</p></td><td class="num"><p>Earnings release; Permian update</p></td><td><p>Production guidance for 2025</p></td></tr><tr><td><p>Q2 2025</p></td><td class="num"><p>Uaru startup; OPEC+ meeting</p></td><td><p>Net new production + oil price risk</p></td></tr><tr><td><p>H2 2025</p></td><td class="num"><p>Baytown online; synergy disclosure</p></td><td><p>Chemical margin expansion</p></td></tr><tr><td><p>2026</p></td><td class="num"><p>Pioneer fully integrated; CCS contracts</p></td><td><p>Full run-rate synergies visible</p></td></tr><tr><td><p>2027</p></td><td class="num"><p>Whiptail FPSO; lithium pilot</p></td><td><p>Step-change in production and diversification</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Highest-Impact Catalysts</h3><span class="tag blue">TOP 3</span></div><div class="aggregate-card-body"><p>1. Guyana Production Ramp: The Stabroek block is XOM&#x27;s most valuable asset on a per-barrel economics basis. Each FPSO startup is a discrete, high-margin production step-up that is largely independent of oil prices (breakeven below $25/bbl)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Near-Term Quarterly Outlook</h3><span class="tag blue">NEXT QUARTER</span></div><div class="aggregate-card-body"><p>Q1 2025 should show continued production growth from Pioneer integration, offset by slightly weaker oil prices ($78 Brent average vs. $81 in Q4). We expect EPS of approximately $2.00-2.10, roughly in line with consensus...</p></div></div>
+      </section>
+      <section id="street" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>street expectations</h2>
+          <div class="kicker">consensus vs. framework</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Wall Street consensus is moderately bullish on XOM, with a median target of $125 implying approximately 11% upside . The analyst community is broadly aligned on the quality of XOM&#x27;s asset base but divided on the oil price outlook.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">consensus rating</div><div class="kpi-value ">Overweight</div><div class="kpi-sub">12 Buy, 10 Hold, 3 Sell</div></div><div class="kpi"><div class="kpi-label">median target</div><div class="kpi-value ">$125</div><div class="kpi-sub">+11% from current $113</div></div><div class="kpi"><div class="kpi-label">consensus eps (2025e)</div><div class="kpi-value ">$8.30</div><div class="kpi-sub">Approximately flat vs FY2024</div></div><div class="kpi"><div class="kpi-label">revenue est (2025e)</div><div class="kpi-value ">$355B</div><div class="kpi-sub">+3% vs FY2024</div></div></div><div class="note"><p>Takeaway. Our base case target of $130 is slightly above the consensus $125, reflecting our higher-conviction view on Pioneer synergy execution and Guyana ramp. The consensus appears to be using more conservative oil price assumptions ($75 Brent) than our base case ($80)...</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Our View vs. Street Consensus</h3><span class="tag blue">VS STREET</span></div><div class="aggregate-card-body"><p>We agree with the Street&#x27;s positive view on XOM&#x27;s asset quality and capital discipline. Where we differ: (1) We think Pioneer synergies will exceed the $2B target, adding $0.15-0.20/share of incremental EPS not in consensus models; (2) We use a slightly higher oil price assumption ($80 vs. $75 consensus) based on OPEC+ supply discipline; (3) We assign more value to the low-carbon solutions optionality than most sell-side models, which treat it as zero-value.</p></div></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">FY2024A</th><th class="num">FY2025E (Cons)</th><th class="num">FY2025E (Our)</th><th class="num">Delta</th></tr></thead><tbody><tr><td><p>Revenue ($B)</p></td><td class="num"><p>$344.6</p></td><td class="num"><p>$355</p></td><td class="num"><p>$360</p></td><td class="num"><p>+$5B</p></td></tr><tr><td><p>EPS</p></td><td class="num"><p>$8.02</p></td><td class="num"><p>$8.30</p></td><td class="num"><p>$8.55</p></td><td class="num"><p>+$0.25</p></td></tr><tr><td><p>FCF ($B)</p></td><td class="num"><p>$36.0</p></td><td class="num"><p>$34</p></td><td class="num"><p>$37</p></td><td class="num"><p>+$3B</p></td></tr><tr><td><p>Production (M boepd)</p></td><td class="num"><p>4.6</p></td><td class="num"><p>4.7</p></td><td class="num"><p>4.75</p></td><td class="num"><p>+50K</p></td></tr><tr><td><p>DPS</p></td><td class="num"><p>$3.96</p></td><td class="num"><p>$4.16</p></td><td class="num"><p>$4.20</p></td><td class="num"><p>+$0.04</p></td></tr></tbody></table></div><div class="table-wrap"><table><thead><tr><th>Year</th><th class="num">Revenue ($B)</th><th class="num">EPS</th><th class="num">FCF ($B)</th><th class="num">P/E</th></tr></thead><tbody><tr><td><p>2023A</p></td><td class="num"><p>$344.6</p></td><td class="num"><p>$8.89</p></td><td class="num"><p>$30.2</p></td><td class="num"><p>12.7x</p></td></tr><tr><td><p>2024A</p></td><td class="num"><p>$344.6</p></td><td class="num"><p>$8.02</p></td><td class="num"><p>$36.0</p></td><td class="num"><p>14.1x</p></td></tr><tr><td><p>2025E</p></td><td class="num"><p>$355</p></td><td class="num"><p>$8.30</p></td><td class="num"><p>$34</p></td><td class="num"><p>13.6x</p></td></tr><tr><td><p>2026E</p></td><td class="num"><p>$370</p></td><td class="num"><p>$9.00</p></td><td class="num"><p>$38</p></td><td class="num"><p>12.6x</p></td></tr></tbody></table></div><div class="table-wrap"><table><thead><tr><th>Firm</th><th>Rating</th><th class="num">Target</th><th>Key View</th></tr></thead><tbody><tr><td><p>Morgan Stanley</p></td><td><p>Overweight</p></td><td class="num"><p>$132</p></td><td><p>Pioneer synergies underappreciated</p></td></tr><tr><td><p>Goldman Sachs</p></td><td><p>Buy</p></td><td class="num"><p>$135</p></td><td><p>Best-in-class integrated portfolio</p></td></tr><tr><td><p>JP Morgan</p></td><td><p>Neutral</p></td><td class="num"><p>$118</p></td><td><p>Fairly valued at $80 Brent</p></td></tr><tr><td><p>Barclays</p></td><td><p>Overweight</p></td><td class="num"><p>$128</p></td><td><p>Guyana is the differentiator</p></td></tr><tr><td><p>BofA</p></td><td><p>Buy</p></td><td class="num"><p>$130</p></td><td><p>Capital allocation best-in-class</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Estimate Revision Trends</h3><span class="tag blue">REVISIONS</span></div><div class="aggregate-card-body"><p>FY2025 EPS estimates have been relatively stable, moving from $8.50 to $8.30 over the past 3 months as oil prices drifted lower. FY2026 estimates of $9.00 embed production growth and Pioneer synergies. The revision trend is neutral to slightly negative on near-term estimates but positive on 2026+ as analysts model the full impact of Pioneer integration.</p></div></div>
+      </section>
+      <section id="scorecard" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>earnings scorecard</h2>
+          <div class="kicker">execution quality</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The Q1 2024 miss was an outlier driven by planned maintenance/turnaround activity.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">beat rate (eps)</div><div class="kpi-value ">7/8</div><div class="kpi-sub">Last 8 quarters</div></div><div class="kpi"><div class="kpi-label">avg beat magnitude</div><div class="kpi-value ">+$0.12</div><div class="kpi-sub">Consistent modest beats</div></div><div class="kpi"><div class="kpi-label">guidance accuracy</div><div class="kpi-value ">High</div><div class="kpi-sub">Conservative capex/production guidance typically exceeded</div></div><div class="kpi"><div class="kpi-label">next report</div><div class="kpi-value ">Apr 25, 2025</div><div class="kpi-sub">Q1 2025; consensus EPS $2.05</div></div></div><div class="note"><p>Takeaway. XOM has a strong track record of beating consensus EPS estimates, primarily through operational outperformance (production above guidance) and cost discipline. Management&#x27;s guidance style is conservative, which creates regular positive surprises...</p></div><div class="table-wrap"><table><thead><tr><th>Quarter</th><th class="num">EPS Actual</th><th class="num">EPS Consensus</th><th class="num">Surprise</th><th>Key Driver</th></tr></thead><tbody><tr><td><p>Q4 2024</p></td><td class="num"><p>$1.67</p></td><td class="num"><p>$1.55</p></td><td class="num"><p>+$0.12</p></td><td><p>Permian production beat</p></td></tr><tr><td><p>Q3 2024</p></td><td class="num"><p>$1.92</p></td><td class="num"><p>$1.88</p></td><td class="num"><p>+$0.04</p></td><td><p>Cost discipline</p></td></tr><tr><td><p>Q2 2024</p></td><td class="num"><p>$2.14</p></td><td class="num"><p>$2.01</p></td><td class="num"><p>+$0.13</p></td><td><p>Pioneer integration ahead of schedule</p></td></tr><tr><td><p>Q1 2024</p></td><td class="num"><p>$2.06</p></td><td class="num"><p>$2.20</p></td><td class="num"><p>-$0.14</p></td><td><p>Turnaround/maintenance headwinds</p></td></tr><tr><td><p>Q4 2023</p></td><td class="num"><p>$2.48</p></td><td class="num"><p>$2.36</p></td><td class="num"><p>+$0.12</p></td><td><p>Strong Guyana volumes</p></td></tr><tr><td><p>Q3 2023</p></td><td class="num"><p>$2.27</p></td><td class="num"><p>$2.18</p></td><td class="num"><p>+$0.09</p></td><td><p>Refining margins above expectations</p></td></tr></tbody></table></div><div class="note"><p>The Q1 2024 miss was an outlier driven by planned maintenance/turnaround activity. Excluding that quarter, XOM has beaten consensus in all recent quarters. The beats are driven by operational execution rather than accounting adjustments, which is a positive quality signal.</p></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Guidance</th><th>Actual</th><th>Variance</th></tr></thead><tbody><tr><td><p>2024 Production</p></td><td><p>3.8M boepd (pre-Pioneer adj)</p></td><td><p>4.6M boepd</p></td><td><p>Beat (includes Pioneer)</p></td></tr><tr><td><p>2024 Capex</p></td><td><p>$25-27B</p></td><td><p>$26.3B</p></td><td><p>In-line</p></td></tr><tr><td><p>Pioneer Synergies (Year 1)</p></td><td><p>$1B+</p></td><td><p>Tracking &gt;$1B</p></td><td><p>On/above track</p></td></tr><tr><td><p>2024 Unit Costs</p></td><td><p>Improving</p></td><td><p>~8% decline</p></td><td><p>Beat</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Earnings Quality: High and Improving</h3><span class="tag blue">QUALITY</span></div><div class="aggregate-card-body"><p>XOM&#x27;s earnings quality is high: (1) cash conversion is excellent (OCF/NI ratio of 1.6x), (2) accruals are low relative to peers, (3) reserve replacement ratios are healthy, and (4) depletion rates are appropriate for the asset base. The Pioneer integration has improved earnings quality by adding lower-cost, shorter-payback barrels to the portfolio.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Estimate Revision Trends</h3><span class="tag blue">REVISIONS</span></div><div class="aggregate-card-body"><p>FY2025 estimates have drifted modestly lower over the past 3 months ($8.50 → $8.30) as oil prices softened. FY2026 estimates remain stable at ~$9.00, reflecting expected production growth and synergy realization. The revision cycle is typical for energy: estimates move with commodity prices in the near term but converge on fundamental value over 12+ months.</p></div></div>
+      </section>
+      <section id="signals" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>alternative data</h2>
+          <div class="kicker">signals</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Satellite data shows Permian Basin rig activity consistent with XOM&#x27;s production guidance.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">institutional ownership</div><div class="kpi-value ">~60%</div><div class="kpi-sub">Broad-based, no activist involvement</div></div><div class="kpi"><div class="kpi-label">insider activity</div><div class="kpi-value ">Neutral</div><div class="kpi-sub">Minimal insider trading activity</div></div><div class="kpi"><div class="kpi-label">short interest</div><div class="kpi-value ">0.8%</div><div class="kpi-sub">Minimal bearish positioning</div></div><div class="kpi"><div class="kpi-label">options flow</div><div class="kpi-value ">Balanced</div><div class="kpi-sub">Slight call skew at $120-130 strikes</div></div></div><div class="note"><p>Takeaway. The signal environment is benign: low short interest, broad institutional ownership, and neutral insider activity. The slight call skew in options suggests some institutional positioning for upside toward $120-130, consistent with the consensus target range.</p></div><div class="table-wrap"><table><thead><tr><th>Signal</th><th>Reading</th><th>Trend</th><th>Implication</th></tr></thead><tbody><tr><td><p>Short Interest</p></td><td><p>0.8%</p></td><td><p>Declining</p></td><td><p>Bullish — bears covering</p></td></tr><tr><td><p>Put/Call Ratio</p></td><td><p>0.85</p></td><td><p>Stable</p></td><td><p>Neutral to slightly bullish</p></td></tr><tr><td><p>Fund Flows (Energy ETFs)</p></td><td><p>Positive</p></td><td><p>Improving</p></td><td><p>Sector rotation into energy</p></td></tr><tr><td><p>CTA Positioning</p></td><td><p>Long</p></td><td><p>Increasing</p></td><td><p>Trend following supports upside</p></td></tr><tr><td><p>Insider Activity</p></td><td><p>Neutral</p></td><td><p>Flat</p></td><td><p>No signal</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Alternative Data Signals</h3><span class="tag blue">ALT DATA</span></div><div class="aggregate-card-body"><p>Satellite data shows Permian Basin rig activity consistent with XOM&#x27;s production guidance. Refinery utilization rates remain in the 90-92% range, supporting downstream earnings. Global crude tanker rates are stable, suggesting balanced supply/demand...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Sentiment: Neutral to Positive</h3><span class="tag blue">SENTIMENT</span></div><div class="aggregate-card-body"><p>Market sentiment toward XOM is neutral to moderately positive. The stock has underperformed the S&P 500 over the past 12 months (energy sector rotation), but relative sentiment is improving as oil prices stabilize and Pioneer synergies become visible. ESG-driven selling pressure has largely abated as institutional investors have accepted energy majors&#x27; role in the transition.</p></div></div><div class="note amber"><p>Risk. Energy sector positioning is currently light relative to historical averages. A rapid sector rotation out of tech/growth into energy could drive outsized short-term moves in either direction.</p></div>
+      </section>
+      <section id="history" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>historical analogies</h2>
+          <div class="kicker">base rates</div>
+        </div>
+        <div class="lead aggregate-lead"><p>ExxonMobil&#x27;s current setup — a major acquisition transforming cost structure at mid-cycle commodity prices — has historical parallels that inform the thesis and risk assessment.</p></div>
+        <div class="kpi-grid cols-3"><div class="kpi"><div class="kpi-label">key analogy</div><div class="kpi-value ">CVX/Texaco (2001)</div><div class="kpi-sub">Transformative acquisition at mid-cycle; stock doubled in 5 years</div></div><div class="kpi"><div class="kpi-label">counter-analogy</div><div class="kpi-value value-rd">XOM/XTO (2010)</div><div class="kpi-sub">Overpaid acquisition at cycle peak; years of underperformance</div></div><div class="kpi"><div class="kpi-label">sector analogy</div><div class="kpi-value ">2016 Oil Recovery</div><div class="kpi-sub">Energy stocks rallied 60%+ from trough as oil recovered</div></div></div><div class="note"><p>Takeaway. The most relevant historical analogy is Chevron&#x27;s acquisition of Texaco in 2001 — a transformative deal that repositioned the acquirer as a cost leader. Chevron&#x27;s stock more than doubled over the subsequent 5 years as the integration delivered synergies and oil prices rose...</p></div><div class="table-wrap"><table><thead><tr><th>Analogy</th><th class="num">Year</th><th>Similarity</th><th>Outcome</th><th class="num">Relevance</th></tr></thead><tbody><tr><td><p>CVX/Texaco merger</p></td><td class="num"><p>2001</p></td><td><p>Transformative acquisition, mid-cycle</p></td><td><p>Stock 2.5x in 5 years</p></td><td class="num"><p>High — similar setup</p></td></tr><tr><td><p>XOM/XTO Energy</p></td><td class="num"><p>2010</p></td><td><p>Large energy acquisition</p></td><td><p>Overpaid; years of drag</p></td><td class="num"><p>Cautionary parallel</p></td></tr><tr><td><p>2016 oil recovery</p></td><td class="num"><p>2016</p></td><td><p>Energy stocks at depressed valuations</p></td><td><p>XLE +60% in 18 months</p></td><td class="num"><p>Moderate — shows upside potential</p></td></tr><tr><td><p>BP Deepwater Horizon</p></td><td class="num"><p>2010</p></td><td><p>Operational risk in E&P</p></td><td><p>$65B in costs/fines</p></td><td class="num"><p>Tail risk reminder</p></td></tr><tr><td><p>Conoco/Burlington</p></td><td class="num"><p>2009</p></td><td><p>Large-scale E&P acquisition</p></td><td><p>Mixed — timing was poor</p></td><td class="num"><p>Moderate</p></td></tr></tbody></table></div><div class="note"><p>Historical lesson: The key differentiator between successful (CVX/Texaco) and failed (XOM/XTO) energy acquisitions is the price paid relative to the commodity cycle. Pioneer was acquired at a time of moderate (not peak) oil prices, with oil-weighted assets (not gas, like XTO). This timing is more favorable than the XTO precedent.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Cyclical Context: Mid-Cycle With Optionality</h3><span class="tag blue">CYCLE</span></div><div class="aggregate-card-body"><p>Oil prices at $80/bbl are roughly mid-cycle by historical standards (the 10-year average is approximately $72/bbl). This is a favorable entry point for XOM because: (1) the stock is not pricing in $100+ oil (which would create bubble risk), (2) there is room for upside if supply tightens, and (3) the $35/bbl breakeven provides meaningful downside protection even if prices decline. Historical analogies suggest that buying quality energy assets at mid-cycle prices has been a winning strategy over 3-5 year horizons.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Pattern Recognition: Post-Acquisition Value Creation</h3><span class="tag blue">PATTERN</span></div><div class="aggregate-card-body"><p>The historical pattern for successful energy acquisitions is: (1) initial integration costs depress near-term earnings, (2) synergy realization drives earnings beats starting 12-18 months post-close, (3) production growth from acquired assets exceeds initial guidance, (4) the market gradually re-rates the acquirer over 2-3 years. XOM appears to be in phase (2) — the inflection point where synergies start flowing through to results. If the pattern holds, the stock should re-rate higher over the next 12-18 months.</p></div></div>
+      </section>
+      <section id="management" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>management &amp; leadership</h2>
+          <div class="kicker">execution + key-person risk</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Darren Woods has been CEO since 2017 and has executed a coherent strategic vision: focus on lowest-cost, highest-return assets; maintain capital discipline; and invest counter-cyclically.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">ceo</div><div class="kpi-value ">Darren Woods</div><div class="kpi-sub">Since 2017 — 8-year tenure</div></div><div class="kpi"><div class="kpi-label">cfo</div><div class="kpi-value ">Kathryn Mikells</div><div class="kpi-sub">Since 2021 — strong financial discipline</div></div><div class="kpi"><div class="kpi-label">management quality</div><div class="kpi-value ">8/10</div><div class="kpi-sub">Disciplined execution, Pioneer deal well-timed</div></div><div class="kpi"><div class="kpi-label">insider ownership</div><div class="kpi-value ">~0.06%</div><div class="kpi-sub">Typical for mega-cap; compensation aligned via stock awards</div></div></div><div class="note"><p>Takeaway. The XOM management team under Darren Woods has executed a strategic transformation from diversified-but-average integrated major to lowest-cost producer. The Pioneer acquisition, the Guyana development, and the discipline to maintain the dividend through 2020 are evidence of strong capital allocation and operational execution.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Darren Woods: Quiet Operator With Strong Track Record</h3><span class="tag blue">CEO</span></div><div class="aggregate-card-body"><p>Darren Woods has been CEO since 2017 and has executed a coherent strategic vision: focus on lowest-cost, highest-return assets; maintain capital discipline; and invest counter-cyclically. Key accomplishments include: (1) navigating the 2020 oil crash without cutting the dividend; (2) timing the Pioneer acquisition at mid-cycle; (3) building the industry&#x27;s largest CCS pipeline; (4) resisting activist pressure to abandon the core hydrocarbon business. His communication style is understated but credible.</p></div></div><div class="table-wrap"><table><thead><tr><th>Executive</th><th>Role</th><th class="num">Since</th><th>Key Contribution</th></tr></thead><tbody><tr><td><p>Darren W. Woods</p></td><td><p>Chairman &amp; CEO</p></td><td class="num"><p>2017</p></td><td><p>Strategic repositioning; Pioneer deal</p></td></tr><tr><td><p>Kathryn A. Mikells</p></td><td><p>SVP &amp; CFO</p></td><td class="num"><p>2021</p></td><td><p>Financial discipline; balance sheet management</p></td></tr><tr><td><p>Neil A. Chapman</p></td><td><p>SVP</p></td><td class="num"><p>2018</p></td><td><p>Upstream operations; Guyana development</p></td></tr><tr><td><p>Jack P. Williams</p></td><td><p>SVP</p></td><td class="num"><p>2014</p></td><td><p>Downstream &amp; chemical operations</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Board Quality and Independence</h3><span class="tag blue">BOARD</span></div><div class="aggregate-card-body"><p>XOM&#x27;s board is composed of 12 directors, the majority of whom are independent. The board successfully navigated the 2021 Engine No. 1 proxy fight, which added climate-focused directors...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Executive Compensation: Well-Aligned</h3><span class="tag blue">COMP</span></div><div class="aggregate-card-body"><p>CEO total compensation was approximately $36M in FY2024, with the majority in performance-based stock awards tied to relative TSR, ROIC, and production growth metrics. The compensation structure incentivizes long-term value creation rather than short-term earnings management. The performance metrics are appropriate for an integrated oil major and align management with shareholder interests.</p></div></div><div class="table-wrap"><table><thead><tr><th>Dimension</th><th class="num">Score</th><th class="num">Evidence</th></tr></thead><tbody><tr><td><p>Capital Allocation</p></td><td class="num"><p>9/10</p></td><td class="num"><p>Pioneer deal, dividend growth, disciplined buybacks</p></td></tr><tr><td><p>Operational Execution</p></td><td class="num"><p>8/10</p></td><td class="num"><p>Production growth, cost reduction, synergy delivery</p></td></tr><tr><td><p>Strategic Vision</p></td><td class="num"><p>8/10</p></td><td class="num"><p>Low-cost focus, CCS positioning, Guyana development</p></td></tr><tr><td><p>Communication</p></td><td class="num"><p>7/10</p></td><td class="num"><p>Conservative guidance, transparent reporting</p></td></tr><tr><td><p>Incentive Alignment</p></td><td class="num"><p>8/10</p></td><td class="num"><p>Performance-based comp tied to ROIC and TSR</p></td></tr></tbody></table></div>
+      </section>
+      <section id="macro" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>macro sensitivity</h2>
+          <div class="kicker">rates, fx, energy</div>
+        </div>
+        <div class="lead aggregate-lead"><p>With net debt/EBITDA of 0.5x and the majority of debt at fixed rates, XOM has minimal sensitivity to interest rate changes.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">oil price sensitivity</div><div class="kpi-value value-am">$6-8B / $10</div><div class="kpi-sub">FCF impact per $10/bbl Brent change</div></div><div class="kpi"><div class="kpi-label">fx exposure</div><div class="kpi-value ">Moderate</div><div class="kpi-sub">~60% USD-denominated revenue</div></div><div class="kpi"><div class="kpi-label">interest rate</div><div class="kpi-value ">Low Sensitivity</div><div class="kpi-sub">Minimal floating-rate debt at 0.5x leverage</div></div><div class="kpi"><div class="kpi-label">inflation</div><div class="kpi-value ">Net Beneficiary</div><div class="kpi-sub">Commodity producer benefits from inflation</div></div></div><div class="note"><p>Takeaway. XOM&#x27;s macro sensitivity is dominated by a single variable: oil prices. All other macro factors (rates, FX, inflation) are secondary...</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Interest Rate Sensitivity: Minimal</h3><span class="tag blue">RATES</span></div><div class="aggregate-card-body"><p>With net debt/EBITDA of 0.5x and the majority of debt at fixed rates, XOM has minimal sensitivity to interest rate changes. A 100bp rise in rates would add approximately $200M in annual interest expense, less than 0.5% of operating cash flow. This is a significant advantage over more leveraged peers (BP at 1.3x, Shell at 1.0x).</p></div></div><div class="table-wrap"><table><thead><tr><th>Currency</th><th class="num">Revenue Exposure</th><th class="num">Cost Exposure</th><th>Net Position</th></tr></thead><tbody><tr><td><p>USD</p></td><td class="num"><p>~60%</p></td><td class="num"><p>~55%</p></td><td><p>Natural long</p></td></tr><tr><td><p>EUR</p></td><td class="num"><p>~15%</p></td><td class="num"><p>~15%</p></td><td><p>Neutral</p></td></tr><tr><td><p>GBP</p></td><td class="num"><p>~5%</p></td><td class="num"><p>~5%</p></td><td><p>Neutral</p></td></tr><tr><td><p>Other</p></td><td class="num"><p>~20%</p></td><td class="num"><p>~25%</p></td><td><p>Slight short</p></td></tr></tbody></table></div><div class="note"><p>FX exposure is largely naturally hedged through the integrated business model. Oil is priced in USD globally, and XOM&#x27;s cost base is predominantly in countries with USD-linked currencies. The main FX risk is on repatriating international earnings.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Commodity Exposure: The Defining Macro Factor</h3><span class="tag amber">COMMODITIES</span></div><div class="aggregate-card-body"><p>Oil prices are THE macro variable for XOM. Our sensitivity analysis shows: at $90/bbl Brent, XOM generates ~$45B FCF and trades toward $150; at $80/bbl, ~$36B FCF supports $130; at $70/bbl, ~$28B FCF supports $110; at $60/bbl, ~$20B FCF supports $90; at $50/bbl, ~$12B FCF and the dividend comes under pressure. The $35/bbl breakeven provides a floor, but practical cash flow constraints (capex + dividends) require approximately $55-60/bbl to be fully self-funding.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Trade Policy and Geopolitical Sensitivity</h3><span class="tag amber">POLICY</span></div><div class="aggregate-card-body"><p>XOM has moderate exposure to trade policy through its global refining and chemical operations. Tariffs on refined products or chemicals could impact segment profitability. The current US administration&#x27;s energy policy is broadly supportive (pro-drilling, LNG exports), but future administrations could impose carbon taxes or restrict leasing...</p></div></div>
+      </section>
+      <section id="quant" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>quantitative profile</h2>
+          <div class="kicker">factor + mean reversion</div>
+        </div>
+        <div class="lead aggregate-lead"><p>XOM screens well on value, quality, and yield factors — a classic value-income profile.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">beta</div><div class="kpi-value ">0.85</div><div class="kpi-sub">vs S&P 500; lower than market</div></div><div class="kpi"><div class="kpi-label">52-week range</div><div class="kpi-value ">$95.77 - $126.34</div><div class="kpi-sub">Currently at 59th percentile of range</div></div><div class="kpi"><div class="kpi-label">avg daily volume</div><div class="kpi-value ">18.5M shares</div><div class="kpi-sub">Highly liquid — $2.1B daily turnover</div></div><div class="kpi"><div class="kpi-label">dividend yield</div><div class="kpi-value ">3.4%</div><div class="kpi-sub">42 consecutive years of growth</div></div></div><div class="note"><p>Takeaway. XOM&#x27;s quantitative profile shows a liquid, moderate-beta stock that provides meaningful yield. The below-market beta (0.85) reflects the defensive characteristics of the dividend and integrated business model...</p></div><div class="table-wrap"><table><thead><tr><th>Factor</th><th>Exposure</th><th>Percentile</th><th>Implication</th></tr></thead><tbody><tr><td><p>Value</p></td><td><p>Strong</p></td><td><p>85th</p></td><td><p>Screens cheap on FCF yield, P/E</p></td></tr><tr><td><p>Quality</p></td><td><p>Above Average</p></td><td><p>72nd</p></td><td><p>Strong ROIC, low leverage</p></td></tr><tr><td><p>Momentum</p></td><td><p>Neutral</p></td><td><p>50th</p></td><td><p>Mid-range — no trend signal</p></td></tr><tr><td><p>Size</p></td><td><p>Mega Cap</p></td><td><p>98th</p></td><td><p>Maximally liquid</p></td></tr><tr><td><p>Yield</p></td><td><p>High</p></td><td><p>88th</p></td><td><p>Attracts income investors</p></td></tr><tr><td><p>Volatility</p></td><td><p>Below Average</p></td><td><p>38th</p></td><td><p>Lower risk than market</p></td></tr></tbody></table></div><div class="note"><p>XOM screens well on value, quality, and yield factors — a classic value-income profile. The neutral momentum score is not a concern; energy stocks often have muted momentum signals between commodity cycles.</p></div><div class="table-wrap"><table><thead><tr><th class="num">Event</th><th class="num">Drawdown</th><th>Recovery Time</th><th>Context</th></tr></thead><tbody><tr><td class="num"><p>COVID-19 (2020)</p></td><td class="num"><p>-59%</p></td><td><p>~24 months</p></td><td><p>Oil demand collapse; dividend maintained</p></td></tr><tr><td class="num"><p>2018 Q4 selloff</p></td><td class="num"><p>-22%</p></td><td><p>~6 months</p></td><td><p>Macro/rate fears</p></td></tr><tr><td class="num"><p>2014-16 oil crash</p></td><td class="num"><p>-42%</p></td><td><p>~48 months</p></td><td><p>OPEC price war; capex cuts</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Liquidity: Exceptional</h3><span class="tag blue">LIQUIDITY</span></div><div class="aggregate-card-body"><p>XOM is one of the most liquid stocks on the NYSE, with $2.1B+ in average daily turnover. Bid-ask spreads are typically $0.01 (1bp). There are no liquidity concerns for any institutional position size...</p></div></div><div class="table-wrap"><table><thead><tr><th>Asset</th><th class="num">Correlation</th><th>Note</th></tr></thead><tbody><tr><td><p>Brent Crude</p></td><td class="num"><p>0.78</p></td><td><p>Primary driver — highly correlated</p></td></tr><tr><td><p>S&P 500</p></td><td class="num"><p>0.55</p></td><td><p>Moderate — diversification benefit</p></td></tr><tr><td><p>10Y Treasury</p></td><td class="num"><p>-0.20</p></td><td><p>Weak negative — slight rate benefit</p></td></tr><tr><td><p>Chevron (CVX)</p></td><td class="num"><p>0.92</p></td><td><p>Very high — peer correlation</p></td></tr><tr><td><p>XLE (Energy ETF)</p></td><td class="num"><p>0.96</p></td><td><p>Essentially tracks the sector</p></td></tr></tbody></table></div>
+      </section>
+      <section id="derivatives" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>options &amp; derivatives</h2>
+          <div class="kicker">sentiment gauge</div>
+        </div>
+        <div class="lead aggregate-lead"><p>The IV term structure is slightly upward sloping (normal contango), with 30-day IV cheapest.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">30-day iv</div><div class="kpi-value ">22%</div><div class="kpi-sub">Below 5-year average of 28%</div></div><div class="kpi"><div class="kpi-label">iv skew</div><div class="kpi-value ">Slight Put Skew</div><div class="kpi-sub">Typical for energy stocks</div></div><div class="kpi"><div class="kpi-label">short interest</div><div class="kpi-value ">0.8%</div><div class="kpi-sub">Minimal bearish positioning</div></div><div class="kpi"><div class="kpi-label">put/call oi</div><div class="kpi-value ">0.85</div><div class="kpi-sub">Balanced with slight call lean</div></div></div><div class="note"><p>Takeaway. Options markets are pricing in low volatility for XOM, which creates opportunity for long-volatility positions if you expect a catalyst (e.g., oil price move or earnings surprise). The 22% IV is below the 5-year average of 28%, suggesting the market is complacent about near-term price risk.</p></div><div class="table-wrap"><table><thead><tr><th>Expiration</th><th class="num">IV</th><th>vs Historical</th><th>Notable Strikes</th></tr></thead><tbody><tr><td><p>30-Day</p></td><td class="num"><p>22%</p></td><td><p>Below avg</p></td><td><p>Heavy call OI at $120</p></td></tr><tr><td><p>60-Day</p></td><td class="num"><p>24%</p></td><td><p>Below avg</p></td><td><p>Put OI building at $105</p></td></tr><tr><td><p>90-Day</p></td><td class="num"><p>25%</p></td><td><p>At avg</p></td><td><p>Earnings window covered</p></td></tr><tr><td><p>180-Day</p></td><td class="num"><p>27%</p></td><td><p>At avg</p></td><td><p>June OPEC+ covered</p></td></tr></tbody></table></div><div class="note"><p>The IV term structure is slightly upward sloping (normal contango), with 30-day IV cheapest. This suggests options are most attractively priced for near-term positions. The 180-day tenor covers both earnings and the June OPEC+ meeting.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Implied Volatility: Cheap Relative to History</h3><span class="tag blue">IV</span></div><div class="aggregate-card-body"><p>At 22%, XOM&#x27;s 30-day IV sits in the 25th percentile of its 5-year range. This is unusual given the number of upcoming catalysts (earnings, Guyana FPSO, OPEC+ meeting). Low IV creates a favorable environment for buying options or structured positions...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Options Flow: Mild Upside Bias</h3><span class="tag blue">FLOW</span></div><div class="aggregate-card-body"><p>Recent options flow shows modest institutional call buying in the $120-130 strike range with May-July expirations. This is consistent with positioning for a move toward consensus targets. Put hedging is light, primarily in the $100-105 range, suggesting institutional holders are not aggressively hedging downside.</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Short Interest: Minimal</h3><span class="tag blue">SHORTS</span></div><div class="aggregate-card-body"><p>Short interest at 0.8% of float is minimal and declining. This reflects the market&#x27;s view that XOM is a high-quality name without significant near-term downside catalysts. Low short interest also means there is limited short-squeeze potential — any upside will need to be driven by fundamental catalysts rather than positioning unwinds.</p></div></div>
+      </section>
+      <section id="governance" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>governance &amp; accounting</h2>
+          <div class="kicker">quality control</div>
+        </div>
+        <div class="lead aggregate-lead"><p>XOM has reasonable shareholder protections: annual director elections, no poison pill, proxy access, and the ability to call special meetings.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">board independence</div><div class="kpi-value ">11/12</div><div class="kpi-sub">Majority independent; includes Engine No. 1 appointees</div></div><div class="kpi"><div class="kpi-label">audit quality</div><div class="kpi-value ">Clean</div><div class="kpi-sub">PricewaterhouseCoopers — unqualified opinion</div></div><div class="kpi"><div class="kpi-label">accounting quality</div><div class="kpi-value ">Above Average</div><div class="kpi-sub">Conservative reserves accounting; low accruals</div></div><div class="kpi"><div class="kpi-label">shareholder rights</div><div class="kpi-value ">Average</div><div class="kpi-sub">No poison pill; annual director elections</div></div></div><div class="note"><p>Takeaway. Governance is solid but not exceptional. The Engine No...</p></div><div class="table-wrap"><table><thead><tr><th>Name</th><th>Independent</th><th>Committee</th><th>Expertise</th></tr></thead><tbody><tr><td><p>Darren Woods (Chair/CEO)</p></td><td><p>No</p></td><td><p>—</p></td><td><p>Oil &amp; gas operations</p></td></tr><tr><td><p>Joseph Hooley</p></td><td><p>Yes</p></td><td><p>Lead Director</p></td><td><p>Financial services</p></td></tr><tr><td><p>Gregory Goff (Engine No. 1)</p></td><td><p>Yes</p></td><td><p>Audit</p></td><td><p>Refining, energy transition</p></td></tr><tr><td><p>Kaisa Hietala (Engine No. 1)</p></td><td><p>Yes</p></td><td><p>ESG</p></td><td><p>Renewable energy strategy</p></td></tr><tr><td><p>Alexander Karsner (Engine No. 1)</p></td><td><p>Yes</p></td><td><p>Strategy</p></td><td><p>Energy policy, technology</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Shareholder Rights: Adequate</h3><span class="tag blue">RIGHTS</span></div><div class="aggregate-card-body"><p>XOM has reasonable shareholder protections: annual director elections, no poison pill, proxy access, and the ability to call special meetings. The combined chairman/CEO role is the main governance weakness, though the lead independent director role partially mitigates this. Shareholder proposals receive fair consideration, as demonstrated by the Engine No...</p></div></div><div class="table-wrap"><table><thead><tr><th>Role</th><th class="num">Base</th><th class="num">Bonus</th><th class="num">Stock Awards</th><th class="num">Total</th></tr></thead><tbody><tr><td><p>CEO (Woods)</p></td><td class="num"><p>$1.9M</p></td><td class="num"><p>$4.5M</p></td><td class="num"><p>$29.6M</p></td><td class="num"><p>$36.0M</p></td></tr><tr><td><p>CFO (Mikells)</p></td><td class="num"><p>$1.2M</p></td><td class="num"><p>$2.5M</p></td><td class="num"><p>$12.8M</p></td><td class="num"><p>$16.5M</p></td></tr><tr><td><p>SVP (Chapman)</p></td><td class="num"><p>$1.1M</p></td><td class="num"><p>$2.2M</p></td><td class="num"><p>$11.5M</p></td><td class="num"><p>$14.8M</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Accounting Quality: Conservative and Transparent</h3><span class="tag blue">ACCOUNTING</span></div><div class="aggregate-card-body"><p>XOM&#x27;s accounting practices are among the most conservative in the energy sector. Key indicators: (1) Reserves are booked conservatively — XOM&#x27;s reserve replacement ratio is consistently 100%+ without aggressive booking; (2) Depreciation and depletion rates are appropriate for the asset base; (3) Accruals are low relative to cash flows; (4) The company does not use pro-forma metrics to obscure GAAP results. PricewaterhouseCoopers has provided unqualified audit opinions consistently.</p></div></div><div class="table-wrap"><table><thead><tr><th>Governance Metric</th><th class="num">Score</th><th>Peer Comparison</th></tr></thead><tbody><tr><td><p>Board independence</p></td><td class="num"><p>A-</p></td><td><p>Above peer average</p></td></tr><tr><td><p>Audit quality</p></td><td class="num"><p>A</p></td><td><p>In line — all use Big 4</p></td></tr><tr><td><p>Compensation alignment</p></td><td class="num"><p>B+</p></td><td><p>Above average — TSR/ROIC linked</p></td></tr><tr><td><p>Shareholder rights</p></td><td class="num"><p>B</p></td><td><p>Average — dual chair/CEO is negative</p></td></tr><tr><td><p>ESG engagement</p></td><td class="num"><p>B+</p></td><td><p>Improved post-Engine No. 1</p></td></tr></tbody></table></div>
+      </section>
+      <section id="value" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>value framework</h2>
+          <div class="kicker">greenwald / qarp</div>
+        </div>
+        <div class="lead aggregate-lead"><p>ExxonMobil passes the majority of classical value investing screens. The stock screens as a high-quality value-income holding with a clear margin of safety from the FCF yield and low-cost production base.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">graham score</div><div class="kpi-value ">7/10</div><div class="kpi-sub">Passes on earnings stability, dividend, asset value</div></div><div class="kpi"><div class="kpi-label">buffett score</div><div class="kpi-value ">7/10</div><div class="kpi-sub">Durable moat, honest management, reasonable price</div></div><div class="kpi"><div class="kpi-label">margin of safety</div><div class="kpi-value ">~16%</div><div class="kpi-sub">Current $113 vs DCF $135</div></div><div class="kpi"><div class="kpi-label">fcf yield</div><div class="kpi-value ">7.6%</div><div class="kpi-sub">2x+ the market average</div></div></div><div class="note"><p>Takeaway. XOM scores well on classical value frameworks, with the FCF yield providing the clearest margin of safety. The main value concern is the commodity cyclicality — Graham and Buffett both preferred businesses with predictable earnings, which XOM does not have...</p></div><div class="table-wrap"><table><thead><tr><th>Criterion</th><th>Requirement</th><th>XOM Result</th><th>Pass/Fail</th></tr></thead><tbody><tr><td><p>Adequate size</p></td><td><p>&gt;$2B revenue</p></td><td><p>$344.6B</p></td><td><p>Pass</p></td></tr><tr><td><p>Strong financial condition</p></td><td><p>Current ratio > 1.5</p></td><td><p>~1.3</p></td><td><p>Marginal</p></td></tr><tr><td><p>Earnings stability</p></td><td><p>Positive EPS 10/10 years</p></td><td><p>9/10 (2020 loss)</p></td><td><p>Marginal</p></td></tr><tr><td><p>Dividend record</p></td><td><p>20+ years</p></td><td><p>42 years</p></td><td><p>Pass</p></td></tr><tr><td><p>Earnings growth</p></td><td><p>&gt;33% over 10 years</p></td><td><p>Cyclical — yes on trend</p></td><td><p>Pass</p></td></tr><tr><td><p>Moderate P/E</p></td><td><p>&lt;15x</p></td><td><p>~13x forward</p></td><td><p>Pass</p></td></tr></tbody></table></div><div class="note amber"><p>Risk. Graham and Buffett frameworks both require durable competitive advantages and predictable earnings. XOM&#x27;s commodity dependence introduces cyclicality that classical value investors may find uncomfortable...</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Buffett Qualitative Assessment</h3><span class="tag blue">BUFFETT</span></div><div class="aggregate-card-body"><p>Moat: Wide — lowest cost producer among super-majors, 42-year dividend record, vertically integrated. The moat is narrowing very slowly (energy transition) but remains deep over the investment horizon. Management: Honest and capable...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Decision Framework: Buy, Size, and Monitor</h3><span class="tag blue">FRAMEWORK</span></div><div class="aggregate-card-body"><p>Buy thesis: XOM&#x27;s post-Pioneer cost structure creates an asymmetric opportunity at 13x PE and 7.6% FCF yield. The $35/bbl breakeven provides a margin of safety on oil prices. Position size: Moderate (65/100 conviction) — sized for the commodity risk, not the company risk...</p></div></div><div class="table-wrap"><table><thead><tr><th>Bias</th><th>Check</th><th>Assessment</th></tr></thead><tbody><tr><td><p>Anchoring</p></td><td><p>Are we anchored to the $113 entry price?</p></td><td><p>Low risk — thesis is based on FCF, not price level</p></td></tr><tr><td><p>Confirmation</p></td><td><p>Are we ignoring bear evidence?</p></td><td><p>Addressed — bear case quantified at $80</p></td></tr><tr><td><p>Narrative</p></td><td><p>Is &#x27;Pioneer transformation&#x27; too neat a story?</p></td><td><p>Moderate risk — need to verify synergies</p></td></tr><tr><td><p>Recency</p></td><td><p>Are we extrapolating current oil prices?</p></td><td><p>Yes — this is the key assumption risk</p></td></tr></tbody></table></div>
+      </section>
+      <section id="appendix" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>appendix &amp; sources</h2>
+          <div class="kicker">sources · methodology</div>
+        </div>
+        <div class="lead aggregate-lead"><p>How we source the tape, verify levels, and align this report with XVARY deep-dive standards.</p></div>
+        <div class="aggregate-sources-attribution"><p>Sources: SEC filings, company disclosures, market data vendors, and sources cited in the sections above. For investment presentation use only.</p></div><p class="aggregate-methodology-link">standards and pipeline: <a href="https://xvary.com/methodology/">xvary.com/methodology/</a></p>
+      </section>
+
+      <div class="footer">
+        xvary · 2026 · not investment advice
+        <div class="links">
+          <a href="https://xvary.com/pulse/">the pulse</a>
+          <a href="https://xvary.com/stacks/">the stacks</a>
+          <a href="https://xvary.com/discover/">discover</a>
+          <a href="https://xvary.com/collectibles/">collectibles</a>
+          <a href="https://xvary.com/pricing/">pricing</a>
+          <a href="https://xvary.com/methodology/">methodology</a>
+          <a href="https://xvary.com/newsletter/">newsletter</a>
+          <a href="https://xvary.com/legal/disclaimer/">disclaimer</a>
+          <a href="https://xvary.com/legal/privacy/">privacy</a>
+          <a href="https://xvary.com/legal/terms/">terms</a>
+        </div>
+        <div class="small">Sources: company filings and earnings, supplier disclosures, named sell-side notes where cited, alt-data where noted, and public flow/sentiment screens. Not investment advice — verify anything you trade on.</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const bar = document.getElementById("reading-progress");
+      const sections = [{"id": "summary", "hotkey": "0"}, {"id": "thesis", "hotkey": "1"}, {"id": "financials", "hotkey": "2"}, {"id": "valuation", "hotkey": "3"}, {"id": "risk", "hotkey": "4"}, {"id": "ops", "hotkey": "5"}, {"id": "competition", "hotkey": "6"}, {"id": "tam", "hotkey": "7"}, {"id": "product", "hotkey": "8"}, {"id": "supply", "hotkey": "9"}, {"id": "catalysts", "hotkey": "a"}, {"id": "street", "hotkey": "b"}, {"id": "scorecard", "hotkey": "c"}, {"id": "signals", "hotkey": "d"}, {"id": "history", "hotkey": "e"}, {"id": "management", "hotkey": "f"}, {"id": "macro", "hotkey": "g"}, {"id": "quant", "hotkey": "h"}, {"id": "derivatives", "hotkey": "i"}, {"id": "governance", "hotkey": "j"}, {"id": "value", "hotkey": "k"}, {"id": "appendix", "hotkey": "l"}];
+      const links = [...document.querySelectorAll(".sidebar a[href^='#']")];
+      const setActive = function (id) {
+        links.forEach(function (link) {
+          link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+        });
+      };
+
+      window.addEventListener("scroll", function () {
+        const root = document.documentElement;
+        const pct = (root.scrollTop / Math.max(root.scrollHeight - root.clientHeight, 1)) * 100;
+        if (bar) {
+          bar.style.width = Math.min(Math.max(pct, 0), 100) + "%";
+        }
+      }, { passive: true });
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(function (entries) {
+          entries.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+          const hit = entries.find(function (entry) {
+            return entry.isIntersecting && entry.intersectionRatio > 0.12;
+          });
+          if (hit) {
+            setActive(hit.target.id);
+          }
+        }, { rootMargin: "-40% 0px -40% 0px", threshold: [0, 0.12, 0.25, 0.45] });
+
+        sections.forEach(function (item) {
+          const node = document.getElementById(item.id);
+          if (node) {
+            observer.observe(node);
+          }
+        });
+      }
+
+      links.forEach(function (link) {
+        link.addEventListener("click", function () {
+          setActive(link.getAttribute("href").slice(1));
+        });
+      });
+
+      const hotkeys = {};
+      sections.forEach(function (item) {
+        hotkeys[item.hotkey] = item.id;
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.metaKey || event.ctrlKey) {
+          return;
+        }
+        const target = event.target;
+        if (target && target.closest && target.closest("input, textarea, select, [contenteditable='true']")) {
+          return;
+        }
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (!hotkeys[key]) {
+          return;
+        }
+        event.preventDefault();
+        const node = document.getElementById(hotkeys[key]);
+        if (node) {
+          node.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    })();
+  </script>
+  <footer class="footer" style="margin-left:var(--navw,0)">
+    xvary · 2026 · not investment advice
+    <div class="footer-links">
+      <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/methodology/">methodology</a>
+      <a href="/newsletter/">newsletter</a>
+      <a href="/pricing/">pricing</a>
+      <a href="/free/">free reports</a>
+      <a href="/legal/disclaimer/">disclaimer</a>
+      <a href="/legal/privacy/">privacy</a>
+      <a href="/legal/terms/">terms</a>
+    </div>
+    <div class="footer-logo">
+      <a href="/" aria-label="home">
+        <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+      </a>
+    </div>
+  </footer>
+  <script src="/js/site-chrome.js?v=1776081807" defer></script>
+</body>
+</html>
