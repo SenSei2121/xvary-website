@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Space Economy — XVARY Research</title>
+  <meta name="description" content="Space Economy — Thematic Basket Builder by XVARY Research.">
+  <meta name="robots" content="index, follow">
+  <meta property="og:type" content="article">
+  <meta property="og:title" content="Space Economy — XVARY Research">
+  <meta property="og:description" content="Space Economy — Thematic Basket Builder by XVARY Research.">
+  <meta property="og:image" content="https://xvary.com/assets/og-default.png">
+  <meta property="og:site_name" content="XVARY">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Space+Grotesk:wght@300;400;500;600;700;800&family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;0,8..60,600;0,8..60,700;1,8..60,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/css/brutalist.css">
+  <style>
+:root {
+  --col-w: clamp(800px, 82%, 1100px);
+  --col-w-safe: min(var(--col-w), 94vw);
+  --ts-xs: 11px;
+  --ts-sm: 14px;
+  --ts-base: 17px;
+  --ts-md: 21px;
+  --ts-lg: 26px;
+  --ts-xl: 33px;
+  --ts-xxl: 41px;
+  --bu: 8px;
+  --ink: #1a1a1a;
+  --paper: #FFF;
+  --rule: #D5D2CC;
+  --rule-heavy: #1a1a1a;
+  --muted: #5a5a5a;
+  --faint: #8a8a8a;
+  --bg: #F7F5F0;
+  --y: #FFE500;
+  --neg: #B22222;
+  --pos: #006B3E;
+  --amber: #b7791f;
+  --blue: #1557B0;
+}
+
+article *, article *::before, article *::after { box-sizing: border-box; margin: 0; padding: 0 }
+html { scroll-behavior: smooth }
+
+article {
+  font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+  font-size: var(--ts-base);
+  line-height: 1.72;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: 'kern' 1, 'liga' 1, 'onum' 1;
+}
+
+article a { color: var(--blue); text-decoration: none }
+article a:hover { text-decoration: underline }
+::selection { background: var(--y); color: var(--ink) }
+
+/* ── Masthead ── */
+.masthead {
+  border-bottom: 3px double var(--rule-heavy);
+  padding: calc(var(--bu) * 1.75) 0 calc(var(--bu) * 1.25);
+  text-align: center;
+}
+.m-inner {
+  max-width: var(--col-w-safe);
+  margin: 0 auto;
+  padding: 0 calc(var(--bu) * 2.5);
+}
+.m-brand {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: var(--ts-xs);
+  font-weight: 700;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: calc(var(--bu) * 0.75);
+}
+.m-dot {
+  width: 6px; height: 6px;
+  background: var(--y);
+  border-radius: 50%;
+  display: inline-block;
+}
+.m-sub {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* ── Nav ribbon ── */
+.ribbon {
+  border-bottom: 1px solid var(--rule);
+  padding: calc(var(--bu) * 1) 0;
+  position: sticky;
+  top: 0;
+  background: rgba(255,255,255,.97);
+  backdrop-filter: blur(8px);
+  z-index: 50;
+}
+.ribbon-inner {
+  max-width: var(--col-w-safe);
+  margin: 0 auto;
+  padding: 0 calc(var(--bu) * 2.5);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px calc(var(--bu) * 1.5);
+  justify-content: center;
+}
+.ribbon a {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: .3px;
+  color: var(--muted);
+  text-decoration: none;
+  padding: calc(var(--bu) * 0.4) 0;
+  border-bottom: 2px solid transparent;
+  transition: all .15s;
+  white-space: nowrap;
+}
+.ribbon a:hover {
+  color: var(--ink);
+  border-bottom-color: var(--y);
+}
+
+/* ── Article shell ── */
+article {
+  max-width: var(--col-w-safe);
+  margin: 0 auto;
+  padding: 0 calc(var(--bu) * 2.5) calc(var(--bu) * 7.5);
+}
+
+/* ── Headline block ── */
+.headline {
+  padding: calc(var(--bu) * 4) 0 calc(var(--bu) * 3);
+  border-bottom: 2px solid var(--rule-heavy);
+}
+.kicker {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 2.5px;
+  color: var(--ink);
+  display: inline-block;
+  padding: 3px 10px 3px 0;
+  margin-bottom: calc(var(--bu) * 2);
+  border-bottom: none;
+  border-left: 4px solid var(--y);
+  padding-left: 10px;
+}
+.headline h1 {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: clamp(var(--ts-xl), 5vw, 48px);
+  font-weight: 700;
+  line-height: 1.08;
+  letter-spacing: -.75px;
+  margin-bottom: calc(var(--bu) * 1);
+  color: var(--ink);
+}
+.deck {
+  font-size: var(--ts-base);
+  color: var(--muted);
+  line-height: 1.55;
+  max-width: 580px;
+}
+.byline {
+  font-family: 'DM Mono', monospace;
+  font-size: var(--ts-xs);
+  color: var(--faint);
+  margin-top: calc(var(--bu) * 1);
+  letter-spacing: .5px;
+  text-transform: uppercase;
+}
+
+/* ── Sections ── */
+.sec {
+  padding: calc(var(--bu) * 5) 0 calc(var(--bu) * 4);
+  border-bottom: none;
+}
+.sec:first-of-type {
+  padding-top: calc(var(--bu) * 3.5);
+}
+.sec + .sec {
+  border-top: 1px solid var(--rule);
+}
+
+.sec-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: flex-start;
+  gap: calc(var(--bu) * 1.25);
+  margin-bottom: calc(var(--bu) * 2.5);
+  text-align: left;
+}
+.sec-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 400;
+  letter-spacing: 1px;
+  color: var(--faint);
+  flex-shrink: 0;
+  min-width: 22px;
+  margin: 0;
+  padding: 0;
+  max-width: none;
+  text-transform: none;
+}
+.sec-head h2 {
+  font-family: 'Source Serif 4', Georgia, serif;
+  font-size: var(--ts-lg);
+  font-weight: 700;
+  letter-spacing: -.3px;
+  line-height: 1.2;
+  margin: 0;
+  color: var(--ink);
+  padding-bottom: calc(var(--bu) * 0.5);
+  border-bottom: 3px solid var(--y);
+  display: inline;
+}
+.sec p {
+  margin-bottom: calc(var(--bu) * 1.75);
+  color: var(--ink);
+}
+.sec p:last-child { margin-bottom: 0 }
+.sec h3 {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: var(--ts-base);
+  font-weight: 700;
+  letter-spacing: -.2px;
+  color: var(--ink);
+  margin: calc(var(--bu) * 3) 0 calc(var(--bu) * 1.25);
+  padding-bottom: calc(var(--bu) * 0.75);
+  border-bottom: 1px solid var(--rule);
+}
+.sec h3:first-child { margin-top: 0 }
+
+/* ── Lede paragraph ── */
+.sec .panel p:first-child,
+.sec > p:first-of-type {
+  font-size: 18px;
+  line-height: 1.75;
+}
+
+/* ── Panels (content containers) ── */
+.panel {
+  padding: calc(var(--bu) * 0.5) 0;
+  margin-top: calc(var(--bu) * 0.75);
+}
+.panel + .panel { margin-top: 0 }
+.panel p {
+  color: var(--ink);
+  margin-bottom: calc(var(--bu) * 1.5);
+  font-size: var(--ts-base);
+  line-height: 1.72;
+}
+.panel p:last-child { margin-bottom: 0 }
+
+/* ── Q&A cards (earnings) ── */
+.qa-card {
+  border-left: 3px solid var(--y);
+  padding: calc(var(--bu) * 2) calc(var(--bu) * 2.5);
+  margin-bottom: calc(var(--bu) * 3);
+  background: #FAFAF7;
+}
+.qa-card:last-child { margin-bottom: 0 }
+.qa-card strong {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: var(--ts-base);
+  font-weight: 700;
+}
+.qa-card em {
+  font-style: italic;
+  color: var(--muted);
+}
+.qa-card p {
+  margin-bottom: calc(var(--bu) * 1);
+  line-height: 1.65;
+}
+.qa-card p:last-child { margin-bottom: 0 }
+
+/* ── KPI grid ── */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0;
+  margin-top: calc(var(--bu) * 1);
+}
+.kpi {
+  padding: calc(var(--bu) * 1.5) calc(var(--bu) * 1.5);
+  border-bottom: 1px solid var(--rule);
+}
+.kpi:nth-child(-n+3) { border-top: 2px solid var(--rule-heavy) }
+.kpi:nth-child(3n) { border-right: none }
+.kpi-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--faint);
+  margin-bottom: 3px;
+}
+.kpi-value {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: var(--ts-sm);
+  font-weight: 700;
+  letter-spacing: -.3px;
+  color: var(--ink);
+}
+.kpi-note {
+  font-size: var(--ts-xs);
+  color: var(--muted);
+  margin-top: 3px;
+  line-height: 1.5;
+}
+
+/* ── Tables ── */
+.table-wrap { overflow-x: auto; margin-top: calc(var(--bu) * 0.5) }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--ts-sm);
+  margin-top: calc(var(--bu) * 0.5);
+}
+thead th {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  color: var(--faint);
+  text-align: left;
+  padding: calc(var(--bu) * 1.25) calc(var(--bu) * 1.5) calc(var(--bu) * 1.25) 0;
+  border-bottom: 2px solid var(--rule-heavy);
+  font-weight: 500;
+}
+tbody td {
+  padding: calc(var(--bu) * 1.25) calc(var(--bu) * 1.5) calc(var(--bu) * 1.25) 0;
+  border-bottom: 1px solid #EAEAE8;
+  vertical-align: baseline;
+  line-height: 1.5;
+}
+tbody tr:last-child td { border-bottom: none }
+tbody tr:nth-child(even) { background: #FAFAF7 }
+.mono { font-family: 'DM Mono', monospace; font-size: 13px }
+.right { text-align: right }
+.bold { font-weight: 700 }
+.pos-val { color: var(--pos); font-weight: 600 }
+.neg-val { color: var(--neg); font-weight: 600 }
+
+/* ── Notes / callouts ── */
+.note {
+  padding: calc(var(--bu) * 1.5) calc(var(--bu) * 2);
+  margin-top: calc(var(--bu) * 1.25);
+  font-size: var(--ts-sm);
+  line-height: 1.65;
+}
+.note-green { background: #e6f5ee; border-left: 2px solid var(--pos) }
+.note-amber { background: #fef6e0; border-left: 2px solid var(--amber) }
+.note-red { background: #fde8e8; border-left: 2px solid var(--neg) }
+.note-blue { background: #e8eeff; border-left: 2px solid var(--blue) }
+.note-tag {
+  font-family: 'DM Mono', monospace;
+  font-size: 9px;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 3px;
+}
+.note-green .note-tag { color: var(--pos) }
+.note-amber .note-tag { color: var(--amber) }
+.note-red .note-tag { color: var(--neg) }
+.note-blue .note-tag { color: var(--blue) }
+
+/* ── Timeline ── */
+.timeline { margin-top: calc(var(--bu) * 1.5); position: relative; padding-left: calc(var(--bu) * 3) }
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 6px; top: calc(var(--bu) * 1); bottom: calc(var(--bu) * 1);
+  width: 2px;
+  background: var(--rule-heavy);
+}
+.tl-item { position: relative; margin-bottom: calc(var(--bu) * 2.5) }
+.tl-item::before {
+  content: '';
+  position: absolute;
+  left: -22px; top: 7px;
+  width: 10px; height: 10px;
+  border-radius: 50%;
+  background: var(--y);
+  border: 2px solid var(--ink);
+}
+.tl-year {
+  font-family: 'DM Mono', monospace;
+  font-size: var(--ts-xs);
+  font-weight: 600;
+  color: var(--muted);
+  margin-bottom: 2px;
+}
+.tl-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 15px; margin-bottom: 2px }
+.tl-desc { font-size: var(--ts-sm); color: var(--muted); line-height: 1.6 }
+
+/* ── Score bars ── */
+.score-bar { display: flex; align-items: center; gap: calc(var(--bu) * 1.5); margin: calc(var(--bu) * 1.5) 0 }
+.score-track { flex: 1; height: 8px; background: #eee; overflow: hidden }
+.score-fill { height: 100%; background: var(--ink) }
+.score-label {
+  font-family: 'DM Mono', monospace;
+  font-size: var(--ts-md);
+  font-weight: 700;
+  min-width: 50px;
+}
+
+/* ── Verdict box ── */
+.verdict-box {
+  background: var(--ink);
+  color: #FFF;
+  padding: calc(var(--bu) * 2.5) calc(var(--bu) * 3);
+  margin-top: 3px;
+}
+.verdict-box .label {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: var(--y);
+  margin-bottom: calc(var(--bu) * 1);
+}
+.verdict-box h3 {
+  color: var(--y);
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: var(--ts-lg);
+  font-weight: 700;
+  letter-spacing: -.5px;
+  margin-bottom: calc(var(--bu) * 1);
+}
+.verdict-box p {
+  font-size: var(--ts-base);
+  line-height: 1.7;
+  color: rgba(255,255,255,.88);
+  margin-bottom: calc(var(--bu) * 1);
+}
+.verdict-box p:last-child { margin-bottom: 0 }
+
+/* ── Sub-headings, dividers, lists ── */
+.sub-heading {
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--ink);
+  margin: calc(var(--bu) * 3) 0 calc(var(--bu) * 1);
+  padding-left: calc(var(--bu) * 1.25);
+  border-left: 3px solid var(--y);
+}
+.divider { border: none; border-top: 1px solid var(--rule); margin: calc(var(--bu) * 2.5) 0 }
+.bullet-list { margin: calc(var(--bu) * 1) 0; padding-left: 1.2em; list-style-type: '–  ' }
+.bullet-list li { margin-bottom: calc(var(--bu) * 1.25); font-size: var(--ts-base); line-height: 1.65; color: var(--ink) }
+.bullet-list li::marker { color: var(--faint); font-size: var(--ts-sm) }
+.flex-row { display: flex; gap: calc(var(--bu) * 1.5); flex-wrap: wrap }
+.flex-1 { min-width: 260px; flex: 1 }
+.pill {
+  display: inline-block;
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: var(--ts-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 1.5px;
+  color: var(--ink);
+  background: var(--y);
+  padding: 3px 10px;
+  margin-right: calc(var(--bu) * 0.75);
+  margin-bottom: calc(var(--bu) * 0.75);
+}
+
+/* ── Footer ── */
+footer {
+  max-width: var(--col-w-safe);
+  margin: 0 auto;
+  padding: calc(var(--bu) * 2) calc(var(--bu) * 2.5) calc(var(--bu) * 5);
+  border-top: 3px double var(--rule-heavy);
+  font-family: 'DM Mono', monospace;
+  font-size: 10px;
+  color: var(--faint);
+  line-height: 1.7;
+  text-align: center;
+}
+footer a { color: var(--muted) }
+
+/* ── Responsive ── */
+@media (max-width: 700px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr) }
+  .kpi:nth-child(2n) { border-right: none }
+}
+
+@media print {
+  .ribbon { display: none }
+  body { font-size: 11pt }
+  .headline h1 { font-size: 24pt }
+  .verdict-box { background: #FFF; color: var(--ink); border: 2px solid var(--ink); padding: calc(var(--bu) * 2) }
+  .verdict-box .label { color: var(--ink) }
+  .verdict-box h3 { color: var(--ink) }
+  .verdict-box p { color: var(--ink) }
+}
+</style>
+</head>
+<body>
+
+<nav class="nav" aria-label="main navigation"></nav>
+
+<nav class="ribbon" aria-label="Section navigation">
+  <div class="ribbon-inner">
+    <a href="#investment-thesis">Investment Thesis</a>
+    <a href="#theme-overview">Theme Overview</a>
+    <a href="#holdings">Holdings</a>
+    <a href="#portfolio-analytics">Portfolio Analytics</a>
+  </div>
+</nav>
+
+<article>
+  <header class="headline">
+    <div class="kicker">Thematic Basket Builder</div>
+    <h1>Space Economy</h1>
+    
+    <div class="byline">XVARY Automated Research &nbsp;·&nbsp; <time datetime="2026-04-14">April 14, 2026</time></div>
+  </header>
+
+  
+  <section class="sec" id="investment-thesis">
+    <div class="sec-head"><span class="sec-label">01</span><h2>Investment Thesis</h2></div>
+    <div class="panel"><div class="panel"><p>This basket targets the expanding space economy, which reached approximately $626 billion in 2025 and is projected to surpass $1 trillion by 2034 at a compound annual growth rate exceeding 7 percent, driven by satellite communications, Earth observation, launch services, and commercial space activities. It comprises 20 names across aerospace and defense, telecommunications infrastructure, and technology sectors, with an effective number of 16.7 holdings reflecting moderate concentration. The investment logic centers on capturing multiple layers of the value chain—from direct-to-device satellite broadband and high-resolution geospatial intelligence to suborbital space tourism and supporting hardware—positioned to benefit from declining launch costs, rising demand for global connectivity, defense applications, and data-driven insights in agriculture, climate monitoring, and security.</p><p>Key risks include technical execution failures in satellite deployment and constellation scaling, high capital intensity leading to ongoing funding needs, regulatory hurdles around spectrum allocation and orbital congestion, and potential delays from supply chain or launch dependencies that could compress timelines and valuations. With no specific warnings flagged for the basket, volatility remains inherent to early-stage space technologies. The highest-conviction position is ASTS at 8.0 percent weight, given its patented direct-to-cell technology enabling broadband connectivity from space to unmodified smartphones via partnerships with major mobile operators, addressing an enormous untapped market for remote and underserved coverage that positions it for outsized revenue inflection upon full constellation activation.</p></div></div>
+  </section>
+  <section class="sec" id="theme-overview">
+    <div class="sec-head"><span class="sec-label">02</span><h2>Theme Overview</h2></div>
+    <div class="panel"><div class="kpi-grid"><div class="kpi">
+      <div class="kpi-label">Theme</div>
+      <div class="kpi-value">Space Economy</div>
+      
+    </div><div class="kpi">
+      <div class="kpi-label">Time Horizon</div>
+      <div class="kpi-value">secular (5-10 yr)</div>
+      
+    </div></div><p style="font-size:var(--ts-sm);color:var(--muted);margin-top:calc(var(--bu)*1.5)"><strong>Geographic focus:</strong> US, Europe, China</p></div>
+  </section>
+  <section class="sec" id="holdings">
+    <div class="sec-head"><span class="sec-label">03</span><h2>Holdings</h2></div>
+    <div class="panel"><table><thead><tr><th>Ticker</th><th>Company</th><th>Weight</th></tr></thead><tbody><tr><td class="mono bold">ASTS</td><td>ASTS</td><td>8.0%</td></tr><tr><td class="mono bold">PL</td><td>PL</td><td>3.9%</td></tr><tr><td class="mono bold">SATL</td><td>SATL</td><td>7.8%</td></tr><tr><td class="mono bold">SPCE</td><td>SPCE</td><td>7.8%</td></tr><tr><td class="mono bold">RKLB</td><td>RKLB</td><td>3.8%</td></tr><tr><td class="mono bold">186A.T</td><td>186A.T</td><td>7.7%</td></tr><tr><td class="mono bold">GSAT</td><td>GSAT</td><td>7.5%</td></tr><tr><td class="mono bold">BKSY</td><td>BKSY</td><td>3.7%</td></tr><tr><td class="mono bold">YSS</td><td>YSS</td><td>3.7%</td></tr><tr><td class="mono bold">SIDU</td><td>SIDU</td><td>3.7%</td></tr><tr><td class="mono bold">MNTS</td><td>MNTS</td><td>7.5%</td></tr><tr><td class="mono bold">IRDM</td><td>IRDM</td><td>7.4%</td></tr><tr><td class="mono bold">RDW</td><td>RDW</td><td>3.6%</td></tr><tr><td class="mono bold">SPIR</td><td>SPIR</td><td>7.2%</td></tr><tr><td class="mono bold">MDA</td><td>MDA</td><td>3.5%</td></tr><tr><td class="mono bold">KRMN</td><td>KRMN</td><td>2.5%</td></tr><tr><td class="mono bold">MOG.A</td><td>MOG.A</td><td>2.3%</td></tr><tr><td class="mono bold">KTOS</td><td>KTOS</td><td>2.2%</td></tr><tr><td class="mono bold">NOC</td><td>NOC</td><td>2.2%</td></tr><tr><td class="mono bold">SATS</td><td>SATS</td><td>4.2%</td></tr></tbody></table></div>
+  </section>
+  <section class="sec" id="portfolio-analytics">
+    <div class="sec-head"><span class="sec-label">04</span><h2>Portfolio Analytics</h2></div>
+    <div class="panel"><div class="kpi-grid"><div class="kpi">
+      <div class="kpi-label">Portfolio Beta</div>
+      <div class="kpi-value">0.2</div>
+      
+    </div><div class="kpi">
+      <div class="kpi-label">Effective N</div>
+      <div class="kpi-value">16.7</div>
+      
+    </div><div class="kpi">
+      <div class="kpi-label">Sub-Theme Overlap</div>
+      <div class="kpi-value">25%</div>
+      
+    </div></div></div>
+  </section>
+
+  <section class="sec" style="border-bottom:none;padding-top:calc(var(--bu)*4);text-align:center">
+    <div style="max-width:480px;margin:0 auto calc(var(--bu)*4)">
+      <p style="font-family:'Space Grotesk',sans-serif;font-size:16px;font-weight:600;margin-bottom:calc(var(--bu)*1.5);color:var(--ink)">Get research notes before the opening bell</p>
+      <form data-xvary-email-form style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center">
+        <input type="email" name="email" placeholder="you@example.com" required
+          style="flex:1;min-width:200px;padding:10px 16px;border:1px solid var(--rule);font-size:14px;font-family:'Space Grotesk',sans-serif">
+        <button type="submit"
+          style="padding:10px 20px;background:var(--ink);color:var(--paper);border:none;font-family:'Space Grotesk',sans-serif;font-size:14px;font-weight:600;cursor:pointer;letter-spacing:.5px">subscribe</button>
+      </form>
+    </div>
+    <p style="font-size:12px;color:var(--faint);line-height:1.6;max-width:none;margin:0;font-family:'DM Mono',monospace;letter-spacing:.3px">
+      This report was generated by XVARY automated research pipelines. Not investment advice.
+      Data sourced from third-party providers and may contain inaccuracies.
+      <a href="/legal/disclaimer/">Disclaimer</a> · <a href="/legal/privacy/">Privacy</a> · <a href="/legal/terms/">Terms</a>
+    </p>
+  </section>
+</article>
+
+<footer class="footer">
+  xvary &middot; 2026 &middot; not investment advice
+  <div class="footer-links">
+    <a href="/pulse/">the pulse</a>
+    <a href="/stacks/">the stacks</a>
+    <a href="/discover/">discover</a>
+    <a href="/collectibles/">collectibles</a>
+    <a href="/methodology/">methodology</a>
+    <a href="/newsletter/">newsletter</a>
+    <a href="/pricing/">pricing</a>
+    <a href="/free/">free reports</a>
+    <a href="/legal/disclaimer/">disclaimer</a>
+    <a href="/legal/privacy/">privacy</a>
+    <a href="/legal/terms/">terms</a>
+  </div>
+  <div class="footer-logo">
+    <a href="/" aria-label="home">
+      <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+    </a>
+  </div>
+</footer>
+
+<script src="/js/site-chrome.js"></script>
+</body>
+</html>
