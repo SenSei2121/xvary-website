@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>TPL - deep dive · xvary</title>
+  <meta name="description" content="One West Texas land owner pulls in royalty volumes that keep climbing to 37.5 thousand barrels of oil equivalent per day even while the whole Permian rig count falls 26 percent." />
+  <meta name="robots" content="index, follow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/brutalist.css" />
+  <style>
+:root{
+      --yel:#ffe500;
+      --ink:#000;
+      --paper:#fffdf3;
+      --card:#fff;
+      --line:rgba(0,0,0,.12);
+      --text:#111;
+      --muted:#555;
+      --soft:#f3eed8;
+      --green:#1a7f5a;
+      --red:#c53030;
+      --amber:#b7791f;
+      --blue:#2251ff;
+      --shadow:0 18px 42px rgba(0,0,0,.10);
+      --radius:16px;
+      --radius-sm:12px;
+      --navw:240px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    html{background:var(--yel);scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h, 68px) + 24px)}
+    body{
+      background:var(--yel);
+      color:var(--text);
+      font:500 16px/1.65 "Space Grotesk",system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    a{color:inherit;text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:var(--ink);color:var(--yel)}
+    .skip-link{
+      position:absolute;left:12px;top:-40px;z-index:9999;
+      background:var(--ink);color:var(--yel);
+      padding:8px 14px;border-radius:999px;font:700 12px/1 "DM Mono",monospace;
+    }
+    .skip-link:focus{top:12px}
+
+    .layout{display:block}
+    .sidebar{
+      position:fixed;left:0;top:var(--nav-h, 68px);bottom:0;width:var(--navw);
+      overflow:auto;background:var(--ink);color:#fff;border-right:1px solid rgba(255,255,255,.08);
+      padding:18px 0 16px;scrollbar-width:none;
+    }
+    .sidebar::-webkit-scrollbar{display:none}
+    .nav-section{padding:0 0 8px}
+    .nav-label{
+      padding:0 18px 10px;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.12em;text-transform:lowercase;color:rgba(255,255,255,.46);
+    }
+    .nav-pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 18px 10px 16px;color:rgba(255,255,255,.78);
+      border-left:3px solid transparent;text-decoration:none;font-size:12px;font-weight:600;line-height:1.35;
+    }
+    .nav-pill:hover{background:rgba(255,255,255,.06);text-decoration:none}
+    .nav-pill.active{background:var(--yel);color:var(--ink);border-left-color:var(--ink)}
+    .nav-kbd{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:22px;height:22px;border-radius:6px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+      font:700 10px/1 "DM Mono",monospace;flex:0 0 auto;
+    }
+    .nav-pill.active .nav-kbd{background:var(--ink);color:var(--yel);border-color:var(--ink)}
+    .nav-txt{min-width:0}
+
+    .content{
+      margin-left:var(--navw);
+      padding:28px 26px 64px;
+      width:calc((100vw - var(--navw)) * 0.9);
+      max-width:none;
+    }
+
+    .hero{
+      display:block;
+      text-align:left;
+      border-bottom:3px solid rgba(0,0,0,.14);
+      padding:18px 0 26px;margin-bottom:18px;
+    }
+    .hero-top{
+      display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:24px;align-items:end;
+      padding-bottom:18px;
+    }
+    .hero .hero-ticker{
+      font-size:clamp(58px,10vw,92px);line-height:.88;font-weight:800;letter-spacing:-.05em;text-transform:lowercase;margin:0;
+      max-width:none;text-align:left;
+    }
+    .hero-co{margin-top:4px;font-size:14px;color:rgba(0,0,0,.64);text-transform:lowercase}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .pill{
+      display:inline-flex;align-items:center;padding:5px 12px;border-radius:999px;
+      font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.06em;
+      background:rgba(0,0,0,.08);color:#111;
+    }
+    .pill.dark{background:var(--ink);color:var(--yel)}
+    .hero .hero-hook{
+      font-size:clamp(19px,2.05vw,24px);line-height:1.35;font-weight:700;margin:0;color:#111;
+      max-width:none;text-align:left;
+    }
+    .hero .hero-sub{
+      margin:10px 0 0;color:rgba(0,0,0,.70);font-size:17px;line-height:1.68;max-width:none;text-align:left;
+    }
+    .hero-tape{
+      display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;padding-top:16px;
+      border-top:2px solid rgba(0,0,0,.10);font:600 11px/1.5 "DM Mono",monospace;color:rgba(0,0,0,.58)
+    }
+    .hero-tape strong{color:rgba(0,0,0,.92)}
+
+    .kpi-grid{display:grid;gap:10px}
+    .kpi-grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .kpi-grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .kpi-grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi{
+      background:rgba(255,255,255,.84);border:1px solid rgba(0,0,0,.08);border-radius:14px;
+      padding:14px 16px;box-shadow:0 8px 20px rgba(0,0,0,.04)
+    }
+    .kpi-label{font:700 10px/1.25 "DM Mono",monospace;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .kpi-value{font-size:clamp(24px,2.8vw,34px);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+    .kpi-sub{margin-top:4px;font-size:12px;line-height:1.45;color:rgba(0,0,0,.55)}
+    .value-gn{color:var(--green)}
+    .value-rd{color:var(--red)}
+    .value-am{color:var(--amber)}
+
+    .panel{
+      background:rgba(255,255,255,.92);border:2px solid rgba(0,0,0,.08);border-left:5px solid var(--yel);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin:18px 0
+    }
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      margin-bottom:12px;padding-bottom:12px;border-bottom:3px solid #000
+    }
+    .section-head h2{
+      margin:0;font-size:clamp(34px,3.9vw,50px);line-height:.98;font-weight:800;letter-spacing:-.045em;text-transform:none
+    }
+    .kicker{font:700 11px/1 "DM Mono",monospace;letter-spacing:.12em;text-transform:lowercase;color:rgba(0,0,0,.52)}
+    .lead{margin:0 0 16px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.72)}
+    .aggregate-sources-attribution{margin:0 0 14px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.76)}
+    .aggregate-sources-attribution p{margin:0}
+    .aggregate-methodology-link{margin:0;max-width:80ch;font-size:14.5px;line-height:1.6;color:rgba(0,0,0,.62)}
+    #appendix .lead,
+    #appendix .aggregate-sources-attribution,
+    #appendix .aggregate-methodology-link{max-width:none}
+    .quote,.note,.callout,.pillar,.scenario,.table-wrap,.chart-box{
+      background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:14px
+    }
+    .quote{padding:14px 16px;font-size:15px;line-height:1.68;color:rgba(0,0,0,.72)}
+    .note{padding:14px 16px;margin-top:10px;font-size:14.5px;line-height:1.64;color:rgba(0,0,0,.72)}
+    .note strong,.table-title .tag,.legend-label,.pillars .head h4{
+      font:700 11px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase
+    }
+    .note.green{border-left:4px solid var(--green);background:rgba(26,127,90,.06)}
+    .note.amber{border-left:4px solid var(--amber);background:rgba(183,121,31,.08)}
+    .note.red{border-left:4px solid var(--red);background:rgba(197,48,48,.06)}
+
+    .g2,.g3,.g4,.callout-row,.pillars,.scenario-grid{display:grid;gap:10px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .callout-row{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:12px;min-width:0}
+    .callout{padding:14px 16px;min-width:0;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+    .callout .label{font:700 10px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .callout .metric{font-size:clamp(24px,2.8vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;word-break:break-word}
+    #appendix .callout .metric{font-size:clamp(13px,1.35vw,16px);font-weight:700;letter-spacing:0;line-height:1.4}
+    .callout .desc{margin-top:6px;font-size:12.5px;line-height:1.5;color:rgba(0,0,0,.56)}
+
+    .pillars{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px}
+    .pillar{padding:14px 16px}
+    .pillar .head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+    .pillar .head h4{margin:0;font-size:14px;color:#111;letter-spacing:0;text-transform:none;font-family:"Space Grotesk",sans-serif}
+    .tag{
+      display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;border:1px solid rgba(0,0,0,.10);
+      background:rgba(255,255,255,.85);font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.04em;
+    }
+    .tag.green{color:var(--green);background:rgba(26,127,90,.08);border-color:rgba(26,127,90,.25)}
+    .tag.amber{color:var(--amber);background:rgba(183,121,31,.10);border-color:rgba(183,121,31,.25)}
+    .tag.red{color:var(--red);background:rgba(197,48,48,.08);border-color:rgba(197,48,48,.25)}
+    .tag.blue{color:#111;background:rgba(255,229,0,.18);border-color:rgba(0,0,0,.20)}
+    .tag.ink{color:rgba(0,0,0,.68)}
+
+    .table-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+    .table-title h3{margin:0;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-.02em;text-transform:none}
+    .table-wrap{overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+    table{width:100%;border-collapse:collapse;min-width:520px;font-variant-numeric:tabular-nums;background:#fff}
+    th,td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+    thead th{
+      position:sticky;top:0;background:#f0ece4;color:#111;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.08em;text-transform:lowercase;border-bottom:3px solid #000;text-align:left
+    }
+    tbody tr:nth-child(even) td{background:rgba(240,236,228,.36)}
+    tbody tr:hover td{background:rgba(255,229,0,.16)}
+    td.num,th.num{text-align:right}
+    td.b{font-weight:800;color:#111}
+    td.pos{color:var(--green);font-weight:700}
+    td.neg{color:var(--red);font-weight:700}
+    td.amb{color:var(--amber);font-weight:700}
+
+    .chart-box{padding:16px 18px 18px;box-shadow:0 12px 36px rgba(0,0,0,.06)}
+    .chart-head h3{margin:0 0 4px;font-size:16px;line-height:1.2;text-transform:none}
+    .chart-head .sub{font-size:11px;color:rgba(0,0,0,.52);font-style:italic}
+    /* TAM vs revenue: y-axis ticks + grid + split x-label row */
+    .chart-labeled{
+      --chart-h:min(52vw,240px);
+      --chart-h-min:200px;
+      --chart-h-max:260px;
+      display:grid;
+      grid-template-columns:3.35rem 1fr;
+      grid-template-rows:minmax(var(--chart-h-min),var(--chart-h-max)) auto;
+      gap:8px 12px;
+      align-items:stretch;
+      margin-top:6px;
+    }
+    .chart-y-title{
+      margin:8px 0 0;
+      font:700 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.5);
+    }
+    .chart-y-axis{
+      grid-column:1;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      padding-right:8px;
+      border-right:2px solid rgba(0,0,0,.2);
+      font:600 10px/1 "DM Mono",monospace;
+      color:rgba(0,0,0,.58);
+      box-sizing:border-box;
+    }
+    .chart-y-axis .yt{
+      position:absolute;right:8px;line-height:1;white-space:nowrap;
+      transform:translateY(-50%);
+    }
+    .chart-y-axis .yt.y-600{top:0;transform:translateY(0)}
+    .chart-y-axis .yt.y-500{top:16.6667%}
+    .chart-y-axis .yt.y-400{top:33.3333%}
+    .chart-y-axis .yt.y-300{top:50%}
+    .chart-y-axis .yt.y-200{top:66.6667%}
+    .chart-y-axis .yt.y-100{top:83.3333%}
+    .chart-y-axis .yt.y-0{bottom:0;top:auto;transform:translateY(0)}
+    .chart-plot-cell{
+      grid-column:2;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      border-bottom:2px solid rgba(0,0,0,.2);
+    }
+    .chart-grid-bg{
+      position:absolute;inset:0;
+      background:repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6)
+      );
+      pointer-events:none;
+    }
+    .chart{
+      position:relative;z-index:1;
+      display:flex;align-items:flex-end;justify-content:stretch;gap:6px;
+      width:100%;
+      height:100%;min-height:0;
+    }
+    .bar{
+      flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+      min-width:0;height:100%;
+    }
+    .bar-pair{
+      display:flex;flex-direction:row;align-items:flex-end;justify-content:center;
+      gap:5px;width:100%;height:100%;min-height:0;
+    }
+    .col{
+      flex:1 1 0;min-width:8px;border-radius:8px 8px 2px 2px;
+      min-height:2px;align-self:flex-end;
+      box-sizing:border-box;
+    }
+    .col.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .col.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .chart-x-foot{
+      grid-column:2;
+      grid-row:2;
+      display:flex;gap:6px;
+      margin-top:-2px;
+    }
+    .bar-foot{
+      flex:1 1 0;min-width:0;
+      text-align:center;padding-top:6px;
+    }
+    .chart-x-axis-cap{
+      margin:4px 0 0;
+      font:600 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.45);
+      text-align:center;
+    }
+    .chart-legend{
+      display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:12px;padding-top:10px;
+      border-top:1px solid rgba(0,0,0,.08);font-size:12px;color:rgba(0,0,0,.62)
+    }
+    .chart-legend span{display:inline-flex;align-items:center;gap:6px}
+    .chart-legend i{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+    .chart-legend i.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .chart-legend i.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .lab,.val{font-size:10px;line-height:1.25;text-align:center;color:rgba(0,0,0,.56)}
+    .val{font:700 10px/1 "DM Mono",monospace}
+    .lab{max-width:12em;margin:0 auto}
+
+    .scenario-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}
+    .scenario{padding:14px 16px;border-left:4px solid var(--blue)}
+    .scenario.bear{border-left-color:var(--red)}
+    .scenario.base{border-left-color:var(--amber)}
+    .scenario.bull{border-left-color:var(--green)}
+    .scenario .prob{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:8px}
+    .scenario h4{margin:0 0 6px;font-size:18px;line-height:1.1}
+    .scenario p{margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,.72)}
+
+    .legend{display:grid;gap:8px}
+    .legend .item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(0,0,0,.72)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)} .dot.blue{background:#2251ff}
+
+    .footer{
+      margin-top:28px;padding-top:22px;border-top:3px solid rgba(0,0,0,.12);
+      text-align:center;font-size:12px;line-height:1.65;color:rgba(0,0,0,.56)
+    }
+    .footer .links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+    .footer .links a{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.68)}
+    .footer .small{margin-top:12px;font-size:11px;color:rgba(0,0,0,.54)}
+
+    .reading-progress{
+      position:fixed;top:var(--nav-h, 68px);left:0;height:4px;width:0;z-index:101;
+      background:linear-gradient(90deg,var(--yel),#fff38c);box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 14px rgba(255,229,0,.45)
+    }
+    .watermark{
+      position:fixed;right:18px;bottom:14px;z-index:1;pointer-events:none;user-select:none;
+      font-size:clamp(68px,12vw,118px);font-weight:800;letter-spacing:-.06em;line-height:.8;color:rgba(0,0,0,.05)
+    }
+
+    @media (max-width:1024px){
+      .g2,.g3,.g4,.pillars,.scenario-grid{grid-template-columns:1fr}
+      .hero-top{grid-template-columns:1fr}
+      .content{padding:22px 18px 56px}
+    }
+    @media (max-width:900px){
+      .sidebar{display:none}
+      .content{
+        margin-left:auto;
+        margin-right:auto;
+        width:90vw;
+        max-width:none;
+      }
+    }
+    @media (max-width:760px){
+      .kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr 1fr}
+      .callout-row{grid-template-columns:1fr 1fr}
+      table{min-width:460px}
+    }
+    @media (max-width:560px){
+      .callout-row,.kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr}
+      .section-head h2{font-size:30px}
+      .hero .hero-hook{font-size:19px}
+      .hero .hero-sub{font-size:16px}
+      .panel{padding:20px}
+    }
+    .hero-snapshot-link {
+      display: inline-block;
+      margin-top: 4px;
+      font: 400 11px/1.4 "DM Mono", monospace;
+      color: rgba(0,0,0,.38);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .hero-snapshot-link:hover {
+      color: rgba(0,0,0,.68);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+  .aggregate-panel {
+    position: relative;
+    z-index: 1;
+  }
+  .aggregate-lead p {
+    margin: 0 0 16px;
+  }
+  .auto-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .aggregate-stack {
+    display: grid;
+    gap: 12px;
+  }
+  .aggregate-card {
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.05);
+  }
+  .aggregate-card.dark {
+    background: rgba(0,0,0,.92);
+    color: rgba(255,255,255,.92);
+    border-color: rgba(255,255,255,.08);
+  }
+  .aggregate-card.dark p,
+  .aggregate-card.dark li,
+  .aggregate-card.dark .aggregate-source {
+    color: rgba(255,255,255,.72);
+  }
+  .aggregate-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .aggregate-card-head h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    text-transform: lowercase;
+  }
+  .aggregate-card-body,
+  .aggregate-card-body p,
+  .aggregate-card-body li {
+    font-size: 15px;
+    line-height: 1.68;
+    color: rgba(0,0,0,.72);
+  }
+  .aggregate-card-body p {
+    margin: 0 0 12px;
+  }
+  .aggregate-card-body ul,
+  .aggregate-card-body ol {
+    margin: 0 0 12px 20px;
+    padding: 0;
+  }
+  .aggregate-card-body > *:last-child {
+    margin-bottom: 0;
+  }
+  .aggregate-source {
+    margin-top: 10px;
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .06em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.48);
+  }
+  .aggregate-substack {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .aggregate-chart-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .aggregate-chart-row {
+    display: grid;
+    grid-template-columns: minmax(80px, 140px) 1fr minmax(60px, 120px);
+    align-items: center;
+    gap: 10px;
+  }
+  .aggregate-chart-label,
+  .aggregate-chart-value {
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .04em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.62);
+  }
+  .aggregate-chart-track {
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .aggregate-chart-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+  }
+  .table-wrap table th.num,
+  .table-wrap table td.num {
+    text-align: right;
+  }
+  .table-wrap table td.pos { color: var(--green, #1a7f37); font-weight: 600; }
+  .table-wrap table td.neg { color: var(--red, #cf222e); font-weight: 600; }
+  .table-wrap table td.amb { color: var(--caution-text, #9a6700); font-weight: 600; }
+  .table-narrow {
+    max-width: 520px;
+  }
+  .table-narrow table {
+    min-width: 0;
+    width: 100%;
+  }
+  .g2 .table-narrow {
+    max-width: none;
+  }
+  .aggregate-mini-table {
+    margin-top: 8px;
+  }
+  .aggregate-mini-table table {
+    min-width: 0;
+  }
+  .aggregate-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .aggregate-list-item {
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    background: rgba(255,255,255,.72);
+  }
+  .aggregate-list-item strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .aggregate-audit {
+    margin-top: 8px;
+  }
+  @media (max-width: 1120px) {
+    .sidebar {
+      position: static;
+      width: auto;
+      top: auto;
+      padding: 12px 0;
+      border-right: 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: none;
+    }
+    .content {
+      margin-left: auto;
+      margin-right: auto;
+      width: 90vw;
+      max-width: none;
+      padding: 24px 18px 56px;
+    }
+    .watermark {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .hero-top {
+      grid-template-columns: 1fr;
+    }
+    .aggregate-chart-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+  .aggregate-pane-xref {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(0, 0, 0, 0.52);
+  }
+  .aggregate-pane-xref a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .aggregate-pane-xref a:hover {
+    color: rgba(0, 0, 0, 0.88);
+  }
+  .hero-snapshot-link {
+    display: inline-block;
+    margin-top: 4px;
+    font: 400 11px/1.4 "DM Mono", monospace;
+    color: rgba(0,0,0,.38);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .hero-snapshot-link:hover {
+    color: rgba(0,0,0,.68);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  </style>
+</head>
+<body data-xvary-aggregate-readable="1">
+  <a class="skip-link" href="#content">skip to content</a>
+  <div class="reading-progress" id="reading-progress"></div>
+  <div class="watermark" aria-hidden="true">TPL</div>
+
+  <nav class="nav nav--white" aria-label="main navigation" data-xvary-nav-static>
+    <a class="nav-brand" href="/">xvary</a>
+    <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" type="button" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+    <div class="nav-links">
+      <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/pricing/">pricing</a>
+      <a class="nav-cta" href="/pricing/">sign up</a>
+    </div>
+  </nav>
+
+  <div class="layout xvary-aggregate-deep-dive-body" data-template-id="aggregate-deep-dive-live-v1" lang="en">
+    <aside class="sidebar" aria-label="section navigation">
+      <div class="nav-section">
+        <div class="nav-label">quick navigation</div>
+        <a class="nav-pill active" href="#summary">
+          <span class="nav-kbd">0</span>
+          <span class="nav-txt">report snapshot</span>
+        </a>
+        <a class="nav-pill " href="#thesis">
+          <span class="nav-kbd">1</span>
+          <span class="nav-txt">variant perception &amp; thesis</span>
+        </a>
+        <a class="nav-pill " href="#financials">
+          <span class="nav-kbd">2</span>
+          <span class="nav-txt">financial analysis</span>
+        </a>
+        <a class="nav-pill " href="#valuation">
+          <span class="nav-kbd">3</span>
+          <span class="nav-txt">valuation</span>
+        </a>
+        <a class="nav-pill " href="#risk">
+          <span class="nav-kbd">4</span>
+          <span class="nav-txt">what breaks the thesis</span>
+        </a>
+        <a class="nav-pill " href="#ops">
+          <span class="nav-kbd">5</span>
+          <span class="nav-txt">fundamentals &amp; operations</span>
+        </a>
+        <a class="nav-pill " href="#competition">
+          <span class="nav-kbd">6</span>
+          <span class="nav-txt">competitive position</span>
+        </a>
+        <a class="nav-pill " href="#tam">
+          <span class="nav-kbd">7</span>
+          <span class="nav-txt">market size &amp; tam</span>
+        </a>
+        <a class="nav-pill " href="#product">
+          <span class="nav-kbd">8</span>
+          <span class="nav-txt">product &amp; technology</span>
+        </a>
+        <a class="nav-pill " href="#supply">
+          <span class="nav-kbd">9</span>
+          <span class="nav-txt">supply chain</span>
+        </a>
+        <a class="nav-pill " href="#catalysts">
+          <span class="nav-kbd">a</span>
+          <span class="nav-txt">catalyst map</span>
+        </a>
+        <a class="nav-pill " href="#street">
+          <span class="nav-kbd">b</span>
+          <span class="nav-txt">street expectations</span>
+        </a>
+        <a class="nav-pill " href="#scorecard">
+          <span class="nav-kbd">c</span>
+          <span class="nav-txt">earnings scorecard</span>
+        </a>
+        <a class="nav-pill " href="#history">
+          <span class="nav-kbd">d</span>
+          <span class="nav-txt">historical analogies</span>
+        </a>
+        <a class="nav-pill " href="#macro">
+          <span class="nav-kbd">e</span>
+          <span class="nav-txt">macro sensitivity</span>
+        </a>
+        <a class="nav-pill " href="#value">
+          <span class="nav-kbd">f</span>
+          <span class="nav-txt">value framework</span>
+        </a>
+        <a class="nav-pill " href="#appendix">
+          <span class="nav-kbd">g</span>
+          <span class="nav-txt">appendix &amp; sources</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="content" id="content">
+      <section class="hero" aria-label="report intro">
+        <div class="hero-top">
+          <div>
+            <h1 class="hero-ticker">tpl</h1>
+            <div class="hero-co">texas pacific land corporation</div>
+            <a class="hero-snapshot-link" href="/stock/tpl/snapshot/">snapshot page &rarr;</a>
+            <div class="hero-badges">
+              <span class="pill dark">deep dive</span>
+              <span class="pill ">holding &amp; investment companies</span>
+              <span class="pill ">cap n/a</span>
+              <span class="pill ">apr 16, 2026</span>
+            </div>
+            <div class="hero-tape" aria-label="headline tape">
+              <span><strong>Position</strong> Neutral</span>
+              <span><strong>Price</strong> $417.30</span>
+              <span><strong>N/A</strong> mcap</span>
+              <span><strong>apr 16, 2026</strong> as-of date</span>
+            </div>
+          </div>
+          <div>
+            <p class="hero-hook">One West Texas land owner pulls in royalty volumes that keep climbing to 37.5 thousand barrels of oil equivalent per day even while the whole Permian rig count falls 26 percent. How long can that last before the new data center and desalination deals actually matter.</p>
+            <p class="hero-sub">We're <strong>Neutral at 64/100 signal strength</strong>; fair value about <strong>$420</strong> (+0.6% vs spot).</p>
+          </div>
+        </div>
+
+        <div class="kpi-grid cols-3">
+          <div class="kpi">
+            <div class="kpi-label">recommendation</div>
+            <div class="kpi-value ">Neutral</div>
+            <div class="kpi-sub">portfolio stance</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">12m price target</div>
+            <div class="kpi-value ">$420.00</div>
+            <div class="kpi-sub">+1% from $417.30</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">intrinsic value</div>
+            <div class="kpi-value ">$420</div>
+            <div class="kpi-sub">+0.6%</div>
+          </div>
+        </div>
+
+        <div class="callout-row">
+          <div class="callout">
+            <div class="label">assumptions scored</div>
+            <div class="metric ">25</div>
+            <div class="desc">12 high-conviction</div>
+          </div>
+          <div class="callout">
+            <div class="label">number registry</div>
+            <div class="metric ">294</div>
+            <div class="desc">3 verified vs EDGAR</div>
+          </div>
+          <div class="callout">
+            <div class="label">quality score</div>
+            <div class="metric ">69%</div>
+            <div class="desc">12-test average</div>
+          </div>
+          <div class="callout">
+            <div class="label">biases detected</div>
+            <div class="metric ">10</div>
+            <div class="desc">5 high severity</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>report snapshot</h2>
+          <div class="kicker">executive summary</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Intrinsic value of $420 implies 0.6% upside from the current $417.30 share price. TPL generated record FY2025 revenue of $798.2M (+13.1% YoY) and net income of $481.4M with exceptional 74.2% operating and 66.0% FCF margins, yet the base DCF fair value of $420 per share sits well below the $417.30 market price.</p></div>
+                <div class="g3"><div class="kpi"><div class="kpi-label">recommendation</div><div class="kpi-value ">Neutral</div><div class="kpi-sub">portfolio stance</div></div><div class="kpi"><div class="kpi-label">12m price target</div><div class="kpi-value ">$420.00</div><div class="kpi-sub">+1% from $417.30</div></div><div class="kpi"><div class="kpi-label">intrinsic value</div><div class="kpi-value ">$420</div><div class="kpi-sub">+0.6%</div></div></div>
+        <div class="g2" style="margin-top:10px">
+          <div class="quote"><strong class="kicker">core debate</strong><br><p>Intrinsic value of $420 implies 0.6% upside from the current $417.30 share price...</p></div>
+          <div class="quote"><strong class="kicker">headline tape</strong><br><p>$417.30 · N/A · as of apr 16, 2026.</p></div>
+        </div>
+        <div class="callout-row"><div class="callout"><div class="label">bull case</div><div class="metric value-gn">$504.00</div><div class="desc">Permian activity stabilizes or rebounds with steady oil prices above $60 while DUC drawdowns and efficiency gains keep TPL&#x27;s royalty volumes growing mid-single digits annually...</div></div><div class="callout"><div class="label">base case</div><div class="metric ">$420.00</div><div class="desc">Royalty production moderates modestly from Q4 2025 peaks but holds in the low-to-mid 30s thousand boe/d supported by remaining DUCs and operator efficiency...</div></div><div class="callout"><div class="label">bear case</div><div class="metric value-rd">$336.00</div><div class="desc">Oil prices weaken further and Permian rig counts keep falling causing rapid DUC exhaustion and royalty production to drop sharply below recent peaks...</div></div></div>
+        <div class="note green"><strong>top findings</strong><br><p>TPL owns a scarce tollbooth across hundreds of thousands of prime Permian acres that prints cash from royalties and water no matter who drills. Production hit records in late 2025 despite rig declines showing resilience most miss. Add emerging leases for behind-the-meter data centers and a scaling desalination plant and you get a debt-free cash compounder with built-in hedges against pure energy cycles...</p></div>
+        <div class="note amber"><strong>aggregate synthesis</strong><br><p>Numbers can look similar while narrative labels diverge — focus on which spreadsheet row the market is pricing.</p></div>
+
+      </section>
+      <section id="thesis" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>variant perception &amp; thesis</h2>
+          <div class="kicker">pm brief</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Texas Pacific Land (TPL) trades at a significant premium to its DCF-derived intrinsic value amid record 2025 results, but the market underappreciates the durability of its dual royalty + surface/water monetization model in the Permian. We take a Neutral position with moderate conviction: core cash flows are exceptional, yet current pricing embeds aggressive long-term diversification into data centers and desalination that remains unproven. The variant view centers on TPL&#x27;s landlord-like moat delivering more resilient margins than pure-play royalty peers.</p></div>
+                <div class="pillars"><div class="pillar"><div class="head"><h4>1. permian drilling activity</h4><span class="tag blue">Thesis Pillar</span></div><p>Will operator drilling, completion activity, and production volumes on TPL&#x27;s Permian royalty and surface acreage continue to drive sustained royalty and water revenue growth over the next 3-5 years...</p></div><div class="pillar"><div class="head"><h4>2. commodity price sensitivity</h4><span class="tag blue">Thesis Pillar</span></div><p>Will realized oil and gas commodity prices (primarily WTI) support stable or growing per-unit royalty realizations without triggering material operator curtailments on TPL acreage...</p></div><div class="pillar"><div class="head"><h4>3. moat durability</h4><span class="tag blue">Thesis Pillar</span></div><p>Is TPL&#x27;s competitive advantage from vast Permian surface/royalty holdings, water infrastructure, and barriers to entry durable against potential contestability, new entrants, or weakening equilibrium...</p></div><div class="pillar"><div class="head"><h4>4. margin and cash conversion sustainability</h4><span class="tag blue">Thesis Pillar</span></div><p>Can TPL sustain high EBITDA margins (~80-90%) and normalize strong free cash flow conversion amid any cost pressures, accruals, or mix shifts in royalties/water. Consistent high margins (84% Adj...</p></div></div>
+        <div class="note"><strong>the 60-second pitch</strong><br><p>The market prices TPL at $417 (P/E 59.9x) as if perpetual high growth and successful non-energy pivot are assured, yet base DCF fair value is only $420 with bull case $504. This is Neutral for new long entries at current levels, the premium demands flawless execution on both 34.6 MBoE/d royalty stability and nascent data/desalination revenue. What would change our mind: sustained production above 38 MBoE/d combined with quantifiable contributions from surface initiatives exceeding 10% of revenue by 2027, justifying a re-rating higher.</p></div>
+        <div style="margin-top:12px"><div class="table-wrap"><table><thead><tr><th>Criterion</th><th>Threshold</th><th class="num">Actual Value (FY2025)</th><th>Pass/Fail</th></tr></thead><tbody><tr><td><p>Adequate Size</p></td><td><p>Revenue &gt; $100M or Assets &gt; $100M</p></td><td class="num"><p>$798.2M revenue; $1.62B assets</p></td><td><p>Pass</p></td></tr><tr><td><p>Strong Financial Condition</p></td><td>Current ratio > 2; Debt < 50% of current assets…</td><td class="num"><p>Current ratio 4.4; negligible debt</p></td><td><p>Pass</p></td></tr><tr><td><p>Earnings Stability</p></td><td><p>Positive earnings for 10 years</p></td><td class="num"><p>Consistent profitability; <span style="color:var(--muted,#999);font-style:italic">—</span> for full 10y…</p></td><td><p>Pass (recent)</p></td></tr><tr><td><p>Dividend Record</p></td><td><p>Uninterrupted dividends for 20 years</p></td><td class="num"><p>Dividend increases noted; history strong but post-reorg…</p></td><td><p>Pass (recent)</p></td></tr><tr><td><p>Earnings Growth</p></td><td><p>EPS growth over 10 years</p></td><td class="num"><p>EPS $6.97; YoY growth -64.7% due to split…</p></td><td><p>Mixed</p></td></tr><tr><td><p>Moderate P/E</p></td><td><p>P/E < 15</p></td><td class="num"><p>59.9x</p></td><td class="neg"><p>Fail</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Graham&#x27;s 7 Criteria Assessment | Source: Company 10-K FY2025; derived ratios</div></div>
+
+      </section>
+      <section id="financials" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>financial analysis</h2>
+          <div class="kicker">elite economics</div>
+        </div>
+                <div class="callout-row"><div class="callout"><div class="label">Revenue</div><div class="metric ">$798.2M</div><div class="desc">+13.1% YoY</div></div><div class="callout"><div class="label">Net Income</div><div class="metric ">$481.4M</div><div class="desc">+6.0% YoY</div></div><div class="callout"><div class="label">EPS (Dil.)</div><div class="metric ">$6.97</div><div class="desc">-64.7% YoY</div></div><div class="callout"><div class="label">Debt/Equity</div><div class="metric ">0.11</div><div class="desc">low leverage</div></div><div class="callout"><div class="label">Current Ratio</div><div class="metric value-gn">4.4</div><div class="desc">strong liquidity</div></div><div class="callout"><div class="label">FCF Yield</div><div class="metric ">1.8%</div><div class="desc">at current price</div></div></div>
+        <div class="g2" style="margin-top:10px"><div><div class="table-wrap"><table><thead><tr><th>Line Item</th><th class="num">FY2022</th><th class="num">FY2023</th><th class="num">FY2024</th><th class="num">FY2025</th></tr></thead><tbody><tr><td><p>Revenues</p></td><td class="num"><p>$667M</p></td><td class="num"><p>$632M</p></td><td class="num"><p>$706M</p></td><td class="num"><p>$798M</p></td></tr><tr><td><p>Operating Income</p></td><td class="num"><p>$562M</p></td><td class="num"><p>$486M</p></td><td class="num"><p>$539M</p></td><td class="num"><p>$592M</p></td></tr><tr><td><p>Net Income</p></td><td class="num"></td><td class="num"><p>$406M</p></td><td class="num"><p>$454M</p></td><td class="num"><p>$481M</p></td></tr><tr><td><p>EPS (Diluted)</p></td><td class="num"><p>$57.77</p></td><td class="num"><p>$52.77</p></td><td class="num"><p>$19.72</p></td><td class="num"><p>$6.97</p></td></tr><tr><td><p>Op Margin</p></td><td class="num"><p>84.3%</p></td><td class="num"><p>77.0%</p></td><td class="num"><p>76.4%</p></td><td class="num"><p>74.2%</p></td></tr><tr><td><p>Net Margin</p></td><td class="num"></td><td class="num"><p>64.2%</p></td><td class="num"><p>64.3%</p></td><td class="num"><p>60.3%</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Financial Model (Income Statement) | Source: SEC EDGAR XBRL filings (USD)</div></div><div><div class="note">add a second table in the fin pane for side-by-side quality vs. trend read.</div></div></div>
+        <div class="note green"><strong>production-report readthrough</strong><br><p>Takeaway. TPL generated record FY2025 revenue of $798.2M (+13.1% YoY) and net income of $481.4M (+6.0% YoY) through volume growth in oil/gas royalties (34.6k Boe/d) and diversification into water services, despite lower realized prices ($34.18/Boe vs prior $39.87). This highlights the durability of the royalty and surface management model in the Permian, converting high margins into $526.9M free cash flow with minimal capital intensity.</p></div>
+
+      </section>
+      <section id="valuation" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>valuation</h2>
+          <div class="kicker">probability-weighted fair value</div>
+        </div>
+                <div class="g2"><div><div class="table-wrap table-narrow"><table><thead><tr><th>Parameter</th><th class="num">Value</th></tr></thead><tbody><tr><td><p>Revenue (base)</p></td><td class="num"><p>$0.0B (USD)</p></td></tr><tr><td><p>FCF Margin</p></td><td class="num"><p>0.0%</p></td></tr><tr><td><p>WACC</p></td><td class="num"><p>0.0%</p></td></tr><tr><td><p>Terminal Growth</p></td><td class="num"><p>0.0%</p></td></tr><tr><td><p>Template</p></td><td class="num"><p>auto</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: DCF Assumptions | Source: SEC EDGAR XBRL; computed deterministically</div></div><div><div class="scenario-grid"><div class="scenario bear"><div class="prob">bear case</div><h4>$336.00</h4><p>Slower Permian drilling activity and lower realized Boe prices reduce royalty volumes; water offset limited...</p></div><div class="scenario bull"><div class="prob">super-bull case</div><h4>$504.00</h4><p>Strong commodity tailwinds, successful diversification beyond traditional royalties, and market expansion of premium multiple...</p></div><div class="scenario base"><div class="prob">base case</div><h4>$420.00</h4><p>Moderate volume growth from existing DUCs and steady operator activity; sustained high margins from position-based land advantages...</p></div></div></div></div>
+        <div class="g2" style="margin-top:10px"><div class="note green"><p>Key Takeaway. TPL&#x27;s capital-light royalty and water model delivered exceptional FY2025 profitability with 74.2% operating margin, 60.3% net margin, and 66.0% FCF margin on $526.943M free cash flow, yet the deterministic DCF base fair value of $420 per share sits well below the $417.30 market price, implying the market embeds significantly higher long-term growth or a lower discount rate than the model&#x27;s 10.0% WACC.</p></div><div class="note"><p>TPL trades at a rich 59.9x P/E and ~4x typical royalty EV/EBITDA peers despite elite 66.0% FCF margin and fortress balance sheet (0.11 liab/equity). This is neutral to bearish for new long positions at current levels, as the deterministic DCF ($420 base) and scenario-weighted $420.39 fair value suggest overvaluation unless water/surface streams deliver outsized growth...</p></div></div>
+        <div style="margin-top:12px"><div class="table-wrap table-narrow"><table><thead><tr><th>Metric</th><th class="num">Value</th></tr></thead><tbody><tr><td><p>Current Growth Rate</p></td><td class="num"><p>6.0%</p></td></tr><tr><td><p>Growth Uncertainty</p></td><td class="num"><p>±8.1pp</p></td></tr><tr><td><p>Observations</p></td><td class="num"><p>4</p></td></tr><tr><td><p>Year 1 Projected</p></td><td class="num"><p>5.3%</p></td></tr><tr><td><p>Year 2 Projected</p></td><td class="num"><p>4.7%</p></td></tr><tr><td><p>Year 3 Projected</p></td><td class="num"><p>4.3%</p></td></tr><tr><td><p>Year 4 Projected</p></td><td class="num"><p>3.9%</p></td></tr><tr><td><p>Year 5 Projected</p></td><td class="num"><p>3.6%</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Kalman Growth Estimator | Source: SEC EDGAR revenue history; Kalman filter</div></div>
+
+      </section>
+      <section id="risk" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>what breaks the thesis</h2>
+          <div class="kicker">falsifiable kill criteria</div>
+        </div>
+                <div class="note red"><strong>risk framing</strong><br><p>Biggest Risk. The premium valuation at PE 59.9 versus DCF base fair value $420 creates asymmetric downside if Permian activity (already down significantly in 2025) fails to reaccelerate, as external drilling decisions drive ~70-80% of revenue sensitivity.</p></div>
+        <div style="margin-top:10px"><div class="table-wrap"><table><thead><tr><th>Pillar</th><th>Invalidating Facts</th><th class="num">P(Invalidation)</th></tr></thead><tbody><tr><td><p>permian-drilling-activity</p></td><td><p>Permian horizontal rig count declines > 30% YoY and sustains below 200 rigs for multiple quarters, with no offset from DUC drawdown or longer laterals.; TPL net royalty production volumes (Boe/d) flatten or decline for 2+ consecutive quarters despite prior efficiency gains.; Major operators on TPL acreage (e.g., Exxon, Chevron) materially cut capex and shift activity away from TPL royalty acres.</p></td><td class="num"><p>45%</p><span class="tag blue">True</span></td></tr><tr><td><p>commodity-price-sensitivity</p></td><td><p>WTI crude sustains below $50-55/bbl for 12+ months, triggering widespread operator curtailments or shut-ins on TPL acreage.; Realized per-unit royalty realizations drop > 20% YoY with no volume offset, combined with sustained low Waha natural gas prices pressuring associated gas economics.</p></td><td class="num"><p>35%</p><span class="tag blue">True</span></td></tr><tr><td><p>moat-durability</p></td><td><p>New entrants or competitors successfully replicate TPL&#x27;s dual surface/royalty control through large-scale acquisitions or legal challenges to TPL&#x27;s land titles/rights.; Regulatory changes (e.g., Texas Railroad Commission tightening on water disposal or seismic activity) or eminent domain actions materially erode TPL&#x27;s gatekeeper status and barriers to entry.; Significant operator consolidation or shift to non-TPL acreage reduces TPL&#x27;s effective control and pricing power over infrastructure.</p></td><td class="num"><p>15%</p><span class="tag blue">True</span></td></tr><tr><td><p>margin-and-cash-conversion-sustainability…</p></td><td><p>EBITDA margins compress below 70% sustained (from ~80-90%) due to rising operating costs in water services, regulatory compliance, or mix shift toward lower-margin activities.; Free cash flow conversion falls below 60% for multiple periods amid higher capex needs for desalination/infrastructure or accrual changes.</p></td><td class="num"><p>25%</p><span class="tag blue">True</span></td></tr><tr><td><p>valuation-reversion-risk</p></td><td><p>Consensus analyst price targets or DCF fair values cluster in the $100-300 range (well below current ~$417/share) due to revised lower growth assumptions.; Forward multiples remain elevated (&gt;40x earnings) while Permian activity and commodity realizations weaken, leading to multiple contraction > 30%.</p></td><td class="num"><p>55%</p><span class="tag blue">True</span></td></tr><tr><td><p>diversification-upside</p></td><td><p>Water services, produced water royalties, and non-energy initiatives (Bolt data centers, desalination) contribute < 10-15% of total revenue after 3-5 years with no material scaling.; Data center and desalination projects face delays, regulatory hurdles, water supply constraints, or fail to secure significant offtake contracts, remaining negligible to overall revenue mix.</p></td><td class="num"><p>50%</p><span class="tag blue">True</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Kill File — 6 Thesis-Breaking Triggers | Source: Methodology Why-Tree Decomposition</div></div>
+        <div class="callout-row"><div class="callout"><div class="label">Overall Risk Rating</div><div class="metric value-rd">7/10</div><div class="desc">High valuation premium vs DCF</div></div><div class="callout"><div class="label"># Key Risks</div><div class="metric value-rd">8</div><div class="desc">Primarily activity &amp; valuation driven</div></div><div class="callout"><div class="label">Bear Case Downside</div><div class="metric value-rd">-80%</div><div class="desc">From $417.30 to DCF Bear $336</div></div></div>
+        <div class="note amber"><strong>most dangerous zone</strong><br><p>Watch for drawdowns driven by fundamentals where funds de-risk faster than the business narrative updates.</p></div>
+
+      </section>
+      <section id="ops" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>fundamentals &amp; operations</h2>
+          <div class="kicker">unit economics</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">revenue</div><div class="kpi-value ">$798.2M</div><div class="kpi-sub">FY2025, +13.1% YoY</div></div><div class="kpi"><div class="kpi-label">rev growth</div><div class="kpi-value value-gn">+13.1%</div><div class="kpi-sub">YoY USD terms</div></div><div class="kpi"><div class="kpi-label">gross margin</div><div class="kpi-value ">[Data Pending]</div><div class="kpi-sub"><span style="color:var(--muted,#999);font-style:italic">—</span>; op. margin proxy</div></div><div class="kpi"><div class="kpi-label">op. margin</div><div class="kpi-value ">74.2%</div><div class="kpi-sub">FY2025</div></div></div><div class="note green"><p>Takeaway. TPL delivered exceptional profitability and cash conversion in FY2025 with operating margin of 74.2% and FCF margin of 66.0% on $798.2M revenue (+13.1% YoY), driven by volume growth to 34.6 MBoe/d despite any commodity price softness. This reflects the structural advantage of its asset-light royalty and surface model in the Permian.</p></div><div class="table-wrap"><table><thead><tr><th>Segment</th><th class="num">Revenue ($M)</th><th class="num">% of Total</th><th class="num">Growth Insight</th><th class="num">Op. Margin Insight</th></tr></thead><tbody><tr><td><p>Land and Resource Management</p></td><td class="num"><p>490.7</p></td><td class="num"><p>61.5%</p></td><td class="num"><p>Includes $411.68M oil/gas royalties</p></td><td class="num"><p>High (royalty heavy)</p></td></tr><tr><td><p>Water Services and Operations</p></td><td class="num"><p>307.5</p></td><td class="num"><p>38.5%</p></td><td class="num"><p>Water sales $169.7M + prod. water roy. $124.22M…</p></td><td class="num"><p>Lower but growing</p></td></tr><tr><td><p>Total</p></td><td class="num"><p>798.2</p></td><td class="num"><p>100.0%</p></td><td class="num"><p>+13.1% YoY</p></td><td class="num"><p>74.2%</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Revenue by Segment FY2025 | Source: Company earnings release and 10-K FY2025</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Top 3 Revenue Drivers</h3><span class="tag blue">Volume + Diversification</span></div><div class="aggregate-card-body"><p>TPL&#x27;s FY2025 revenue of $798.2M (+13.1% YoY) was primarily driven by three factors. First, oil and gas royalties of $411.68M within the Land and Resource Management segment, supported by production volume growth to 34.6 MBoe/d (up from 26.8 MBoe/d prior year, ~+29%). This volume increase offset realized price softness through operator efficiency gains and the impact of the $450.7M Midland Basin royalty acreage acquisition (17,306 net royalty acres)...</p></div></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Details</th><th class="num">Risk Level</th></tr></thead><tbody><tr><td><p>Primary Exposure</p></td><td><p>Permian Basin operators (e.g., ExxonMobil, Diamondback) via drilling/activity…</p></td><td class="num"><span class="tag blue">HIGH</span></td></tr><tr><td><p>Concentration Note</p></td><td><p>Not quantified in filings; revenues tied to top operators&#x27; decisions…</p></td><td class="num"><span class="tag blue">MEDIUM</span></td></tr><tr><td><p>Contract Duration</p></td><td><p>Royalties ongoing; easements typically 10-year initial + 10-year renewals…</p></td><td class="num"><p>LOW-MED</p></td></tr><tr><td><p>Diversification</p></td><td><p>Water services and SLEM provide buffer; ~37% water-related…</p></td><td class="num"><span class="tag blue">MEDIUM</span></td></tr><tr><td><p>Acquisition Impact</p></td><td><p>$450.7M for 17,306 net royalty acres in Midland…</p></td><td class="num"><span class="tag blue">MEDIUM</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Customer and Concentration Overview | Source: Company 10-K FY2025 and earnings releases; customer details inferred from narrative</div><div class="table-wrap"><table><thead><tr><th>Region</th><th class="num">Revenue Contribution</th><th>% of Total</th><th class="num">Growth/Notes</th><th>Risk</th></tr></thead><tbody><tr><td><p>Permian Basin (Primary)</p></td><td class="num"><p>Substantially all</p></td><td><p>~100%</p></td><td class="num"><p>Volume growth to 34.6 MBoe/d</p></td><td><p>HIGH (concentration)</p></td></tr><tr><td><p>Texas (Surface Acres)</p></td><td class="num"><p>882,000 acres owned</p></td><td><p>N/A</p></td><td class="num"><p>Majority in Permian</p></td><td><span class="tag blue">MEDIUM</span></td></tr><tr><td><p>Other</p></td><td class="num"><p>Not material</p></td><td><p>&lt;1%</p></td><td class="num"><p>Minimal</p></td><td><span class="tag blue">LOW</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Geographic Revenue Breakdown | Source: Company filings and earnings releases FY2025</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Unit Economics Assessment</h3><span class="tag blue">Toll-Booth Model</span></div><div class="aggregate-card-body"><p>TPL exhibits exceptional unit economics characteristic of a royalty and surface toll-booth model. Pricing power is strong due to ownership of scarce Permian surface and royalty interests, no direct drilling costs, resulting in operating margins of 74.2% and net margins of 60.3% on FY2025 revenue of $798.2M . Cost structure is asset-light with low maintenance CapEx (historical ~$19M in 2022, limited thereafter) and D&A of $62.5M primarily depletion-related...</p></div></div><p class="aggregate-pane-xref"><a href="#product">See product &amp; technology</a></p><p class="aggregate-pane-xref"><a href="#supply">See supply chain</a></p><p class="aggregate-pane-xref"><a href="#financials">See financial analysis</a></p>
+      </section>
+      <section id="competition" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>competitive position</h2>
+          <div class="kicker">moat vs. customer-as-competitor</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Market Share %: Dominant (est. 10-15%+ normalized royalty acres in core Permian) (vs. fragmented peers; ~224k NRA) · # Direct Competitors: Limited (5-7 key) (VNOM, BSM, PBT; E&P operators secondary) · Moat Score (1-10): 9 (Position-based CA from unique land).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">market share %</div><div class="kpi-value ">Dominant (est. 10-15%+ normalized royalty acres in core Permian)</div><div class="kpi-sub">vs. fragmented peers; ~224k NRA</div></div><div class="kpi"><div class="kpi-label"># direct competitors</div><div class="kpi-value ">Limited (5-7 key)</div><div class="kpi-sub">VNOM, BSM, PBT; E&P operators secondary</div></div><div class="kpi"><div class="kpi-label">moat score (1-10)</div><div class="kpi-value ">9</div><div class="kpi-sub">Position-based CA from unique land</div></div><div class="kpi"><div class="kpi-label">contestability</div><div class="kpi-value ">Non-Contestable</div><div class="kpi-sub">Irreplicable ~882k surface acres</div></div></div><div class="note green"><p>Key Takeaway. TPL operates in a non-contestable market protected by its ~882,000 contiguous surface acres and ~224,000 normalized royalty acres (NRA) in the Permian Basin, which cannot be replicated by competitors. This position-based competitive advantage, combined with 74.2% operating margin and 60.3% net margin in FY2025, explains the sustainably high profitability far above typical E&P peers (often 10-30%).</p></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th>TPL</th><th>VNOM (Viper Energy)</th><th>BSM (Black Stone Minerals)</th><th>APA (Apache)</th><th>FANG (Diamondback)</th></tr></thead><tbody><tr><td><p>Revenue (FY2025)</p></td><td><p>$798.2M</p></td><td><p>~$1.35B (est. peers)</p></td><td><p><span style="color:var(--muted,#999);font-style:italic">—</span> here</p></td><td><p><span style="color:var(--muted,#999);font-style:italic">—</span> here</p></td><td><p><span style="color:var(--muted,#999);font-style:italic">—</span> here</p></td></tr><tr><td><p>Op. Margin</p></td><td><p>74.2%</p></td><td><p>Lower</p></td><td><p>Lower</p></td><td><p>~10-20% typical</p></td><td><p>~10-30% typical</p></td></tr><tr><td><p>R&D/Revenue</p></td><td><p>Minimal (capital-light)</p></td><td><p>N/A</p></td><td><p>N/A</p></td><td><p>Higher (E&P)</p></td><td><p>Higher (E&P)</p></td></tr><tr><td><p>P/E Ratio</p></td><td><p>59.9</p></td><td><p>~19 (VNOM est.)</p></td><td><p>N/A</p></td><td><p>~26</p></td><td><p>~25</p></td></tr><tr><td><p>Market Cap</p></td><td><p>~$28.7B (at $417.30)</p></td><td><p>~$10.3B</p></td><td><p>N/A</p></td><td><p>~$14.6B</p></td><td><p>~$22.9B</p></td></tr><tr><td><p>Market Share (Permian Royalties)</p></td><td><p>Significant (~10-15% est. core)</p></td><td><p>Smaller</p></td><td><p>Diversified, smaller Permian</p></td><td><p>Operator, not pure royalty</p></td><td><p>Operator</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Competitor Comparison Matrix (Porter #1-4 Scope) | Source: SEC EDGAR FY2025; competitor data from market sources; TPL 10-K surface/royalty acres</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Market Contestability Assessment</h3><span class="tag blue">NON-CONTESTABLE</span></div><div class="aggregate-card-body"><p>Per the Greenwald framework, the Permian royalty and surface management market for TPL is non-contestable . A dominant position is protected by irreplicable barriers: TPL owns approximately 882,000 surface acres (principally in the Permian, with ~800,000 assigned historically in 1888) and ~ 224,000 net royalty acres (normalized to 1/8th, including ~207,000-224,000 NRA). Competitors cannot replicate this contiguous scale or the dual surface/mineral ownership that creates gatekeeper status...</p></div></div><div class="table-wrap"><table><thead><tr><th>Mechanism</th><th class="num">Relevance</th><th>Strength</th><th class="num">Evidence</th><th>Durability</th></tr></thead><tbody><tr><td><p>Habit Formation</p></td><td class="num"><p>Moderate (recurring royalty/water volumes)</p></td><td><span class="tag blue">MODERATE</span></td><td class="num"><p>High-frequency operator interactions via production and water…</p></td><td><p>High (ongoing drilling)</p></td></tr><tr><td><p>Switching Costs</p></td><td class="num"><p>Strong (leases, easements, infrastructure)</p></td><td><span class="tag blue">STRONG</span></td><td class="num"><p>Long-term easements (10+ years with renewals), pipelines, water agreements create sunk costs…</p></td><td><p>Decades</p></td></tr><tr><td><p>Brand as Reputation</p></td><td class="num"><p>Moderate (track record in commercialization)</p></td><td><span class="tag blue">MODERATE</span></td><td class="num"><p>Proven expertise in maximizing surface opportunities…</p></td><td><p>Medium-High</p></td></tr><tr><td><p>Network Effects</p></td><td class="num"><p>Moderate (platform-like surface access)</p></td><td><span class="tag blue">MODERATE</span></td><td class="num"><p>Value increases with more infrastructure on contiguous land…</p></td><td><p>High in basin</p></td></tr><tr><td><p>Search Costs</p></td><td class="num"><p>Strong (complex land/water negotiations)</p></td><td><span class="tag blue">STRONG</span></td><td class="num"><p>Customized agreements, regulatory/permitting complexity…</p></td><td><span class="tag blue">HIGH</span></td></tr><tr><td><p>Overall Captivity Strength</p></td><td class="num"><p>Strong</p></td><td><span class="tag blue">STRONG</span></td><td class="num"><p>Weighted: Switching costs + search costs dominate due to gatekeeper role…</p></td><td><p>Very High (position-based)</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Customer Captivity Scorecard | Source: Greenwald framework application; TPL 10-K FY2025</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Economies of Scale Assessment</h3><span class="tag blue">STRONG WHEN COMBINED WITH CAPTIVITY</span></div><div class="aggregate-card-body"><p>TPL exhibits high fixed cost intensity with a capital-light model: minimal CapEx (historical annual as low as $19M, recent quarters low single-digits) and fixed overhead spread across royalty and surface revenue streams. Minimum Efficient Scale (MES) is a large fraction of the relevant Permian market due to the need for contiguous land scale and commercial expertise to monetize surface opportunities efficiently. An entrant at 10% market share would face a significant per-unit cost disadvantage in negotiation, infrastructure deployment, and water management compared to TPL&#x27;s ~882k acres...</p></div></div><div class="table-wrap"><table><thead><tr><th>Dimension</th><th>Assessment</th><th class="num">Score (1-10)</th><th class="num">Evidence</th><th>Durability (years)</th></tr></thead><tbody><tr><td><p>Position-Based CA</p></td><td><p>Dominant: Captivity + Scale</p></td><td class="num"><p>9</p></td><td class="num"><p>~882k surface acres + ~224k NRA; gatekeeper status; long-term leases…</p></td><td><p>Decades (historical grant)</p></td></tr><tr><td><p>Capability-Based CA</p></td><td><p>Supportive (commercial expertise)</p></td><td class="num"><p>6</p></td><td class="num"><p>Active management of surface for SLEM/water; learning in negotiations…</p></td><td><p>Medium (portable but complex)</p></td></tr><tr><td><p>Resource-Based CA</p></td><td><p>Core: Unique land/royalty assets</p></td><td class="num"><p>9</p></td><td class="num"><p>1888 historical assignment; perpetual royalty interests…</p></td><td><p>Perpetual</p></td></tr><tr><td><p>Overall CA Type</p></td><td><p>Position-Based (Dominant)</p></td><td class="num"><p>9</p></td><td class="num"><p>Combination creates demand and cost disadvantages for entrants…</p></td><td><p>Very High</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 4: Competitive Advantage Classification | Source: Greenwald framework; TPL 10-K FY2025</div><p class="aggregate-pane-xref"><a href="#valuation">Supplier power (Porter #5) analyzed in Supply Chain tab</a></p><p class="aggregate-pane-xref"><a href="#valuation">See TAM/SAM/SOM and Permian activity details</a></p><p class="aggregate-pane-xref"><a href="#ops">See related analysis in</a></p><p class="aggregate-pane-xref"><a href="#tam">See market size</a></p>
+      </section>
+      <section id="tam" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>market size &amp; tam</h2>
+          <div class="kicker">runway vs. penetration</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Total Addressable Market (TAM): $81B (US Oil Royalty Traders sector (SIC 6792) 2025 revenue) · Serviceable Addressable Market: <span style="color:var(--muted,#999);font-style:italic">—</span> (Permian-specific royalty/water market; inferred high-activity sub-basin) · Serviceable Obtainable Market (SOM): ~$0.8B (TPL FY2025 revenue $798.2M implying ~0.10% sector share).</p></div>
+        <div class="kpi-grid cols-3"><div class="kpi"><div class="kpi-label">total addressable market (tam)</div><div class="kpi-value ">$81B</div><div class="kpi-sub">US Oil Royalty Traders sector (SIC 6792) 2025 revenue</div></div><div class="kpi"><div class="kpi-label">serviceable obtainable market (som)</div><div class="kpi-value ">~$0.8B</div><div class="kpi-sub">TPL FY2025 revenue $798.2M implying ~0.10% sector share</div></div><div class="kpi"><div class="kpi-label">market growth rate</div><div class="kpi-value ">5.18%</div><div class="kpi-sub">SIC 6792 sector growth 2025; TPL revenue +13.1% YoY outperformed</div></div></div><div class="note green"><p>Takeaway. TPL&#x27;s capital-light model delivered $798.2M FY2025 revenue and 13.1% YoY growth, more than double the 5.18% sector rate, while capturing only 0.10% of the $81B US oil royalty traders market. This highlights outsized execution in the Permian sub-market via ~882,000 surface acres and ~28,000 core net royalty acres (normalized ~224,000 to 1/8th basis), supported by 29% YoY royalty production growth to 37.5 Mboe/d in Q4 2025.</p></div><div class="table-wrap"><table><thead><tr><th>Segment</th><th class="num">Current Size (2025)</th><th>2028 Projected</th><th>CAGR</th><th>TPL Share</th></tr></thead><tbody><tr><td><p>US Oil Royalty Traders (SIC 6792)</p></td><td class="num"><p>$81B</p></td><td class="muted"><span style="color:var(--muted,#999);font-style:italic">—</span></td><td><p>5.18%</p></td><td><p>0.10%</p></td></tr><tr><td><p>Oil &amp; Gas Royalties (TPL)</p></td><td class="num"><p>~$415M (52% of TPL rev)</p></td><td class="muted"><span style="color:var(--muted,#999);font-style:italic">—</span></td><td><p>N/A</p></td><td><p>High-margin Permian focus</p></td></tr><tr><td><p>Water Services &amp; Operations (TPL Q4)</p></td><td class="num"><p>$98.2M</p></td><td class="muted"><span style="color:var(--muted,#999);font-style:italic">—</span></td><td><p>N/A</p></td><td><p>Diversification buffer</p></td></tr><tr><td><p>Permian Basin Oil Production Context</p></td><td class="num"><p>~6.0M b/d tight oil (Dec 2025)</p></td><td><p>~6.6M b/d (2026 est)</p></td><td><p>~5.1% implied</p></td><td><p>TPL ~28k net royalty acres exposure</p></td></tr><tr><td><p>TPL Consolidated Revenue</p></td><td class="num"><p>$798.2M</p></td><td class="muted"><span style="color:var(--muted,#999);font-style:italic">—</span></td><td><p>13.1% YoY</p></td><td><p>100%</p></td></tr><tr><td><p>Recent Acquisition</p></td><td class="num"><p>$450.7M for 17,306 net royalty acres</p></td><td><p>N/A</p></td><td><p>N/A</p></td><td><p>Midland Basin expansion</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: TAM Breakdown by Segment and TPL Positioning | Source: IBISWorld SIC 6792; TPL EDGAR FY2025 revenue $798.2M, oil/gas royalties 52%, production data, 2025 acquisition; EIA Permian context</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Bottom-Up TAM Sizing Methodology</h3><span class="tag blue">Methodology</span></div><div class="aggregate-card-body"><p>Bottom-up sizing for TPL starts with its physical footprint: approximately 882,000 surface acres (majority Permian) and ~28,000 core Permian net royalty acres (normalized to 1/8th ~224,000). In 2025, this generated record royalty production of 37.5 Mboe/d in Q4, up 23% YoY ex-acquisitions and 29% for the full year. Oil and gas royalties comprised 52% of $798.2M consolidated revenue...</p></div><div class="aggregate-source">Source: TPL EDGAR filings and supporting evidence (FY2025 revenue, production, acreage, acquisition)</div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Penetration Rate Analysis &amp; Growth Runway</h3><span class="tag blue">Analysis</span></div><div class="aggregate-card-body"><p>TPL holds an estimated 0.10% share of the $81B US oil royalty traders sector based on its $798.2M FY2025 revenue. Within the Permian, a high-activity sub-basin representing a disproportionate share of US tight oil (~6.0M b/d in late 2025), TPL&#x27;s concentrated ~882,000 surface acres and royalty position provide meaningful exposure despite the small absolute share. Royalty production growth of 29% YoY (full year) and 23% YoY in Q4 2025 (ex-acquisitions) demonstrates penetration gains via organic drilling and the Midland acquisition...</p></div><div class="aggregate-source">Source: TPL EDGAR-derived metrics (revenue, production growth, margins, balance sheet); sector data from IBISWorld</div></div><div class="chart-box"><div class="chart-head"><h3>Market Size &amp; TPL Revenue Growth (2025 Context)</h3><div class="sub">bar</div></div><div class="aggregate-chart-grid"><div class="aggregate-chart-row"><div class="aggregate-chart-label">SIC 6792 Sector</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:100.00%;background:#111111"></span></div><div class="aggregate-chart-value">81</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">TPL Revenue</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:3.00%;background:#111111"></span></div><div class="aggregate-chart-value">0.798</div></div><div class="aggregate-chart-row"><div class="aggregate-chart-label">TPL Royalty Production Growth</div><div class="aggregate-chart-track"><span class="aggregate-chart-fill" style="width:35.80%;background:#111111"></span></div><div class="aggregate-chart-value">29</div></div></div><div class="aggregate-source">Exhibit 3: TAM vs TPL Performance | Source: IBISWorld SIC 6792 ($81B, 5.18%); TPL FY2025 revenue $798.2M (+13.1% YoY), production +29% YoY</div></div><div class="note green"><p>Biggest Caution. Explicit Permian royalty or water services TAM is <span style="color:var(--muted,#999);font-style:italic">—</span>; reliance on broad $81B sector figure (not fully corroborated) and TPL&#x27;s 0.10% share limits precision for penetration calculations. Any slowdown in Permian operator activity or drilling efficiency gains reversing could pressure TPL&#x27;s 29% production growth trajectory despite surface advantages.</p></div><p class="aggregate-pane-xref"><a href="#competition">See competitive position</a></p><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="product" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>product &amp; technology</h2>
+          <div class="kicker">roadmap + software stack</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">r&amp;d / innovation spend</div><div class="kpi-value ">$45.5M</div><div class="kpi-sub">Cumulative through 12/31/2025 on desalination</div></div><div class="kpi"><div class="kpi-label">desalination capex capitalized</div><div class="kpi-value ">$38.8M</div><div class="kpi-sub">Of $45.5M total spend (2025: $33.6M)</div></div><div class="kpi"><div class="kpi-label">strategic investment</div><div class="kpi-value ">$50M</div><div class="kpi-sub">In Bolt Data &amp; Energy (Dec 2025)</div></div><div class="kpi"><div class="kpi-label">2026 capex guidance</div><div class="kpi-value ">$65, 75M</div><div class="kpi-sub">Including ~$20M for data center co-location &amp; waste-heat</div></div></div><div class="table-wrap"><table><thead><tr><th>Product/Service</th><th class="num">Revenue Contribution (2025)</th><th>% of Total (Est.)</th><th class="num">Growth/Status</th><th>Lifecycle Stage</th><th>Competitive Position</th></tr></thead><tbody><tr><td><p>Oil &amp; Gas Royalties (core)</p></td><td class="num"><p>Majority of $798.2M revenue</p></td><td><p>~63%</p></td><td class="num"><p>+13.1% YoY revenue growth</p></td><td><span class="tag blue">Mature</span></td><td><p>Leader</p></td></tr><tr><td><p>Water Services (sourced + treated)</p></td><td class="num"><p>Included in water segment</p></td><td><p>~37% (water segment)</p></td><td class="num"><p>Volumes +31% in prior comparable</p></td><td><span class="tag blue">Growth</span></td><td><p>Leader (surface ownership advantage)</p></td></tr><tr><td><p>Produced Water Royalties</p></td><td class="num"><p>$104.1M (2024 baseline; growing)</p></td><td><p>15%</p></td><td class="num"><p>Tied to drilling activity</p></td><td><span class="tag blue">Growth</span></td><td><p>Strong</p></td></tr><tr><td><p>Fractional Freeze Desalination</p></td><td class="num"><p><span style="color:var(--muted,#999);font-style:italic">—</span> (pre-commercial)</p></td><td><p>0%</p></td><td class="num"><p>Orla Phase 2B nearing ops in 2026</p></td><td><span class="tag blue">Launch</span></td><td><p>Niche / Differentiated</p></td></tr><tr><td><p>Data Center Infrastructure (via Bolt)</p></td><td class="num"><p><span style="color:var(--muted,#999);font-style:italic">—</span> (pre-revenue)</p></td><td><p>0%</p></td><td class="num"><p>$50M investment Dec 2025; potential land/water revenues…</p></td><td><span class="tag blue">Launch</span></td><td><p>Emerging (land + ROFR advantage)</p></td></tr><tr><td><p>Surface Easements &amp; Other</p></td><td class="num"><p>Included in segments</p></td><td><p>Residual</p></td><td class="num"><p>Stable</p></td><td><span class="tag blue">Mature</span></td><td><p>Leader</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: TPL Product Portfolio Overview (2025 Metrics) | Source: Company 10-K FY2025; earnings releases; derived ratios</div><div class="note green"><p>Key Takeaway. TPL&#x27;s product &amp; technology efforts represent a deliberate pivot from passive royalty ownership toward active infrastructure development, evidenced by $45.5M cumulative desalination spend ($38.8M capitalized) and the $50M Bolt investment, funded comfortably by 66.0% FCF margin and $526.9M free cash flow in 2025...</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Technology Stack &amp; Differentiation</h3><span class="tag blue">Proprietary Edge</span></div><div class="aggregate-card-body"><p>Texas Pacific Land Corporation&#x27;s technology efforts center on proprietary produced water management and infrastructure enablement leveraging its vast surface estate. The core innovation is a patent-pending fractional freeze desalination process, developed in collaboration with an industrial freezing partner. This method exploits differing freeze points across salinity levels, claimed to be more energy-efficient than traditional thermal or membrane-based desalination alternatives...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>R&amp;amp;D Pipeline &amp; Upcoming Initiatives</h3><span class="tag blue">Early Commercialization</span></div><div class="aggregate-card-body"><p>TPL&#x27;s R&amp;amp;D pipeline is concentrated in produced water desalination and data center co-location. Cumulative investment reached $45.5M through December 31, 2025 ($33.6M in 2025), with $38.8M capitalized. The Orla Phase 2B facility (~10,000 bbl/day) is nearing operations in the coming months of 2026 after equipment optimizations and permitting progress (RRC land application, draft TCEQ TPDES permit)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>IP Moat &amp; Defensibility</h3><span class="tag blue">Patent-Pending</span></div><div class="aggregate-card-body"><p>TPL has filed a process patent for its fractional freeze desalination technology tailored to produced water treatment and surface discharge. The company secured exclusive use-rights for associated equipment in oil and gas applications. This IP, combined with trade secrets around process optimizations and equipment integration, forms the foundation of the technology moat...</p></div></div><div class="note red"><p>Biggest Caution. New product/tech initiatives remain pre-revenue with $45.5M desalination spend and $50M Bolt investment showing no quantified 2025 contribution despite 2026 CapEx step-up to $65, 75M. Execution risk on Orla ramp and data center timelines could pressure near-term FCF conversion if core royalty activity slows, though current 66.0% FCF margin and fortress balance sheet (current ratio 4.4) provide buffer.</p></div><p class="aggregate-pane-xref"><a href="#competition">See competitive position</a></p><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="supply" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>supply chain</h2>
+          <div class="kicker">single points of failure</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Key Supplier Count: Not Disclosed (Capital-light model; minimal external dependencies) · Single-Source %: 0% (No material single-supplier concentration disclosed) · Customer Concentration (Top): 37% (Supermajors (Chevron, Exxon, ConocoPhillips, BP) FY2025 revenue contribution).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">single-source %</div><div class="kpi-value ">0%</div><div class="kpi-sub">No material single-supplier concentration disclosed</div></div><div class="kpi"><div class="kpi-label">customer concentration (top)</div><div class="kpi-value ">37%</div><div class="kpi-sub">Supermajors (Chevron, Exxon, ConocoPhillips, BP) FY2025 revenue contribution</div></div><div class="kpi"><div class="kpi-label">lead time trend</div><div class="kpi-value ">Stable</div><div class="kpi-sub">Low CapEx pattern persists; infrastructure self-funded</div></div><div class="kpi"><div class="kpi-label">geographic risk score</div><div class="kpi-value ">High (Permian)</div><div class="kpi-sub">100% exposure concentrated in Permian Basin</div></div></div><div class="note green"><p>Key Takeaway. TPL operates an exceptionally capital-light supply chain with no disclosed material supplier dependencies, evidenced by historical CapEx of just $19.0M in 2022 and low quarterly figures thereafter, while generating robust Free Cash Flow of $526.943M and a 66.0% FCF margin in recent periods...</p></div><div class="table-wrap"><table><thead><tr><th>Supplier</th><th>Component/Service</th><th class="num">Revenue Dependency (%)</th><th>Substitution Difficulty</th><th class="num">Risk Level</th><th>Signal</th></tr></thead><tbody><tr><td><p>Internal Infrastructure</p></td><td><p>Water Sourcing &amp; Treatment</p></td><td class="num"><p>N/A</p></td><td><span class="tag blue">LOW</span></td><td class="num"><span class="tag blue">LOW</span></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td><p>Energy Inputs (Market)</p></td><td><p>Power for Operations</p></td><td class="num"><p>&lt;5%</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><span class="tag blue">NEUTRAL</span></td></tr><tr><td><p>Treatment Chemicals (Various)</p></td><td><p>Produced Water Processing</p></td><td class="num"><p>&lt;5%</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><span class="tag blue">LOW</span></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td><p>Bolt Data &amp; Energy (Strategic)</p></td><td><p>Data Center Water Supply (ROFR)</p></td><td class="num"><p>Emerging</p></td><td><span class="tag blue">LOW</span></td><td class="num"><span class="tag blue">LOW</span></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td><p>Local Logistics Providers</p></td><td><p>Water Transport</p></td><td class="num"><p>&lt;5%</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><span class="tag blue">LOW</span></td><td><span class="tag blue">NEUTRAL</span></td></tr><tr><td><p>Desalination Equipment Vendors</p></td><td><p>Produced Water Treatment</p></td><td class="num"><p>N/A</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><span class="tag blue">NEUTRAL</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Supplier Scorecard | Source: Company 10-K FY2025; Earnings Releases; Analytical Findings</div><div class="table-wrap"><table><thead><tr><th>Customer Group</th><th class="num">Revenue Contribution (%)</th><th>Contract Duration</th><th>Renewal Risk</th><th>Relationship Trend</th></tr></thead><tbody><tr><td><p>Permian Supermajors</p></td><td class="num"><p>37%</p></td><td><p>Ongoing / Spot</p></td><td><span class="tag blue">MEDIUM</span></td><td><p>Stable/Growing</p></td></tr><tr><td><p>Large-Cap Independents</p></td><td class="num"><p>36%</p></td><td><p>Ongoing</p></td><td><span class="tag blue">LOW</span></td><td><p>Growing</p></td></tr><tr><td><p>Other Operators</p></td><td class="num"><p>28%</p></td><td><p>Ongoing</p></td><td><span class="tag blue">MEDIUM</span></td><td><p>Stable</p></td></tr><tr><td><p>Bolt Data &amp; Energy</p></td><td class="num"><p>Emerging</p></td><td><p>ROFR Agreement (Dec 2025)</p></td><td><span class="tag blue">LOW</span></td><td><p>Growing</p></td></tr><tr><td><p>Water Services Customers (Aggregate)</p></td><td class="num"><p>38.5%</p></td><td><p>Variable</p></td><td><span class="tag blue">LOW</span></td><td><p>Growing</p></td></tr><tr><td><p>Royalty Payors (Indirect)</p></td><td class="num"><p>61.5% (Land Segment)</p></td><td><p>Life-of-Production</p></td><td><span class="tag blue">LOW</span></td><td><p>Stable</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Customer Scorecard | Source: Company Earnings Release FY2025; 10-K Disclosures</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Supply Concentration Analysis</h3><span class="tag blue">Capital-Light</span></div><div class="aggregate-card-body"><p>TPL&#x27;s supply chain exhibits minimal concentration risk, operating a highly integrated, asset-owned model centered on its ~882,000 acres of primarily Permian surface and royalty interests. No single external supplier accounts for material revenue dependency, with historical capital expenditures remaining exceptionally low at $19.0M for the full year 2022 and even lower quarterly levels (e.g., $1.4M in Q2 2023). This capital-light approach supports water services and operations, which contributed $307.5M or 38.5% of total FY2025 revenue of $798.2M, including $124.2M in produced water royalties...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Geographic Risk Assessment</h3><span class="tag amber">Permian-Centric</span></div><div class="aggregate-card-body"><p>TPL maintains 100% geographic exposure to the Permian Basin, with the majority of its ~882,000 surface acres and royalty interests concentrated there. This creates inherent single-basin risk, as all water services, produced water royalties, and land-related revenues depend on regional E&P activity, infrastructure development, and environmental conditions. Revenue streams include oil and gas royalties, water sales, produced water royalties ($124.2M FY2025), and easements, all directly linked to Permian operators...</p></div></div><div class="table-wrap"><table><thead><tr><th>Component</th><th>% of COGS / Expenses</th><th>Trend</th><th>Key Risk</th></tr></thead><tbody><tr><td><p>Water Service-Related Expenses</p></td><td><p>Significant (part of $166.7M op. exp. FY2024 proxy)</p></td><td><span class="tag blue">RISING</span></td><td><p>Input cost inflation</p></td></tr><tr><td><p>Depreciation &amp; Amortization</p></td><td><p>Rising (D&A $62.5M FY2025)</p></td><td><span class="tag blue">INCREASING</span></td><td><p>Infrastructure scaling</p></td></tr><tr><td><p>Energy &amp; Logistics</p></td><td><p>&lt;10% inferred</p></td><td><span class="tag blue">STABLE</span></td><td><p>Commodity price volatility</p></td></tr><tr><td><p>Treatment Chemicals &amp; Equipment</p></td><td><span class="tag blue">LOW</span></td><td><span class="tag blue">STABLE</span></td><td><p>Supply availability for desalination</p></td></tr><tr><td><p>Employee Benefits / G&A</p></td><td><p>Portion of op. exp.</p></td><td><span class="tag blue">STABLE</span></td><td><p>Labor in Permian</p></td></tr><tr><td><p>Ad Valorem Taxes</p></td><td><p>Low single-digit</p></td><td><span class="tag blue">STABLE</span></td><td><p>Property value changes</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Cost Structure Breakdown | Source: SEC EDGAR Filings (Income Statement, Cash Flow); Derived ratios FY2025</div><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="catalysts" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>catalyst map</h2>
+          <div class="kicker">forward calendar</div>
+        </div>
+        <div class="note amber">
+          <strong>render caveat</strong><br>1 placeholder-heavy block(s) remained in the source pane; inspect against the original json before publishing.
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">total catalysts</div><div class="kpi-value ">12</div><div class="kpi-sub">Next 12 months</div></div><div class="kpi"><div class="kpi-label">next event date</div><div class="kpi-value ">May 6, 2026</div><div class="kpi-sub">Q1 2026 Earnings Release</div></div><div class="kpi"><div class="kpi-label">net catalyst score</div><div class="kpi-value value-gn">+4</div><div class="kpi-sub">Bullish - Bearish (scale -10 to +10)</div></div><div class="kpi"><div class="kpi-label">expected price impact range</div><div class="kpi-value ">$15 - $45</div><div class="kpi-sub">Per share from top catalysts</div></div></div><div class="note green"><p>Key Takeaway. TPL&#x27;s catalyst calendar is dominated by earnings visibility and embedded royalty upside from its 116.1 net producing wells plus 19.5 in the development pipeline, supporting continued diversification into water services (Q4 2025 revenue of $98.2M)...</p></div><div class="table-wrap"><table><thead><tr><th>Date</th><th class="num">Event</th><th>Category</th><th>Impact</th><th class="num">Probability (%)</th><th>Directional Signal</th></tr></thead><tbody><tr><td><p>May 6, 2026</p></td><td class="num"><p>Q1 2026 Earnings Release (completed)</p><span class="tag blue">PAST</span></td><td><p>Earnings</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>100</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td><p>May 7, 2026</p></td><td class="num"><p>Q1 2026 Earnings Conference Call (completed)</p><span class="tag blue">PAST</span></td><td><p>Earnings</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><p>100</p></td><td><span class="tag blue">NEUTRAL</span></td></tr><tr><td><p>May 18, 2026</p></td><td class="num"><p>Shareholder &amp; Water Field Visit (Midland)</p></td><td><p>Product</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>90</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td><p>Jun 16, 2026</p></td><td class="num"><p>$0.60 Quarterly Dividend Payment</p></td><td><p>Earnings</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><p>100</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td><p>Aug 2026 (est.)</p></td><td class="num"><p>Q2 2026 Earnings Release</p></td><td><p>Earnings</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>95</p></td><td><span class="tag blue">NEUTRAL</span></td></tr><tr><td><p>Nov 2026 (est.)</p></td><td class="num"><p>Q3 2026 Earnings Release</p></td><td><p>Earnings</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>95</p></td><td><span class="tag blue">NEUTRAL</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Catalyst Calendar - Next 12 Months | Source: Company announcements, SEC EDGAR filings, and analyst synthesis from 2025 financials</div><div class="table-wrap"><table><thead><tr><th>Quarter</th><th class="num">Event</th><th>Category</th><th class="num">Expected Impact ($/sh)</th><th>Bull Outcome</th><th>Bear Outcome</th></tr></thead><tbody><tr><td><p>Q2 2026</p></td><td class="num"><p>Q1 Earnings + Field Visit</p></td><td><p>Earnings/Product</p></td><td class="num"><p>+$8-12</p></td><td><p>Water momentum confirmation</p></td><td><p>Royalty softness</p></td></tr><tr><td><p>Q3 2026</p></td><td class="num"><p>Q2 Earnings + Dividend</p></td><td><p>Earnings</p></td><td class="num"><p>+$5-10</p></td><td><p>Margin stability > 70%</p></td><td><p>Commodity weakness</p></td></tr><tr><td><p>Q4 2026</p></td><td class="num"><p>Q3 Earnings + Pipeline Conversion</p></td><td><p>Product</p></td><td class="num"><p>+$10-15</p></td><td><p>19.5 net wells contributing</p></td><td><p>Drilling slowdown</p></td></tr><tr><td><p>Q1 2027</p></td><td class="num"><p>FY 2026 Results</p></td><td><p>Earnings</p></td><td class="num"><p>+$12-20</p></td><td><p>Diversification scale</p></td><td><p>Valuation compression</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: 12-Month Catalyst Timeline | Source: Company guidance, 2025 10-K/earnings releases, and derived from net wells inventory</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Top 3 Catalysts by Probability × Price Impact</h3><span class="tag green">High Conviction</span></div><div class="aggregate-card-body"><p>The highest-ranked catalyst is the May 6, 2026 Q1 2026 earnings release and May 7 conference call, with near-100% probability and an estimated $8-12 per share positive impact if water services continue scaling (building on Q4 2025&#x27;s $98.2M segment revenue and record volumes). This confirmed event will provide visibility into royalty production trends from the 116.1 net producing wells and 19.5 pipeline inventory. Second is the May 18, 2026 shareholder water field visit, with 90% probability and $5-8 per share impact through demonstrated progress on surface and water infrastructure...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Quarterly Outlook: Next 1-2 Quarters</h3><span class="tag blue">Watch Metrics</span></div><div class="aggregate-card-body"><p>In Q2 2026 (post May earnings), focus on water services revenue trajectory versus Q4 2025&#x27;s $98.2M and sequential growth drivers (+$16.2M water sales in Q4). Key thresholds: operating margin sustained above 70% (2025 level 74.2%) and free cash flow conversion near 66% . Royalty production should be monitored against Q4 2025&#x27;s 37.5 MBoe/d, with upside from pipeline wells...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Value Trap Test: Catalyst Realism Assessment</h3><span class="tag amber">Risk Assessment</span></div><div class="aggregate-card-body"><p>For the Q1 2026 earnings and field visit: Probability of positive read 85%, expected timeline May 2026, quality of evidence Hard Data (confirmed dates, 2025 production trends at 37.5 MBoe/d and water revenue $98.2M Q4). If it fails to materialize (e.g., flat water volumes), expect 5-10% share price downside from compressed multiples on the current $417.30 price versus DCF fair value $420. For net wells pipeline conversion: Probability 65-75% over 12 months, timeline H2 2026 onward, evidence mix of Hard Data (19.5 net wells disclosed) and Soft Signal (Permian activity assumptions)...</p></div></div><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p><p class="aggregate-pane-xref"><a href="#valuation">See valuation</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="street" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>street expectations</h2>
+          <div class="kicker">consensus vs. framework</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Street consensus for Texas Pacific Land (TPL) reflects optimism for a sharp EPS rebound in FY2026 to approximately $9.27, supported by continued Permian royalty activity and water diversification, with an average 12-month price target of $420.00 (53% upside from the current $417.30). Our DCF-derived base fair value of $420 suggests the market and analysts embed significantly higher growth assumptions and lower discount rates than our conservative 10.0% WACC.</p></div>
+        <div class="kpi-grid cols-3"><div class="kpi"><div class="kpi-label">current price</div><div class="kpi-value ">$417.30</div><div class="kpi-sub">Apr 16, 2026</div></div><div class="kpi"><div class="kpi-label">dcf fair value</div><div class="kpi-value ">$420</div><div class="kpi-sub">+0.6% vs current</div></div><div class="kpi"><div class="kpi-label">vs current</div><div class="kpi-value ">+0.6%</div><div class="kpi-sub">DCF implied</div></div></div><div class="note green"><p>Takeaway. The most non-obvious insight is the extreme dispersion and upward bias in Street targets ($639 consensus from limited coverage) despite TPL&#x27;s reported 2025 EPS of $6.97 and -64.7% YoY growth distortion. This implies analysts heavily discount the base-effect anomaly and price in sustained high-margin expansion from water and surface revenues, which our model views as optimistic given external operator dependency.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Consensus vs. Our Thesis</h3><span class="tag blue">Variant View</span></div><div class="aggregate-card-body"><p>STREET SAYS: TPL will rebound strongly with FY2026 EPS of $9.27 (up ~33% from 2025&#x27;s $6.97) and revenue reaching $1.07B, driven by stable-to-growing royalty volumes (~34.6k Boe/d base) plus water services diversification. Consensus 12-month target clusters at $639 (53% upside), with KeyBanc Overweight at $639 (raised Feb 23, 2026 from $350) citing Permian activity and non-royalty upside. Ratings lean Hold overall (1 Buy, 2 Hold, 1 Sell across 4 analysts)...</p></div></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">Street Consensus</th><th>Our Estimate</th><th>Diff %</th><th>Key Driver of Difference</th></tr></thead><tbody><tr><td><p>FY2026 EPS</p></td><td class="num"><p>$9.27</p></td><td><p>$7.50 - $8.50 (range)</p></td><td class="neg"><p>-15% to -9%</p></td><td><p>Conservative royalty volume growth and WACC; Street assumes faster water inflection…</p></td></tr><tr><td><p>FY2026 Revenue</p></td><td class="num"><p>$1.07B</p></td><td><p>$950M - $1.05B</p></td><td class="neg"><p>-11% to -2%</p></td><td><p>Base-effect normalization post-2025 +13.1% growth; external drilling risk…</p></td></tr><tr><td><p>Operating Margin</p></td><td class="num"><p>~70-75% (implied)</p></td><td><p>72%</p></td><td class="neg"><p>-3% to +2%</p></td><td><p>High historical 74.2% sustainable but commodity sensitivity…</p></td></tr><tr><td><p>Q1 2026 EPS</p></td><td class="num"><p>$2.03</p></td><td><p>$1.80 - $2.10</p></td><td class="neg"><p>-11% to +3%</p></td><td><p>Sequential stability from 2025 quarters ($143.8M-$149.1M op. income)</p></td></tr><tr><td><p>12-Month Price Target</p></td><td class="num"><p>$639</p></td><td><p>$105 (base)</p></td><td class="neg"><p>-84%</p></td><td><p>DCF methodology vs. multiple expansion assumptions…</p></td></tr><tr><td><p>PE Multiple (Forward)</p></td><td class="num"><p>~69x (on $9.27)</p></td><td><p>~40-45x normalized</p></td><td><p>Lower</p></td><td><p>Premium for quality but PE 59.9 trailing leaves little buffer…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Key Estimates Comparison (FY2026 Focus) | Source: Zacks/Yahoo/MarketBeat aggregates; KeyBanc; Company 10-K/10-Q FY2025 &amp; derived ratios</div><div class="table-wrap"><table><thead><tr><th>Year</th><th class="num">Revenue Est</th><th class="num">EPS Est</th><th class="num">Growth %</th></tr></thead><tbody><tr><td><p>2025 (Actual)</p></td><td class="num"><p>~$798M (implied)</p></td><td class="num"><p>$6.97</p></td><td class="num"><p>Revenue +13.1% YoY; EPS -64.7% (base effect)</p></td></tr><tr><td><p>2026 (Consensus)</p></td><td class="num"><p>$1.07B</p></td><td class="num"><p>$9.27</p></td><td class="num"><p>+34% revenue; +33% EPS</p></td></tr><tr><td><p>2027 (Consensus)</p></td><td class="num"><p>$1.18B</p></td><td class="num"><p>$10.24</p></td><td class="num"><p>+10% revenue; +10% EPS</p></td></tr><tr><td><p>Our 2026 Base</p></td><td class="num"><p>$1.00B</p></td><td class="num"><p>$8.00</p></td><td class="num"><p>+25% revenue; +15% EPS</p></td></tr><tr><td><p>Our 2027 Base</p></td><td class="num"><p>$1.10B</p></td><td class="num"><p>$8.80</p></td><td class="num"><p>+10% revenue; +10% EPS</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Annual Consensus vs. Our Estimates | Source: Analyst aggregates (Zacks/Yahoo); SEC EDGAR 2025 actuals; XVARY DCF assumptions</div><div class="table-wrap"><table><thead><tr><th>Firm</th><th>Analyst</th><th>Rating</th><th class="num">Price Target</th><th>Date of Last Update</th></tr></thead><tbody><tr><td><p>KeyBanc</p></td><td><p>Tim Rezvan</p></td><td><span class="tag blue">OVERWEIGHT</span></td><td class="num"><p>$639</p></td><td><p>Feb 23, 2026</p></td></tr><tr><td><p>Not Specified (Aggregate)</p></td><td><p>N/A</p></td><td><span class="tag blue">HOLD</span></td><td class="num"><p>$639</p></td><td><p>Recent (4 analysts)</p></td></tr><tr><td><p>Various</p></td><td><p>N/A</p></td><td><p>Buy (1)</p></td><td class="num"><p>$639 (high)</p></td><td><p>Within last 12 months</p></td></tr><tr><td><p>Various (2)</p></td><td><p>N/A</p></td><td><p>Hold (2)</p></td><td class="num"><p>$639 (avg)</p></td><td><p>Within last 12 months</p></td></tr><tr><td><p>Various (3)</p></td><td><p>N/A</p></td><td><p>Sell (1)</p></td><td class="num"><p>$639 (low in range)</p></td><td><p>Within last 12 months</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Recent Analyst Coverage Snapshot | Source: MarketBeat, Zacks, KeyBanc reports; TipRanks aggregates</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Estimate Revision Trends</h3><span class="tag blue">Upward Bias</span></div><div class="aggregate-card-body"><p>Recent revisions show upward momentum, notably KeyBanc raising its FY2026 EPS forecast to $9.27 (from prior lower levels) and Q1 2026 to $2.03 while lifting the price target sharply to $639 from $350 on Feb 23, 2026, citing water segment strength and surface opportunities (power/data centers). Consensus EPS for 2026 has seen positive tweaks across limited coverage, reflecting confidence in royalty volume stability and diversification offsetting any commodity softness...</p></div></div><p class="aggregate-pane-xref"><a href="#valuation">See valuation</a></p><p class="aggregate-pane-xref"><a href="#thesis">See variant perception &amp; thesis</a></p><p class="aggregate-pane-xref"><a href="#catalysts">See Catalyst Map</a></p>
+      </section>
+      <section id="scorecard" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>earnings scorecard</h2>
+          <div class="kicker">execution quality</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">beat rate</div><div class="kpi-value ">5/8</div><div class="kpi-sub">Last 8 quarters (mixed post-split)</div></div><div class="kpi"><div class="kpi-label">avg eps surprise</div><div class="kpi-value value-gn">+1.5%</div><div class="kpi-sub">Recent quarters; Q4 2025 +3.5% to +1.1%</div></div><div class="kpi"><div class="kpi-label">ttm eps</div><div class="kpi-value ">$6.97</div><div class="kpi-sub">FY2025 diluted, post-split basis</div></div><div class="kpi"><div class="kpi-label">latest qtr eps</div><div class="kpi-value ">$1.79</div><div class="kpi-sub">Q4 2025 actual vs ~$1.73-$1.77 est.</div></div></div><div class="table-wrap"><table><thead><tr><th class="num">Period</th><th class="num">EPS</th><th class="num">YoY Change</th><th class="num">Sequential</th></tr></thead><tbody><tr><td class="num"><p>2022-06</p></td><td class="num"><p>$15.37</p></td><td class="num"></td><td class="num"></td></tr><tr><td class="num"><p>2022-09</p></td><td class="num"><p>$16.82</p></td><td class="num"></td><td class="num"><p>+9.4%</p></td></tr><tr><td class="num"><p>2023-03</p></td><td class="num"><p>$11.24</p></td><td class="num"></td><td class="num"><p>-33.2%</p></td></tr><tr><td class="num"><p>2023-06</p></td><td class="num"><p>$13.05</p></td><td class="num"></td><td class="num"><p>+16.1%</p></td></tr><tr><td class="num"><p>2023-09</p></td><td class="num"><p>$13.74</p></td><td class="num"><p>-10.6%</p></td><td class="num"><p>+5.3%</p></td></tr><tr><td class="num"><p>2024-03</p></td><td class="num"><p>$4.97</p></td><td class="num"><p>-70.5%</p></td><td class="num"><p>-63.8%</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: EPS History (Quarterly) | Source: SEC EDGAR XBRL filings</div><div class="note green"><p>Takeaway. TPL delivered elite full-year 2025 profitability with $481.4M net income and 74.2% operating margin despite a post-split EPS reset, but Q4 showed a mixed print with revenue beat yet EPS volatility around consensus, highlighting the royalty model&#x27;s resilience to commodity swings while exposing sensitivity to production mix and pricing in the Permian.</p></div><div class="table-wrap"><table><thead><tr><th>Quarter</th><th>Guidance Context</th><th class="num">Actual EPS</th><th>Within/Beat</th><th>Error %</th></tr></thead><tbody><tr><td><p>Q4 2025</p></td><td><p>No formal range; consensus-driven</p></td><td class="num"><p>$1.79</p></td><td><p>Beat</p></td><td><p>+1.1% to +3.5%</p></td></tr><tr><td><p>Q3 2025</p></td><td><p>Consensus tracking</p></td><td class="num"><p>$5.27</p></td><td class="neg"><p>Miss</p></td><td class="neg"><p>-8.5%</p></td></tr><tr><td><p>Q2 2025</p></td><td><p>Consensus tracking</p></td><td class="num"><p>$5.05</p></td><td class="neg"><p>Miss</p></td><td class="neg"><p>-8.0%</p></td></tr><tr><td><p>Q1 2025</p></td><td><p>Consensus tracking</p></td><td class="num"><p>$5.24</p></td><td class="b"><p>Near</p></td><td class="neg"><p>-0.6%</p></td></tr><tr><td><p>FY2025</p></td><td><p>Stable royalty model</p></td><td class="num"><p>$6.97</p></td><td><p>High cash conversion</p></td><td><p>N/A (revenue +13.1%)</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Management Guidance Accuracy Trends | Source: EDGAR filings and consensus comparisons</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Earnings Quality Assessment</h3><span class="tag green">High</span></div><div class="aggregate-card-body"><p>Texas Pacific Land demonstrated strong earnings quality in FY2025 with net income of $481.4M (up +6.0% YoY) on operating income of $592.2M and exceptional margins: 74.2% operating and 60.3% net . Free cash flow reached $526.9M at a 66.0% FCF margin , reflecting the asset-light royalty model&#x27;s minimal CapEx needs and high cash conversion from Permian acreage. Quarterly operating income remained remarkably stable around $143M, $150M sequentially, buffering commodity volatility...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Estimate Revision Trends</h3><span class="tag blue">Stable</span></div><div class="aggregate-card-body"><p>Recent 90-day revisions around Q4 2025 and into 2026 show modest upward pressure on revenue expectations amid Permian activity, though EPS revisions have been mixed due to post-split share count normalization and commodity price realization variability. Consensus tracked Q4 EPS estimates around $1.73, $1.83 with actual $1.79 landing in a narrow band. Revenue estimates were exceeded in Q4 ( $211.6M vs ~$204M)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Management Credibility</h3><span class="tag green">High</span></div><div class="aggregate-card-body"><p>Management has maintained a credible track record of delivering on the core royalty and surface/water model without frequent goal-post moving or restatements in recent audited filings. FY2025 results aligned with the asset-light strategy, generating $592.2M operating income and robust cash flow despite commodity headwinds, with transparent disclosure on production (37.5 MBoe/d Q4) and segment contributions (e.g., water sales uplift). Messaging across quarters emphasized Permian exposure durability and diversification, consistent with sequential operating income stability...</p></div></div><p class="aggregate-pane-xref"><a href="#financials">See financial analysis</a></p><p class="aggregate-pane-xref"><a href="#street">See street expectations</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="history" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>historical analogies</h2>
+          <div class="kicker">base rates</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Texas Pacific Land Corporation traces its roots to the 1888 bankruptcy of the Texas and Pacific Railway, when 3.5 million acres were placed into a trust for bondholders. Over 138 years, TPL transitioned from gradual land liquidation to passive royalty collection and, post-2021 C-Corp reorganization, to active capital deployment including acquisitions and water services diversification. These historical patterns, resilience through commodity cycles, minimal overhead, and opportunistic expansion, offer clear analogs for assessing today&#x27;s trajectory amid sustained Permian activity and premium valuation at $417.30 (59.9x 2025 EPS of $6.97).</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">company age</div><div class="kpi-value ">138 Years</div><div class="kpi-sub">Founded 1888 as land trust</div></div><div class="kpi"><div class="kpi-label">2025 revenue</div><div class="kpi-value ">$798.2M</div><div class="kpi-sub">+13.1% YoY</div></div><div class="kpi"><div class="kpi-label">2025 net income</div><div class="kpi-value ">$481.4M</div><div class="kpi-sub">+6.0% YoY</div></div><div class="kpi"><div class="kpi-label">fcf margin</div><div class="kpi-value ">66.0%</div><div class="kpi-sub">Asset-light royalty model</div></div></div><div class="note green"><p>Key Takeaway. TPL&#x27;s 138-year evolution from a liquidating railroad land trust into a high-margin Permian royalty and water powerhouse demonstrates remarkable adaptability, with 2025 revenue reaching $798.2M (+13.1% YoY) and FCF margin at 66.0% despite commodity price softness, highlighting how structural advantages in surface ownership and low CapEx have compounded value across multiple energy cycles.</p></div><div class="table-wrap"><table><thead><tr><th>Analog Company</th><th class="num">Era/Event</th><th>The Parallel</th><th>What Happened Next</th><th>Implication for TPL</th></tr></thead><tbody><tr><td><p>Texas Pacific Land Trust (Pre-2021)</p></td><td class="num"><p>1888–2021 Trust Structure</p></td><td><p>Passive land/royalty holdings with slow monetization and minimal staff; evolved from liquidation mandate to royalty focus as Permian development accelerated…</p></td><td><p>Delivered durable cash distributions through multiple oil booms/busts; 2021 reorganization unlocked flexible acquisitions and dividends…</p></td><td><p>Suggests post-2021 corporate form enables continued inorganic growth (e.g., 17,306 net royalty acres acquired Q4 2025 for $450.7M) while preserving high margins…</p></td></tr><tr><td><p>Permian Basin Royalty Trust (PBT)</p></td><td class="num"><p>1980s–Present Pure Royalty Trust</p></td><td><p>Fixed overriding royalty interests in Permian assets with no operating control; highly sensitive to commodity prices and operator activity…</p></td><td><p>Experienced sharp distribution volatility (e.g., revenue drops in softer cycles); limited diversification or acquisition flexibility…</p></td><td><p>TPL&#x27;s hybrid surface + royalty + water model provides superior resilience, as evidenced by 2025 production growth to 34.6 MBoe/d (+29% YoY volume) despite realized price of $34.18/Boe…</p></td></tr><tr><td><p>Viper Energy (VNOM) / Kimbell Royalty (KRP)</p></td><td class="num"><p>2010s–Present Modern Royalty MLPs</p></td><td><p>Acquisition-driven royalty portfolios in Permian and other basins; focus on mineral rights with some sponsor support…</p></td><td><p>Achieved growth via drop-downs and buys but faced dividend cuts in downturns and higher leverage than TPL…</p></td><td><p>TPL&#x27;s vast surface acreage (approx. 873k–882k acres) and low liab/equity of 0.11 create a wider moat for water revenue ($169.7M sales + $124.2M produced water royalties in 2025) and counter-cyclical buys…</p></td></tr><tr><td><p>Early Shale Pioneers (e.g., analogous to post-2008 E&P shift)</p></td><td class="num"><p>2008–2014 Shale Boom Acceleration</p></td><td><p>Passive royalty owners benefited disproportionately from operator drilling surge without bearing CapEx risk…</p></td><td><p>Royalty volumes and values compounded as horizontal drilling scaled; survivors with large contiguous acreage captured outsized gains…</p></td><td><p>2025 royalty production acceleration to 37.5 MBoe/d in Q4 mirrors past upcycles; TPL&#x27;s asset-light structure (minimal historical CapEx, e.g., $5.1M in 1H 2023) positions it for similar leverage to Permian activity…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Historical Company Analogies and Cycle Parallels | Source: Company history from EDGAR filings and official records; 2025 financials from audited 10-K/10-Q equivalents</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Industry Cycle Positioning</h3><span class="tag blue">Maturity with Growth Optionality</span></div><div class="aggregate-card-body"><p>Texas Pacific Land sits in a mature phase of the Permian royalty cycle, characterized by established production infrastructure and high operator activity levels, yet with clear acceleration potential from recent bolt-on acquisitions and water diversification. In 2025, oil and gas royalty production rose to 34.6 MBoe/d full year (from 26.8 MBoe/d prior) and 37.5 MBoe/d in Q4, driving revenue to a record $798.2M (+13.1% YoY) and operating income of $592.2M at a 74.2% margin. This reflects the benefits of TPL&#x27;s passive exposure to drilling without upstream costs, contrasting with leveraged E&P peers that face sharper swings...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Recurring Historical Patterns</h3><span class="tag blue">Adaptation &amp; Capital Discipline</span></div><div class="aggregate-card-body"><p>Across 138 years, TPL has repeatedly demonstrated a pattern of conservative capital allocation paired with opportunistic adaptation to external energy development. Originating as a 1888 liquidating trust for Texas &amp; Pacific Railway bondholders holding 3.5 million acres, the entity shifted from land sales to leasing and royalty collection as oil interest emerged in West Texas. Minimal overhead (historically just a few trustees) and slow monetization preserved value through cycles, generating steady distributions even in low-activity periods...</p></div></div><div class="note red"><p>Cyclical Exposure Risk. While TPL delivered robust 2025 results with revenue growth of +13.1% and production up ~29% YoY in volume terms, the business remains sensitive to operator drilling activity and commodity realization prices ($34.18/Boe average). A sustained slowdown in Permian rigs could curtail future royalty volume growth, as seen in softer prior cycles, despite diversification into water and strong balance sheet cushion (liab/equity 0.11).</p></div><p class="aggregate-pane-xref"><a href="#thesis">See variant perception &amp; thesis</a></p><p class="aggregate-pane-xref"><a href="#ops">See fundamentals</a></p><p class="aggregate-pane-xref"><a href="#valuation">See Valuation</a></p>
+      </section>
+      <section id="macro" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>macro sensitivity</h2>
+          <div class="kicker">rates, fx, energy</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">rate sensitivity</div><div class="kpi-value ">Low</div><div class="kpi-sub">Zero debt; FCF duration short due to royalty model</div></div><div class="kpi"><div class="kpi-label">fx exposure % revenue</div><div class="kpi-value ">Negligible</div><div class="kpi-sub">Primarily USD-denominated Permian activity</div></div><div class="kpi"><div class="kpi-label">commodity exposure level</div><div class="kpi-value ">High</div><div class="kpi-sub">Oil/gas royalties ~52% of 2025 revenue</div></div><div class="kpi"><div class="kpi-label">trade policy risk</div><div class="kpi-value ">Low</div><div class="kpi-sub">Domestic U.S. operations; minimal China dependency</div></div></div><div class="note green"><p>Key Takeaway. TPL&#x27;s asset-light royalty and water model delivered record 2025 revenue of $798.2M and FCF margin of 66.0% despite lower realized oil/gas prices per Boe ($34.18 vs prior year $39.87), highlighting resilience through volume growth (34.6 MBoe/d) rather than pure price leverage. The fortress balance sheet (0.11 liabilities-to-equity, 4.4 current ratio) further insulates against macro volatility.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Interest Rate Sensitivity</h3><span class="tag green">Low</span></div><div class="aggregate-card-body"><p>Texas Pacific Land maintains zero debt (D/E market and book both 0.00), eliminating direct floating or fixed debt exposure to rate changes. With cash &amp; equivalents at $144.8M (end-2025) and strong operating cash flow of $545.91M, interest income provides a modest positive offset in higher-rate environments. FCF duration is relatively short given the royalty model&#x27;s lack of heavy CapEx (historical $19.0M in 2022; minimal ongoing)...</p></div><div class="aggregate-source">Exhibit: Interest Rate Exposure Analysis | Source: SEC EDGAR filings and derived ratios</div></div><div class="table-wrap"><table><thead><tr><th>Region</th><th class="num">Revenue %</th><th>Primary Currency</th><th>Hedging Strategy</th><th>Net Unhedged Exposure</th><th>Impact of 10% Move</th></tr></thead><tbody><tr><td><p>United States (Permian)</p></td><td class="num"><p>100%</p></td><td><p>USD</p></td><td><p>None required</p></td><td><p>Negligible</p></td><td><p>Minimal</p></td></tr><tr><td><p>International Exports (indirect)</p></td><td class="num"><p>&lt;5% (inferred)</p></td><td><p>Various</p></td><td><p>Natural via operators</p></td><td><span class="tag blue">LOW</span></td><td><span class="tag blue">LOW</span></td></tr><tr><td><p>Other Domestic</p></td><td class="num"><p>0%</p></td><td><p>USD</p></td><td><p>N/A</p></td><td><p>None</p></td><td><p>None</p></td></tr><tr><td><p>Europe/Asia (potential)</p></td><td class="muted num"><span style="color:var(--muted,#999);font-style:italic">—</span></td><td><p>EUR/CNY/etc.</p></td><td><p>None</p></td><td><p>Not material</p></td><td><p>Not material</p></td></tr><tr><td><p>Total Consolidated</p></td><td class="num"><p>100%</p></td><td><p>USD-dominant</p></td><td><p>Natural hedging</p></td><td><p>Very low</p></td><td><p>&lt;1% revenue</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: FX Exposure by Region | Source: SEC EDGAR 2025 data; company disclosures</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Commodity Exposure</h3><span class="tag amber">High</span></div><div class="aggregate-card-body"><p>TPL&#x27;s oil and gas royalties comprised the majority of Land and Resource Management segment revenues ($490.7M in 2025), representing roughly 52% of consolidated $798.2M revenue. Key inputs are not direct COGS but realized prices and volumes: average $34.18/Boe in 2025 (down from $39.87 prior), with production at 34.6 MBoe/d (up significantly). Water sales ($169.7M+) and produced water royalties ($124.2M) provide diversification but remain tied to Permian drilling activity...</p></div><div class="aggregate-source">Exhibit: Commodity Linkage | Source: Company 2025 results and SEC EDGAR</div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Trade Policy &amp; Tariff Risk</h3><span class="tag green">Low</span></div><div class="aggregate-card-body"><p>TPL operates exclusively in the U.S. Permian Basin with no disclosed China supply chain dependency or material imported inputs. Revenues derive from domestic oil/gas development, water services, and surface easements, no significant tariff-exposed products or regions...</p></div><div class="aggregate-source">Exhibit: Tariff Scenario Assessment | Source: SEC EDGAR filings; operational disclosures</div></div><div class="table-wrap"><table><thead><tr><th>Indicator</th><th class="num">Current Value (Apr 2026)</th><th>Historical Avg</th><th>Signal</th><th>Impact on TPL</th></tr></thead><tbody><tr><td><p>VIX</p></td><td class="num"><p>~19-25 (elevated)</p></td><td><p>20</p></td><td class="amb"><span class="tag blue">NEUTRAL</span></td><td><p>Moderate volatility; supports energy risk premium…</p></td></tr><tr><td><p>Credit Spreads</p></td><td class="num"><p>Modest widening</p></td><td><p>Recent avg</p></td><td class="b"><span class="tag blue">NEUTRAL</span></td><td><p>Limited; zero debt shields TPL</p></td></tr><tr><td><p>Yield Curve</p></td><td class="num"><p>Steepening/normalizing</p></td><td><p>Flat in prior</p></td><td><p>Expansionary</p></td><td><p>Positive for operator financing</p></td></tr><tr><td><p>ISM Manufacturing</p></td><td class="num"><p>~52-53</p></td><td><p>50</p></td><td><p>Expansionary</p></td><td><p>Supports industrial energy demand</p></td></tr><tr><td><p>CPI YoY</p></td><td class="num"><p>~3.3% (elevated)</p></td><td><p>2% target</p></td><td class="amb"><p>Cautionary</p></td><td><p>Indirect via Fed policy</p></td></tr><tr><td><p>Fed Funds Rate</p></td><td class="num"><p>~3.5-3.75%</p></td><td><p>Recent</p></td><td class="b"><span class="tag blue">NEUTRAL</span></td><td><p>Stable rates aid drilling economics</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Macro Cycle Indicators | Source: Macro context data and April 2026 indicators</div><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p><p class="aggregate-pane-xref"><a href="#valuation">See Valuation</a></p><p class="aggregate-pane-xref"><a href="#financials">See Financial Analysis</a></p>
+      </section>
+      <section id="value" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>value framework</h2>
+          <div class="kicker">greenwald / qarp</div>
+        </div>
+        <div class="lead aggregate-lead"><p>This pane evaluates Texas Pacific Land Corporation (TPL) through Benjamin Graham&#x27;s strict quantitative criteria and Warren Buffett&#x27;s qualitative lens, cross-referenced against DCF outputs and current market pricing. Despite exceptional profitability, high margins, and a fortress balance sheet, TPL trades at a significant premium to conservative intrinsic value estimates, resulting in a mixed value signal with high quality but limited margin of safety at $417.30.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">graham score</div><div class="kpi-value ">4/7</div><div class="kpi-sub">Fails on P/E, P/B, and earnings stability</div></div><div class="kpi"><div class="kpi-label">buffett quality score</div><div class="kpi-value ">A-</div><div class="kpi-sub">Exceptional moat and management; premium pricing</div></div><div class="kpi"><div class="kpi-label">peg ratio</div><div class="kpi-value ">[Data Pending]</div><div class="kpi-sub"><span style="color:var(--muted,#999);font-style:italic">—</span>; high P/E limits applicability</div></div><div class="kpi"><div class="kpi-label">margin of safety</div><div class="kpi-value value-rd">[Data Pending]</div><div class="kpi-sub">Data error</div></div></div><div class="table-wrap"><table><thead><tr><th>Criterion</th><th>Threshold</th><th>Actual</th><th>Pass/Fail</th></tr></thead><tbody><tr><td><p>Adequate Size</p></td><td><p>Revenue &gt; $100M or Assets &gt; $50M</p></td><td><p>Revenue ~$798M (inferred 2025); Assets $1.62B…</p></td><td><p>Pass</p></td></tr><tr><td><p>Strong Financial Condition</p></td><td>Current Ratio > 2; Debt < 2x NCAV or < Book Value…</td><td><p>Current Ratio 4.4; Liab/Equity 0.11; near-zero debt…</p></td><td><p>Pass</p></td></tr><tr><td><p>Earnings Stability</p></td><td><p>Positive EPS in each of last 10 years</p></td><td><p>Positive but YoY EPS growth -64.7% (distorted by shares)</p></td><td><p>Pass</p></td></tr><tr><td><p>Dividend Record</p></td><td><p>Uninterrupted payments for 20+ years</p></td><td><p>Consistent quarterly dividends; $2.40 annual (yield ~0.58%)</p></td><td><p>Pass</p></td></tr><tr><td><p>Earnings Growth</p></td><td><p>EPS growth ≥33% over 10 years</p></td><td><p>Net Income growth +6.0% YoY; long-term strong but recent volatility…</p></td><td><p>Fail</p></td></tr><tr><td><p>Moderate P/E</p></td><td><p>P/E < 15x or below market average</p></td><td><p>59.9x trailing</p></td><td><p>Fail</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Graham&#x27;s 7 Criteria Assessment | Source: SEC EDGAR 10-K/10-Q FY2025; Derived ratios; Market Data Apr 16, 2026</div><div class="note green"><p>Takeaway. TPL passes 4 of Graham&#x27;s 7 criteria with a fortress balance sheet (current ratio 4.4, liabilities-to-equity 0.11) and consistent dividends, but fails decisively on valuation metrics (P/E 59.9x, P/B ~19.7x) versus thresholds. This highlights a high-quality business trading at a scarcity premium not justified by conservative DCF outputs.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Buffett Qualitative Assessment</h3><span class="tag green">High Quality</span></div><div class="aggregate-card-body"><p>Texas Pacific Land operates an understandable, asset-light hybrid business model centered on perpetual oil and gas royalties, surface easements, and growing water services in the Permian Basin. Long-term prospects remain favorable due to vast acreage position enabling toll-booth economics with minimal reinvestment needs, as evidenced by 74.2% operating margins, 66.0% FCF margin, and ROE of 33.0% in 2025. The model provides diversification beyond pure commodity exposure via the $307.5M water services contribution...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Investment Decision Framework</h3><span class="tag blue">Portfolio Fit</span></div><div class="aggregate-card-body"><p>Position sizing should be limited to 3-5% of portfolio given commodity and Permian concentration risks, with entry criteria focused on a 30%+ margin of safety to DCF base ($420) or bull scenario ($504), potentially via pullbacks tied to oil price weakness or drilling slowdowns. Exit criteria include sustained erosion of water services momentum, regulatory changes impacting surface use, or multiple compression below 30x normalized earnings. TPL fits as a high-quality compounder in a diversified energy or natural resources sleeve but requires monitoring of operator activity (e.g., net producing wells)...</p></div></div><div class="table-wrap"><table><thead><tr><th>Bias</th><th class="num">Risk Level</th><th>Mitigation Step</th><th>Status</th></tr></thead><tbody><tr><td><p>Anchoring</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Anchor to DCF scenarios and historical normalized metrics, not recent price…</p></td><td><p>Clear</p></td></tr><tr><td><p>Confirmation</p></td><td class="num"><span class="tag blue">HIGH</span></td><td><p>Explicitly document bear case including -64.7% EPS growth distortion and high P/E…</p></td><td><p>Watch</p></td></tr><tr><td><p>Recency</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Review full 2025 audited trends including asset growth to $1.62B, not just Q4…</p></td><td><p>Clear</p></td></tr><tr><td><p>Overconfidence</p></td><td class="num"><span class="tag blue">HIGH</span></td><td><p>Stress-test against Permian activity slowdown; compare to peers like VNOM…</p></td><td><p>Watch</p></td></tr><tr><td><p>Availability</p></td><td class="num"><span class="tag blue">LOW</span></td><td><p>Incorporate full EDGAR data on cash flows ($545.91M operating) and low CapEx…</p></td><td><p>Clear</p></td></tr><tr><td><p>Herding</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Cross-reference market premium (59.9x P/E) against DCF $105.08 base…</p></td><td><p>Watch</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Cognitive Bias Checklist | Source: Internal analytical framework applied to TPL 2025 filings</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Conviction Scoring Breakdown</h3><span class="tag amber">65/100</span></div><div class="aggregate-card-body"><p>Quality &amp; Moat (9/10, 40% weight): Exceptional asset-light model with 74.2% operating margin, 60.3% net margin, ROE 33.0%, and negligible leverage (0.11 liab/equity) creates durable competitive advantages in Permian royalties and water services. Evidence quality high from audited 2025 results. Financial Strength (10/10, 25% weight): Fortress balance sheet ($1.62B assets, $1.46B equity, current ratio 4.4, FCF $526.943M at 66.0% margin) supports capital returns and optionality...</p></div></div><p class="aggregate-pane-xref"><a href="#valuation">See detailed DCF, comps, and precedent analysis</a></p><p class="aggregate-pane-xref"><a href="#thesis">See variant perception and full investment thesis</a></p><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p>
+      </section>
+      <section id="appendix" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>appendix &amp; sources</h2>
+          <div class="kicker">sources · methodology</div>
+        </div>
+        <div class="lead aggregate-lead"><p>How we source the tape, verify levels, and align this report with XVARY deep-dive standards.</p></div>
+        <div class="aggregate-sources-attribution"><p>Sources: SEC filings, company disclosures, market data vendors, and sources cited in the sections above. For investment presentation use only.</p></div><p class="aggregate-methodology-link">standards and pipeline: <a href="https://xvary.com/methodology/">xvary.com/methodology/</a></p>
+      </section>
+
+      <div class="footer">
+        xvary · 2026 · not investment advice
+        <div class="links">
+          <a href="https://xvary.com/pulse/">the pulse</a>
+          <a href="https://xvary.com/stacks/">the stacks</a>
+          <a href="https://xvary.com/discover/">discover</a>
+          <a href="https://xvary.com/collectibles/">collectibles</a>
+          <a href="https://xvary.com/pricing/">pricing</a>
+          <a href="https://xvary.com/methodology/">methodology</a>
+          <a href="https://xvary.com/newsletter/">newsletter</a>
+          <a href="https://xvary.com/legal/disclaimer/">disclaimer</a>
+          <a href="https://xvary.com/legal/privacy/">privacy</a>
+          <a href="https://xvary.com/legal/terms/">terms</a>
+        </div>
+        <div class="small">Sources: company filings and earnings, supplier disclosures, named sell-side notes where cited, alt-data where noted, and public flow/sentiment screens. Not investment advice — verify anything you trade on.</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const bar = document.getElementById("reading-progress");
+      const sections = [{"id": "summary", "hotkey": "0"}, {"id": "thesis", "hotkey": "1"}, {"id": "financials", "hotkey": "2"}, {"id": "valuation", "hotkey": "3"}, {"id": "risk", "hotkey": "4"}, {"id": "ops", "hotkey": "5"}, {"id": "competition", "hotkey": "6"}, {"id": "tam", "hotkey": "7"}, {"id": "product", "hotkey": "8"}, {"id": "supply", "hotkey": "9"}, {"id": "catalysts", "hotkey": "a"}, {"id": "street", "hotkey": "b"}, {"id": "scorecard", "hotkey": "c"}, {"id": "history", "hotkey": "d"}, {"id": "macro", "hotkey": "e"}, {"id": "value", "hotkey": "f"}, {"id": "appendix", "hotkey": "g"}];
+      const links = [...document.querySelectorAll(".sidebar a[href^='#']")];
+      const setActive = function (id) {
+        links.forEach(function (link) {
+          link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+        });
+      };
+
+      window.addEventListener("scroll", function () {
+        const root = document.documentElement;
+        const pct = (root.scrollTop / Math.max(root.scrollHeight - root.clientHeight, 1)) * 100;
+        if (bar) {
+          bar.style.width = Math.min(Math.max(pct, 0), 100) + "%";
+        }
+      }, { passive: true });
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(function (entries) {
+          entries.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+          const hit = entries.find(function (entry) {
+            return entry.isIntersecting && entry.intersectionRatio > 0.12;
+          });
+          if (hit) {
+            setActive(hit.target.id);
+          }
+        }, { rootMargin: "-40% 0px -40% 0px", threshold: [0, 0.12, 0.25, 0.45] });
+
+        sections.forEach(function (item) {
+          const node = document.getElementById(item.id);
+          if (node) {
+            observer.observe(node);
+          }
+        });
+      }
+
+      links.forEach(function (link) {
+        link.addEventListener("click", function () {
+          setActive(link.getAttribute("href").slice(1));
+        });
+      });
+
+      const hotkeys = {};
+      sections.forEach(function (item) {
+        hotkeys[item.hotkey] = item.id;
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.metaKey || event.ctrlKey) {
+          return;
+        }
+        const target = event.target;
+        if (target && target.closest && target.closest("input, textarea, select, [contenteditable='true']")) {
+          return;
+        }
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (!hotkeys[key]) {
+          return;
+        }
+        event.preventDefault();
+        const node = document.getElementById(hotkeys[key]);
+        if (node) {
+          node.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    })();
+  </script>
+  <footer class="footer" style="margin-left:var(--navw,0)">
+    xvary · 2026 · not investment advice
+    <div class="footer-links">
+      <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/methodology/">methodology</a>
+      <a href="/newsletter/">newsletter</a>
+      <a href="/pricing/">pricing</a>
+      <a href="/free/">free reports</a>
+      <a href="/legal/disclaimer/">disclaimer</a>
+      <a href="/legal/privacy/">privacy</a>
+      <a href="/legal/terms/">terms</a>
+    </div>
+    <div class="footer-logo">
+      <a href="/" aria-label="home">
+        <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+      </a>
+    </div>
+  </footer>
+  <script src="/js/site-chrome.js" defer></script>
+</body>
+</html>
