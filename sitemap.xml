@@ -96,6 +96,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://xvary.com/basket/satellite-internet/index.html</loc>
+    <lastmod>2026-04-17</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://xvary.com/basket/smart-grid-infrastructure/index.html</loc>
     <lastmod>2026-04-17</lastmod>
     <priority>0.7</priority>
@@ -346,6 +351,11 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://xvary.com/earnings/wmt-pre/index.html</loc>
+    <lastmod>2026-04-17</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://xvary.com/free/index.html</loc>
     <lastmod>2026-04-11</lastmod>
     <priority>0.7</priority>
@@ -411,12 +421,22 @@
     <priority>0.7</priority>
   </url>
   <url>
+    <loc>https://xvary.com/geopolitical/iran-strait-of-hormuz-oil-supply-disruption-amid-us-iran-tensions/index.html</loc>
+    <lastmod>2026-04-17</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
     <loc>https://xvary.com/geopolitical/iran-war-oil-supply-disruption-via-strait-of-hormuz/index.html</loc>
     <lastmod>2026-04-17</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://xvary.com/geopolitical/middle-east-oil-supply-disruption-from-strait-of-hormuz-closure/index.html</loc>
+    <lastmod>2026-04-17</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://xvary.com/geopolitical/nato-defense-posturing-and-capability-buildup-in-the-baltic-region/index.html</loc>
     <lastmod>2026-04-17</lastmod>
     <priority>0.7</priority>
   </url>
@@ -472,7 +492,7 @@
   </url>
   <url>
     <loc>https://xvary.com/</loc>
-    <lastmod>2026-04-16</lastmod>
+    <lastmod>2026-04-17</lastmod>
     <priority>1.0</priority>
   </url>
   <url>
@@ -1698,6 +1718,11 @@
   <url>
     <loc>https://xvary.com/stock/alkt/snapshot/index.html</loc>
     <lastmod>2026-04-11</lastmod>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://xvary.com/stock/all/deep-dive/index.html</loc>
+    <lastmod>2026-04-17</lastmod>
     <priority>0.7</priority>
   </url>
   <url>
