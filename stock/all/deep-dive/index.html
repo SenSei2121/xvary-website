@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ALL - deep dive · xvary</title>
+  <meta name="description" content="Allstate turned a 94.3% combined ratio into 85.2% in one year and made over $10 billion in net income." />
+  <meta name="robots" content="index, follow" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=DM+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/css/brutalist.css" />
+  <style>
+:root{
+      --yel:#ffe500;
+      --ink:#000;
+      --paper:#fffdf3;
+      --card:#fff;
+      --line:rgba(0,0,0,.12);
+      --text:#111;
+      --muted:#555;
+      --soft:#f3eed8;
+      --green:#1a7f5a;
+      --red:#c53030;
+      --amber:#b7791f;
+      --blue:#2251ff;
+      --shadow:0 18px 42px rgba(0,0,0,.10);
+      --radius:16px;
+      --radius-sm:12px;
+      --navw:240px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    html{background:var(--yel);scroll-behavior:smooth;scroll-padding-top:calc(var(--nav-h, 68px) + 24px)}
+    body{
+      background:var(--yel);
+      color:var(--text);
+      font:500 16px/1.65 "Space Grotesk",system-ui,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    a{color:inherit;text-decoration:none}
+    a:hover{text-decoration:underline}
+    ::selection{background:var(--ink);color:var(--yel)}
+    .skip-link{
+      position:absolute;left:12px;top:-40px;z-index:9999;
+      background:var(--ink);color:var(--yel);
+      padding:8px 14px;border-radius:999px;font:700 12px/1 "DM Mono",monospace;
+    }
+    .skip-link:focus{top:12px}
+
+    .layout{display:block}
+    .sidebar{
+      position:fixed;left:0;top:var(--nav-h, 68px);bottom:0;width:var(--navw);
+      overflow:auto;background:var(--ink);color:#fff;border-right:1px solid rgba(255,255,255,.08);
+      padding:18px 0 16px;scrollbar-width:none;
+    }
+    .sidebar::-webkit-scrollbar{display:none}
+    .nav-section{padding:0 0 8px}
+    .nav-label{
+      padding:0 18px 10px;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.12em;text-transform:lowercase;color:rgba(255,255,255,.46);
+    }
+    .nav-pill{
+      display:flex;align-items:center;gap:10px;
+      padding:10px 18px 10px 16px;color:rgba(255,255,255,.78);
+      border-left:3px solid transparent;text-decoration:none;font-size:12px;font-weight:600;line-height:1.35;
+    }
+    .nav-pill:hover{background:rgba(255,255,255,.06);text-decoration:none}
+    .nav-pill.active{background:var(--yel);color:var(--ink);border-left-color:var(--ink)}
+    .nav-kbd{
+      display:inline-flex;align-items:center;justify-content:center;
+      width:22px;height:22px;border-radius:6px;
+      background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);
+      font:700 10px/1 "DM Mono",monospace;flex:0 0 auto;
+    }
+    .nav-pill.active .nav-kbd{background:var(--ink);color:var(--yel);border-color:var(--ink)}
+    .nav-txt{min-width:0}
+
+    .content{
+      margin-left:var(--navw);
+      padding:28px 26px 64px;
+      width:calc((100vw - var(--navw)) * 0.9);
+      max-width:none;
+    }
+
+    .hero{
+      display:block;
+      text-align:left;
+      border-bottom:3px solid rgba(0,0,0,.14);
+      padding:18px 0 26px;margin-bottom:18px;
+    }
+    .hero-top{
+      display:grid;grid-template-columns:minmax(220px,300px) 1fr;gap:24px;align-items:end;
+      padding-bottom:18px;
+    }
+    .hero .hero-ticker{
+      font-size:clamp(58px,10vw,92px);line-height:.88;font-weight:800;letter-spacing:-.05em;text-transform:lowercase;margin:0;
+      max-width:none;text-align:left;
+    }
+    .hero-co{margin-top:4px;font-size:14px;color:rgba(0,0,0,.64);text-transform:lowercase}
+    .hero-badges{display:flex;gap:6px;flex-wrap:wrap;margin-top:10px}
+    .pill{
+      display:inline-flex;align-items:center;padding:5px 12px;border-radius:999px;
+      font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.06em;
+      background:rgba(0,0,0,.08);color:#111;
+    }
+    .pill.dark{background:var(--ink);color:var(--yel)}
+    .hero .hero-hook{
+      font-size:clamp(19px,2.05vw,24px);line-height:1.35;font-weight:700;margin:0;color:#111;
+      max-width:none;text-align:left;
+    }
+    .hero .hero-sub{
+      margin:10px 0 0;color:rgba(0,0,0,.70);font-size:17px;line-height:1.68;max-width:none;text-align:left;
+    }
+    .hero-tape{
+      display:flex;flex-wrap:wrap;gap:10px 16px;margin-top:16px;padding-top:16px;
+      border-top:2px solid rgba(0,0,0,.10);font:600 11px/1.5 "DM Mono",monospace;color:rgba(0,0,0,.58)
+    }
+    .hero-tape strong{color:rgba(0,0,0,.92)}
+
+    .kpi-grid{display:grid;gap:10px}
+    .kpi-grid.cols-4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .kpi-grid.cols-3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .kpi-grid.cols-2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .kpi{
+      background:rgba(255,255,255,.84);border:1px solid rgba(0,0,0,.08);border-radius:14px;
+      padding:14px 16px;box-shadow:0 8px 20px rgba(0,0,0,.04)
+    }
+    .kpi-label{font:700 10px/1.25 "DM Mono",monospace;text-transform:uppercase;letter-spacing:.08em;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .kpi-value{font-size:clamp(24px,2.8vw,34px);font-weight:800;line-height:1;letter-spacing:-.04em;font-variant-numeric:tabular-nums}
+    .kpi-sub{margin-top:4px;font-size:12px;line-height:1.45;color:rgba(0,0,0,.55)}
+    .value-gn{color:var(--green)}
+    .value-rd{color:var(--red)}
+    .value-am{color:var(--amber)}
+
+    .panel{
+      background:rgba(255,255,255,.92);border:2px solid rgba(0,0,0,.08);border-left:5px solid var(--yel);
+      border-radius:var(--radius);box-shadow:var(--shadow);padding:24px;margin:18px 0
+    }
+    .section-head{
+      display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;
+      margin-bottom:12px;padding-bottom:12px;border-bottom:3px solid #000
+    }
+    .section-head h2{
+      margin:0;font-size:clamp(34px,3.9vw,50px);line-height:.98;font-weight:800;letter-spacing:-.045em;text-transform:none
+    }
+    .kicker{font:700 11px/1 "DM Mono",monospace;letter-spacing:.12em;text-transform:lowercase;color:rgba(0,0,0,.52)}
+    .lead{margin:0 0 16px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.72)}
+    .aggregate-sources-attribution{margin:0 0 14px;max-width:80ch;font-size:16.5px;line-height:1.72;color:rgba(0,0,0,.76)}
+    .aggregate-sources-attribution p{margin:0}
+    .aggregate-methodology-link{margin:0;max-width:80ch;font-size:14.5px;line-height:1.6;color:rgba(0,0,0,.62)}
+    #appendix .lead,
+    #appendix .aggregate-sources-attribution,
+    #appendix .aggregate-methodology-link{max-width:none}
+    .quote,.note,.callout,.pillar,.scenario,.table-wrap,.chart-box{
+      background:rgba(255,255,255,.82);border:1px solid rgba(0,0,0,.08);border-radius:14px
+    }
+    .quote{padding:14px 16px;font-size:15px;line-height:1.68;color:rgba(0,0,0,.72)}
+    .note{padding:14px 16px;margin-top:10px;font-size:14.5px;line-height:1.64;color:rgba(0,0,0,.72)}
+    .note strong,.table-title .tag,.legend-label,.pillars .head h4{
+      font:700 11px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase
+    }
+    .note.green{border-left:4px solid var(--green);background:rgba(26,127,90,.06)}
+    .note.amber{border-left:4px solid var(--amber);background:rgba(183,121,31,.08)}
+    .note.red{border-left:4px solid var(--red);background:rgba(197,48,48,.06)}
+
+    .g2,.g3,.g4,.callout-row,.pillars,.scenario-grid{display:grid;gap:10px}
+    .g2{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .g3{grid-template-columns:repeat(3,minmax(0,1fr))}
+    .g4{grid-template-columns:repeat(4,minmax(0,1fr))}
+    .callout-row{grid-template-columns:repeat(auto-fit,minmax(180px,1fr));margin-top:12px;min-width:0}
+    .callout{padding:14px 16px;min-width:0;box-shadow:0 10px 28px rgba(0,0,0,.06)}
+    .callout .label{font:700 10px/1 "DM Mono",monospace;letter-spacing:.08em;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:6px}
+    .callout .metric{font-size:clamp(24px,2.8vw,32px);font-weight:800;line-height:1.15;letter-spacing:-.04em;font-variant-numeric:tabular-nums;overflow-wrap:anywhere;word-break:break-word}
+    #appendix .callout .metric{font-size:clamp(13px,1.35vw,16px);font-weight:700;letter-spacing:0;line-height:1.4}
+    .callout .desc{margin-top:6px;font-size:12.5px;line-height:1.5;color:rgba(0,0,0,.56)}
+
+    .pillars{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:14px}
+    .pillar{padding:14px 16px}
+    .pillar .head{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-bottom:8px}
+    .pillar .head h4{margin:0;font-size:14px;color:#111;letter-spacing:0;text-transform:none;font-family:"Space Grotesk",sans-serif}
+    .tag{
+      display:inline-flex;align-items:center;padding:3px 9px;border-radius:999px;border:1px solid rgba(0,0,0,.10);
+      background:rgba(255,255,255,.85);font:700 10px/1 "DM Mono",monospace;text-transform:lowercase;letter-spacing:.04em;
+    }
+    .tag.green{color:var(--green);background:rgba(26,127,90,.08);border-color:rgba(26,127,90,.25)}
+    .tag.amber{color:var(--amber);background:rgba(183,121,31,.10);border-color:rgba(183,121,31,.25)}
+    .tag.red{color:var(--red);background:rgba(197,48,48,.08);border-color:rgba(197,48,48,.25)}
+    .tag.blue{color:#111;background:rgba(255,229,0,.18);border-color:rgba(0,0,0,.20)}
+    .tag.ink{color:rgba(0,0,0,.68)}
+
+    .table-title{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:0 0 8px}
+    .table-title h3{margin:0;font-size:18px;line-height:1.25;font-weight:800;letter-spacing:-.02em;text-transform:none}
+    .table-wrap{overflow:auto;box-shadow:0 8px 24px rgba(0,0,0,.05)}
+    table{width:100%;border-collapse:collapse;min-width:520px;font-variant-numeric:tabular-nums;background:#fff}
+    th,td{padding:11px 14px;border-bottom:1px solid rgba(0,0,0,.07);vertical-align:top}
+    thead th{
+      position:sticky;top:0;background:#f0ece4;color:#111;font:700 10px/1 "DM Mono",monospace;
+      letter-spacing:.08em;text-transform:lowercase;border-bottom:3px solid #000;text-align:left
+    }
+    tbody tr:nth-child(even) td{background:rgba(240,236,228,.36)}
+    tbody tr:hover td{background:rgba(255,229,0,.16)}
+    td.num,th.num{text-align:right}
+    td.b{font-weight:800;color:#111}
+    td.pos{color:var(--green);font-weight:700}
+    td.neg{color:var(--red);font-weight:700}
+    td.amb{color:var(--amber);font-weight:700}
+
+    .chart-box{padding:16px 18px 18px;box-shadow:0 12px 36px rgba(0,0,0,.06)}
+    .chart-head h3{margin:0 0 4px;font-size:16px;line-height:1.2;text-transform:none}
+    .chart-head .sub{font-size:11px;color:rgba(0,0,0,.52);font-style:italic}
+    /* TAM vs revenue: y-axis ticks + grid + split x-label row */
+    .chart-labeled{
+      --chart-h:min(52vw,240px);
+      --chart-h-min:200px;
+      --chart-h-max:260px;
+      display:grid;
+      grid-template-columns:3.35rem 1fr;
+      grid-template-rows:minmax(var(--chart-h-min),var(--chart-h-max)) auto;
+      gap:8px 12px;
+      align-items:stretch;
+      margin-top:6px;
+    }
+    .chart-y-title{
+      margin:8px 0 0;
+      font:700 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.5);
+    }
+    .chart-y-axis{
+      grid-column:1;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      padding-right:8px;
+      border-right:2px solid rgba(0,0,0,.2);
+      font:600 10px/1 "DM Mono",monospace;
+      color:rgba(0,0,0,.58);
+      box-sizing:border-box;
+    }
+    .chart-y-axis .yt{
+      position:absolute;right:8px;line-height:1;white-space:nowrap;
+      transform:translateY(-50%);
+    }
+    .chart-y-axis .yt.y-600{top:0;transform:translateY(0)}
+    .chart-y-axis .yt.y-500{top:16.6667%}
+    .chart-y-axis .yt.y-400{top:33.3333%}
+    .chart-y-axis .yt.y-300{top:50%}
+    .chart-y-axis .yt.y-200{top:66.6667%}
+    .chart-y-axis .yt.y-100{top:83.3333%}
+    .chart-y-axis .yt.y-0{bottom:0;top:auto;transform:translateY(0)}
+    .chart-plot-cell{
+      grid-column:2;
+      grid-row:1;
+      position:relative;
+      height:var(--chart-h);
+      min-height:var(--chart-h-min);
+      max-height:var(--chart-h-max);
+      border-bottom:2px solid rgba(0,0,0,.2);
+    }
+    .chart-grid-bg{
+      position:absolute;inset:0;
+      background:repeating-linear-gradient(
+        to bottom,
+        transparent 0,
+        transparent calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6 - 1px),
+        rgba(0,0,0,.09) calc(100% / 6)
+      );
+      pointer-events:none;
+    }
+    .chart{
+      position:relative;z-index:1;
+      display:flex;align-items:flex-end;justify-content:stretch;gap:6px;
+      width:100%;
+      height:100%;min-height:0;
+    }
+    .bar{
+      flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;
+      min-width:0;height:100%;
+    }
+    .bar-pair{
+      display:flex;flex-direction:row;align-items:flex-end;justify-content:center;
+      gap:5px;width:100%;height:100%;min-height:0;
+    }
+    .col{
+      flex:1 1 0;min-width:8px;border-radius:8px 8px 2px 2px;
+      min-height:2px;align-self:flex-end;
+      box-sizing:border-box;
+    }
+    .col.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .col.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .chart-x-foot{
+      grid-column:2;
+      grid-row:2;
+      display:flex;gap:6px;
+      margin-top:-2px;
+    }
+    .bar-foot{
+      flex:1 1 0;min-width:0;
+      text-align:center;padding-top:6px;
+    }
+    .chart-x-axis-cap{
+      margin:4px 0 0;
+      font:600 10px/1.3 "DM Mono",monospace;
+      letter-spacing:.06em;
+      text-transform:lowercase;
+      color:rgba(0,0,0,.45);
+      text-align:center;
+    }
+    .chart-legend{
+      display:flex;flex-wrap:wrap;gap:14px 20px;margin-top:12px;padding-top:10px;
+      border-top:1px solid rgba(0,0,0,.08);font-size:12px;color:rgba(0,0,0,.62)
+    }
+    .chart-legend span{display:inline-flex;align-items:center;gap:6px}
+    .chart-legend i{width:12px;height:12px;border-radius:3px;flex-shrink:0}
+    .chart-legend i.tam{background:linear-gradient(180deg,#4a90d9,#2251ff)}
+    .chart-legend i.nvda{background:linear-gradient(180deg,#2d9f6c,var(--green))}
+    .lab,.val{font-size:10px;line-height:1.25;text-align:center;color:rgba(0,0,0,.56)}
+    .val{font:700 10px/1 "DM Mono",monospace}
+    .lab{max-width:12em;margin:0 auto}
+
+    .scenario-grid{grid-template-columns:repeat(3,minmax(0,1fr));margin-top:12px}
+    .scenario{padding:14px 16px;border-left:4px solid var(--blue)}
+    .scenario.bear{border-left-color:var(--red)}
+    .scenario.base{border-left-color:var(--amber)}
+    .scenario.bull{border-left-color:var(--green)}
+    .scenario .prob{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.55);margin-bottom:8px}
+    .scenario h4{margin:0 0 6px;font-size:18px;line-height:1.1}
+    .scenario p{margin:0;font-size:14px;line-height:1.6;color:rgba(0,0,0,.72)}
+
+    .legend{display:grid;gap:8px}
+    .legend .item{display:flex;align-items:center;gap:8px;font-size:13px;color:rgba(0,0,0,.72)}
+    .dot{width:10px;height:10px;border-radius:50%}
+    .dot.green{background:var(--green)} .dot.amber{background:var(--amber)} .dot.red{background:var(--red)} .dot.blue{background:#2251ff}
+
+    .footer{
+      margin-top:28px;padding-top:22px;border-top:3px solid rgba(0,0,0,.12);
+      text-align:center;font-size:12px;line-height:1.65;color:rgba(0,0,0,.56)
+    }
+    .footer .links{display:flex;flex-wrap:wrap;justify-content:center;gap:12px;margin-top:10px}
+    .footer .links a{font:700 11px/1 "DM Mono",monospace;text-transform:lowercase;color:rgba(0,0,0,.68)}
+    .footer .small{margin-top:12px;font-size:11px;color:rgba(0,0,0,.54)}
+
+    .reading-progress{
+      position:fixed;top:var(--nav-h, 68px);left:0;height:4px;width:0;z-index:101;
+      background:linear-gradient(90deg,var(--yel),#fff38c);box-shadow:0 1px 0 rgba(0,0,0,.2),0 0 14px rgba(255,229,0,.45)
+    }
+    .watermark{
+      position:fixed;right:18px;bottom:14px;z-index:1;pointer-events:none;user-select:none;
+      font-size:clamp(68px,12vw,118px);font-weight:800;letter-spacing:-.06em;line-height:.8;color:rgba(0,0,0,.05)
+    }
+
+    @media (max-width:1024px){
+      .g2,.g3,.g4,.pillars,.scenario-grid{grid-template-columns:1fr}
+      .hero-top{grid-template-columns:1fr}
+      .content{padding:22px 18px 56px}
+    }
+    @media (max-width:900px){
+      .sidebar{display:none}
+      .content{
+        margin-left:auto;
+        margin-right:auto;
+        width:90vw;
+        max-width:none;
+      }
+    }
+    @media (max-width:760px){
+      .kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr 1fr}
+      .callout-row{grid-template-columns:1fr 1fr}
+      table{min-width:460px}
+    }
+    @media (max-width:560px){
+      .callout-row,.kpi-grid.cols-4,.kpi-grid.cols-3,.kpi-grid.cols-2{grid-template-columns:1fr}
+      .section-head h2{font-size:30px}
+      .hero .hero-hook{font-size:19px}
+      .hero .hero-sub{font-size:16px}
+      .panel{padding:20px}
+    }
+    .hero-snapshot-link {
+      display: inline-block;
+      margin-top: 4px;
+      font: 400 11px/1.4 "DM Mono", monospace;
+      color: rgba(0,0,0,.38);
+      text-decoration: none;
+      letter-spacing: 0.02em;
+    }
+    .hero-snapshot-link:hover {
+      color: rgba(0,0,0,.68);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+  .aggregate-panel {
+    position: relative;
+    z-index: 1;
+  }
+  .aggregate-lead p {
+    margin: 0 0 16px;
+  }
+  .auto-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+  .aggregate-stack {
+    display: grid;
+    gap: 12px;
+  }
+  .aggregate-card {
+    background: rgba(255,255,255,.82);
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 14px;
+    padding: 14px 16px;
+    box-shadow: 0 10px 28px rgba(0,0,0,.05);
+  }
+  .aggregate-card.dark {
+    background: rgba(0,0,0,.92);
+    color: rgba(255,255,255,.92);
+    border-color: rgba(255,255,255,.08);
+  }
+  .aggregate-card.dark p,
+  .aggregate-card.dark li,
+  .aggregate-card.dark .aggregate-source {
+    color: rgba(255,255,255,.72);
+  }
+  .aggregate-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+  .aggregate-card-head h3 {
+    margin: 0;
+    font-size: 18px;
+    line-height: 1.25;
+    font-weight: 800;
+    letter-spacing: -.02em;
+    text-transform: lowercase;
+  }
+  .aggregate-card-body,
+  .aggregate-card-body p,
+  .aggregate-card-body li {
+    font-size: 15px;
+    line-height: 1.68;
+    color: rgba(0,0,0,.72);
+  }
+  .aggregate-card-body p {
+    margin: 0 0 12px;
+  }
+  .aggregate-card-body ul,
+  .aggregate-card-body ol {
+    margin: 0 0 12px 20px;
+    padding: 0;
+  }
+  .aggregate-card-body > *:last-child {
+    margin-bottom: 0;
+  }
+  .aggregate-source {
+    margin-top: 10px;
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .06em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.48);
+  }
+  .aggregate-substack {
+    display: grid;
+    gap: 10px;
+    margin-top: 12px;
+  }
+  .aggregate-chart-grid {
+    display: grid;
+    gap: 10px;
+    margin-top: 8px;
+  }
+  .aggregate-chart-row {
+    display: grid;
+    grid-template-columns: minmax(80px, 140px) 1fr minmax(60px, 120px);
+    align-items: center;
+    gap: 10px;
+  }
+  .aggregate-chart-label,
+  .aggregate-chart-value {
+    font: 700 10px/1.4 "DM Mono", monospace;
+    letter-spacing: .04em;
+    text-transform: lowercase;
+    color: rgba(0,0,0,.62);
+  }
+  .aggregate-chart-track {
+    position: relative;
+    height: 12px;
+    border-radius: 999px;
+    background: rgba(0,0,0,.08);
+    overflow: hidden;
+  }
+  .aggregate-chart-fill {
+    position: absolute;
+    inset: 0 auto 0 0;
+    border-radius: 999px;
+  }
+  .table-wrap table th.num,
+  .table-wrap table td.num {
+    text-align: right;
+  }
+  .table-wrap table td.pos { color: var(--green, #1a7f37); font-weight: 600; }
+  .table-wrap table td.neg { color: var(--red, #cf222e); font-weight: 600; }
+  .table-wrap table td.amb { color: var(--caution-text, #9a6700); font-weight: 600; }
+  .table-narrow {
+    max-width: 520px;
+  }
+  .table-narrow table {
+    min-width: 0;
+    width: 100%;
+  }
+  .g2 .table-narrow {
+    max-width: none;
+  }
+  .aggregate-mini-table {
+    margin-top: 8px;
+  }
+  .aggregate-mini-table table {
+    min-width: 0;
+  }
+  .aggregate-list {
+    display: grid;
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .aggregate-list-item {
+    padding: 10px 12px;
+    border: 1px solid rgba(0,0,0,.08);
+    border-radius: 12px;
+    background: rgba(255,255,255,.72);
+  }
+  .aggregate-list-item strong {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+  }
+  .aggregate-audit {
+    margin-top: 8px;
+  }
+  @media (max-width: 1120px) {
+    .sidebar {
+      position: static;
+      width: auto;
+      top: auto;
+      padding: 12px 0;
+      border-right: 0;
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      display: none;
+    }
+    .content {
+      margin-left: auto;
+      margin-right: auto;
+      width: 90vw;
+      max-width: none;
+      padding: 24px 18px 56px;
+    }
+    .watermark {
+      display: none;
+    }
+  }
+  @media (max-width: 720px) {
+    .hero-top {
+      grid-template-columns: 1fr;
+    }
+    .aggregate-chart-row {
+      grid-template-columns: 1fr;
+      gap: 6px;
+    }
+  }
+  .aggregate-pane-xref {
+    margin: 10px 0 0;
+    font-size: 13px;
+    line-height: 1.45;
+    color: rgba(0, 0, 0, 0.52);
+  }
+  .aggregate-pane-xref a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+  .aggregate-pane-xref a:hover {
+    color: rgba(0, 0, 0, 0.88);
+  }
+  .hero-snapshot-link {
+    display: inline-block;
+    margin-top: 4px;
+    font: 400 11px/1.4 "DM Mono", monospace;
+    color: rgba(0,0,0,.38);
+    text-decoration: none;
+    letter-spacing: 0.02em;
+  }
+  .hero-snapshot-link:hover {
+    color: rgba(0,0,0,.68);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+  }
+
+  </style>
+</head>
+<body data-xvary-aggregate-readable="1">
+  <a class="skip-link" href="#content">skip to content</a>
+  <div class="reading-progress" id="reading-progress"></div>
+  <div class="watermark" aria-hidden="true">ALL</div>
+
+  <nav class="nav nav--white" aria-label="main navigation" data-xvary-nav-static>
+    <a class="nav-brand" href="/">xvary</a>
+    <button class="nav-toggle" aria-label="toggle menu" aria-expanded="false" type="button" onclick="this.setAttribute('aria-expanded',this.getAttribute('aria-expanded')==='false');this.nextElementSibling.classList.toggle('open')"><span></span></button>
+    <div class="nav-links">
+      <a href="/pulse/" class="nav-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/pricing/">pricing</a>
+      <a class="nav-cta" href="/pricing/">sign up</a>
+    </div>
+  </nav>
+
+  <div class="layout xvary-aggregate-deep-dive-body" data-template-id="aggregate-deep-dive-live-v1" lang="en">
+    <aside class="sidebar" aria-label="section navigation">
+      <div class="nav-section">
+        <div class="nav-label">quick navigation</div>
+        <a class="nav-pill active" href="#summary">
+          <span class="nav-kbd">0</span>
+          <span class="nav-txt">report snapshot</span>
+        </a>
+        <a class="nav-pill " href="#thesis">
+          <span class="nav-kbd">1</span>
+          <span class="nav-txt">variant perception &amp; thesis</span>
+        </a>
+        <a class="nav-pill " href="#financials">
+          <span class="nav-kbd">2</span>
+          <span class="nav-txt">financial analysis</span>
+        </a>
+        <a class="nav-pill " href="#valuation">
+          <span class="nav-kbd">3</span>
+          <span class="nav-txt">valuation</span>
+        </a>
+        <a class="nav-pill " href="#risk">
+          <span class="nav-kbd">4</span>
+          <span class="nav-txt">what breaks the thesis</span>
+        </a>
+        <a class="nav-pill " href="#ops">
+          <span class="nav-kbd">5</span>
+          <span class="nav-txt">fundamentals &amp; operations</span>
+        </a>
+        <a class="nav-pill " href="#competition">
+          <span class="nav-kbd">6</span>
+          <span class="nav-txt">competitive position</span>
+        </a>
+        <a class="nav-pill " href="#tam">
+          <span class="nav-kbd">7</span>
+          <span class="nav-txt">market size &amp; tam</span>
+        </a>
+        <a class="nav-pill " href="#product">
+          <span class="nav-kbd">8</span>
+          <span class="nav-txt">product &amp; technology</span>
+        </a>
+        <a class="nav-pill " href="#supply">
+          <span class="nav-kbd">9</span>
+          <span class="nav-txt">supply chain</span>
+        </a>
+        <a class="nav-pill " href="#catalysts">
+          <span class="nav-kbd">a</span>
+          <span class="nav-txt">catalyst map</span>
+        </a>
+        <a class="nav-pill " href="#street">
+          <span class="nav-kbd">b</span>
+          <span class="nav-txt">street expectations</span>
+        </a>
+        <a class="nav-pill " href="#management">
+          <span class="nav-kbd">c</span>
+          <span class="nav-txt">management &amp; leadership</span>
+        </a>
+        <a class="nav-pill " href="#macro">
+          <span class="nav-kbd">d</span>
+          <span class="nav-txt">macro sensitivity</span>
+        </a>
+        <a class="nav-pill " href="#governance">
+          <span class="nav-kbd">e</span>
+          <span class="nav-txt">governance &amp; accounting</span>
+        </a>
+        <a class="nav-pill " href="#value">
+          <span class="nav-kbd">f</span>
+          <span class="nav-txt">value framework</span>
+        </a>
+        <a class="nav-pill " href="#appendix">
+          <span class="nav-kbd">g</span>
+          <span class="nav-txt">appendix &amp; sources</span>
+        </a>
+      </div>
+    </aside>
+
+    <main class="content" id="content">
+      <section class="hero" aria-label="report intro">
+        <div class="hero-top">
+          <div>
+            <h1 class="hero-ticker">all</h1>
+            <div class="hero-co">the allstate corporation</div>
+            <a class="hero-snapshot-link" href="/stock/all/snapshot/">snapshot page &rarr;</a>
+            <div class="hero-badges">
+              <span class="pill dark">deep dive</span>
+              <span class="pill ">insurance</span>
+              <span class="pill ">cap n/a</span>
+              <span class="pill ">apr 17, 2026</span>
+            </div>
+            <div class="hero-tape" aria-label="headline tape">
+              <span><strong>Position</strong> Long</span>
+              <span><strong>Price</strong> $213.87</span>
+              <span><strong>N/A</strong> mcap</span>
+              <span><strong>apr 17, 2026</strong> as-of date</span>
+            </div>
+          </div>
+          <div>
+            <p class="hero-hook">Allstate turned a 94.3% combined ratio into 85.2% in one year and made over $10 billion in net income. Most people still think of it as the company that gets hammered by every big storm. How long until the market realizes this profitability inflection is real and sticky?</p>
+            <p class="hero-sub">We're <strong>Long at 46/100 signal strength</strong>; fair value about <strong>$260</strong> (+21.6% vs spot).</p>
+          </div>
+        </div>
+
+        <div class="kpi-grid cols-3">
+          <div class="kpi">
+            <div class="kpi-label">recommendation</div>
+            <div class="kpi-value ">Long</div>
+            <div class="kpi-sub">portfolio stance</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">12m price target</div>
+            <div class="kpi-value ">$260.00</div>
+            <div class="kpi-sub">+22% from $213.87</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">intrinsic value</div>
+            <div class="kpi-value ">$260</div>
+            <div class="kpi-sub">+21.6%</div>
+          </div>
+        </div>
+
+        <div class="callout-row">
+          <div class="callout">
+            <div class="label">assumptions scored</div>
+            <div class="metric ">24</div>
+            <div class="desc">6 high-conviction</div>
+          </div>
+          <div class="callout">
+            <div class="label">number registry</div>
+            <div class="metric ">374</div>
+            <div class="desc">3 verified vs EDGAR</div>
+          </div>
+          <div class="callout">
+            <div class="label">quality score</div>
+            <div class="metric ">63%</div>
+            <div class="desc">12-test average</div>
+          </div>
+          <div class="callout">
+            <div class="label">biases detected</div>
+            <div class="metric ">9</div>
+            <div class="desc">4 high severity</div>
+          </div>
+        </div>
+      </section>
+
+      <section id="summary" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>report snapshot</h2>
+          <div class="kicker">executive summary</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Intrinsic value of $260 implies 21.6% upside from the current $213.87 share price. The single most important non-obvious insight is the extreme valuation disconnect: Allstate trades at a 5.6x P/E on 2025 EPS of $38.06 while generating 33.6% ROE and $9.882B free cash flow (14.6% margin).</p></div>
+                <div class="g3"><div class="kpi"><div class="kpi-label">recommendation</div><div class="kpi-value ">Long</div><div class="kpi-sub">portfolio stance</div></div><div class="kpi"><div class="kpi-label">12m price target</div><div class="kpi-value ">$260.00</div><div class="kpi-sub">+22% from $213.87</div></div><div class="kpi"><div class="kpi-label">intrinsic value</div><div class="kpi-value ">$260</div><div class="kpi-sub">+21.6%</div></div></div>
+        <div class="g2" style="margin-top:10px">
+          <div class="quote"><strong class="kicker">core debate</strong><br><p>Intrinsic value of $260 implies 21.6% upside from the current $213.87 share price...</p></div>
+          <div class="quote"><strong class="kicker">headline tape</strong><br><p>$213.87 · N/A · as of apr 17, 2026.</p></div>
+        </div>
+        <div class="callout-row"><div class="callout"><div class="label">bear case</div><div class="metric value-rd">$208.00</div><div class="desc">Frequent and severe weather events continue to spike catastrophe losses, overwhelming pricing actions and pushing the combined ratio back toward or above 95%...</div></div><div class="callout"><div class="label">bull case</div><div class="metric value-gn">$312.00</div><div class="desc">Allstate sustains combined ratios in the mid-80s through superior risk selection and pricing discipline while growing personal lines policies at mid-single digits...</div></div><div class="callout"><div class="label">base case</div><div class="metric ">$260.00</div><div class="desc">Allstate maintains a combined ratio in the upper-80s to low-90s with moderate policy growth and ongoing capital returns via dividends and buybacks...</div></div></div>
+        <div class="note green"><strong>top findings</strong><br><p>Allstate has finally cracked the code on profitable personal lines growth after years of underwriting discipline and tech investment. 2025 delivered explosive earnings from a 9.1-point combined ratio improvement to 85.2%, $10.2 billion net income, and strong policy growth in auto and homeowners while still making insurance more affordable for millions of customers...</p></div>
+        <div class="note amber"><strong>aggregate synthesis</strong><br><p>Numbers can look similar while narrative labels diverge — focus on which spreadsheet row the market is pricing.</p></div>
+
+      </section>
+      <section id="thesis" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>variant perception &amp; thesis</h2>
+          <div class="kicker">pm brief</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Allstate delivered an exceptional 2025 inflection with $67.69B revenue, $10.28B net income, and diluted EPS of $38.06 (+164.9% YoY), driving ROE to 33.6% and a 15.2% net margin. The market prices the stock at only 5.6x trailing EPS despite durable drivers in pricing sophistication, multi-channel distribution, and policy growth to ~211M. We are Long with high conviction that the 2025 profitability expansion is structural rather than transitory, supported by a DCF base fair value of $260 versus the current $213.87 price.</p></div>
+                <div class="pillars"><div class="pillar"><div class="head"><h4>1. sustainable underwriting profitability</h4><span class="tag green">Catalyst</span></div><p>Can Allstate sustain favorable combined ratios (below 90-95%) in its Property-Liability segment through disciplined pricing, AI/data-driven risk selection, and catastrophe management, or will volatility from weather events and competitive pressures erode unit economics...</p></div><div class="pillar"><div class="head"><h4>2. durable competitive advantage</h4><span class="tag blue">Thesis Pillar</span></div><p>Is Allstate&#x27;s competitive position in the US P&C market (solid but non-dominant ~5-10% shares in auto/homeowners) durable against larger peers (State Farm ~18%, Progressive ~16-18%), or are barriers to entry weakening and price competition intensifying in a softening market...</p></div><div class="pillar"><div class="head"><h4>3. catastrophe exposure management</h4><span class="tag green">Catalyst</span></div><p>Can Allstate effectively manage and mitigate escalating catastrophe losses (driven by climate/volatility) to limit earnings volatility and maintain long-term capital strength, or will frequent severe weather events (e.g., wind/hail) materially impair results...</p></div><div class="pillar"><div class="head"><h4>4. shareholder return sustainability</h4><span class="tag green">Catalyst</span></div><p>Will Allstate continue delivering strong shareholder returns via dividend growth (from ~$3.68 in 2024 to $4.00 in 2025, with 2026 quarterly at $1.08) and buybacks, supported by high EPS/ROE, or will volatility and capital needs constrain payouts...</p></div></div>
+        <div class="note"><strong>the 60-second pitch</strong><br><p>XVARY&#x27;s view: Allstate&#x27;s 2025 results mark a sustainable step-change, not a peak, with $38.06 EPS and 33.6% ROE likely to moderate only modestly rather than collapse toward historical averages. This is Long for the thesis as the 5.6x P/E embeds excessive skepticism versus DCF fair value of $260. What would change our mind: two consecutive quarters of underlying combined ratio > 92% or PIF contraction, signaling loss of pricing power or distribution momentum...</p></div>
+        <div style="margin-top:12px"><div class="table-wrap"><table><thead><tr><th>Criterion</th><th>Threshold</th><th class="num">Actual Value (2025)</th><th>Pass/Fail</th></tr></thead><tbody><tr><td><p>Adequate Size</p></td><td><p>Revenue &gt; $100M or assets &gt; $100M</p></td><td class="num"><p>Revenue $67.69B; Assets $119.76B</p></td><td><p>Pass</p></td></tr><tr><td><p>Strong Financial Condition</p></td><td>Current ratio > 2 or debt/equity < 0.5 (insurance adjusted)</td><td class="num"><p>Debt/Equity 0.24; Liab/Equity 2.91 (typical for P&C)</p></td><td><p>Pass</p></td></tr><tr><td><p>Earnings Stability</p></td><td><p>Positive EPS in 10 of last 10 years</p></td><td class="num"><p>2025 EPS $38.06 after prior variability; not full 10-yr disclosed…</p></td><td class="amb"><p>Partial</p></td></tr><tr><td><p>Dividend Record</p></td><td><p>Uninterrupted dividends 20+ years</p></td><td class="num"><p>Long history with 8.7% increase in 2025; confirmed ongoing…</p></td><td><p>Pass</p></td></tr><tr><td><p>Earnings Growth</p></td><td><p>EPS growth > 33% over 10 years</p></td><td class="num"><p>+164.9% YoY in 2025; longer-term not fully detailed…</p></td><td><p>Strong recent</p></td></tr><tr><td><p>Moderate P/E Ratio</p></td><td><p>P/E < 15</p></td><td class="num"><p>5.6x on 2025 EPS</p></td><td><p>Pass</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Graham&#x27;s 7 Criteria Assessment for ALL | Source: SEC EDGAR filings and derived ratios (2025 data)</div></div>
+
+      </section>
+      <section id="financials" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>financial analysis</h2>
+          <div class="kicker">elite economics</div>
+        </div>
+                <div class="callout-row"><div class="callout"><div class="label">Revenue</div><div class="metric ">$17.3B</div><div class="desc">FY2025</div></div><div class="callout"><div class="label">Net Income</div><div class="metric ">$10.28B</div><div class="desc">+120.3% YoY</div></div><div class="callout"><div class="label">EPS (Dil.)</div><div class="metric ">$14.37</div><div class="desc">+164.9% YoY</div></div><div class="callout"><div class="label">Net Margin</div><div class="metric ">59.3%</div><div class="desc">vs historical mid-single digits</div></div><div class="callout"><div class="label">Debt/Equity</div><div class="metric ">0.24</div><div class="desc">conservative leverage</div></div><div class="callout"><div class="label">Current Ratio</div><div class="metric ">[Data Pending]</div><div class="desc"><span style="color:var(--muted,#999);font-style:italic">—</span></div></div></div>
+        <div class="g2" style="margin-top:10px"><div><div class="table-wrap"><table><thead><tr><th>Line Item</th><th class="num">FY2024</th><th class="num">FY2025</th><th class="num">FY2025</th><th class="num">FY2025</th><th class="num">FY2025</th></tr></thead><tbody><tr><td><p>Revenues</p></td><td class="num"><p>$64.1B</p></td><td class="num"><p>$16.5B</p></td><td class="num"><p>$16.6B</p></td><td class="num"><p>$17.3B</p></td><td class="num"><p>$67.7B</p></td></tr><tr><td><p>EPS (Diluted)</p></td><td class="num"><p>$16.99</p></td><td class="num"><p>$2.11</p></td><td class="num"><p>$7.76</p></td><td class="num"><p>$13.95</p></td><td class="num"><p>$38.06</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Financial Model (Income Statement) | Source: SEC EDGAR XBRL filings (USD)</div></div><div><div class="table-wrap"><table><thead><tr><th>Component</th><th class="num">Amount</th><th class="num">% of Total</th></tr></thead><tbody><tr><td><p>Long-Term Debt</p></td><td class="num"><p>$7.5B</p></td><td class="num"><p>94%</p></td></tr><tr><td><p>Short-Term / Current Debt</p></td><td class="num"><p>$500M</p></td><td class="num"><p>6%</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Debt Composition | Source: SEC EDGAR XBRL filings</div></div></div>
+        <div class="note green"><strong>production-report readthrough</strong><br><p>Key Takeaway. Allstate delivered a transformative FY2025 with net income surging 120.3% YoY to $10.28B on $67.69B revenue, driving net margin to 15.2% and ROE to 33.6%. This reflects sharp underwriting discipline and lower catastrophe impact versus prior cycles, creating exceptional earnings power at a compressed 5.6x trailing P/E.</p></div>
+
+      </section>
+      <section id="valuation" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>valuation</h2>
+          <div class="kicker">probability-weighted fair value</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Allstate Corporation (NYSE: ALL) trades at a compelling valuation following exceptional FY2025 results, including $67.69 billion in total revenue and $10.28 billion in net income. The deterministic DCF model derives a base fair value of $260 per share, implying +329.1% upside from the April 17, 2026 closing price of $213.87. This reflects strong free cash flow generation of $9.882 billion, a 14.6% FCF margin, and a low 5.6x trailing P/E multiple versus peer averages around 10.5x.</p></div>
+                <div class="g2"><div><div class="table-wrap table-narrow"><table><thead><tr><th>Parameter</th><th class="num">Value</th></tr></thead><tbody><tr><td><p>Revenue (base)</p></td><td class="num"><p>$67.69B (USD) FY2025</p></td></tr><tr><td><p>FCF Margin</p></td><td class="num"><p>14.6%</p></td></tr><tr><td><p>WACC</p></td><td class="num"><p>9.0%</p></td></tr><tr><td><p>Terminal Growth</p></td><td class="num"><p>0.0%</p></td></tr><tr><td><p>Growth Path</p></td><td class="num"><p>Kalman filter: 8.5% current declining to 4.5% by Year 5…</p></td></tr><tr><td><p>Template</p></td><td class="num"><p>auto</p></td></tr><tr><td><p>Free Cash Flow (FY2025)</p></td><td class="num"><p>$9.882B</p></td></tr><tr><td><p>Net Income (FY2025)</p></td><td class="num"><p>$10.28B</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: DCF Assumptions | Source: SEC EDGAR XBRL; computed deterministically</div></div><div><div class="scenario-grid"><div class="scenario bear"><div class="prob">bear case</div><h4>$208.00</h4><p>Frequent and severe weather events continue to spike catastrophe losses, overwhelming pricing actions and pushing the combined ratio back toward or above 95%...</p></div><div class="scenario bull"><div class="prob">bull case</div><h4>$312.00</h4><p>Allstate sustains combined ratios in the mid-80s through superior risk selection and pricing discipline while growing personal lines policies at mid-single digits...</p></div><div class="scenario base"><div class="prob">base case</div><h4>$260.00</h4><p>Allstate maintains a combined ratio in the upper-80s to low-90s with moderate policy growth and ongoing capital returns via dividends and buybacks...</p></div></div></div></div>
+        <div class="g2" style="margin-top:10px"><div class="note amber"><p>Allstate trades at a significant discount to peers. The company&#x27;s trailing P/E of 5.6x compares to approximately 10.5x for the peer group average, including Travelers (TRV) at around 10.2-10.7x and Progressive (PGR) with an EBITDA multiple near 8.9x. EV/EBITDA for Allstate stands at 4.9x versus higher industry benchmarks...</p></div></div>
+        <div style="margin-top:12px"><div class="table-wrap table-narrow"><table><thead><tr><th>Metric</th><th class="num">Value</th></tr></thead><tbody><tr><td><p>Current Growth Rate</p></td><td class="num"><p>8.5%</p></td></tr><tr><td><p>Growth Uncertainty</p></td><td class="num"><p>±3.1pp</p></td></tr><tr><td><p>Observations</p></td><td class="num"><p>3</p></td></tr><tr><td><p>Year 1 Projected</p></td><td class="num"><p>7.3%</p></td></tr><tr><td><p>Year 2 Projected</p></td><td class="num"><p>6.3%</p></td></tr><tr><td><p>Year 3 Projected</p></td><td class="num"><p>5.6%</p></td></tr><tr><td><p>Year 4 Projected</p></td><td class="num"><p>5.0%</p></td></tr><tr><td><p>Year 5 Projected</p></td><td class="num"><p>4.5%</p></td></tr><tr><td><p>FY2025 Revenue Base</p></td><td class="num"><p>$67.69B</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Kalman Growth Estimator | Source: SEC EDGAR revenue history; Kalman filter</div></div>
+
+      </section>
+      <section id="risk" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>what breaks the thesis</h2>
+          <div class="kicker">falsifiable kill criteria</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Overall Risk Rating: 6/10 (Elevated cat volatility offset by strong 2025 underwriting turnaround) · # Key Risks: 8 (Including competitive dynamics and secondary peril frequency) · Bear Case Downside: -20% (From $213.87 to ~$171 (aligned with DCF bear $208 scenario adjusted for current price)).</p></div>
+                <div class="note red"><strong>risk framing</strong><br><p>Takeaway. Allstate delivered exceptional 2025 results with net income $10.28B, EPS $38.06 (+164.9% YoY), property-liability combined ratio 85.2, and ROE 33.6%, yet Q1 2026 pre-tax catastrophe losses of $1.24B (including $925M in March from wind/hail) highlight persistent secondary peril risk that could undermine the Transformative Growth strategy if frequency exceeds pricing models.</p></div>
+        <div style="margin-top:10px"><div class="table-wrap"><table><thead><tr><th>Pillar</th><th>Invalidating Facts</th><th class="num">P(Invalidation)</th></tr></thead><tbody><tr><td><p>sustainable-underwriting-profitability</p></td><td><p>Allstate&#x27;s Property-Liability recorded combined ratio consistently exceeds 95% over multiple quarters (e.g., full-year average > 95% for 2+ years) despite rate actions, reserve releases, and non-cat adjustments.; Underlying combined ratio (ex-cat and ex-prior year development) rises above 90-92% and fails to improve with AI/pricing initiatives amid competitive rate cuts or loss cost inflation.</p></td><td class="num"><p>35%</p><span class="tag blue">True</span></td></tr><tr><td><p>durable-competitive-advantage</p></td><td><p>Allstate&#x27;s US P&C market share (auto/homeowners) declines materially (e.g., drops below 8% or loses ground to Progressive/State Farm) while policies in force stagnate or shrink amid intensified price competition in a softening market.; Barriers weaken as direct/digital competitors or larger peers gain share through superior pricing/tech, with Allstate unable to sustain growth in independent agent or direct channels.</p></td><td class="num"><p>45%</p><span class="tag blue">True</span></td></tr><tr><td><p>catastrophe-exposure-management</p></td><td><p>Annual catastrophe losses (net of reinsurance) exceed $7-8B+ or represent > 12-15% of premiums for consecutive years, with frequent severe events (wind/hail/wildfire) causing material earnings volatility and impairing capital strength (e.g., ROE drops sharply or ratings pressured).; Reinsurance costs rise dramatically or availability tightens, while modeled PML (1-in-100) net losses grow significantly without effective mitigation.</p></td><td class="num"><p>50%</p><span class="tag blue">True</span></td></tr><tr><td><p>shareholder-return-sustainability</p></td><td><p>Dividend growth stalls or is cut (e.g., quarterly dividend fails to reach/maintain $1.08+ levels or payout ratio spikes unsustainably), and/or share buybacks are significantly reduced/suspended due to volatility-driven capital constraints or lower EPS/ROE.; High EPS/ROE (e.g., 30%+) proves non-recurring as underwriting or cat losses normalize, constraining free cash flow available for returns.</p></td><td class="num"><p>30%</p><span class="tag blue">True</span></td></tr><tr><td><p>valuation-gap-resolution</p></td><td><p>Market price remains near or below ~$214 (or current levels) for an extended period (e.g., 12+ months) while quant/Gordon Growth models continue implying $900+, with no material re-rating as risks (cats, regulation, cycle) materialize and erode fundamentals.; Analyst targets and multiples compress significantly due to realized unmodeled risks, closing the gap via downward revisions rather than upward price convergence.</p></td><td class="num"><p>55%</p><span class="tag blue">True</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Kill File — 5 Thesis-Breaking Triggers | Source: Methodology Why-Tree Decomposition</div></div>
+        <div class="callout-row"><div class="callout"><div class="label">Overall Risk Rating</div><div class="metric value-rd">6/10</div><div class="desc">Elevated cat volatility offset by strong 2025 underwriting turnaround</div></div><div class="callout"><div class="label"># Key Risks</div><div class="metric value-rd">8</div><div class="desc">Including competitive dynamics and secondary peril frequency</div></div><div class="callout"><div class="label">Bear Case Downside</div><div class="metric value-rd">-20%</div><div class="desc">From $213.87 to ~$171 (aligned with DCF bear $208 scenario adjusted for current price)</div></div></div>
+        <div class="note amber"><strong>most dangerous zone</strong><br><p>Watch for drawdowns driven by fundamentals where funds de-risk faster than the business narrative updates.</p></div>
+
+      </section>
+      <section id="ops" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>fundamentals &amp; operations</h2>
+          <div class="kicker">unit economics</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">revenue</div><div class="kpi-value ">$17.3B</div><div class="kpi-sub">FY2025</div></div><div class="kpi"><div class="kpi-label">rev growth</div><div class="kpi-value ">5.6%</div><div class="kpi-sub">YoY</div></div><div class="kpi"><div class="kpi-label">gross margin</div><div class="kpi-value ">N/D</div><div class="kpi-sub">Not separately disclosed</div></div><div class="kpi"><div class="kpi-label">op margin</div><div class="kpi-value ">19.4%</div><div class="kpi-sub">Derived from op. income / rev.</div></div></div><div class="note green"><p>Key Takeaway. Allstate delivered a dramatic 2025 turnaround with net income surging to $10.28B and EPS reaching $38.06 (diluted), driving ROE to 33.6% on expanded equity of $30.61B. This reflects successful rate adequacy, expense discipline, and favorable loss trends in Property-Liability, far exceeding historical norms in the P&C cycle.</p></div><div class="table-wrap"><table><thead><tr><th>Segment</th><th class="num">Revenue ($B)</th><th class="num">% of Total</th><th class="num">Growth YoY</th><th class="num">Key Margin/Notes</th></tr></thead><tbody><tr><td><p>Property-Liability (Allstate Protection + Run-off)</p></td><td class="num"><p>~$64.1</p></td><td class="num"><p>~94.7%</p></td><td class="num"><p>5.9% (premiums)</p></td><td class="num"><p>Combined ratio 85.2; Underwriting income strong…</p></td></tr><tr><td><p>Protection Services</p></td><td class="num"><p>3.55</p></td><td class="num"><p>5.2%</p></td><td class="num"><p>9.5% (or 11.7% alt.)</p></td><td class="num"><p>Adjusted net income $218M</p></td></tr><tr><td><p>Corporate &amp; Other / Adjustments</p></td><td class="num"><p>~0.04</p></td><td class="num"><p>~0.1%</p></td><td class="num"><p>N/A</p></td><td class="num"><p>Net investment income and gains</p></td></tr><tr><td><p>Total Revenue</p></td><td class="num"><p>67.69</p></td><td class="num"><p>100%</p></td><td class="num"><p>5.6%</p></td><td class="num"><p>Net margin 15.2%</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Revenue by Reportable Segment FY2025 | Source: Company 10-K FY2025; Investor Supplement Q4 2025</div><div class="table-wrap table-narrow"><table><thead><tr><th>Metric</th><th class="num">Value</th></tr></thead><tbody><tr><td><p>Revenue</p></td><td class="num"><p>$67.69B</p></td></tr><tr><td><p>Key Ratio</p></td><td class="num"><p>15.0%</p></td></tr><tr><td><p>Equity Value</p></td><td class="num"><p>$2.4B</p></td></tr><tr><td><p>Equity Value (2)</p></td><td class="num"><p>$5.7B</p></td></tr><tr><td><p>Price / Earnings</p></td><td class="num"><p>$3.55B</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Top 3 Revenue Drivers</h3><span class="tag blue">Core Turnaround</span></div><div class="aggregate-card-body"><p>Allstate&#x27;s 2025 revenue of $67.69B grew 5.6% YoY, primarily driven by Property-Liability premiums. Driver 1: Homeowners insurance earned premiums rose 15.0% with policies in force up 2.5%, fueled by rate actions and improved affordability measures that supported retention amid proactive 17% average premium reductions for 7.8 million customers. Underwriting income in homeowners reached approximately $2.4B with a combined ratio of 84.4 (improved from 90.1 in 2024)...</p></div></div><div class="table-wrap"><table><thead><tr><th>Category</th><th>Contribution</th><th>Notes/Risk</th></tr></thead><tbody><tr><td><p>Policies in Force Total</p></td><td><p>210.9M</p></td><td><p>+3% YoY; diversified across channels</p></td></tr><tr><td><p>Protection Services PIF</p></td><td><p>172M (81.6% of total)</p></td><td><p>Primarily Protection Plans; lower volatility…</p></td></tr><tr><td><p>Property-Liability PIF</p></td><td><p>~38.3M</p></td><td><p>Auto ~25.5M, Homeowners ~7.7M</p></td></tr><tr><td><p>Distribution Channels</p></td><td><p>Exclusive agents (27.4k+), Independent (58.7k locations), Direct…</p></td><td><p>Broad; no single customer > 5% concentration disclosed…</p></td></tr><tr><td><p>Top Exposure</p></td><td><p>Michigan Catastrophic Claim Association</p></td><td><p>State-mandated; potential reimbursement risk…</p></td></tr><tr><td><p>Retail Partners (Protection Plans)</p></td><td><p>Walmart, Home Depot, Costco (extended contracts)</p></td><td><p>Key but diversified; contract renewal risk low…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Customer &amp; Policy Concentration Metrics | Source: Company 10-K FY2025; Q4 2025 Investor Supplement</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Unit Economics Assessment</h3><span class="tag blue">Margin Expansion</span></div><div class="aggregate-card-body"><p>Allstate demonstrated strong pricing power and cost discipline in 2025. Property-Liability combined ratio improved to 85.2 (from higher prior levels), with Q4 at 72.9. Auto underwriting income hit $5.7B (combined ratio 85.0) and homeowners ~ $2.4B (84.4)...</p></div></div><p class="aggregate-pane-xref"><a href="#product">See product &amp; technology</a></p><p class="aggregate-pane-xref"><a href="#supply">See supply chain</a></p><p class="aggregate-pane-xref"><a href="#financials">See financial analysis</a></p>
+      </section>
+      <section id="competition" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>competitive position</h2>
+          <div class="kicker">moat vs. customer-as-competitor</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">p&amp;c market share</div><div class="kpi-value ">5.36%</div><div class="kpi-sub">Allstate Ins Grp; $59.47B direct premiums written (2025)</div></div><div class="kpi"><div class="kpi-label">auto market share</div><div class="kpi-value ">10.2%</div><div class="kpi-sub">Trailing State Farm ~18.9%, Progressive ~16.7%</div></div><div class="kpi"><div class="kpi-label"># direct competitors</div><div class="kpi-value ">4</div><div class="kpi-sub">Top 4 control > 55% auto (State Farm, Progressive, GEICO, Allstate)</div></div><div class="kpi"><div class="kpi-label">moat score</div><div class="kpi-value ">6/10</div><div class="kpi-sub">Capability-based edges with partial scale benefits</div></div></div><div class="note red"><p>Key Takeaway. Allstate operates in a contestable oligopoly where 2025&#x27;s exceptional profitability (net margin 15.2%, combined ratio 85.2) stems more from cyclical rate adequacy and expense discipline than from durable position-based competitive advantage. The modest auto PIF growth of +1.3% (to 25.3M policies) amid industry shopping +9.3% highlights retention vulnerability despite scale.</p></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th>Allstate</th><th>State Farm</th><th>Progressive</th><th>GEICO</th></tr></thead><tbody><tr><td><p>Revenue (2025)</p></td><td><p>$67.69B</p></td><td><p>N/A (mutual)</p></td><td><p>~$76B est. (grp)</p></td><td><p>N/A</p></td></tr><tr><td><p>Revenue Growth</p></td><td><p>Strong (implied by NI +120.3%)</p></td><td><p>N/A</p></td><td><p>High (+21% premiums in periods)</p></td><td><p>N/A</p></td></tr><tr><td><p>Auto Market Share</p></td><td><p>10.2%</p></td><td><p>18.87-18.9%</p></td><td><p>16.73-16.7%</p></td><td><p>11.63% (Berkshire)</p></td></tr><tr><td><p>Homeowners MP Share</p></td><td><p>9.42%</p></td><td><p>~18.7%</p></td><td><p>Lower</p></td><td><p>Significant</p></td></tr><tr><td><p>P&C Overall Share</p></td><td><p>5.36%</p></td><td><p>~10-12%</p></td><td><p>~6-7%</p></td><td><p>~4-5%</p></td></tr><tr><td><p>Net Margin</p></td><td><p>15.2%</p></td><td><p>N/A</p></td><td><p>Strong</p></td><td><p>N/A</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Competitor Comparison Matrix (Porter Forces 1-4 Scope) | Source: NAIC 2025 market share data, Allstate filings, peer reports</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Market Contestability Assessment</h3><span class="tag amber">Contestable Oligopoly</span></div><div class="aggregate-card-body"><p>The U.S. personal lines P&C insurance market, particularly auto and homeowners, is contestable . Multiple large incumbents (State Farm ~18.9% auto, Progressive ~16.7%, GEICO ~11.6%, Allstate 10.2%) enjoy similar scale and data advantages but face no insurmountable barriers preventing effective competition or entry by agile players...</p></div><div class="aggregate-source">Exhibit 3: Contestability Classification | Source: Allstate 2025 data &amp; NAIC market shares</div></div><div class="table-wrap"><table><thead><tr><th>Mechanism</th><th class="num">Relevance</th><th>Strength</th><th class="num">Evidence</th><th>Durability</th></tr></thead><tbody><tr><td><p>Habit Formation</p></td><td class="num"><p>Moderate (annual renewals)</p></td><td><span class="tag blue">MODERATE</span></td><td class="num"><p>Renewal stickiness via bundling; offset by shopping…</p></td><td><p>Medium-term</p></td></tr><tr><td><p>Switching Costs</p></td><td class="num"><p>Low (no heavy ecosystem lock-in)</p></td><td><span class="tag blue">WEAK</span></td><td class="num"><p>Annual quoting common; low multi-homing friction…</p></td><td><p>Short</p></td></tr><tr><td><p>Brand as Reputation</p></td><td class="num"><p>High (experience good)</p></td><td><span class="tag blue">MODERATE</span></td><td class="num"><p>Allstate brand &amp; agency network (&gt;12k locations); J.D. Power service scores competitive…</p></td><td><span class="tag blue">MEDIUM</span></td></tr><tr><td><p>Network Effects</p></td><td class="num"><p>N/A (not platform)</p></td><td><p>N-A</p></td><td class="num"><p>Not applicable</p></td><td><p>N/A</p></td></tr><tr><td><p>Search Costs</p></td><td class="num"><p>Moderate (comparison shopping tools)</p></td><td><p>Weak-Moderate</p></td><td class="num"><p>Online quoting reduces evaluation costs</p></td><td><p>Short-Medium</p></td></tr><tr><td><p>Overall Captivity Strength</p></td><td class="num"><p>Weighted</p></td><td><span class="tag blue">MODERATE</span></td><td class="num"><p>Bundling &amp; service provide some stickiness but insufficient vs. price sensitivity…</p></td><td><span class="tag blue">MEDIUM</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 4: Customer Captivity Scorecard | Source: Allstate disclosures &amp; industry shopping data</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Economies of Scale Assessment</h3><span class="tag blue">Partial Scale Advantage</span></div><div class="aggregate-card-body"><p>Allstate demonstrates meaningful economies of scale through spreading of fixed costs in marketing ($2.1B in 2025, up from $0.9B in 2019), technology, claims processing, and distribution infrastructure. Minimum Efficient Scale (MES) is a substantial fraction of the market; at ~5.36% overall P&C share ($59.47B premiums), Allstate achieves cost efficiencies in data analytics and reinsurance that smaller players cannot match quickly. Fixed cost intensity is elevated in advertising, IT systems, and regulatory compliance...</p></div><div class="aggregate-source">Exhibit 5: Economies of Scale | Source: Allstate 2025 investor data</div></div><div class="table-wrap"><table><thead><tr><th>Dimension</th><th>Assessment</th><th class="num">Score (1-10)</th><th class="num">Evidence</th><th>Durability (years)</th></tr></thead><tbody><tr><td><p>Position-Based CA</p></td><td><p>Partial (scale + moderate captivity)</p></td><td class="num"><p>5</p></td><td class="num"><p>Scale present; captivity moderate due to shopping…</p></td><td><p>5-10</p></td></tr><tr><td><p>Capability-Based CA</p></td><td><p>Strong</p></td><td class="num"><p>7</p></td><td class="num"><p>Proprietary pricing algorithms, claims data, Transformative Growth efficiencies…</p></td><td><p>3-7 (portability risk)</p></td></tr><tr><td><p>Resource-Based CA</p></td><td><p>Moderate</p></td><td class="num"><p>6</p></td><td class="num"><p>Agency network, regulatory licenses, brand…</p></td><td><span class="tag blue">MEDIUM</span></td></tr><tr><td><p>Overall CA Type</p></td><td><p>Dominant: Capability-Based</p></td><td class="num"><p>6</p></td><td class="num"><p>Requires conversion to position-based for durability…</p></td><td><p>Variable</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 6: Competitive Advantage Classification | Source: Greenwald framework applied to Allstate 2025 data</div><p class="aggregate-pane-xref"><a href="#valuation">See supplier power (reinsurance, claims ecosystem) in Supply Chain tab</a></p><p class="aggregate-pane-xref"><a href="#valuation">See TAM/SAM/SOM and industry growth in Market Size tab</a></p><p class="aggregate-pane-xref"><a href="#ops">See related analysis in</a></p><p class="aggregate-pane-xref"><a href="#tam">See market size</a></p>
+      </section>
+      <section id="tam" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>market size &amp; tam</h2>
+          <div class="kicker">runway vs. penetration</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">tam</div><div class="kpi-value ">$1,109.79B</div><div class="kpi-sub">US P&C Direct Premiums Written 2025 (NAIC)</div></div><div class="kpi"><div class="kpi-label">sam</div><div class="kpi-value ">$1,109.79B</div><div class="kpi-sub">US Personal &amp; Commercial P&C (Allstate core focus)</div></div><div class="kpi"><div class="kpi-label">som</div><div class="kpi-value ">$59.47B</div><div class="kpi-sub">Allstate DPW 2025; 5.36% share</div></div><div class="kpi"><div class="kpi-label">market growth rate</div><div class="kpi-value ">3-4%</div><div class="kpi-sub">Projected US P&C premium growth 2026</div></div></div><div class="note green"><p>Takeaway. Allstate&#x27;s 5.36% share of the $1,109.79B US P&C market in 2025 anchors its addressable opportunity, with stronger 9.42% positioning in homeowners multiple peril highlighting segment-specific upside. Company revenue of $67.69B for 2025 closely tracks premium activity, confirming P&C as the dominant driver.</p></div><div class="table-wrap"><table><thead><tr><th>Segment</th><th class="num">Current Size (2025)</th><th>2028 Projected</th><th>CAGR</th><th>Company Share</th></tr></thead><tbody><tr><td><p>US P&C Industry (DPW)</p></td><td class="num"><p>$1,109.79B</p></td><td><p>~$1.20T</p></td><td><p>3-4%</p></td><td><p>N/A</p></td></tr><tr><td><p>Allstate Total DPW</p></td><td class="num"><p>$59.47B</p></td><td><p>~$66B</p></td><td><p>3-4%</p></td><td><p>5.36%</p></td></tr><tr><td><p>Allstate Overall P&C</p></td><td class="num"><p>$59.47B</p></td><td><p>N/A</p></td><td><p>N/A</p></td><td><p>5.36% (rank #4)</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: TAM Breakdown by Segment and Share (2025) | Source: NAIC 2025 data; SEC EDGAR 10-K/annual data for Allstate revenue</div><div class="table-wrap table-narrow"><table><thead><tr><th>Metric</th><th class="num">Value</th></tr></thead><tbody><tr><td><p>Equity Value</p></td><td class="num"><p>$59.47B</p></td></tr><tr><td><p>Equity Value (2)</p></td><td class="num"><p>$1,109.79B</p></td></tr><tr><td><p>Revenue</p></td><td class="num"><p>$67.69B</p></td></tr><tr><td><p>Debt-to-equity</p></td><td class="num"><p>$30.61B</p></td></tr><tr><td><p>CapEx</p></td><td class="num"><p>$228M</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Bottom-Up Sizing Methodology</h3><span class="tag blue">Methodology</span></div><div class="aggregate-card-body"><p>Allstate&#x27;s bottom-up TAM sizing starts with its audited 2025 direct premiums written of $59.47B (NAIC), representing 5.36% of the US P&C industry&#x27;s $1,109.79B total. This is cross-referenced against company-reported revenue of $67.69B for FY2025, where property-liability operations (primarily auto and homeowners) account for the vast majority. Assumptions include stable business mix with no material shift away from core personal lines, continued capacity supported by shareholders&#x27; equity of $30.61B and low debt-to-equity of 0.24, and modest industry premium growth of 3-4% in 2026...</p></div></div><div class="table-wrap table-narrow"><table><thead><tr><th>Metric</th><th class="num">Value</th></tr></thead><tbody><tr><td><p>Equity Value</p></td><td class="num"><p>$59.47B</p></td></tr><tr><td><p>Net income</p></td><td class="num"><p>$10.28B</p></td></tr><tr><td><p>Net income (2)</p></td><td class="num"><p>$38.06</p></td></tr><tr><td><p>Equity Value (2)</p></td><td class="num"><p>$119.76B</p></td></tr><tr><td><p>Equity Value (3)</p></td><td class="num"><p>$30.61B</p></td></tr></tbody></table></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Penetration Analysis &amp; Growth Runway</h3><span class="tag blue">Runway</span></div><div class="aggregate-card-body"><p>Allstate holds a 5.36% share of the US P&C market via $59.47B in 2025 direct premiums written, ranking #4 behind State Farm (10.39%), Progressive (7.59%), and Berkshire Hathaway (5.81%). Cumulative top-5 share reaches 29.15%, leaving substantial fragmentation for measured gains. In homeowners multiple peril, Allstate&#x27;s 9.42% share (second to State Farm) demonstrates differentiated strength and cross-sell potential with auto lines...</p></div></div><p class="aggregate-pane-xref"><a href="#competition">See competitive position</a></p><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="product" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>product &amp; technology</h2>
+          <div class="kicker">roadmap + software stack</div>
+        </div>
+        <div class="kpi-grid cols-3"><div class="kpi"><div class="kpi-label">r&amp;d / tech investment</div><div class="kpi-value ">$228M</div><div class="kpi-sub">CapEx FY2025 (embedded in ops; no separate R&D line disclosed)</div></div><div class="kpi"><div class="kpi-label">policies in force</div><div class="kpi-value ">210.9M</div><div class="kpi-sub">Enterprise total end-2025 (+3% YoY growth)</div></div><div class="kpi"><div class="kpi-label">patent / ai ip assets</div><div class="kpi-value ">172 Total Patents</div><div class="kpi-sub">Part of top 3 U.S. P&C insurers holding 77% of AI patents (Allstate share)</div></div></div><div class="note green"><p>Key Takeaway. Allstate&#x27;s technology initiatives, evidenced by Arity&#x27;s over 2 trillion miles of driving data and AI handling 15% of new coding plus 100% of claims adjuster emails, are contributing to operational leverage that helped drive net margin to 15.2% and ROE to 33.6% in FY2025...</p></div><div class="table-wrap"><table><thead><tr><th>Product / Segment</th><th>Key Metrics</th><th class="num">Revenue Contribution (Est.)</th><th class="num">Growth / Policies in Force</th><th>Lifecycle Stage</th><th>Competitive Position</th></tr></thead><tbody><tr><td><p>Allstate Protection - Auto</p></td><td><p>Private passenger auto insurance</p></td><td class="num"><p>Majority of P&C premiums (~$9.3B+ earned in recent periods)</p></td><td class="num"><p>25.5M policies; return to growth</p></td><td><p>Growth</p><span class="tag blue">grn</span></td><td><p>Leader (hybrid agent/digital)</p></td></tr><tr><td><p>Allstate Protection - Homeowners</p></td><td><p>Homeowners insurance</p></td><td class="num"><p>Significant portion of P&C</p></td><td class="num"><p>7.7M policies</p></td><td><p>Mature</p></td><td><p>Strong in select markets</p></td></tr><tr><td><p>Other Personal Lines / Commercial</p></td><td><p>Renters, condo, motorcycle, business</p></td><td class="num"><p>Smaller share</p></td><td class="num"><p>4.9M other personal</p></td><td><p>Mature</p></td><td><p>Niche / Challenger</p></td></tr><tr><td><p>Protection Services - Protection Plans</p></td><td><p>Consumer product protection (electronics, appliances)</p></td><td class="num"><p>&gt;$3.5B segment revenues</p></td><td class="num"><p>164.7M plans</p></td><td><p>Growth</p><span class="tag blue">grn</span></td><td><p>Leader via retail partnerships (Walmart, etc.)</p></td></tr><tr><td><p>Protection Services - Roadside / Dealer Services…</p></td><td><p>Roadside assistance, extended vehicle care…</p></td><td class="num"><p>Part of Protection Services</p></td><td class="num"><p>1.2M roadside; 3.7M dealer</p></td><td><p>Growth</p><span class="tag blue">grn</span></td><td><p>Niche with tech enhancements</p></td></tr><tr><td><p>Identity Protection / Arity Telematics</p></td><td><p>Identity restoration, driving data analytics…</p></td><td class="num"><p>Arity revenue in services</p></td><td class="num"><p>2.6M identity; 2T+ miles data</p></td><td><p>Growth</p><span class="tag blue">grn</span></td><td><p>Differentiated moat vs. Progressive Snapshot…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Product Portfolio Overview (End-2025) | Source: Allstate 2025 Annual Report / Investor Supplements; SEC EDGAR data</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Technology Stack and Differentiation</h3><span class="tag blue">Proprietary Edge</span></div><div class="aggregate-card-body"><p>Allstate has built a hybrid technology architecture combining traditional insurance systems with modern data and AI layers. Core proprietary elements include the Arity platform, which has collected over 2 trillion miles of driving data to power telematics-based pricing in programs like Drivewise and Milewise. This provides a data moat for refined risk selection and usage-based insurance, differentiating from commodity pricing models...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>R&D Pipeline and Product Launches</h3><span class="tag blue">AI &amp; Digital Expansion</span></div><div class="aggregate-card-body"><p>Allstate&#x27;s innovation pipeline centers on scaling AI and data-driven offerings under the Transformative Growth strategy. Key upcoming elements include broader rollout of the Affordable, Simple, Connected (ASC) product suite, now in 43 states for auto and 31 for homeowners, with direct purchase options and rate reductions averaging 9% in select markets to drive volume. The ALLIE AI agent system is in multi-phase development to further automate reasoning, resolution, and customer interactions, building on current gen AI that already manages claims communications at scale...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Intellectual Property and Technology Moat</h3><span class="tag blue">AI Patent Leadership</span></div><div class="aggregate-card-body"><p>Allstate maintains a solid IP position as one of the top three U.S. P&C insurers (alongside State Farm and USAA) accounting for 77% of AI patents filed over the past decade. The company holds approximately 172 total patents globally (104 granted), with a focus on areas like in-vehicle AI assistants for claims automation, interpretable AI for underwriting, and document indexing...</p></div></div><div class="note green"><p>Biggest Caution. Specific R&D and technology capital expenditure breakdowns are <span style="color:var(--muted,#999);font-style:italic">—</span> separately in filings (only aggregate CapEx of $228M), making it challenging to quantify the precise ROI on AI and Arity initiatives despite reported efficiency metrics like 45% reduction in billing inquiries. This opacity requires monitoring future reserve developments and combined ratio trends for confirmation of sustainable benefits.</p></div><p class="aggregate-pane-xref"><a href="#competition">See competitive position</a></p><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="supply" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>supply chain</h2>
+          <div class="kicker">single points of failure</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Allstate&#x27;s supply chain primarily supports its property and casualty insurance operations through procurement of goods and services, vendor management for claims handling, and reinsurance arrangements to mitigate catastrophe risks. While the company maintains a strategic sourcing approach focused on risk mitigation, quality, and ethical standards, its exposure to supply chain disruptions, particularly in vehicle repairs and parts pricing, has been noted in regulatory filings as a factor influencing claims costs and loss reserves.</p></div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>Overview of Supply Chain Management</h3></div><div class="aggregate-card-body"><p>Allstate Corporation maintains a structured procurement and supplier management program designed to support its core insurance operations, including claims processing, policy administration, and risk transfer activities. The company&#x27;s Sourcing and Procurement Solutions (SPS) team oversees decisions aimed at mitigating risks in the supply chain while ensuring access to high-quality goods and services at competitive prices. This involves a strategic and inclusive sourcing approach that connects with suppliers meeting Allstate&#x27;s business needs, ethical standards, and performance expectations...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Key Suppliers, Vendors, and Reinsurance Dependencies</h3></div><div class="aggregate-card-body"><p>Allstate relies on a network of suppliers and vendors primarily for claims services, professional services, information technology, and administrative support. Specific individual supplier names and contract values are not detailed in public financial disclosures; however, the company sources goods and services across numerous categories worldwide through its category managers. Reinsurance represents a critical component of Allstate&#x27;s risk management supply chain, with arrangements designed to protect against catastrophe losses from hurricanes, earthquakes, wildfires, and other events...</p></div></div><div class="table-title"><h3>Supply Chain and Related Financial Metrics</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">Value</th><th>Period</th><th>Notes</th></tr></thead><tbody><tr><td><p>Revenue</p></td><td class="num"><p>$67.69B</p></td><td><p>2025 Annual</p></td><td><p>Supported by efficient procurement and claims management…</p></td></tr><tr><td><p>Net Income</p></td><td class="num"><p>$10.28B</p></td><td><p>2025 Annual</p></td><td><p>Impacted by claims cost trends including supply chain factors…</p></td></tr><tr><td><p>CapEx</p></td><td class="num"><p>$228.0M</p></td><td><p>2025 Annual</p></td><td><p>Includes investments in operational and technology infrastructure…</p></td></tr><tr><td><p>Total Assets</p></td><td class="num"><p>$119.76B</p></td><td><p>2025-12-31 Annual</p></td><td><p>Scale of balance sheet underpinning vendor and reinsurance activities…</p></td></tr><tr><td><p>Long-Term Debt</p></td><td class="num"><p>$7.49B</p></td><td><p>2025-12-31 Annual</p></td><td><p>Part of overall capital structure supporting risk management…</p></td></tr><tr><td><p>Shareholders&#x27; Equity</p></td><td class="num"><p>$30.61B</p></td><td><p>2025-12-31 Annual</p></td><td><p>Capital buffer against supply chain and catastrophe risks…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Supply Chain and Related Financial Metrics</div><div class="note"><strong>Supply Chain Risk Factors</strong><br><p>Allstate has disclosed in SEC filings that supply chain disruptions, labor shortages, and tariffs can increase the cost of settling claims, particularly in vehicle physical damage coverage, by impacting parts prices, labor rates, and repair timelines. These factors may lead to variances between recorded reserves and ultimate loss costs. The company manages catastrophe exposure through reinsurance, with the 1-in-100 PML at ~$3.1B net as of year-end 2025...</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Risks and Mitigation Strategies</h3></div><div class="aggregate-card-body"><p>Supply chain risks at Allstate primarily manifest through their impact on claims severity and frequency, especially in auto and property lines. Regulatory filings consistently note that inflation, supply chain disruptions, labor shortages, and tariffs can elevate used vehicle and parts prices, extend claim resolution times, and increase the proportion of total losses. These dynamics were highlighted as potential drivers of higher loss costs in vehicle physical damage coverage...</p></div></div><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p><p class="aggregate-pane-xref"><a href="#competition">See related analysis in</a></p>
+      </section>
+      <section id="catalysts" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>catalyst map</h2>
+          <div class="kicker">forward calendar</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">total catalysts</div><div class="kpi-value ">12</div><div class="kpi-sub">Next 12 months (confirmed + speculative)</div></div><div class="kpi"><div class="kpi-label">next event date</div><div class="kpi-value ">Apr 29, 2026</div><div class="kpi-sub">Q1 2026 Earnings Release</div></div><div class="kpi"><div class="kpi-label">net catalyst score</div><div class="kpi-value value-gn">+4.2</div><div class="kpi-sub">Bullish bias from execution tailwinds</div></div><div class="kpi"><div class="kpi-label">expected price impact range</div><div class="kpi-value ">$15, $45</div><div class="kpi-sub">Per share on key events (DCF sensitivity)</div></div></div><div class="note green"><p>Key Takeaway. Allstate enters 2026 with exceptional momentum from 2025 results, $67.69B revenue, $10.28B net income, and +164.9% YoY EPS growth to $38.06, setting up multiple execution catalysts around platform modernization and product launches. The single most important non-obvious signal is the low 5.6 PE ratio despite 33.6% ROE and 14.6% FCF margin, implying the market heavily discounts sustainability of margin gains amid contained early-2026 catastrophe losses.</p></div><div class="table-wrap"><table><thead><tr><th>Date</th><th class="num">Event</th><th>Category</th><th>Impact</th><th class="num">Probability (%)</th><th>Directional Signal</th></tr></thead><tbody><tr><td><p>Apr 29, 2026</p></td><td class="num"><p>Q1 2026 Earnings Release &amp; Apr 30 Conference Call… (completed)</p><span class="tag blue">PAST</span></td><td><p>Earnings</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>95</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td><p>Q2 2026 (est. Aug)</p></td><td class="num"><p>Q2 2026 Earnings</p></td><td><p>Earnings</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>90</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td><p>Ongoing 2026</p></td><td class="num"><p>ASC &amp; Custom360 Platform Rollouts</p></td><td><p>Product</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>75</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td><p>Apr 16, 2026 (started)</p></td><td class="num"><p>Free Identity Theft Protection Rollout (6.8M customers, 14 states)</p></td><td><p>Product</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><p>80</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td><p>Feb 17, 2026 (launched)</p></td><td class="num"><p>New Allstate Homeowners Product Launch</p></td><td><p>Product</p></td><td><span class="tag blue">MEDIUM</span></td><td class="num"><p>70</p></td><td><span class="tag blue">BULLISH</span></td></tr><tr><td><p>Q3 2026 (est. Nov)</p></td><td class="num"><p>Q3 2026 Earnings</p></td><td><p>Earnings</p></td><td><span class="tag blue">HIGH</span></td><td class="num"><p>85</p></td><td><span class="tag blue">BULLISH</span></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Catalyst Calendar (Next 12 Months) | Source: Company announcements, SEC EDGAR filings, and investor relations</div><div class="table-wrap"><table><thead><tr><th>Quarter</th><th class="num">Event</th><th>Category</th><th>Expected Impact ($/share)</th><th>Bull Outcome</th><th>Bear Outcome</th></tr></thead><tbody><tr><td><p>Q1 2026 (completed)</p><span class="tag blue">PAST</span></td><td class="num"><p>Earnings + Identity Protection Rollout</p></td><td><p>Earnings/Product</p></td><td><p>+8 – 12</p></td><td><p>Policy growth acceleration + margin beat…</p></td><td><p>Cat losses pressure results</p></td></tr><tr><td><p>Q2 2026</p></td><td class="num"><p>Platform Rollout Progress</p></td><td><p>Product</p></td><td><p>+10 – 15</p></td><td><p>Expense ratio improvement visible</p></td><td><p>Adoption delays</p></td></tr><tr><td><p>Q3 2026</p></td><td class="num"><p>Earnings + AI Metrics</p></td><td><p>Earnings/Product</p></td><td><p>+12 – 18</p></td><td><p>Claims efficiency gains quantified</p></td><td><p>Regulatory pushback</p></td></tr><tr><td><p>Q4 2026</p></td><td class="num"><p>Full-Year Guidance Update</p></td><td><p>Earnings</p></td><td><p>+15 – 20</p></td><td><p>Sustained ROE > 30%</p></td><td><p>Cat volatility resurgence</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: 12-Month Catalyst Timeline | Source: Analytical model outputs &amp; company strategy disclosures</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Top 3 Catalysts by Probability × Price Impact</h3><span class="tag green">High Conviction</span></div><div class="aggregate-card-body"><p>The highest-impact catalysts center on execution of Allstate&#x27;s Transformative Growth plan. Q1 2026 Earnings (Apr 29 release, Apr 30 call) ranks first with ~95% probability and estimated $8, 12 per share upside on continued margin momentum from 2025&#x27;s $10.28B net income and +164.9% EPS growth. Early data on the February 17 new homeowners product and April 16 free identity theft protection rollout (to 6.8M customers) will be key watch items...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Quarterly Outlook: Next 1-2 Quarters</h3><span class="tag blue">Watch Metrics</span></div><div class="aggregate-card-body"><p>In Q1/Q2 2026, focus on policy-in-force growth (target > 2.5% YoY continuation), underlying combined ratio trends, and early traction from the new homeowners product launched February 17 and free identity protection rollout started April 16 in 14 states. Key thresholds: Q1 EPS beat vs. consensus ~$7.70, 8.72, catastrophe losses contained below $1.24B Q1 total (including March&#x27;s $925M pre-tax), and expense ratio improvement signaling platform benefits...</p></div></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Quarter</th><th class="num">Consensus EPS</th><th class="num">Consensus Revenue</th><th>Key Watch Items</th></tr></thead><tbody><tr><td><p>Apr 29, 2026 (after close)</p></td><td><p>Q1 2026 (completed)</p><span class="tag blue">PAST</span></td><td class="num"><p>~$7.70–8.72</p></td><td class="muted num"><span style="color:var(--muted,#999);font-style:italic">—</span></td><td><p>New homeowners product traction, identity protection rollout, cat losses…</p></td></tr><tr><td><p>Est. Aug 2026</p></td><td><p>Q2 2026</p></td><td class="muted num"><span style="color:var(--muted,#999);font-style:italic">—</span></td><td class="muted num"><span style="color:var(--muted,#999);font-style:italic">—</span></td><td><p>Platform rollout progress, expense ratio…</p></td></tr><tr><td><p>Est. Nov 2026</p></td><td><p>Q3 2026</p></td><td class="muted num"><span style="color:var(--muted,#999);font-style:italic">—</span></td><td class="muted num"><span style="color:var(--muted,#999);font-style:italic">—</span></td><td><p>AI claims efficiency metrics</p></td></tr><tr><td><p>Est. Feb 2027</p></td><td><p>Q4 2026</p></td><td class="muted num"><span style="color:var(--muted,#999);font-style:italic">—</span></td><td class="muted num"><span style="color:var(--muted,#999);font-style:italic">—</span></td><td><p>Full-year guidance, policy growth</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 4: Next 4 Earnings Dates | Source: Company IR announcements &amp; analyst consensus references</div><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p><p class="aggregate-pane-xref"><a href="#valuation">See valuation</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="street" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>street expectations</h2>
+          <div class="kicker">consensus vs. framework</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Wall Street consensus holds a Moderate Long rating on Allstate with an average 12-month price target near $238-$243, implying 11-14% upside from the current $213.87 share price. Street models embed normalization of 2025&#x27;s exceptional results, forecasting FY2026 EPS around $26.17 (down ~31% from 2025&#x27;s $38.06) and revenue of approximately $71.58B. XVARY&#x27;s DCF-derived base fair value of $260 per share reflects greater conviction in the durability of underwriting improvements and balance sheet strength.</p></div>
+        <div class="kpi-grid cols-3"><div class="kpi"><div class="kpi-label">current price</div><div class="kpi-value ">$213.87</div><div class="kpi-sub">Apr 17, 2026</div></div><div class="kpi"><div class="kpi-label">dcf fair value</div><div class="kpi-value ">$260</div><div class="kpi-sub">+21.6% vs current</div></div><div class="kpi"><div class="kpi-label">vs current</div><div class="kpi-value ">+21.6%</div><div class="kpi-sub">DCF implied</div></div></div><div class="note green"><p>Takeaway. Street&#x27;s FY2026 EPS consensus of $26.17 prices in a sharp ~31% decline from Allstate&#x27;s 2025 reported diluted EPS of $38.06, reflecting skepticism around the sustainability of the 72.9 Q4 combined ratio and $719M favorable reserve reestimates. This normalization view contrasts with the company&#x27;s strengthened $30.61B shareholders&#x27; equity and $9.882B free cash flow generation, which support potential for higher run-rate profitability.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Consensus vs. XVARY Thesis</h3><span class="tag blue">Variant View</span></div><div class="aggregate-card-body"><p>STREET SAYS: Moderate Buy with ~$240 average price target (11-14% upside from $213.87). FY2026 EPS consensus clusters at $26.17 (range $22.22-$29.51 across 23 analysts), implying material normalization from 2025&#x27;s $38.06 diluted EPS (+164.9% YoY). Revenue expected at ~$71.58B for 2026...</p></div></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">Street Consensus</th><th class="num">XVARY Estimate</th><th>Diff %</th><th>Key Driver of Difference</th></tr></thead><tbody><tr><td><p>FY2026 EPS</p></td><td class="num"><p>$26.17</p></td><td class="num"><p>$32-35</p></td><td><p>+22% to +34%</p></td><td><p>Higher sustained underwriting margins and lower normalized cats vs. Street mean-reversion…</p></td></tr><tr><td><p>FY2026 Revenue</p></td><td class="num"><p>$71.58B</p></td><td class="num"><p>$72-74B</p></td><td><p>+1% to +3%</p></td><td><p>Continued 5-6% earned premium growth in Property-Liability from rate adequacy…</p></td></tr><tr><td><p>FY2026 Net Margin</p></td><td class="num"><p>~9-10% (implied)</p></td><td class="num"><p>12-14%</p></td><td><p>+300-400 bps</p></td><td><p>Structural improvement in combined ratio vs. one-time 2025 benefits…</p></td></tr><tr><td><p>Q1 2026 EPS</p></td><td class="num"><p>$7.71</p></td><td class="num"><p>$8.50-9.00</p></td><td><p>+10% to +17%</p></td><td><p>Favorable auto severity trends persisting beyond Q1 $1.24B pre-tax cats…</p></td></tr><tr><td><p>2027 EPS</p></td><td class="num"><p>$25.83</p></td><td class="num"><p>$30-33</p></td><td><p>+16% to +28%</p></td><td><p>Ongoing equity base expansion to $30B+ and FCF deployment…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Key Metric Comparison — Street vs. XVARY (FY2026 Focus) | Source: Analyst aggregates (Yahoo, MarketBeat, TipRanks); XVARY DCF and filings-derived run-rate</div><div class="table-wrap"><table><thead><tr><th>Year</th><th class="num">Revenue Est</th><th class="num">EPS Est</th><th class="num">Growth %</th></tr></thead><tbody><tr><td><p>2025 (Actual)</p></td><td class="num"><p>$67.69B</p></td><td class="num"><p>$38.06</p></td><td class="num"><p>EPS +164.9% YoY</p></td></tr><tr><td><p>2026 (Street)</p></td><td class="num"><p>$71.58B</p></td><td class="num"><p>$26.17</p></td><td class="num"><p>Revenue +5.7%; EPS -31%</p></td></tr><tr><td><p>2026 (XVARY)</p></td><td class="num"><p>$72-74B</p></td><td class="num"><p>$32-35</p></td><td class="num"><p>EPS -8% to -16% (sustained high ROE)</p></td></tr><tr><td><p>2027 (Street)</p></td><td class="num"><p>$75.3B</p></td><td class="num"><p>$25.83</p></td><td class="num"><p>Revenue +5.2%; EPS -1%</p></td></tr><tr><td><p>2027 (XVARY)</p></td><td class="num"><p>$76-79B</p></td><td class="num"><p>$30-33</p></td><td class="num"><p>EPS stable/high-single digit growth</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Annual Revenue and EPS Estimates (2025-2027) | Source: SEC EDGAR 2025 actuals; analyst consensus aggregates; XVARY modeling</div><div class="table-wrap"><table><thead><tr><th>Firm</th><th>Analyst</th><th>Rating</th><th class="num">Price Target</th><th>Date of Last Update</th></tr></thead><tbody><tr><td><p>MarketBeat Aggregate</p></td><td><p>N/A</p></td><td><p>Moderate Buy</p></td><td class="num"><p>$238.65</p></td><td><p>Recent (Apr 2026)</p></td></tr><tr><td><p>TipRanks Aggregate</p></td><td><p>N/A</p></td><td><p>Moderate Buy</p></td><td class="num"><p>$243.14</p></td><td><p>Recent (Apr 2026)</p></td></tr><tr><td><p>Wells Fargo</p></td><td><p>N/A</p></td><td><p>N/A</p></td><td class="num"><p>$229</p></td><td><p>Apr 9, 2026</p></td></tr><tr><td><p>Barclays</p></td><td><p>Bob Huang (via reports)</p></td><td><p>Underweight/Sell</p></td><td class="num"><p>$208</p></td><td><p>Apr 8, 2026</p></td></tr><tr><td><p>Mizuho Securities</p></td><td><p>N/A</p></td><td><span class="tag blue">BUY</span></td><td class="num"><p>$260</p></td><td><p>Apr 15, 2026</p></td></tr><tr><td><p>BofA Securities</p></td><td><p>N/A</p></td><td><span class="tag blue">BUY</span></td><td class="num"><p>$297</p></td><td><p>Recent (Apr 2026)</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Selected Analyst Coverage and Recent Price Targets | Source: MarketBeat, TipRanks, Yahoo Finance, recent analyst notes (as of Apr 2026)</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Estimate Revision Trends</h3><span class="tag blue">Mixed but Upward Bias</span></div><div class="aggregate-card-body"><p>Recent trends show upward revisions to FY2026 EPS estimates in the last 30 days, with consensus holding steady near $26.17 amid Allstate&#x27;s strong 2025 results and Q4 combined ratio improvement. Q1 2026 EPS consensus sits at $7.71 (up significantly YoY from $3.53). Some firms like Zacks adjusted Q1 estimates higher, while others (e.g., Barclays) remain cautious on valuation...</p></div></div><p class="aggregate-pane-xref"><a href="#valuation">See valuation</a></p><p class="aggregate-pane-xref"><a href="#thesis">See variant perception &amp; thesis</a></p><p class="aggregate-pane-xref"><a href="#risk">See What Breaks the Thesis</a></p>
+      </section>
+      <section id="management" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>management &amp; leadership</h2>
+          <div class="kicker">execution + key-person risk</div>
+        </div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">management score</div><div class="kpi-value value-gn">4.2/5</div><div class="kpi-sub">Strong 2025 execution vs. prior cycles</div></div><div class="kpi"><div class="kpi-label">insider ownership %</div><div class="kpi-value ">0.5-1.7%</div><div class="kpi-sub">Collective; CEO ~0.3%</div></div><div class="kpi"><div class="kpi-label">ceo tenure</div><div class="kpi-value ">19.25 years</div><div class="kpi-sub">Since Jan 2007</div></div><div class="kpi"><div class="kpi-label">compensation alignment</div><div class="kpi-value value-rd">Moderate-High</div><div class="kpi-sub">CEO pay $22.9M (down YoY); 90%+ at-risk</div></div></div><div class="note green"><p>Key Takeaway. Allstate&#x27;s management delivered exceptional 2025 results with net income of $10.28B and diluted EPS of $38.06 (+164.9% YoY), driving ROE to 33.6%, a sharp inflection from prior underwriting pressures, enabled by disciplined pricing and capital returns that reduced shares outstanding from 264M to 260M.</p></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Leadership Assessment</h3><span class="tag green">Experienced &amp; Executing</span></div><div class="aggregate-card-body"><p>Thomas J. Wilson has served as CEO since January 2007 (19+ years tenure) and Board Chair since 2008, providing strategic continuity through insurance cycles. Under his leadership, Allstate executed the multi-year Transformative Growth initiative focused on market share, underwriting discipline, and affordable protection...</p></div></div><div class="table-wrap"><table><thead><tr><th>Name</th><th>Title</th><th>Tenure</th><th>Background</th><th class="num">Key Achievement</th></tr></thead><tbody><tr><td><p>Thomas J. Wilson</p></td><td><p>Chair, President &amp; CEO</p></td><td><p>19.25 years (CEO since 2007)</p></td><td><p>Long-tenured insurance executive; led major operating units…</p></td><td class="num"><p>Oversaw 2025 profitability surge: $10.28B net income, ROE 33.6%</p></td></tr><tr><td><p>Other Key Executives</p></td><td><p>Senior Leadership Team</p></td><td><p>Avg. ~1.9 years</p></td><td><p>Functional expertise in underwriting, risk, finance…</p></td><td class="num"><p>Supported Transformative Growth and capital discipline…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Key Executive Overview | Source: Company 2026 Proxy / Annual Report; SEC EDGAR</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Governance Structure</h3><span class="tag green">Strong Independence</span></div><div class="aggregate-card-body"><p>The Allstate Board comprises 12 directors, with 11 independent (91% independence). All committees (except Executive, chaired by the CEO) consist of independent directors per NYSE standards and Board Independence Standards. The Board affirmatively determined that non-CEO nominees have no material relationships impairing independence...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Compensation Alignment</h3><span class="tag blue">Performance-Linked</span></div><div class="aggregate-card-body"><p>CEO Thomas J. Wilson received total compensation of $22.9M in 2025, down from $26.7M in 2024, driven by lower non-equity incentives and equity awards despite salary increases. Over 90% of NEO compensation is at-risk and tied to performance metrics, including adjusted ROE, total shareholder return relative to peers, and operating priorities aligned with Transformative Growth...</p></div></div><div class="table-wrap"><table><thead><tr><th>Dimension</th><th class="num">Score (1-5)</th><th class="num">Evidence Summary</th></tr></thead><tbody><tr><td><p>Capital Allocation</p></td><td class="num"><p>5</p></td><td class="num"><p>Share count reduced 264M (Jun 2025) to 260M (Dec 2025); FCF $9.882B supported &gt;$2.2B returns + $4B authorization; stable debt ~$7.5-8.1B; equity +$9.17B…</p></td></tr><tr><td><p>Communication</p></td><td class="num"><p>4</p></td><td class="num"><p>Transparent reporting of 2025 inflection; proxy details ERRM, human capital, and strategy execution; active shareholder engagement (35% of shares)</p></td></tr><tr><td><p>Insider Alignment</p></td><td class="amb num"><p>3</p></td><td class="num"><p>Ownership 0.5-1.7% collective (~1.42M shares); CEO ~0.3%; recent option grant (106k) and planned sales under 10b5-1; equity-heavy pay…</p></td></tr><tr><td><p>Track Record</p></td><td class="num"><p>5</p></td><td class="num"><p>2025 net income $10.28B (+120.3% YoY growth); EPS $38.06 (+164.9%); ROE 33.6%; net margin 15.2%; equity to $30.61B…</p></td></tr><tr><td><p>Strategic Vision</p></td><td class="num"><p>4</p></td><td class="num"><p>Transformative Growth plan delivered policy growth to 211M and profitability recovery; focus on underwriting, AI (ALLIE), risk-return…</p></td></tr><tr><td><p>Operational Execution</p></td><td class="num"><p>5</p></td><td class="num"><p>Margin expansion to 15.2%; OCF $10.11B; liabilities down to $89.17B; modest CapEx $228M; underwriting discipline post-loss pressures…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: 6-Dimension Management Quality Scorecard | Source: SEC EDGAR 10-K/Proxy 2025-2026; Derived ratios</div><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p><p class="aggregate-pane-xref"><a href="#ops">See operations</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p>
+      </section>
+      <section id="macro" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>macro sensitivity</h2>
+          <div class="kicker">rates, fx, energy</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Allstate Corporation (NYSE: ALL) exhibits notable sensitivity to macroeconomic variables, including interest rate movements, inflation-driven loss costs, severe weather patterns influenced by climate trends, and broader geopolitical factors such as tariffs and commodity volatility. With a fixed income portfolio duration of 5.1 years as of December 31, 2025, the company’s investment income and balance sheet are directly impacted by rate changes. Catastrophe losses, a perennial challenge for property &amp; casualty insurers, totaled $1.24 billion pre-tax ($980 million after-tax) in Q1 2026 alone, underscoring exposure to weather volatility amid rising severe event frequency. The company’s 2025 full-year net income reached $10.28 billion with diluted EPS of $38.06, reflecting strong underwriting gains and investment performance despite macro headwinds. Peers such as Progressive, Travelers, and Chubb face similar pressures, though Allstate’s focused risk mitigation, including reinsurance programs and geographic exposure reductions in high-risk states like California and Florida, provides a differentiated resilience profile.</p></div>
+        <div class="aggregate-card"><div class="aggregate-card-head"><h3>Interest Rate Sensitivity and Investment Portfolio</h3></div><div class="aggregate-card-body"><p>Allstate’s investment portfolio, heavily weighted toward fixed income securities, demonstrates clear sensitivity to interest rate fluctuations. As of December 31, 2025, the fixed income securities portfolio duration stood at 5.1 years, with the duration including interest rate derivative positions also at 5.1 years and the combined fixed income and short-term investments duration at 4.7 years. A parallel 100 basis point increase in interest rates would typically result in an approximate 5.1% decline in the market value of the fixed income holdings before derivatives, though hedging strategies moderate this impact...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Catastrophe and Severe Weather Exposure</h3></div><div class="aggregate-card-body"><p>Allstate faces significant macro-driven sensitivity through catastrophe losses tied to severe weather events, which are increasingly influenced by climate patterns and economic factors such as inflation on repair costs. In Q1 2026, estimated catastrophe losses reached $1.24 billion pre-tax ($980 million after-tax), including $925 million pre-tax ($731 million after-tax) in March alone from 15 wind and hail events, with approximately 80% of March losses concentrated in three major events. January and February 2026 added $315 million pre-tax ($249 million after-tax)...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Inflation, Tariffs, and Input Cost Risks</h3></div><div class="aggregate-card-body"><p>Inflation and geopolitical developments, including U.S. tariffs on Chinese imports, introduce additional macro sensitivity for Allstate through elevated loss costs and supply chain disruptions. On April 2, 2025, the U.S...</p></div></div><div class="table-title"><h3>Key Macro Sensitivity Metrics and Historical Context</h3><span class="tag blue">read first</span></div><div class="table-wrap"><table><thead><tr><th>Metric</th><th class="num">2025 Value</th><th>Prior Period/Reference</th><th>Notes/Impact</th></tr></thead><tbody><tr><td><p>Fixed Income Portfolio Duration</p></td><td class="num"><p>5.1 years (Dec 31, 2025)</p></td><td><p>5.1 years (Sep 30, 2025)</p></td><td><p>Measures price sensitivity to interest rate changes; derivatives help stabilize exposure…</p></td></tr><tr><td><p>1-in-100 PML (Hurricane/EQ/Wildfire, net)</p></td><td class="num"><p>$3.1 billion</p></td><td><p>$3.0 billion (Jun 30, 2025)</p></td><td><p>Probable maximum loss benchmark; reinsurance caps tail risk…</p></td></tr><tr><td><p>Q1 2026 Catastrophe Losses (pre-tax)</p></td><td class="num"><p>$1.24 billion</p></td><td><p>$558 million (Q3 2025)</p></td><td><p>Driven by wind/hail; highlights weather volatility…</p></td></tr><tr><td><p>Debt to Equity Ratio</p></td><td class="num"><p>0.24</p></td><td><p>Stable across 2025</p></td><td><p>Conservative leverage supports resilience to macro shocks…</p></td></tr><tr><td><p>ROE</p></td><td class="num"><p>33.6%</p></td><td><p>Supported by 2025 net income $10.28B</p></td><td><p>Reflects strong returns despite cat and rate pressures…</p></td></tr><tr><td><p>EPS Growth YoY</p></td><td class="num"><p>+164.9%</p></td><td><p>2025 diluted EPS $38.06</p></td><td><p>Demonstrates earnings momentum amid macro navigation…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit: Key Macro Sensitivity Metrics and Historical Context</div><div class="note"><strong>Risk Mitigation Highlights</strong><br><p>Allstate’s catastrophe reinsurance program and targeted exposure reductions in California and Florida have helped limit net losses from severe events. The 2025-2026 program excludes Florida personal lines property but covers a broad range of perils, targeting low probability of exceeding $2.5 billion net aggregate losses. Ongoing portfolio duration management and derivative usage further buffer interest rate impacts...</p></div><p class="aggregate-pane-xref"><a href="#valuation">See related analysis in</a></p><p class="aggregate-pane-xref"><a href="#ops">See related analysis in</a></p><p class="aggregate-pane-xref"><a href="#financials">See related analysis in</a></p>
+      </section>
+      <section id="governance" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>governance &amp; accounting</h2>
+          <div class="kicker">quality control</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Allstate demonstrates strong governance practices characterized by high board independence, shareholder-friendly mechanisms, and clean accounting signals. These elements supported exceptional 2025 financial results, including $10.28 billion net income, 33.6% ROE, and robust free cash flow generation of $9.882 billion, while maintaining conservative leverage with a Debt to Equity ratio of 0.24.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">board independence</div><div class="kpi-value ">91%</div><div class="kpi-sub">10/11 director nominees independent (2026 proxy)</div></div><div class="kpi"><div class="kpi-label">avg independent director tenure</div><div class="kpi-value ">8 years</div><div class="kpi-sub">Three new independents added in last five years</div></div><div class="kpi"><div class="kpi-label">ceo pay ratio</div><div class="kpi-value ">[Data Pending]</div><div class="kpi-sub"><span style="color:var(--muted,#999);font-style:italic">—</span> in available filings</div></div><div class="kpi"><div class="kpi-label">governance score</div><div class="kpi-value value-gn">A-</div><div class="kpi-sub">Strong independence and shareholder rights</div></div></div><div class="note green"><p>Key Takeaway. Allstate maintains robust governance with 91% board independence and fully independent key committees, paired with conservative leverage (Debt to Equity 0.24) and exceptional 2025 ROE of 33.6%. This structure supported $10.28B net income and $9.882B free cash flow while enabling &gt;$2.2B shareholder returns...</p></div><div class="table-wrap"><table><thead><tr><th>Director</th><th>Independent</th><th class="num">Tenure (years)</th><th>Key Committees</th><th>Other Board Seats</th><th class="num">Relevant Expertise</th></tr></thead><tbody><tr><td><p>Tom Wilson</p></td><td class="neg"><p>N</p></td><td class="num"><p>19</p></td><td><p>Executive (Chair)</p></td><td><p>0</p></td><td class="num"><p>Insurance leadership, strategy, AI oversight…</p></td></tr><tr><td><p>Siddarth N. (Bobby) Mehta</p></td><td><p>Y</p></td><td class="num"><p>12+</p></td><td><p>Audit, others</p></td><td><p>Select</p></td><td class="num"><p>Finance, operations, risk management</p></td></tr><tr><td><p>Kermit R. Crawford</p></td><td><p>Y</p></td><td class="num"><p>13</p></td><td><p>Multiple</p></td><td><p>Select</p></td><td class="num"><p>Retail, operations, consumer insights</p></td></tr><tr><td><p>Andrea Redmond</p></td><td><p>Y</p></td><td class="num"><p>16</p></td><td><p>Compensation, Nominating</p></td><td><p>Select</p></td><td class="num"><p>Human capital, governance, succession planning…</p></td></tr><tr><td><p>Judith Sprieser (retiring 2026)</p></td><td><p>Y</p></td><td class="num"><p>27</p></td><td><p>Audit (Chair historically)</p></td><td><p>Select</p></td><td class="num"><p>Finance, audit, controls</p></td></tr><tr><td><p>Richard T. Hume</p></td><td><p>Y</p></td><td class="num"><p>6</p></td><td><p>Risk and Return (Lead Director successor)</p></td><td><p>Select</p></td><td class="num"><p>Technology, operations, enterprise risk</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Board Composition and Independence (2026 Nominees) | Source: Allstate 2026 DEF 14A proxy statement</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Shareholder Rights Assessment</h3><span class="tag green">Strong</span></div><div class="aggregate-card-body"><p>Allstate employs shareholder-friendly governance mechanics. No shareholder rights plan (poison pill) is in place. The board is not classified, with annual election of all directors under a majority voting standard in uncontested elections...</p></div></div><div class="table-wrap"><table><thead><tr><th>Executive</th><th>Title</th><th>Total Comp (2025)</th><th>Pay Structure</th><th>Alignment with TSR</th></tr></thead><tbody><tr><td><p>Tom Wilson</p></td><td><p>CEO &amp; Chair</p></td><td><p>$22.9M</p></td><td><p>93% at-risk/performance-based (including 70% equity incentives as performance stock awards)</p></td><td><p>Equity incentives tied to long-term measures, including relative TSR…</p></td></tr><tr><td><p>John Dugenske</p></td><td><p>Interim CFO</p></td><td><p>Lower than prior (with additional $1M RSU grant in Oct 2025)</p></td><td><p>Performance-linked, including annual cash incentive and equity…</p></td><td><p>Relative TSR elements; supports investments and strategy…</p></td></tr><tr><td><p>Mario Rizzo</p></td><td><p>COO (effective Oct 1, 2025)</p></td><td><p>Lower than prior (target equity opportunity 425% of salary)</p></td><td><p>60-84% at-risk (avg NEO); 60% performance stock awards…</p></td><td><p>Long-term equity awards aligned with operating performance…</p></td></tr><tr><td><p>Jess Merten</p></td><td><p>President, Property-Liability (effective Oct 1, 2025)</p></td><td><p>Competitive with target equity 400% of salary…</p></td><td><p>Performance-based with annual incentives at 225% target…</p></td><td><p>TSR and operating metrics tied to Transformative Growth…</p></td></tr><tr><td><p>Other NEOs (avg)</p></td><td><p>NEOs</p></td><td><p>Declined YoY (84% at-risk average)</p></td><td><p>Performance-based, with 72% of S&P 500 peers incorporating relative TSR…</p></td><td><p>TSR and operating metrics</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Named Executive Officer Compensation (2025) | Source: Allstate 2026 DEF 14A and 2025 financial disclosures</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Accounting Quality Deep-Dive</h3><span class="tag green">Clean</span></div><div class="aggregate-card-body"><p>Deloitte &amp; Touche LLP has been ratified as independent auditor for 2026, with the Audit Committee conducting annual evaluations of independence, fees, and quality controls, including mandatory partner rotation and PCAOB oversight. The Audit Committee, composed entirely of independent financial experts, oversees financial reporting integrity, internal controls, auditor independence, cybersecurity, and AI-related risks. No material weaknesses in internal controls over financial reporting were indicated in available disclosures...</p></div></div><div class="table-wrap"><table><thead><tr><th>Dimension</th><th class="num">Score (1-5)</th><th class="num">Evidence Summary</th></tr></thead><tbody><tr><td><p>Capital Allocation</p></td><td class="num"><p>5</p></td><td class="num"><p>Equity +$9.17B YoY; debt reduction to $7.49B; $2.2B+ returns + new $4B buyback; FCF $9.882B; disciplined divestiture of Employee Voluntary Benefits business for $3.1B…</p></td></tr><tr><td><p>Strategy Execution</p></td><td class="num"><p>4</p></td><td class="num"><p>Transformative Growth delivered +120.3% net income growth, 15.2% net margin, ROE 33.6% amid leadership transitions effective October 1, 2025…</p></td></tr><tr><td><p>Communication</p></td><td class="num"><p>4</p></td><td class="num"><p>Shareholder engagement with 35% of shares on governance/AI; transparent proxy disclosures on risk oversight and succession…</p></td></tr><tr><td><p>Culture</p></td><td class="num"><p>4</p></td><td class="num"><p>Succession planning, human capital oversight by Compensation &amp; Human Capital Committee; focus on pay equity and employee engagement improvements…</p></td></tr><tr><td><p>Track Record</p></td><td class="num"><p>5</p></td><td class="num"><p>2025 EPS $38.06 (+164.9% YoY); OCF $10.11B; consistent TSR performance with 10.1% one-year TSR outperforming proxy peers&#x27; 7.2%</p></td></tr><tr><td><p>Alignment</p></td><td class="num"><p>4</p></td><td class="num"><p>Low insider ownership 0.496%; performance-based comp (93% at-risk for CEO, aligned with 95% of S&P 500 peers using PSUs); majority voting and proxy access…</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 3: Management Quality Scorecard | Source: 2025 financials, 2026 DEF 14A, and governance disclosures</div><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception &amp; Thesis</a></p><p class="aggregate-pane-xref"><a href="#valuation">See Valuation</a></p><p class="aggregate-pane-xref"><a href="#financials">See Financial Analysis</a></p>
+      </section>
+      <section id="value" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>value framework</h2>
+          <div class="kicker">greenwald / qarp</div>
+        </div>
+        <div class="lead aggregate-lead"><p>Allstate (ALL) is evaluated through Graham&#x27;s strict quantitative criteria and Buffett&#x27;s qualitative tenets, cross-referenced against DCF-derived fair value of $260 versus current price of $213.87. The framework highlights exceptional 2025 profitability inflection (EPS $38.06, ROE 33.6%, net margin 15.2%) at a depressed 5.6x P/E, supporting a strong Long position with high conviction if underwriting gains prove durable.</p></div>
+        <div class="kpi-grid cols-4"><div class="kpi"><div class="kpi-label">graham score</div><div class="kpi-value ">5/7</div><div class="kpi-sub">Strong on size, finances, earnings; fails moderate P/E &amp; P/B tests due to low multiples</div></div><div class="kpi"><div class="kpi-label">buffett quality</div><div class="kpi-value ">A-</div><div class="kpi-sub">Excellent management capital allocation; understandable P&C business with improving moat</div></div><div class="kpi"><div class="kpi-label">peg ratio</div><div class="kpi-value ">0.03</div><div class="kpi-sub">EPS growth +164.9% vs P/E 5.6</div></div><div class="kpi"><div class="kpi-label">margin of safety</div><div class="kpi-value ">77%</div><div class="kpi-sub">Based on DCF base $260 vs $213.87 price</div></div></div><div class="note green"><p>Key Takeaway. Allstate&#x27;s 2025 net income of $10.28B and EPS of $38.06 produced a 15.2% net margin and 33.6% ROE at a mere 5.6x P/E, creating one of the deepest valuation discounts in the P&C sector versus peers like Progressive. This disconnect between exceptional capital generation (FCF $9.882B) and market pricing signals either profound skepticism on sustainability or a generational value opportunity.</p></div><div class="table-wrap"><table><thead><tr><th>Criterion</th><th>Threshold</th><th>Actual</th><th>Pass/Fail</th></tr></thead><tbody><tr><td><p>Adequate Size</p></td><td><p>Revenue &gt; $100M</p></td><td><p>$67.69B</p></td><td><p>Pass</p></td></tr><tr><td><p>Strong Financial Condition</p></td><td>Current ratio > 2 or Debt/Equity < 0.5 (P&C adjusted)</td><td><p>Debt/Equity 0.24</p></td><td><p>Pass</p></td></tr><tr><td><p>Earnings Stability</p></td><td><p>Positive EPS in 10 of last 10 years</p></td><td><p>Strong 2025 inflection; prior volatility <span style="color:var(--muted,#999);font-style:italic">—</span>…</p></td><td><p>Partial</p></td></tr><tr><td><p>Dividend Record</p></td><td><p>Uninterrupted dividends 20+ years</p></td><td><p><span style="color:var(--muted,#999);font-style:italic">—</span></p></td><td class="muted"><span style="color:var(--muted,#999);font-style:italic">—</span></td></tr><tr><td><p>Earnings Growth</p></td><td><p>EPS growth > 33% over 10 years</p></td><td><p>+164.9% YoY; $38.06 EPS</p></td><td><p>Pass</p></td></tr><tr><td><p>Moderate P/E</p></td><td><p>&lt; 15x</p></td><td><p>5.6x</p></td><td><p>Pass</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 1: Graham&#x27;s 7 Criteria Assessment | Source: SEC EDGAR filings (2025 annual data); Derived ratios</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Buffett Qualitative Assessment</h3><span class="tag blue">A-</span></div><div class="aggregate-card-body"><p>Allstate operates an understandable property &amp; casualty insurance business with favorable long-term prospects driven by the &#x27;Transformative Growth&#x27; strategy blending exclusive agents, independent agents via National General, and direct channels. The 2025 results demonstrate able and trustworthy management through disciplined underwriting that delivered $10.28B net income, $9.882B free cash flow, and reduction in shares outstanding to 260M while growing shareholders&#x27; equity to $30.61B...</p></div></div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Investment Decision Framework</h3><span class="tag blue">Long</span></div><div class="aggregate-card-body"><p>Position sizing should target 4-6% of portfolio given P&C cyclicality, with entry below $250 (current $213.87 offers 77% margin of safety to base DCF $260). Exit criteria include P/E expansion above 12x without corresponding ROE sustainment above 20%, or combined ratio deterioration beyond 90%. Portfolio fit is strong for value-oriented accounts seeking high-ROE compounders at depressed multiples; the low beta of 0.59 provides defensive characteristics...</p></div></div><div class="table-wrap"><table><thead><tr><th>Bias</th><th class="num">Risk Level</th><th>Mitigation</th><th>Status</th></tr></thead><tbody><tr><td><p>Anchoring</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Explicit DCF and multi-method cross-check…</p></td><td><p>Clear</p></td></tr><tr><td><p>Confirmation Bias</p></td><td class="num"><span class="tag blue">HIGH</span></td><td><p>Actively reviewed bear case on ROE mean-reversion…</p></td><td><p>Watch</p></td></tr><tr><td><p>Recency Bias</p></td><td class="num"><span class="tag blue">HIGH</span></td><td><p>Tested 2025 inflection against historical P&C cycles…</p></td><td><p>Watch</p></td></tr><tr><td><p>Overconfidence</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Scenario weighting with 734.09 bear case…</p></td><td><p>Clear</p></td></tr><tr><td><p>Availability Bias</p></td><td class="num"><span class="tag blue">MEDIUM</span></td><td><p>Incorporated peer comparisons (Progressive, Travelers)</p></td><td><p>Clear</p></td></tr><tr><td><p>Hindsight Bias</p></td><td class="num"><span class="tag blue">LOW</span></td><td><p>Focused on forward sustainability assumptions…</p></td><td><p>Clear</p></td></tr></tbody></table></div><div class="aggregate-source">Exhibit 2: Cognitive Bias Mitigation Checklist | Source: Analyst assessment based on 2025 filings and model outputs</div><div class="aggregate-card"><div class="aggregate-card-head"><h3>Conviction Scoring Breakdown</h3><span class="tag blue">82/100</span></div><div class="aggregate-card-body"><p>Pillars (weighted): Valuation Discount (30% weight): 10/10, 5.6x P/E vs $38.06 EPS and $260 DCF Financial Strength &amp; Capital Allocation (25%): 9/10, ROE 33.6%, FCF $9.882B, Debt/Equity 0.24, equity growth to $30.61B Underwriting Recovery Durability (25%): 7/10, Net margin 15.2%, +164.9% EPS growth; monitor for reversion Business Quality &amp; Moat (10%): 8/10, Hybrid distribution advantage vs pure-play peers Management Execution (10%): 9/10, Shares reduced to 260M, disciplined CapEx $228M Weighted total 82/100 reflects high confidence in 2025 metrics but tempered by cyclical risks in property-casualty insurance.</p></div></div><p class="aggregate-pane-xref"><a href="#valuation">See full DCF model, comps, and precedent transactions in Valuation tab</a></p><p class="aggregate-pane-xref"><a href="#thesis">See Variant Perception and full investment thesis details</a></p><p class="aggregate-pane-xref"><a href="#risk">See risk assessment</a></p>
+      </section>
+      <section id="appendix" class="panel aggregate-panel">
+        <div class="section-head">
+          <h2>appendix &amp; sources</h2>
+          <div class="kicker">sources · methodology</div>
+        </div>
+        <div class="lead aggregate-lead"><p>How we source the tape, verify levels, and align this report with XVARY deep-dive standards.</p></div>
+        <div class="aggregate-sources-attribution"><p>Sources: SEC filings, company disclosures, market data vendors, and sources cited in the sections above. For investment presentation use only.</p></div><p class="aggregate-methodology-link">standards and pipeline: <a href="https://xvary.com/methodology/">xvary.com/methodology/</a></p>
+      </section>
+
+      <div class="footer">
+        xvary · 2026 · not investment advice
+        <div class="links">
+          <a href="https://xvary.com/pulse/">the pulse</a>
+          <a href="https://xvary.com/stacks/">the stacks</a>
+          <a href="https://xvary.com/discover/">discover</a>
+          <a href="https://xvary.com/collectibles/">collectibles</a>
+          <a href="https://xvary.com/pricing/">pricing</a>
+          <a href="https://xvary.com/methodology/">methodology</a>
+          <a href="https://xvary.com/newsletter/">newsletter</a>
+          <a href="https://xvary.com/legal/disclaimer/">disclaimer</a>
+          <a href="https://xvary.com/legal/privacy/">privacy</a>
+          <a href="https://xvary.com/legal/terms/">terms</a>
+        </div>
+        <div class="small">Sources: company filings and earnings, supplier disclosures, named sell-side notes where cited, alt-data where noted, and public flow/sentiment screens. Not investment advice — verify anything you trade on.</div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    (function () {
+      const bar = document.getElementById("reading-progress");
+      const sections = [{"id": "summary", "hotkey": "0"}, {"id": "thesis", "hotkey": "1"}, {"id": "financials", "hotkey": "2"}, {"id": "valuation", "hotkey": "3"}, {"id": "risk", "hotkey": "4"}, {"id": "ops", "hotkey": "5"}, {"id": "competition", "hotkey": "6"}, {"id": "tam", "hotkey": "7"}, {"id": "product", "hotkey": "8"}, {"id": "supply", "hotkey": "9"}, {"id": "catalysts", "hotkey": "a"}, {"id": "street", "hotkey": "b"}, {"id": "management", "hotkey": "c"}, {"id": "macro", "hotkey": "d"}, {"id": "governance", "hotkey": "e"}, {"id": "value", "hotkey": "f"}, {"id": "appendix", "hotkey": "g"}];
+      const links = [...document.querySelectorAll(".sidebar a[href^='#']")];
+      const setActive = function (id) {
+        links.forEach(function (link) {
+          link.classList.toggle("active", link.getAttribute("href") === "#" + id);
+        });
+      };
+
+      window.addEventListener("scroll", function () {
+        const root = document.documentElement;
+        const pct = (root.scrollTop / Math.max(root.scrollHeight - root.clientHeight, 1)) * 100;
+        if (bar) {
+          bar.style.width = Math.min(Math.max(pct, 0), 100) + "%";
+        }
+      }, { passive: true });
+
+      if ("IntersectionObserver" in window) {
+        const observer = new IntersectionObserver(function (entries) {
+          entries.sort(function (a, b) { return b.intersectionRatio - a.intersectionRatio; });
+          const hit = entries.find(function (entry) {
+            return entry.isIntersecting && entry.intersectionRatio > 0.12;
+          });
+          if (hit) {
+            setActive(hit.target.id);
+          }
+        }, { rootMargin: "-40% 0px -40% 0px", threshold: [0, 0.12, 0.25, 0.45] });
+
+        sections.forEach(function (item) {
+          const node = document.getElementById(item.id);
+          if (node) {
+            observer.observe(node);
+          }
+        });
+      }
+
+      links.forEach(function (link) {
+        link.addEventListener("click", function () {
+          setActive(link.getAttribute("href").slice(1));
+        });
+      });
+
+      const hotkeys = {};
+      sections.forEach(function (item) {
+        hotkeys[item.hotkey] = item.id;
+      });
+
+      document.addEventListener("keydown", function (event) {
+        if (event.metaKey || event.ctrlKey) {
+          return;
+        }
+        const target = event.target;
+        if (target && target.closest && target.closest("input, textarea, select, [contenteditable='true']")) {
+          return;
+        }
+        const key = event.key.length === 1 ? event.key.toLowerCase() : event.key;
+        if (!hotkeys[key]) {
+          return;
+        }
+        event.preventDefault();
+        const node = document.getElementById(hotkeys[key]);
+        if (node) {
+          node.scrollIntoView({ behavior: "smooth", block: "start" });
+        }
+      });
+    })();
+  </script>
+  <footer class="footer" style="margin-left:var(--navw,0)">
+    xvary · 2026 · not investment advice
+    <div class="footer-links">
+      <a href="/pulse/" class="footer-link-pulse">the pulse</a>
+      <a href="/stacks/">the stacks</a>
+      <a href="/discover/">discover</a>
+      <a href="/collectibles/">collectibles</a>
+      <a href="/methodology/">methodology</a>
+      <a href="/newsletter/">newsletter</a>
+      <a href="/pricing/">pricing</a>
+      <a href="/free/">free reports</a>
+      <a href="/legal/disclaimer/">disclaimer</a>
+      <a href="/legal/privacy/">privacy</a>
+      <a href="/legal/terms/">terms</a>
+    </div>
+    <div class="footer-logo">
+      <a href="/" aria-label="home">
+        <img src="/assets/xvary-logo.svg" alt="xvary" width="100" height="26">
+      </a>
+    </div>
+  </footer>
+  <script src="/js/site-chrome.js" defer></script>
+</body>
+</html>
