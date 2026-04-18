@@ -1,6 +1,416 @@
 (function () {
   window.XVARY_BLOG_DATA = [
   {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-18",
+    "published_at": "2026-04-18T18:55:05Z",
+    "title": "Mamdani's $500M pied-\u00e0-terre tax accelerates NYC's top taxpayer flight to Florida",
+    "body": "<p>The ultra-rich won&#x27;t just absorb it\u2014they&#x27;ll domicile elsewhere. The data already proves they do.</p><p>The consensus is simple: Mayor Mamdani\u2019s new pied-\u00e0-terre tax on roughly 13,000 luxury second homes valued over $5 million will rake in $500 million a year from absentee billionaires and global elites who treat Manhattan penthouses as wealth-storage units, without triggering any real exodus. Full-time New Yorkers are exempt, the ultra-rich can absorb the hit, and the city plugs part of its $5.4 billion budget gap. Nice, clean math on paper.</p><p>Reality doesn\u2019t do clean. New York\u2019s top 1%\u2014around 41,000 filers\u2014already shoulder more than 40% of the state\u2019s income tax burden. Layer on another annual surcharge for part-time luxury holdings, atop sky-high property taxes and a top marginal rate exceeding 10%, and the marginal owner starts running the numbers. Florida has no state income tax. The math flips from \u201cabsorb it\u201d to \u201cwhy subsidize someone else\u2019s deficit when I can domicile full-time in zero-tax sunshine?\u201d</p><p>You\u2019ve seen the precedent. In recent years, more than 125,000 New Yorkers headed to Florida, carrying nearly $14 billion in income with them. A big chunk\u2014about 41,000 movers\u2014landed in Miami-Dade, Palm Beach, and Broward counties alone, stripping New York City of $9-10 billion in adjusted gross income during the 2018-2022 window. Average incomes of those departing ran $190,000 to $266,000, the exact cohort that notices every extra basis point.</p><p>IRS data for 2023 puts the broader picture in stark relief: Florida posted a net gain of $20.7 billion in AGI, while New York logged a net loss of $10.7 billion. High earners ($200k+) drove 82% of Florida\u2019s haul. That\u2019s not random weather migration. It\u2019s rational capital responding to incentives that have been screaming for years.</p>",
+    "url": "/pulse/mamdanis-500m-pied-terre-tax-accelerates-nycs-top-taxpayer-flight-to-florida/",
+    "tags": [
+      "pulse",
+      "contrarian",
+      "tax-policy",
+      "migration",
+      "nyc"
+    ],
+    "pulse_slug": "mamdanis-500m-pied-terre-tax-accelerates-nycs-top-taxpayer-flight-to-florida",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-17",
+    "published_at": "2026-04-17T10:04:18Z",
+    "title": "Netflix selloff on Hastings board exit and soft Q2 guide ignores clean cash windfall and steady execution",
+    "body": "<p>The market freaked out over optics. The numbers tell a different story.</p><p>Netflix stock is tanking because Reed Hastings is leaving the board after 29 years and the Q2 guide looks a little soft. You\u2019d think the company just admitted defeat. Reality is different: Netflix just pocketed $2.8 billion for walking away from a bad deal, crushed Q1 numbers, generated record free cash flow, and left its full-year targets completely untouched.</p><p>Wall Street is treating the founder\u2019s planned exit like the end of an era and the Q2 revenue forecast of $12.57 billion as proof that momentum is rolling over. That narrative drove an 8-9% after-hours drop even though the actual print beat on both top and bottom lines. The market is laser-focused on optics and conservative framing while completely ignoring the cash windfall and the machine that keeps humming.</p><p>Here\u2019s what actually happened. Q1 revenue hit $12.25 billion, up 16% year-over-year and ahead of the $12.18 billion consensus. Adjusted EPS came in at $1.23 versus roughly $0.76\u20130.79 expected. Operating income reached $3.96 billion with a 32.3% margin\u2014better than the company\u2019s own internal guide. None of this was a fluke. Stronger membership growth, pricing power, and the expanding ad tier all contributed. The $2.8 billion termination fee from the collapsed Warner Bros. Discovery transaction landed squarely in other income, pushing net income to $5.28 billion and free cash flow to $5.1 billion\u2014nearly double the year-ago figure. That\u2019s real capital, not accounting smoke.</p>",
+    "url": "/pulse/netflix-selloff-on-hastings-board-exit-and-soft-q2-guide-ignores-clean-cash-wind/",
+    "tags": [
+      "pulse",
+      "contrarian",
+      "earnings",
+      "netflix",
+      "streaming"
+    ],
+    "pulse_slug": "netflix-selloff-on-hastings-board-exit-and-soft-q2-guide-ignores-clean-cash-wind",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-17",
+    "published_at": "2026-04-17T10:03:29Z",
+    "title": "'You're an Idiot': Marc Rowan Has a Word for Lenders Who Can't Handle 5% Redemptions",
+    "body": "<p>Apollo&#x27;s 11.2% redemption spike in its Debt Solutions BDC isn&#x27;t cracking the model\u2014it&#x27;s exposing who chased software yield without the discipline to deliver liquidity when asked.</p><p>Marc Rowan didn't mince words on CNBC: if you can't meet the standard 5% quarterly redemption in a private credit fund, \"you're an idiot.\" Right after Apollo Debt Solutions BDC disclosed 11.2% redemption requests for Q1 2026\u2014more than double its disclosed 5% cap\u2014while honoring only about $730 million, or roughly 45% prorated, of the ~$1.6 billion asked. The market panicked anyway, selling Apollo stock and painting the entire $2T+ private credit space as one software default from a liquidity nightmare. That's the consensus view, and it's missing the point entirely.</p><p>You've been sold the story of systemic stress: redemption gates slamming, valuation opacity biting, and AI disruption in software forcing fire sales across the board. Apollo's flagship BDC, with roughly $14.7-15 billion in NAV, fielded that 11.2% ask on shares outstanding as of December 31, 2025, per its shareholder letter and SEC disclosures. Industry-wide, private credit direct lending funds saw record redemption requests of ~$19.5 billion in Q1 2026, with only about 53% honored across analyzed vehicles. Yet Apollo stuck strictly to its contractual terms\u2014no gate hikes, no emergency capital injections, no blinking. It prorated payouts and offset the outflow with ~$724 million in new subscriptions, leaving net flows essentially flat. The structure didn't break. It worked exactly as designed for anyone who built the right portfolio.</p>",
+    "url": "/pulse/youre-an-idiot-marc-rowan-has-a-word-for-lenders-who-cant-handle-5-redemptions/",
+    "tags": [
+      "pulse",
+      "private-credit",
+      "apollo-global",
+      "marc-rowan",
+      "redemptions",
+      "bdcs",
+      "alternative-credit",
+      "software-exposure"
+    ],
+    "pulse_slug": "youre-an-idiot-marc-rowan-has-a-word-for-lenders-who-cant-handle-5-redemptions",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-17",
+    "published_at": "2026-04-17T10:02:17Z",
+    "title": "Everyone Expected TSMC and ASML to Rocket on Record Beats\u2014They Dropped 2-6% Anyway",
+    "body": "<p>Beat-and-raise quarters with sold-out AI capacity through 2026, yet the market hit sell. That&#x27;s not peak demand. That&#x27;s profit-taking handing you an entry.</p><p>Everyone expected the AI bellwethers to rocket on record beats. TSMC and ASML delivered exactly that\u2014stronger revenue, fatter margins, raised full-year guidance\u2014yet the stocks dropped 2-6% post-earnings. Consensus calls it the first crack in the AI spending frenzy. You should hear it for what it really is: classic profit-taking after monster rallies, not evidence that hyperscalers are suddenly hitting pause. The factories tell the opposite story.</p><p>TSMC just posted its fourth straight record quarter. Q1 revenue hit $35.9 billion, up 40.6% year-over-year, while net profit surged 58.3% to a record NT$572.5 billion. Gross margin expanded to 66.2%. They guided Q2 revenue to $39-40.2 billion and raised full-year 2026 growth above 30% in USD terms, pushing capex toward the high end of $52-56 billion. The stock still sold off. That's the deadpan fact bomb: record results, higher guidance, and the market treated it like bad news.</p><p>This isn't fading AI demand. It's persistent supply constraints that demand keeps outrunning. TSMC's 3nm and advanced packaging capacity is already oversubscribed, with management flagging \"extremely strong\" demand for AI accelerators and leading-edge nodes. Advanced technologies (7nm and below) made up 74% of wafer revenue in Q1, HPC platform hit 61% of total revenue, and they're ramping 2nm while converting lines to chase orders locked in through 2026 and beyond. When the company powering Nvidia, AMD, and the rest says capacity is sold out and they're accelerating spend, the message is clear: silicon shortage isn't easing\u2014it's structural.</p>",
+    "url": "/pulse/everyone-expected-tsmc-and-asml-to-rocket-on-record-beatsthey-dropped-2-6-anyway/",
+    "tags": [
+      "pulse",
+      "semiconductors",
+      "AI",
+      "earnings",
+      "contrarian",
+      "TSMC",
+      "ASML"
+    ],
+    "pulse_slug": "everyone-expected-tsmc-and-asml-to-rocket-on-record-beatsthey-dropped-2-6-anyway",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-16",
+    "published_at": "2026-04-18T18:48:30Z",
+    "title": "Waller's Iran Hold Signal Is Already Outdated",
+    "body": "<p>The Strait reopened, oil collapsed, and the energy spike looks as temporary as they come.</p><p>You heard Fed Governor Christopher Waller loud and clear on Friday: Iran war risks and a softening labor market have him leaning toward holding rates steady at the current 3.5-3.75% target range. If inflation risks from any prolonged energy shock outweigh labor weakness, the central bank stays on hold\u2014even as hiring slows. That's the consensus view right now. Markets and speakers are anchoring hard to worst-case Strait of Hormuz blockage scenarios that could embed higher costs across the economy.</p><p>Reality just punched back. Iran declared the Strait \"completely open\" for commercial traffic on Friday amid the ceasefire, and oil prices didn't just dip\u2014they plunged over 10% in hours. Brent crude futures dropped as much as 11% toward $88-90 per barrel after trading above $100 earlier in the week. WTI followed suit, falling toward the low $80s. That immediate collapse tells you the supply shock was measured in weeks, not years. Rerouting, SPR releases, and normalized flows are already unwinding the spike before it can bake into wages or core services.</p><p>Look at the inflation data that landed right before Waller's remarks. Headline CPI jumped to 3.3% YoY in March from 2.4% in February, driven almost entirely by energy. Gasoline prices surged 18.9-24.9% in the month depending on the lens, pushing the energy component up around 12.5%. But core CPI? It rose only modestly to 2.6% YoY from 2.5%, with month-over-month gains staying tame at 0.2-0.3%. This isn't 2022 redux where Russia's invasion created persistent, broad-based pressure. It's a transient hit that markets are already pricing out.</p>",
+    "url": "/pulse/wallers-iran-hold-signal-is-already-outdated/",
+    "tags": [
+      "pulse",
+      "fed",
+      "macro",
+      "oil",
+      "contrarian"
+    ],
+    "pulse_slug": "wallers-iran-hold-signal-is-already-outdated",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-16",
+    "published_at": "2026-04-18T18:47:25Z",
+    "title": "Mamdani's $500M pied-\u00e0-terre tax on 13k luxury units won't trigger mass exodus to Florida",
+    "body": "<p>The ultrawealthy aren&#x27;t fleeing over a rounding-error surcharge on their trophy apartments. The real driver of New York&#x27;s tax base erosion happened years ago.</p><p>Everyone's screaming that Mayor Mamdani's new pied-\u00e0-terre tax will empty out Manhattan's skyline and send the rich racing to Florida. You know the script: slap a surcharge on $5M+ second homes owned by non-residents, watch the tax base crater as the golden geese bolt. Consensus has the story locked in\u2014another self-inflicted wound on a city already bleeding high earners.</p><p>Reality doesn't match the panic. This tax targets roughly 13,000 luxury properties valued over $5 million that aren't primary residences\u2014condos, co-ops, and one-to-three family homes. Officials project it raises $500 million annually, a drop in the bucket against New York City's $5.4 billion budget gap. That works out to roughly $38,000 average per unit if spread evenly, though actual hits scale with value and tiers kick in higher. For owners parking $10 million to $200 million-plus in a Manhattan trophy asset they use a few weeks a year, it's not the trigger that forces a full relocation. It's a signaling cost at best.</p>",
+    "url": "/pulse/mamdanis-500m-pied-terre-tax-on-13k-luxury-units-wont-trigger-mass-exodus-to-flo/",
+    "tags": [
+      "pulse",
+      "contrarian",
+      "tax-policy",
+      "nyc",
+      "migration"
+    ],
+    "pulse_slug": "mamdanis-500m-pied-terre-tax-on-13k-luxury-units-wont-trigger-mass-exodus-to-flo",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-16",
+    "published_at": "2026-04-16T10:04:33Z",
+    "title": "Iran War's March Export Hit Masks India's Full-Year Resilience and US Offset",
+    "body": "<p>One month&#x27;s Middle East pain doesn&#x27;t rewrite the annual record\u2014diversification and demand absorption tell the real story.</p><p>Iran war means prolonged pain for India's exports, right? Headlines scream that regional chaos slashed March goods shipments 7.4% year-over-year to $38.92 billion, hammering sectors, jacking up freight costs, and delaying recovery for months. Consensus has you bracing for cascading weakness across markets.</p><p>They're missing the punchline.</p><p>March's $3.5 billion Middle East hit\u2014including a brutal 62% drop to the UAE\u2014was real and visceral. But full FY26 goods exports still rose 0.93% to $441.78 billion from $437.70 billion the prior year, per official Ministry of Commerce data. Total exports (goods plus services) smashed a record $860.09 billion, up 4.22% YoY. The \"more pain ahead\" narrative fixated on one month's shock while skipping the annual positive print and the US surge that cushioned the blow.</p><p>Look at March in context. Merchandise imports fell 6.5% to $59.59 billion, pulling the trade deficit sharply narrower to roughly $20.7 billion. Exports dipped regionally, yet import compression and diversification kept the broader trade picture intact. US shipments jumped, helping absorb some of the Gulf loss, while engineering goods, petroleum products, and minerals drove March to the highest monthly goods export of the entire fiscal year.</p><p><strong>Screenshottable stat line:</strong> FY26 goods exports: +0.93% to $441.78B (vs $437.70B FY25). March alone: -7.4% YoY to $38.92B with $3.5B ME hit, yet imports -6.5% narrowed deficit to ~$20.7B. US surge + diversification offset the regional pain. (Source: Ministry of Commerce / PIB releases, April 2026.)</p>",
+    "url": "/pulse/iran-wars-march-export-hit-masks-indias-full-year-resilience-and-us-offset/",
+    "tags": [
+      "pulse",
+      "india-exports",
+      "trade",
+      "geopolitics",
+      "iran-war",
+      "fy26",
+      "contrarian"
+    ],
+    "pulse_slug": "iran-wars-march-export-hit-masks-indias-full-year-resilience-and-us-offset",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-16",
+    "published_at": "2026-04-16T10:03:58Z",
+    "title": "Goldman's FICC 'Stumble' Is Just a Noisy Rates Blip \u2014 Not the Death of the Trader's Edge",
+    "body": "<p>Wall Street fixated on the -10% FICC print to $4.01B while ignoring record equities revenue of $5.33B (+27%) and a firmwide earnings beat. The market&#x27;s missing Goldman&#x27;s macro DNA in action.</p><p>You heard the headlines: Goldman Sachs bond traders stumbled as Wall Street rivals thrived. FICC revenue dropped 10% to $4.01 billion in Q1 2026, missing estimates by roughly $910 million. CNBC framed it as a fire lit under management, questioning if the firm's trader identity\u2014built for volatile markets\u2014was finally fading. Consensus piled on: Goldman got caught offsides on rates amid Iran-related volatility, proving it's no longer the sharpest macro player on the Street.</p><p>Reality is the punchline. That FICC number looks ugly in a vacuum, but the same quarter delivered record-breaking strength elsewhere that more than offset it. Equities revenue hit an all-time high of $5.33 billion, up 27% year-over-year, fueled by prime financing and cash products. Global Banking & Markets net revenues climbed 19% to a record $12.74 billion. Firmwide net revenues reached $17.23 billion (+14% YoY), net earnings jumped 19% to $5.63 billion, and diluted EPS came in at $17.55\u2014crushing the $16.49 consensus. Investment banking fees surged 48% to $2.84 billion on a sharp M&A rebound.</p>",
+    "url": "/pulse/goldmans-ficc-stumble-is-just-a-noisy-rates-blip-not-the-death-of-the-traders-ed/",
+    "tags": [
+      "pulse",
+      "goldman-sachs",
+      "ficc",
+      "earnings",
+      "trading",
+      "wall-street",
+      "q1-2026",
+      "macro"
+    ],
+    "pulse_slug": "goldmans-ficc-stumble-is-just-a-noisy-rates-blip-not-the-death-of-the-traders-ed",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-16",
+    "published_at": "2026-04-16T10:03:28Z",
+    "title": "Banks face $2.6-5.6B citizenship verification hit while Bessent frames it as standard KYC upgrade",
+    "body": "<p>Wall Street screams existential crisis. The numbers say it&#x27;s just another Tuesday in compliance hell.</p><p>You've heard the panic: Treasury Secretary Scott Bessent wants banks to start collecting citizenship data on customers, and suddenly it's the end of banking as we know it. Billions in new costs, millions of accounts frozen, legal residents debanked over paperwork gaps, and the entire system turned into immigration cops. Consensus has priced in operational Armageddon, with shares in big banks already twitching on every headline. Reality is the punchline here, and it's a lot drier than the headlines suggest.</p><p>Bessent put it plainly at the recent CNBC event: \"Why can unknown foreign nationals come and open a bank account? Our bank executives' job is to know your customer. How do you know your customer if you don't know if they have legal or illegal status?\" He added that \"every other country does it,\" pointing to places like the UK where even apartment rentals trigger residency checks. The U.S. stands out for not requiring this layer\u2014current rules under the Bank Secrecy Act and USA PATRIOT Act force banks to verify name, address, date of birth, and SSN or ITIN, but stop short of confirming legal status. That gap lets undocumented individuals open accounts with ITINs for tax purposes, something the administration wants closed.</p>",
+    "url": "/pulse/banks-face-26-56b-citizenship-verification-hit-while-bessent-frames-it-as-standa/",
+    "tags": [
+      "pulse",
+      "banks",
+      "compliance",
+      "treasury",
+      "contrarian",
+      "KYC"
+    ],
+    "pulse_slug": "banks-face-26-56b-citizenship-verification-hit-while-bessent-frames-it-as-standa",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-16",
+    "published_at": "2026-04-16T10:03:12Z",
+    "title": "Banks will absorb $3-6B citizenship verification costs with minimal customer loss",
+    "body": "<p>Consensus screams debanking disaster. Banks just see another KYC Tuesday.</p><p>You hear the panic: Treasury Secretary Scott Bessent is turning banks into immigration cops, slapping a massive new burden on the system that will trigger privacy nightmares, debank millions of everyday Americans who can't instantly prove citizenship, and push people into cash economies that kill tax revenue and growth. Wall Street whispers operational chaos and customer flight. Reality is the punchline\u2014banks have swallowed KYC and AML layers for decades under the Bank Secrecy Act and PATRIOT Act. This directive lands as one more compliance evolution they absorb or pass on at scale, while tightening the net on illicit flows that currently slip through.</p><p>Consensus crowds the doomsday lane. The Treasury push forces one-time friction on existing accounts, endless paperwork, and a wave of closures hitting citizens without easy proof. Headlines scream economic damage, with millions shifting underground. But the numbers tell a different story within two sentences. The American Action Forum modeled the added costs at $2.6\u2013$5.6 billion and 33.1\u201373.3 million paperwork hours, drawing directly from existing verification programs like Form I-9 and passport processing. Real friction, yes\u2014but hardly existential for an industry already spending billions annually on BSA/AML compliance, as detailed in the 10-K filings of JPMorgan Chase, Bank of America, and Wells Fargo, where such costs represent a manageable slice of their massive operational budgets against trillions in assets.</p>",
+    "url": "/pulse/banks-will-absorb-3-6b-citizenship-verification-costs-with-minimal-customer-loss/",
+    "tags": [
+      "pulse",
+      "banks",
+      "regulation",
+      "immigration",
+      "contrarian"
+    ],
+    "pulse_slug": "banks-will-absorb-3-6b-citizenship-verification-costs-with-minimal-customer-loss",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-16",
+    "published_at": "2026-04-16T10:01:40Z",
+    "title": "Iran War Took a $3.5B Bite Out of India's Exports \u2014 But March Still Delivered FY26's Strongest Month",
+    "body": "<p>The street sees fragility and months of pain. The numbers show India&#x27;s export base rerouting in real time, hitting a record annual total while narrowing the trade deficit.</p><p>Everyone's fixated on the Iran war hammering India's goods exports. March merchandise exports dropped 7.44% year-over-year to $38.92 billion from $42.05 billion. West Asia shipments cratered nearly 58%, wiping out roughly $3.5 billion as routes snarled and costs climbed. Analysts warn of prolonged supply chain stress, higher energy bills, wider deficits, and growth drag stretching into FY27. You hear it loud and clear: another geopolitical hit exposing how vulnerable India's trade engine remains in a messy world.</p><p>That's the consensus panic. Here's the part they're missing: that same $38.92 billion in March goods exports marked the highest monthly print for the entire FY26. Not a battered low \u2014 the peak. The regional hit stung, but the rest of the world didn't just fill the gap; it accelerated. US exports surged 17.4% month-over-month to $8.02 billion on tariff relief breathing room. Engineering goods still posted 1.1% year-over-year growth despite the chaos. The headline YoY drop hid a machine that adapted on the fly and delivered its best monthly performance of the fiscal year.</p>",
+    "url": "/pulse/iran-war-took-a-35b-bite-out-of-indias-exports-but-march-still-delivered-fy26s-s/",
+    "tags": [
+      "pulse",
+      "india-exports",
+      "geopolitics",
+      "trade-deficit",
+      "iran-war",
+      "diversification",
+      "macro"
+    ],
+    "pulse_slug": "iran-war-took-a-35b-bite-out-of-indias-exports-but-march-still-delivered-fy26s-s",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-15",
+    "published_at": "2026-04-18T18:44:19Z",
+    "title": "Berkshire's lag in the tech rally is exactly why it wins the long game",
+    "body": "<p>Wall Street calls it weakness. The cash pile and earnings machine say otherwise.</p><p>You hear it on every screen: Berkshire Hathaway shares are getting left behind. While the S&P 500 charges to fresh records on narrow tech leadership, BRK.B sits down 5.5% year-to-date through mid-April 2026 versus the index up roughly 4%. CNBC and the crowd frame it as post-Buffett drift, proof the conglomerate missed the AI-fueled party and lacks growth exposure. Fair surface read. But the real story flips hard when you look at the balance sheet and operating core. That deliberate lag isn't weakness\u2014it's the repeatable edge that has let Berkshire deliver superior risk-adjusted compounding across full market cycles for decades.</p><p>The market is all-in on concentrated growth names at premium multiples. Berkshire is doing the opposite: sitting on $373.3 billion in cash and short-term investments at the end of 2025, according to its 2025 annual report and 10-K\u2014roughly one-third of its market cap. That war chest was built through disciplined net equity trimming into strength, not panic selling. Per the same filings, Berkshire generated $46 billion in net cash from operating activities in 2025, well above the five-year average of more than $40 billion. Meanwhile, the S&P 500's blended P/E sits in the mid-20s while BRK.B trades at a trailing P/E of 15.3x as of mid-April 2026 data. You get paid to wait with a fortress that most CEOs can only dream about.</p>",
+    "url": "/pulse/berkshires-lag-in-the-tech-rally-is-exactly-why-it-wins-the-long-game/",
+    "tags": [
+      "pulse",
+      "contrarian",
+      "value",
+      "berkshire",
+      "market cycles"
+    ],
+    "pulse_slug": "berkshires-lag-in-the-tech-rally-is-exactly-why-it-wins-the-long-game",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-15",
+    "published_at": "2026-04-18T18:40:58Z",
+    "title": "Tech's Monster Rebound Week Hides the Same Old Execution Gaps",
+    "body": "<p>Oracle +27%, AMD&#x27;s 13-day streak to ATH, Microsoft +14%, IGV +14%\u2014the crowd calls it the AI recovery. You should call it a relief rally in names that still can&#x27;t prove the spend.</p><p>You saw the headlines: Oracle rocketed 27% in its best week since June 1999 after expanding a power deal with Bloom Energy for 1.2 GW of fuel-cell capacity, complete with a fresh $400 million warrant for Bloom shares. AMD tacked on 13% for the week, capped by a 13-day winning streak\u2014the longest in over 20 years\u2014and a new all-time high. Microsoft surged 14%, its best week since April 2015, snapping back from a quarter that erased nearly 25% of its value, the worst since 2008. And the iShares Expanded Tech-Software Sector ETF (IGV) jumped roughly 14%, on track for its best week since October 2001. Consensus is pounding the table: the YTD pain in software and semis is over, AI infrastructure demand is finally inflecting, and this rotation proves it. Wrong. This is classic short-covering in oversold names after brutal selling on AI disruption fears\u2014not evidence that hyperscalers are converting headline power deals into sustainable revenue or margin expansion for these players.</p>",
+    "url": "/pulse/techs-monster-rebound-week-hides-the-same-old-execution-gaps/",
+    "tags": [
+      "pulse",
+      "tech",
+      "semiconductors",
+      "software",
+      "ai",
+      "contrarian"
+    ],
+    "pulse_slug": "techs-monster-rebound-week-hides-the-same-old-execution-gaps",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-15",
+    "published_at": "2026-04-15T10:04:44Z",
+    "title": "Herm\u00e8s Drops 14% on a 1.5-Point Miss: The Market Just Overran Its Own Math",
+    "body": "<p>Q1 constant-currency growth hit 6% with \u20ac4.1B revenue\u2014Americas and Japan double digits, leather goods strong\u2014yet the stock erased billions because perfection was priced in at 34x forward earnings.</p><p>You had Herm\u00e8s trading above 34 times forward earnings heading into the print, everyone convinced the Birkin machine would glide through any geopolitical static. Consensus modeled around 7% constant-currency growth. Then the numbers landed: \u20ac4.1 billion in Q1 revenue, up 6% at constant exchange rates but missing by roughly 150 basis points. Middle East softness shaved the top line. The stock plunged 14%, wiping out more than $20 billion in market value overnight. Same day Kering dropped 10% on Gucci weakness, and suddenly the entire luxury complex looked vulnerable. The price action raced ahead of what the data actually shows\u2014a contained regional blip, not a model crack.</p><p>Break it down. Americas delivered double-digit growth, Japan posted strong gains, Europe ex-France rose nearly 10%. Leather goods and saddlery\u2014the heart of the house\u2014advanced solidly. Overall store sales still climbed 7% despite tourist drag. The miss came from two isolated spots: France down 3% on slower March tourist flows linked to Middle East tensions, and the 'Other' region (mostly Middle East) falling 5.9% to \u20ac160 million from \u20ac185 million. That regional hit accounts for the entire 150-basis-point gap, per breakdowns. One quarter, one conflict-driven slowdown in a slice of the business representing low-single-digit exposure, and the premium resilience story took a 14% haircut. You saw the headlines screaming surprise. Reality is the punchline: the math never supported the panic.</p>",
+    "url": "/pulse/herms-drops-14-on-a-15-point-miss-the-market-just-overran-its-own-math/",
+    "tags": [
+      "pulse",
+      "luxury-goods",
+      "hermes",
+      "earnings",
+      "middle-east",
+      "geopolitics",
+      "valuation",
+      "overreaction"
+    ],
+    "pulse_slug": "herms-drops-14-on-a-15-point-miss-the-market-just-overran-its-own-math",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-15",
+    "published_at": "2026-04-15T10:03:30Z",
+    "title": "ASML Raises 2026 Guidance to \u20ac36-40B on AI Demand, But the Real Signal Is the Widened Bandwidth for China Export Hits",
+    "body": "<p>Consensus cheers the AI beat. The fine print says they&#x27;re bracing for the other shoe.</p><p>You've heard it already: ASML crushed Q1 expectations and hiked its 2026 sales outlook, proof that AI demand is unstoppable and the lithography monopoly prints money. Wall Street popped the champagne because the numbers looked clean on the surface. But dig one layer deeper and the real message lands like a cold splash of reality: this modest raise isn't pure AI euphoria\u2014it's management carving out explicit room to absorb a sharp drop in China revenue that's already underway.</p><p>Start with the beat everyone is high-fiving. ASML delivered Q1 2026 net sales of \u20ac8.8 billion, topping the \u20ac8.5 billion consensus estimate, with gross margin hitting 53.0% at the high end of guidance. Net income came in at \u20ac2.8 billion. On paper, that's validation of AI-driven EUV strength. Yet right alongside that strength, China sales slid to just 19% of Q1 revenue\u2014down from 33% of total sales in 2025. That's not a rounding error; that's a structural hole opening up faster than most models assumed.</p>",
+    "url": "/pulse/asml-raises-2026-guidance-to-36-40b-on-ai-demand-but-the-real-signal-is-the-wide/",
+    "tags": [
+      "pulse",
+      "asml",
+      "semiconductors",
+      "earnings",
+      "contrarian",
+      "china-risk",
+      "ai-demand"
+    ],
+    "pulse_slug": "asml-raises-2026-guidance-to-36-40b-on-ai-demand-but-the-real-signal-is-the-wide",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-15",
+    "published_at": "2026-04-15T10:02:04Z",
+    "title": "Hermes 14% Drop Overstates Iran War Damage: ME Exposure Is Minor and Transient",
+    "body": "<p>The market freaked out over a tiny wholesale blip while owned stores kept growing. Birkin demand didn&#x27;t vanish\u2014crowd psychology did.</p><p>You see Hermes shares crater 14% on Iran war headlines and the luxury sector narrative flips to panic mode: geopolitical shock has derailed the recovery, tourist spend is toast, and even the Birkin maker isn't immune. Consensus says the Q1 miss\u20146% constant exchange rate growth versus 7.1% expected\u2014confirms broader demand weakness, dragging peers like Kering lower with it. Then you dig into the actual numbers and the panic looks ridiculous. Q1 revenue hit \u20ac4.07 billion, up 6% at constant exchange rates per the company's release, with directly operated stores still growing 7% despite the tourist slowdown. Middle East sales came in at \u20ac160 million, down 6% from \u20ac185 million prior year and clocking in under 4% of total revenue\u2014yet that sliver triggered a $20+ billion wipeout in market value. That's not insight. That's the crowd treating a concession and airport hiccup like the death of ultra-HNW demand.</p><p>The real insulation sits in Hermes' owned-store core. Jefferies analysts noted the Middle East conflict shaved roughly 150 basis points off group growth, concentrated in wholesale to concessions and airports\u2014not the flagship network that drives the bulk of profits. Hermes operates just six stores in the region, three directly run, with the rest in concessions that took the direct hit from March closures and security issues. Core leather goods and directly operated stores held firm while the noise stayed contained to one transient channel. This wasn't a broad-based collapse; it was a 1-2% quarterly shave from one region's wholesale activity, following strong January and February trends before the abrupt geopolitical turn.</p>",
+    "url": "/pulse/hermes-14-drop-overstates-iran-war-damage-me-exposure-is-minor-and-transient/",
+    "tags": [
+      "pulse",
+      "contrarian",
+      "luxury-goods",
+      "earnings-reaction",
+      "hermes",
+      "geopolitics"
+    ],
+    "pulse_slug": "hermes-14-drop-overstates-iran-war-damage-me-exposure-is-minor-and-transient",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-14",
+    "published_at": "2026-04-18T18:36:43Z",
+    "title": "Tech's Monster Rebound Week Masks Persistent AI Infrastructure Execution Gaps",
+    "body": "<p>Oracle +27% (best week since 1999), AMD&#x27;s 12-day streak to all-time highs (longest since 2005), Microsoft +14% (best since 2015), and IGV +14% (best since October 2001). The street screams AI fears are over. You should see a classic relief rally in oversold names.</p><p>You watched the fireworks this week: Oracle ripped 27% for its best week since 1999, AMD charged to fresh all-time highs on a 12-day winning streak\u2014the longest since 2005\u2014Microsoft posted its best week since 2015 with a 14% surge, and the iShares Expanded Tech-Software Sector ETF (IGV) delivered a 14% jump, its strongest since October 2001. Intel, Broadcom, Micron, Marvell, and ON Semiconductor joined the April roar. Consensus wasted no time calling the bottom on YTD AI disruption pain, declaring power deals and rotation as proof the infrastructure spend is finally converting. Nice narrative. But this snapback is short-covering and momentum chasing after brutal selling, not validated execution closing the gap between headline optics and real revenue acceleration.</p>",
+    "url": "/pulse/techs-monster-rebound-week-masks-persistent-ai-infrastructure-execution-gaps/",
+    "tags": [
+      "pulse",
+      "tech",
+      "ai",
+      "semiconductors",
+      "software",
+      "oracle",
+      "amd",
+      "contrarian"
+    ],
+    "pulse_slug": "techs-monster-rebound-week-masks-persistent-ai-infrastructure-execution-gaps",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-14",
+    "published_at": "2026-04-14T10:04:32Z",
+    "title": "Stocks Shrug Off Failed Iran Talks\u2014Oil Just Repriced the Real Risk",
+    "body": "<p>Consensus bets on quick de-escalation and resilient equities after the Islamabad collapse. Oil market data says otherwise: sustained $95-100+ crude will cap multiples and bite margins harder than any Trump tweet.</p><p>You saw the script play out Monday: 21 hours of U.S.-Iran talks in Islamabad collapse with zero progress on nukes or Hormuz access, the U.S. Navy starts enforcing a blockade, and the S&P 500 still closes up 1.02% at 6,886.24. Wall Street's consensus view? Quick resolution ahead, limited supply disruption, equities resilient as ever. Classic narrative trade. But oil didn't play along. Brent settled up 4.4% at $99.36, WTI gained 2.6% to $99.08 per Reuters data from April 13, 2026, both flirting with $100+ intraday on blockade news. That's the indicator guiding the next 1-3 months\u2014not headlines. Consensus is lazy on how energy costs transmit to the broader market.</p><p>Last week's ceasefire hype delivered the perfect contrast: stocks rallied roughly 5%, oil dropped 15%. Markets cheered the temporary relief. Then the breakdown hit, exposing the move as overdone. Ex-JPM strategist Marko Kolanovic called it precisely that on X, noting the prior rally ignored +75 million barrels of effective supply lost in the interim chaos. Reality is the punchline\u201421 hours of talks ended with zero agreement on the chokepoint carrying 20% of global oil and LNG transit (EIA data), yet equities shook it off faster than oil repriced the disruption. Tanker traffic through Hormuz had already plunged 95%+ in March 2026, averaging just 7 vessels per day versus peacetime 100-138, per UNCTAD tracking.</p>",
+    "url": "/pulse/stocks-shrug-off-failed-iran-talksoil-just-repriced-the-real-risk/",
+    "tags": [
+      "pulse",
+      "oil",
+      "geopolitics",
+      "hormuz",
+      "iran",
+      "crude",
+      "spx",
+      "energy",
+      "markets"
+    ],
+    "pulse_slug": "stocks-shrug-off-failed-iran-talksoil-just-repriced-the-real-risk",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-14",
+    "published_at": "2026-04-14T10:04:31Z",
+    "title": "Wall Street's Streaming Crush Ignores the Profitability Chasm",
+    "body": "<p>Netflix prints 29.5% operating margins on $45.2B revenue while Disney guides to just 10% DTC\u2014and YouTube&#x27;s ad machine already out-earns the legacy pack combined.</p><p>Wall Street keeps cheering every streaming subscriber add and revenue beat like the glory days of 2021 never ended. They bid up media stocks on Disney's guidance to 10% DTC margins, Paramount+'s 17% revenue growth, and Warner Bros. Discovery's occasional streaming profits, convinced that price hikes, ad tiers, and password crackdowns will finally turn the corner for everyone. The bet is simple in their minds: scale fixes everything, libraries monetize, and the legacy players ride Netflix's coattails into sustainable cash flow.</p><p>Reality doesn't agree. Netflix already locked in the win with a 29.5% operating margin on $45.2 billion in full-year 2025 revenue, up from 26.7% the year before, per its 10-K filing. Advertising revenue more than doubled to over $1.5 billion, with guidance calling for another near-doubling in 2026 as the platform targets 31.5% overall margins. That's the payoff from global scale, disciplined content spend, and an asset-light model that spreads costs across hundreds of millions of users without legacy linear TV bleeding cash.</p><p>Disney, meanwhile, is steering its Entertainment DTC business toward a 10% operating margin in fiscal 2026, targeting $2.1 billion in streaming operating income\u2014up from $1.3 billion last year. Progress, sure, but still a distant shadow of Netflix's efficiency. Heavy content amortization, bundling pressure with Hulu and ESPN+, and ongoing linear declines keep the math stubborn. Ten percent on a fragmented operation isn't closing any gap; it's survival mode dressed as momentum.</p>",
+    "url": "/pulse/wall-streets-streaming-crush-ignores-the-profitability-chasm/",
+    "tags": [
+      "pulse",
+      "streaming",
+      "media",
+      "netflix",
+      "disney",
+      "profitability",
+      "contrarian",
+      "youtube"
+    ],
+    "pulse_slug": "wall-streets-streaming-crush-ignores-the-profitability-chasm",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-14",
+    "published_at": "2026-04-14T10:02:50Z",
+    "title": "Goldman Sachs Q1 equities record masks FICC fragility in volatile macro",
+    "body": "<p>The street cheered the headline beat. They missed the $910 million FICC hole sitting right next to it.</p><p>You saw the headlines: Goldman Sachs crushed estimates with record equities trading and its second-highest quarterly revenue ever. Consensus immediately spun it as proof that capital markets are firing on all cylinders and that any post-earnings stock dip was just macro noise or a classic sell-the-news reaction. But zoom in on the split and the story flips. Equities delivered a blowout $5.33 billion in net revenues, up 27% year-over-year and a new all-time high. Meanwhile FICC posted $4.01 billion, down 10% from last year and missing Street expectations by roughly $910 million. That near-$1 billion swing in opposite directions on the same volatile trading floor tells you everything about the quality of this beat\u2014and why it won't hold.</p><p>Start with the deadpan fact bomb: equities shattered the prior record by over $1 billion while FICC missed by nearly $1 billion. The market priced the headline, not the split. Equities strength came heavily from financing, which hit a record $2.61 billion\u2014up 59% year-over-year\u2014fueled by prime brokerage activity and record average prime balances, especially in Asia. Cash equities intermediation added another solid layer, up 7%. Total firm net revenues reached $17.23 billion, beating estimates, with EPS at $17.55 versus $16.49 expected and net earnings of $5.63 billion, up 19% year-over-year. ROE landed at 19.8%. On paper, it's a monster quarter. In reality, half the trading book is flashing warning lights.</p>",
+    "url": "/pulse/goldman-sachs-q1-equities-record-masks-ficc-fragility-in-volatile-macro/",
+    "tags": [
+      "pulse",
+      "earnings",
+      "contrarian",
+      "trading",
+      "goldman-sachs"
+    ],
+    "pulse_slug": "goldman-sachs-q1-equities-record-masks-ficc-fragility-in-volatile-macro",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
     "type": "earnings",
     "ticker": "AAPL",
     "date": "2026-04-13",
@@ -237,6 +647,154 @@
       "geopolitical analysis"
     ],
     "pulse_kicker": "geopolitical analysis"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-13",
+    "published_at": "2026-04-18T18:33:06Z",
+    "title": "Tech's Monster Rebound Week Is Short-Covering Optics, Not AI Execution Proof",
+    "body": "<p>Oracle +27% for its best week since 1999 on a Bloom Energy power deal. AMD +42% over its longest streak in 20+ years to a new ATH. Microsoft +14%, best since 2015. IGV +14%, best since 2001. The street calls this durable AI infrastructure vindication after YTD pain. You should see it for what it is: relief rally noise masking the same revenue conversion and margin gaps.</p><p>You watched the screens light up this week and felt the pull\u2014Oracle ripped 27% for its best weekly gain since 1999, AMD chained together gains for its longest streak since 2005 with a 42%+ surge to a fresh all-time high near $278, Microsoft added nearly 14% for its strongest week since 2015, and the IGV ETF jumped 14% for its best performance since October 2001. April turned the laggards into leaders: Intel +55%, Marvell +41%, with Broadcom, Micron, and ON Semiconductor each clearing big moves. Consensus immediately declared the YTD AI disruption fears over, pricing in a clean rotation and durable rebound in software and semis as power deals and momentum confirmed the narrative shift.</p><p>Reality is the punchline: this is classic short-covering in names hammered by valuation, execution worries, and uneven AI visibility\u2014not structural proof that infrastructure hype is finally converting to revenue acceleration and sustainable margins. The market took headline optics and sector rotation as vindication. But the gaps between flashy announcements and actual customer spend data, utilization rates, and margin trends sit exactly where they did before the fireworks. One week of momentum chasing doesn't erase the drivers that sent many of these holdings down 20-30%+ YTD.</p>",
+    "url": "/pulse/techs-monster-rebound-week-is-short-covering-optics-not-ai-execution-proof/",
+    "tags": [
+      "pulse",
+      "tech",
+      "semiconductors",
+      "software",
+      "AI infrastructure",
+      "Oracle",
+      "AMD",
+      "Microsoft",
+      "IGV",
+      "Bloom Energy",
+      "short covering"
+    ],
+    "pulse_slug": "techs-monster-rebound-week-is-short-covering-optics-not-ai-execution-proof",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-13",
+    "published_at": "2026-04-18T18:35:22Z",
+    "title": "The Market Calls Berkshire\u2019s Lag Weakness. The Cash Pile Says Otherwise.",
+    "body": "<p>While the S&amp;P races on tech fumes, Berkshire sits on record dry powder and a discount that screams preparation\u2014not procrastination.</p><p>You\u2019ve seen the headlines: Berkshire Hathaway shares are getting left behind again. As the S&P 500 charges to new records on a handful of high-beta tech names, BRK.B has dropped about 5.5% year-to-date through mid-April 2026 while the index sits up roughly 4%. That gap blew out to nearly 10 points in recent weeks. CNBC calls it post-Buffett drift. The street whispers missed AI exposure and too much caution. Here\u2019s the sharper truth: this lag isn\u2019t a bug in Berkshire\u2019s machine\u2014it\u2019s the feature that has delivered superior long-term compounding every time concentration cracks.</p><p>Start with the balance sheet that most analysts treat as boring. Berkshire ended 2025 with $373.3 billion in cash and short-term investments\u2014roughly one-third of its market cap, per the year-end 10-K. That\u2019s not idle money sitting idle; it\u2019s low-risk liquidity built while the S&P pushed valuations into dangerous territory. Greg Abel doesn\u2019t need to chase every rally. He waits for the reset that always comes when narrow leadership dominates. You own real optionality here, not narrative risk.</p><p>Underneath that cash fortress runs a cash-generative operating engine the market keeps undervaluing. Full-year 2025 operating earnings reached $44.5 billion, powered by stable insurance float, BNSF rail traffic, and energy assets\u2014even as Q4 came in at $10.2 billion amid some underwriting noise. That\u2019s $46 billion in operating cash flow for the year, funding buybacks, small tuck-ins, and the occasional big swing without dilution or distress sales. While growth chasers swing for the fences and pray sentiment holds, Berkshire grinds out durable earnings that survive corrections.</p>",
+    "url": "/pulse/the-market-calls-berkshires-lag-weakness-the-cash-pile-says-otherwise/",
+    "tags": [
+      "pulse",
+      "contrarian",
+      "value",
+      "berkshire",
+      "capital-allocation"
+    ],
+    "pulse_slug": "the-market-calls-berkshires-lag-weakness-the-cash-pile-says-otherwise",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-13",
+    "published_at": "2026-04-13T10:03:15Z",
+    "title": "The Goldman Sachs Q1 Beat Is Already Priced In at 18x Forward Earnings",
+    "body": "<p>Wall Street is handing out Morgan Stanley stability to a firm that still lives and dies by trading volatility.</p><p>You\u2019re about to watch the market celebrate another clean Goldman Sachs Q1 beat. Consensus is calling for roughly $16.41 EPS and $16.95 billion in revenue, up about 13% year-over-year. Shares have already ripped 89% over the past 12 months and sit near all-time highs. The narrative is simple: trading desks are on fire thanks to AI-driven churn, investment banking is recovering, and Goldman is finally getting the premium multiple it \u201cdeserves.\u201d</p><p>Reality is less generous. The same Q4 2025 that delivered record equities trading revenue of $4.31 billion (up sharply YoY) and IB fees up 25% still saw overall revenue come in soft enough that the stock needed the trading momentum just to keep climbing. Global Banking & Markets (GBM) generated $41.45 billion for the full year 2025, up 18%, but that segment\u2014dominated by volatile trading\u2014still accounts for the overwhelming majority of Goldman\u2019s top line. Even with financing revenues growing, the firm remains structurally exposed to the very market swings that produce these headline beats.</p>",
+    "url": "/pulse/the-goldman-sachs-q1-beat-is-already-priced-in-at-18x-forward-earnings/",
+    "tags": [
+      "pulse",
+      "contrarian",
+      "earnings",
+      "financials",
+      "valuation"
+    ],
+    "pulse_slug": "the-goldman-sachs-q1-beat-is-already-priced-in-at-18x-forward-earnings",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-13",
+    "published_at": "2026-04-13T10:02:07Z",
+    "title": "Oil spike to $104+ on Trump Hormuz blockade is a classic overreaction; flows resume faster than priced in",
+    "body": "<p>Markets flipped from 15% drop to 8% surge on the same leverage theater. Selective Navy action and Saudi buffers already online say the panic is overdone.</p><p>Markets repriced 15% lower on a two-week ceasefire promise last week, then surged 8% higher on its collapse plus a targeted blockade tweet\u2014same waterway, same players, same leverage game. You saw WTI blast past $104 and Brent top $102+ in one volatile session after weekend talks in Pakistan fell apart. Stock futures dipped as the fear narrative locked in: prolonged Strait of Hormuz disruption, one-fifth of global oil flows choked, inflation spiking, growth taking a hit. Consensus is screaming supply shock that sticks for weeks or months. The market is pricing in irreversible pain.</p><p>Except this isn't a lockdown\u2014it's leverage. Trump's announcement and CENTCOM clarification specify the U.S. Navy will interdict vessels entering or leaving Iranian ports or those that paid Iranian tolls in international waters, while preserving freedom of navigation for non-Iranian Gulf traffic. Selective enforcement hits Tehran's revenue without sealing the chokepoint entirely. Physical tanker traffic through Hormuz has already been running well below 10% of normal volumes\u2014often just 7 ships per day versus 140 pre-conflict\u2014since late February, per ship-tracking data from Kpler, Lloyd\u2019s List, and Signal Ocean. Headlines swing prices; barrels barely move.</p>",
+    "url": "/pulse/oil-spike-to-104-on-trump-hormuz-blockade-is-a-classic-overreaction-flows-resume/",
+    "tags": [
+      "pulse",
+      "oil",
+      "geopolitics",
+      "contrarian",
+      "energy",
+      "hormuz"
+    ],
+    "pulse_slug": "oil-spike-to-104-on-trump-hormuz-blockade-is-a-classic-overreaction-flows-resume",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-12",
+    "published_at": "2026-04-18T18:30:28Z",
+    "title": "Waller's Iran Hold Signal Already Outdated as Strait Reopens and Oil Collapses",
+    "body": "<p>The Fed dove laid out a conditional framework tied to the Strait of Hormuz. Hours later, Iran declared it completely open, oil plunged over 10%, and the transient energy shock evaporated\u2014leaving doves free to confront the real issue of labor softness without inflation guilt.</p><p>You've seen the market hang on every word from Fed Governor Christopher Waller as if it's gospel. Consensus has him\u2014and the central bank\u2014locked into a hold, or worse, a hawkish bias. The Iran conflict, particularly any prolonged disruption to the Strait of Hormuz, supposedly creates an impossible dual-mandate squeeze: energy-driven inflation risks layered on softening labor data force policymakers to prioritize prices over jobs. The fed funds target stays pinned at 3.5-3.75%, doves stay sidelined, and any talk of cuts gets deferred.</p><p>Reality is the punchline, and it landed fast. On April 17, right around Waller's Auburn University speech, Iran's foreign minister declared the Strait of Hormuz \"completely open\" for commercial traffic during the ceasefire window. Brent crude didn't dip modestly\u2014it plunged as much as 11% in hours, trading below $89 per barrel after earlier spikes toward $100+ on blockage fears. That move shredded the worst-case supply disruption scenarios Waller had just referenced.</p><p>This wasn't abstract relief. Tanker traffic that slowed during the brief closure began normalizing quickly as rerouting and other measures kicked in. Markets repriced the disruption as transient\u2014measured in weeks, not the persistent multi-year scar of Russia's 2022 Ukraine invasion. Equities jumped on the signal while oil futures reflected the reopening speed almost instantly. The premium for prolonged chaos evaporated in real time.</p>",
+    "url": "/pulse/wallers-iran-hold-signal-already-outdated-as-strait-reopens-and-oil-collapses/",
+    "tags": [
+      "pulse",
+      "fed",
+      "oil",
+      "macro",
+      "iran",
+      "rates",
+      "waller",
+      "strait-of-hormuz"
+    ],
+    "pulse_slug": "wallers-iran-hold-signal-already-outdated-as-strait-reopens-and-oil-collapses",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-12",
+    "published_at": "2026-04-18T18:31:12Z",
+    "title": "Oracle just did its best week since 1999 while Microsoft was still recovering from its worst quarter since 2008 \u2014 and the market is calling this an AI victory.",
+    "body": "<p>Power deals and GPU headlines lit up the tape in Oracle, AMD, and Microsoft. But the rebound is short-covering theater in a capital-intensive grind where monetization still lags the spend.</p><p>Oracle just did its best week since 1999 while Microsoft was still recovering from its worst quarter since 2008 \u2014 and the market is calling this an AI victory. You watched Oracle rip 27%, AMD surge 13% on its longest winning streak in over 20 years, and Microsoft add 14%. The IGV ETF had one of its strongest weeks in memory as Intel, Broadcom, Micron, Marvell, and ON Semiconductor joined the April party. Consensus immediately rang the bell: AI capex fears were overdone, hyperscaler budgets are reaccelerating, and the entire stack just got the all-clear.</p><p>Reality is the punchline. This move traces straight back to oversold levels after brutal YTD weakness. Microsoft had just taken a roughly 25% drawdown tied directly to AI infrastructure costs. Oracle and AMD lagged hard into mid-April. Shorts got squeezed on power-deal headlines and GPU shipment optics, but the underlying numbers show no sudden explosion in high-margin, monetizable AI revenue. It's tactical relief, not a fundamental inflection.</p>",
+    "url": "/pulse/oracle-just-did-its-best-week-since-1999-while-microsoft-was-still-recovering-fr/",
+    "tags": [
+      "pulse",
+      "tech",
+      "semiconductors",
+      "cloud",
+      "AI",
+      "capex",
+      "Oracle",
+      "AMD",
+      "Microsoft"
+    ],
+    "pulse_slug": "oracle-just-did-its-best-week-since-1999-while-microsoft-was-still-recovering-fr",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-12",
+    "published_at": "2026-04-18T18:29:49Z",
+    "title": "Waller\u2019s Iran Shock Warning Masks a Labor Market Already Too Soft for Hold",
+    "body": "<p>The dovish Fed governor just handed you the real story: oil is noise, payrolls are the signal.</p><p>You\u2019ve heard the consensus drumbeat: Fed Governor Christopher Waller, the board\u2019s most reliable dove, warned Friday that a prolonged Iran conflict and potential Strait of Hormuz disruption could lock rates in place well into 2026, forcing the central bank to prioritize sticky inflation over a softening labor market. Markets priced in a 99% chance of no cut at the late-April FOMC, with brokers still penciling just one or two moves later this year. Sounds prudent\u2014until you look at the data Waller himself can\u2019t ignore. Reality is the punchline: the labor market rolled over months ago, any oil spike is already proving transitory, and the Fed is on hold because growth is slowing faster than the geopolitical narrative lets on.</p><p>Start with the numbers that matter most. March nonfarm payrolls came in at +178,000, better than the +59,000 consensus estimate, but that headline hid the weakness\u2014February was revised down by 41,000 (to -133,000 from prior), January revised up by 34,000 to +160,000, leaving the three-month average hovering around 68,000 per BLS data. The unemployment rate edged to 4.3% from 4.4%, but not because hiring surged; 396,000 people dropped out of the labor force, pulling the rate lower artificially while participation fell below 62% for the first time since the pandemic. This isn\u2019t resilience\u2014it\u2019s a market where the job creation needed to hold unemployment steady has faded to near zero. Waller admitted as much in his Auburn University speech: low payroll growth signals a greater chance of outright employment shrinkage ahead if trends continue.</p>",
+    "url": "/pulse/wallers-iran-shock-warning-masks-a-labor-market-already-too-soft-for-hold/",
+    "tags": [
+      "pulse",
+      "fed",
+      "labor-market",
+      "oil-shock",
+      "contrarian",
+      "macro"
+    ],
+    "pulse_slug": "wallers-iran-shock-warning-masks-a-labor-market-already-too-soft-for-hold",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
   },
   {
     "type": "pulse_editorial",
