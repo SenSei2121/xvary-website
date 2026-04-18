@@ -22,6 +22,27 @@
   {
     "type": "pulse_editorial",
     "ticker": "",
+    "date": "2026-04-18",
+    "published_at": "2026-04-18T18:54:40Z",
+    "title": "Mamdani's $500M Pied-\u00e0-Terre Tax Won't Send the Ultra-Wealthy Racing to Florida",
+    "body": "<p>The math on 13,000 luxury second homes shows this is more political theater than a tipping point for NYC&#x27;s tax base exodus.</p><p>You've heard the panic already: Mayor Zohran Mamdani and Governor Kathy Hochul just dropped a proposed pied-\u00e0-terre tax on New York City second homes worth $5 million or more, and the usual suspects are screaming that this $500 million grab will finally push the rich out the door to Florida. Consensus says NYC's eroding tax base\u2014already leaking high earners\u2014will accelerate as the ultra-wealthy vote with their feet against yet another hit on luxury living.</p><p>Reality is the punchline. This tax targets a narrow slice of roughly 13,000 absentee luxury properties, mostly in Manhattan, that aren't primary residences. It spreads to an average annual hit of about $38,000 per unit if evenly applied across the target. For owners parking $10 million to $200 million in NYC real estate while basing themselves elsewhere, that's not a relocation trigger\u2014it's a rounding error next to the lifestyle, networks, and sunk costs that keep them tied to the city. The real driver of Florida migration has been humming for years, powered by zero state income tax and remote-work flexibility, not incremental property surcharges on vacation pads.</p>",
+    "url": "/pulse/mamdanis-500m-pied-terre-tax-wont-send-the-ultra-wealthy-racing-to-florida/",
+    "tags": [
+      "pulse",
+      "nyc",
+      "tax-policy",
+      "wealth-migration",
+      "real-estate",
+      "mamdani",
+      "florida-migration"
+    ],
+    "pulse_slug": "mamdanis-500m-pied-terre-tax-wont-send-the-ultra-wealthy-racing-to-florida",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
     "date": "2026-04-17",
     "published_at": "2026-04-17T10:04:18Z",
     "title": "Netflix selloff on Hastings board exit and soft Q2 guide ignores clean cash windfall and steady execution",
@@ -793,6 +814,44 @@
       "macro"
     ],
     "pulse_slug": "wallers-iran-shock-warning-masks-a-labor-market-already-too-soft-for-hold",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-12",
+    "published_at": "2026-04-18T18:31:29Z",
+    "title": "Berkshire's $373 Billion Cash Pile Isn't Weakness\u2014It's a Loaded Spring",
+    "body": "<p>Wall Street calls it post-Buffett drift. The balance sheet says disciplined patience.</p><p>You've heard the CNBC take: Berkshire Hathaway shares are getting left behind as the S&P 500 charges to fresh records. BRK.B is down roughly 5% year-to-date through mid-April 2026 while the index rips higher on tech momentum. Consensus labels the massive cash hoard dead money and Greg Abel's early moves as proof the conglomerate can't keep pace in a risk-on world.</p><p>That's the lazy read. Reality is simpler and sharper: Berkshire ended 2025 with $373 billion in cash and short-term Treasuries\u2014the largest corporate liquidity position on record\u2014and that fortress has held steady into early 2026 with continued T-bill purchases. Per the 2025 annual report and Q4 10-K, this isn't idle cash; it's dry powder deliberately held when few assets offered adequate margin of safety. Markets price one narrative of weakness. The numbers reveal capital discipline that sets up asymmetric upside when valuations reset.</p><p>Start with the lag itself. BRK.B has trailed the S&P by about 5-7 percentage points YTD amid a concentrated tech rally. Yet Berkshire generated $44.5 billion in operating earnings for full-year 2025 across its insurance, railroad, energy, and manufacturing businesses, according to the annual report. That's down modestly from 2024 but still well above the five-year average of $37.5 billion and comes from real operations\u2014not multiple expansion. The S&P's outperformance masks its vulnerability to any rotation away from the Magnificent Few; Berkshire's diversified earnings provide ballast the index lacks.</p>",
+    "url": "/pulse/berkshires-373-billion-cash-pile-isnt-weaknessits-a-loaded-spring/",
+    "tags": [
+      "pulse",
+      "contrarian",
+      "value",
+      "berkshire",
+      "market"
+    ],
+    "pulse_slug": "berkshires-373-billion-cash-pile-isnt-weaknessits-a-loaded-spring",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-12",
+    "published_at": "2026-04-18T18:28:18Z",
+    "title": "The market calls Berkshire's lag a warning. It's actually the setup.",
+    "body": "<p>While the S&amp;P 500 races to records on narrow tech bets, Berkshire sits on $373 billion in cash and trades at half the multiple. History says this isn&#x27;t weakness\u2014it&#x27;s the edge.</p><p>You've heard the CNBC take: Berkshire Hathaway shares are getting left behind again. BRK.B is down about 5.5% year-to-date through mid-April 2026 while the S&P 500 sits up around 4%. Month-to-date, the gap widened as the index hit fresh highs and Berkshire barely moved or slipped under 1%. The narrative writes itself\u2014post-Buffett drift, missed the AI party, value investing is dead in a growth world. Markets love a simple story. Reality usually delivers the punchline later.</p><p>Here's the ignored datapoint everyone glosses over: Berkshire ended 2025 with $373.3 billion in cash and short-term investments, roughly one-third of its roughly $1 trillion market cap. That pile\u2014built deliberately while trimming equities in frothy conditions\u2014earns steady yield at low risk. Meanwhile, the S&P 500 trades at blended multiples around 24-25x with a CAPE near 37-39, levels that have preceded major tops before. Berkshire's operating businesses generated $44.5 billion in full-year 2025 operating earnings from insurance, BNSF rail, and energy\u2014durable cash machines that don't need daily hype to compound. This isn't sitting on the sidelines; it's structural optionality most companies can only dream about.</p>",
+    "url": "/pulse/the-market-calls-berkshires-lag-a-warning-its-actually-the-setup/",
+    "tags": [
+      "pulse",
+      "contrarian",
+      "value",
+      "berkshire",
+      "market"
+    ],
+    "pulse_slug": "the-market-calls-berkshires-lag-a-warning-its-actually-the-setup",
     "pulse_editorial_order": 500,
     "pulse_kicker": "pulse note"
   },
