@@ -3,6 +3,71 @@
   {
     "type": "pulse_editorial",
     "ticker": "",
+    "date": "2026-04-20",
+    "published_at": "2026-04-20T10:04:20Z",
+    "title": "Friday's Oil Plunge and Dow Surge Were Pure Optics \u2014 Hormuz Fragility Still Sits Ready to Torch the Mag 7 Rebound",
+    "body": "<p>Cramer called out lower yields, cheaper oil, and selective Mag 7 pops as proof stocks can keep running despite Iran setbacks. Reality punched back over the weekend: one flare-up at the chokepoint carrying 20% of global supply flips the script overnight.</p><p>You felt that Friday exhale. The Dow ripped 869 points. The S&P 500 blasted above 7,100 for a fresh record. Brent crude cratered 9% to $90.38 after Iran signaled the Strait of Hormuz was 'completely open' during the ceasefire. WTI dropped nearly 12% to $83.85. Ten-year yields eased from 4.32% to 4.26%. Selective Mag 7 names like TSLA popped around 3%. Jim Cramer ticked off the wins \u2014 lower borrowing costs, fuel relief, tech rebounding \u2014 as evidence the market could shrug off war noise and keep climbing. Here's the reality: this was a headline-chasing relief bounce on temporary optics, not structural strength. Consensus is calling it resilience. They're wrong. The setup remains fragile, overweighting one day's supply hope while ignoring how fast Hormuz rhetoric reverses and slams inflation back into tech valuations.</p>",
+    "url": "/pulse/fridays-oil-plunge-and-dow-surge-were-pure-optics-hormuz-fragility-still-sits-re/",
+    "tags": [
+      "pulse",
+      "macro",
+      "oil",
+      "hormuz",
+      "iran",
+      "mag7",
+      "yields",
+      "geopolitics"
+    ],
+    "pulse_slug": "fridays-oil-plunge-and-dow-surge-were-pure-optics-hormuz-fragility-still-sits-re",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-20",
+    "published_at": "2026-04-20T10:03:31Z",
+    "title": "Software rally ignores Microsoft capex reality: rebound is valuation reset, not fundamentals fix",
+    "body": "<p>The buy-the-dip crowd missed the collision between exploding infrastructure spend and lagging Azure returns.</p><p>The software crowd is piling into the rebound like it's 2023 all over again. Microsoft entered 2026 near all-time highs and shed roughly 23% at its worst points through mid-April\u2014its steepest quarterly drop since 2008 in Q1\u2014wiping out over a trillion in market value. The iShares Expanded Tech-Software Sector ETF (IGV) fell about 20-24% YTD before any partial recovery. Suddenly the screens lit up with \u201chigh-quality dip\u201d calls. The narrative sounded tidy: AI disruption fears were overdone, sentiment snapped back, time to buy as the broader market lifted. You\u2019ve heard it everywhere this week. The reality is the punchline, and it\u2019s staring at you from Microsoft\u2019s cash flow statement: exploding infrastructure spend is outrunning Azure\u2019s ability to turn it into sustained acceleration.</p><p>You saw the drawdown facts. Microsoft\u2019s YTD total return through mid-April 2026 sat around -12% to -18% depending on the exact day, with intra-year pain hitting deeper. Consensus framed it as temporary panic over AI agents and slow Copilot monetization. Surface-level, sure. But one layer down, the capital allocation picture shifts hard. Pre-AI, capex ran steady at 25-27% of operating cash flow. The latest full fiscal year pushed that ratio to 47.4%. The last four quarters alone totaled $83 billion in capex. That\u2019s not noise. That\u2019s a structural retooling of how Microsoft deploys its massive cash generation.</p>",
+    "url": "/pulse/software-rally-ignores-microsoft-capex-reality-rebound-is-valuation-reset-not-fu/",
+    "tags": [
+      "pulse",
+      "contrarian",
+      "software",
+      "microsoft",
+      "capex",
+      "azure",
+      "ai-infrastructure"
+    ],
+    "pulse_slug": "software-rally-ignores-microsoft-capex-reality-rebound-is-valuation-reset-not-fu",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-20",
+    "published_at": "2026-04-20T10:02:56Z",
+    "title": "Software Rebound Is Pure Noise\u2014AI Seat Compression Is Still Crushing the Math",
+    "body": "<p>IGV&#x27;s best week since 2001 changes nothing. The structural repricing from fewer seats and licenses is intact.</p><p>The street is already rewriting the script. Microsoft had been off roughly 20-25% at its worst point in early 2026, the IGV ETF cratered, and suddenly a violent snapback has everyone chanting the classic buy-the-dip mantra. Oracle and Microsoft led the charge. CNBC desks are buzzing about high-quality enterprise names finally getting their due after the semis rotation reversed. Fundamentals are still growing, they say. Short covering plus macro relief equals the bottom is in. You\u2019ve heard this movie before\u2014weak hands shaken out, smart money steps in, and we all move higher.</p><p>You should ignore the barking. This is textbook relief rally noise masking a structural repricing that AI agents are accelerating, not pausing. The market wants to treat any bounce as vindication for the old software playbook. Reality is the punchline: enterprises are already testing agents that consolidate workflows and reduce the total number of seats and licenses they pay for. One Claude-powered agent handling tasks that used to require multiple human seats doesn\u2019t expand the TAM\u2014it shrinks the dollars flowing into traditional per-seat contracts. That dynamic didn\u2019t disappear because the ETF had a green week.</p>",
+    "url": "/pulse/software-rebound-is-pure-noiseai-seat-compression-is-still-crushing-the-math/",
+    "tags": [
+      "pulse",
+      "software",
+      "AI",
+      "IGV",
+      "Microsoft",
+      "SaaS",
+      "valuation",
+      "seat compression"
+    ],
+    "pulse_slug": "software-rebound-is-pure-noiseai-seat-compression-is-still-crushing-the-math",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
     "date": "2026-04-18",
     "published_at": "2026-04-18T18:55:05Z",
     "title": "Mamdani's $500M pied-\u00e0-terre tax accelerates NYC's top taxpayer flight to Florida",
