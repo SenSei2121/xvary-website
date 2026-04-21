@@ -3,6 +3,110 @@
   {
     "type": "pulse_editorial",
     "ticker": "",
+    "date": "2026-04-21",
+    "published_at": "2026-04-21T10:08:22Z",
+    "title": "Retail Just Chased Bonds After Their Best Year in Five \u2014 Stocks Are Set to Lap Them Through 2026",
+    "body": "<p>Record 10-month EPFR inflows into bond funds scream peak complacency. History says this chase ends with bonds lagging as earnings power equities higher.</p><p>You\u2019ve heard the pitch: bonds are back. After 2025\u2019s solid gains, yields look attractive, the Fed has pivoted, inflation is under control, and a comfortable 60/40 portfolio will deliver safety plus decent returns. Wall Street nods along. Retail has voted with its cash. But here\u2019s the punchline \u2014 that flood of money into bond funds isn\u2019t smart positioning for the future. It\u2019s the classic late-cycle chase of yesterday\u2019s winners, and it sets up stocks to outperform bonds for the rest of 2026.</p><p>EPFR data shows bond funds posted 10 consecutive months of positive net inflows through Q1 2026. Taxable bond funds alone pulled in a record $540 billion in 2025 \u2014 the largest annual total on record and roughly 70% of all long-term U.S. fund inflows that year. US bond mutual funds kept the momentum into 2026, with another $33.78 billion in February alone. That\u2019s not defensive rotation. That\u2019s momentum investors piling in after the price move already happened.</p><p>Consensus calls this rational safety-seeking. The Bloomberg US Aggregate returned about 7% in 2025 while offering 4-5% nominal yields ahead, with Fed cuts expected in a steady economy. Why not lock it in? The problem is fund-flow studies going back decades reveal the real pattern: heavy inflows show strong contemporaneous correlation with returns, but the lagged effect is weaker subsequent bond performance. Investors chase what just worked. Stocks, by contrast, keep riding resilient corporate earnings and economic growth that bonds simply can\u2019t match when duration risk kicks in on any upside surprise in growth or inflation.</p>",
+    "url": "/pulse/retail-just-chased-bonds-after-their-best-year-in-five-stocks-are-set-to-lap-the/",
+    "tags": [
+      "pulse",
+      "bonds",
+      "stocks",
+      "fund-flows",
+      "EPFR",
+      "contrarian",
+      "2026-outlook",
+      "asset-allocation"
+    ],
+    "pulse_slug": "retail-just-chased-bonds-after-their-best-year-in-five-stocks-are-set-to-lap-the",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-21",
+    "published_at": "2026-04-21T10:06:21Z",
+    "title": "The Crowd Is Flooding Bonds at Record Pace \u2014 Exactly the Setup That Hands Stocks the Edge Through 2026",
+    "body": "<p>Record EPFR inflows into fixed income aren&#x27;t a blanket warning for lower bond returns. They&#x27;re a defensive rotation chasing safety after 2025&#x27;s gains, leaving the far larger equity base relatively under-committed with more room to run on resilient earnings.</p><p>You've heard the chorus from the Hulbert crowd: ten consecutive months of positive EPFR bond fund inflows signal lower returns ahead for fixed income. The story writes itself \u2014 investors piling into safety after 2025's solid bond performance, with history showing big inflows often precede underperformance versus stocks. Except the market is being lazy on the context. Those inflows reflect a defensive chase amid equity volatility and geopolitical noise, not euphoria that caps risk assets. Bonds will lag stocks for the rest of 2026 because this safety rotation leaves equities with lighter hot money and clearer upside as the economy refuses to break.</p><p>Start with the scale that everyone glosses over. EPFR data shows bond funds pulling in money at a clip that has pushed year-to-date fixed income flows toward the $600 billion mark in recent months, outpacing the lighter equity pace. Yet U.S. equities still dominate roughly 78% of total ETF assets \u2014 domestic equity ETFs alone sat above $8.8 trillion out of over $14 trillion in total U.S. ETF AUM as of early 2026 per FactSet and ICI figures. Bond ETFs represent a far smaller slice, around 17-23% depending on the snapshot. Investors are flooding the smaller pond while the ocean of equities absorbs wobbles without flows collapsing. That mismatch means bonds are getting the defensive lift exactly when the larger equity base sits less congested.</p>",
+    "url": "/pulse/the-crowd-is-flooding-bonds-at-record-pace-exactly-the-setup-that-hands-stocks-t/",
+    "tags": [
+      "pulse",
+      "bonds",
+      "stocks",
+      "asset-allocation",
+      "EPFR-flows",
+      "contrarian",
+      "2026-outlook",
+      "MOVE-index",
+      "earnings-resilience"
+    ],
+    "pulse_slug": "the-crowd-is-flooding-bonds-at-record-pace-exactly-the-setup-that-hands-stocks-t",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-21",
+    "published_at": "2026-04-21T10:06:11Z",
+    "title": "Okta\u2019s 20% AI-agent rally prices in a breakout that 9% guidance won\u2019t deliver",
+    "body": "<p>Barclays and Raymond James upgrades celebrate customer reinvestment in identity security. The numbers show a capped grower facing hyperscaler bundling gravity.</p><p>You\u2019ve heard the story: Okta beats Q4 estimates, management flags early agentic AI wins, Barclays and Raymond James upgrade within days, and the stock surges 20%+ toward $75. Consensus calls it proof that identity security is heating up again after years of renewal drags. Customers are supposedly reinvigorating spend on securing AI agents, positioning Okta as the pure-play leader ready to ride the next wave. At the bar it sounds right\u2014until the financials punch back.</p><p>Reality is the punchline. Okta reported Q4 FY2026 revenue of $761 million, up 11% year-over-year per the March 4, 2026 earnings release. But full-year FY2027 guidance landed at $3.17 billion to $3.19 billion\u2014roughly 9% growth. That\u2019s the slowest top-line outlook since the IPO days, even after crossing $3 billion in annual contract value and posting record Q4 bookings of nearly $1.3 billion in total contract value. Management labeled it \u201cprudent\u201d given market conditions. Customers may talk AI agents, but they\u2019re not yet spending enough to lift the official forecast.</p><p>The Q4 outperformance came largely from cycling easier comparisons off prior renewal headwinds, not explosive new demand. New products, including early agentic offerings, drove about 30% of Q4 bookings with 40% contract uplift when bundled. Yet the FY2027 guide explicitly assumes these tailwinds remain non-material to the overall growth rate. Q1 FY2027 revenue is projected around 9% as well. If agentic AI were truly reaccelerating enterprise identity budgets for the first time in years, the forward numbers would reflect it. They don\u2019t.</p>",
+    "url": "/pulse/oktas-20-ai-agent-rally-prices-in-a-breakout-that-9-guidance-wont-deliver/",
+    "tags": [
+      "pulse",
+      "okta",
+      "identity-security",
+      "cybersecurity",
+      "ai-security",
+      "earnings",
+      "hyperscaler"
+    ],
+    "pulse_slug": "oktas-20-ai-agent-rally-prices-in-a-breakout-that-9-guidance-wont-deliver",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-21",
+    "published_at": "2026-04-21T10:03:52Z",
+    "title": "Apple's Cook-to-Ternus Handover: Hardware Insider Signals No AI Miracle, Just Disciplined Execution",
+    "body": "<p>The market wants a software savior. Apple just promoted the guy who ships the phones.</p><p>Wall Street buzzes that Tim Cook's exit after 15 years hands the keys to John Ternus for a fresh AI hardware push to finally catch Microsoft and Google. They frame it as continuity with a clever tilt toward devices in the AI age, shares barely moving\u2014down less than 1% after-hours\u2014because everyone bets the $4 trillion machine keeps humming. Reality is the punchline: this isn't a pivot to software dominance. It's reinforcement of Apple's core strength in integrated hardware execution, where Ternus has spent 25 years delivering the products that actually print money.</p><p>You've heard the 'AI laggard' drumbeat. Apple Intelligence lands late, Siri drags, partnerships prop up the cloud story. The crowd demands the new CEO deliver flashy software wins. But Ternus joined Apple in 2001, rose to senior vice president of hardware engineering in 2021, and has directly overseen silicon and devices for iPhone, iPad, Mac, Watch, AirPods, and Vision Pro\u2014the revenue engines. His promotion, announced April 20 and effective September 1 after unanimous board approval, with Cook shifting to executive chairman, signals steady refinement over revolution. No desperate rewrite of the AI playbook.</p><p>Under Cook, Apple stock returned roughly 1,932% from August 2011 through April 2026, growing market cap from about $350 billion to over $4 trillion. That crushed the S&P 500's 504% gain in the same stretch. Yet here's the deadpan fact bomb that reframes everything: Apple's performance ranked only 38th among S&P 500 names, trailing Nvidia at 61,881% and Tesla at 24,564%. Cook mastered supply chain scale and ecosystem lock-in, but the real edge came from shipping polished hardware at scale, not software moonshots.</p>",
+    "url": "/pulse/apples-cook-to-ternus-handover-hardware-insider-signals-no-ai-miracle-just-disci/",
+    "tags": [
+      "pulse",
+      "apple",
+      "ceo-transition",
+      "hardware-execution",
+      "ai-strategy"
+    ],
+    "pulse_slug": "apples-cook-to-ternus-handover-hardware-insider-signals-no-ai-miracle-just-disci",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-21",
+    "published_at": "2026-04-21T10:03:36Z",
+    "title": "Apple's hardware insider Ternus succeeds Cook: continuity beats AI hype reset",
+    "body": "<p>Cook hands the keys to the engineer who built the silicon cash machine. The market calls it risk. The numbers call it reinforcement.</p><p>The market is panicking over Tim Cook's exit like it's the end of Apple's golden run. Headlines scream 'successor faces big challenges' and 'AI pivot or bust' as if the company suddenly forgot how to ship hardware that prints money. John Ternus stepping in as CEO on September 1, 2026, isn't a desperate reboot\u2014it's the board doubling down on the guy who's already engineered the machine that delivered a 1,900% stock surge under Cook.</p><p>You know the consensus script: Cook leaves after 15 years, iPhone growth slows, AI hype demands a software savior, and Ternus inherits a hardware dinosaur that can't keep up with cloud-native disruptors. Street chatter treats this as the moment Apple must chase hyperscaler-scale AI bets or watch margins erode. That's the crowded trade\u2014pricing in disruption and betting the succession forces a risky reinvention.</p><p>Reality is the punchline: Ternus isn't an outsider parachuted in to fix what isn't broken. As the 25-year veteran who ran hardware engineering, he directly oversaw the Apple Silicon transition that turned devices into the high-margin engine driving roughly 80% of revenue. The move locks in continuity, not chaos. Cook stays on as Executive Chairman through the smooth handoff, and the board picked the engineer who built the silicon quietly powering the cash machine.</p>",
+    "url": "/pulse/apples-hardware-insider-ternus-succeeds-cook-continuity-beats-ai-hype-reset/",
+    "tags": [
+      "pulse",
+      "contrarian",
+      "apple",
+      "hardware",
+      "succession"
+    ],
+    "pulse_slug": "apples-hardware-insider-ternus-succeeds-cook-continuity-beats-ai-hype-reset",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
     "date": "2026-04-20",
     "published_at": "2026-04-20T10:04:20Z",
     "title": "Friday's Oil Plunge and Dow Surge Were Pure Optics \u2014 Hormuz Fragility Still Sits Ready to Torch the Mag 7 Rebound",
