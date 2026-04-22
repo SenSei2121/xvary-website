@@ -3,6 +3,68 @@
   {
     "type": "pulse_editorial",
     "ticker": "",
+    "date": "2026-04-22",
+    "published_at": "2026-04-22T10:05:15Z",
+    "title": "Why 45% in Gold, Metals, and Bitcoin Is Portfolio Poison",
+    "body": "<p>Berenberg pushes zero bonds and a massive hard-asset barbell. The Sharpe math and history say cap it at 10-15%.</p><p>You\u2019ve seen the headline: strategists at Berenberg recommend 45% of your portfolio in \u201cgold plus\u201d\u2014gold, silver, other precious metals, and bitcoin\u2014with another 20% in commodities and zero allocation to bonds. The pitch is simple. Traditional 60/40 equity-bond portfolios are broken in a world of exploding government debt, financial repression, and persistent inflation. Trump-era policies might juice equities temporarily, and positive expectations around the mid-May Trump-Xi summit in Beijing could stabilize markets short-term. But the real defense, they argue, is a heavy barbell loaded with hard assets to ride the commodity supercycle driven by reindustrialization, hard-power politics, and surging energy demand.</p><p>Sounds sophisticated. Until you look at the actual numbers. Bitwise\u2019s January 2026 analysis crunched the past decade and found that a 15% combined allocation to bitcoin and gold delivered a Sharpe ratio of 0.679\u2014nearly three times the 0.237 posted by a classic 60/40 portfolio. Gold alone clocked in at 0.436. That\u2019s real improvement in risk-adjusted returns from a modest slice of non-yielding assets. But the data stops cooperating once you scale up. Higher allocations don\u2019t triple your edge; they introduce persistent volatility drag that eats into compounding without delivering proportional gains. You\u2019re not hedging\u2014you\u2019re concentrating in assets that sit idle while productive capital works.</p>",
+    "url": "/pulse/why-45-in-gold-metals-and-bitcoin-is-portfolio-poison/",
+    "tags": [
+      "pulse",
+      "contrarian",
+      "portfolio allocation",
+      "gold",
+      "bitcoin",
+      "macro",
+      "sharpe ratio"
+    ],
+    "pulse_slug": "why-45-in-gold-metals-and-bitcoin-is-portfolio-poison",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-22",
+    "published_at": "2026-04-22T10:04:02Z",
+    "title": "Why Berenberg\u2019s 45% Gold-Plus Barbell Will Underperform in 2026\u2019s Reflation Setup",
+    "body": "<p>Non-yielding hard assets at peak prices ignore the supply response and policy tailwinds already in motion.</p><p>Berenberg\u2019s big 45% bet on gold, metals, and bitcoin is the kind of defensive posture that sounds profound in a room full of worried allocators \u2014 until you look at the actual numbers driving 2026. The strategists at the German bank laid out a barbell: 45% in what they call \u201cgold plus\u201d (gold, silver, other precious metals, and bitcoin), another 20% in broader commodities, zero bonds, and just 35% equities. Their case rests on reindustrialization, hard-power geopolitics, surging energy demand, and de-dollarization extending the commodity supercycle while equities look toppy. You\u2019ve heard versions of this before. It feels prudent. It\u2019s also wrong for the next 12 months.</p><p>Gold is already trading near $4,800\u2013$5,000 per ounce as of late April 2026, up massively from pre-2024 levels after central bank buying and uncertainty premiums piled in. Bitcoin has swung around $68,000\u2013$77,000 recently, with futures pointing to continued volatility but no breakout into a new supercycle leg. The Berenberg team sees these assets as the ultimate insurance in a world of fractured supply chains and political risk. Fair enough as a tactical hedge. But loading nearly half your portfolio into non-yielding, zero-cash-flow assets at these valuations ignores the supply response already underway and the reflationary policy mix that favors cyclical equities over defensive hard assets.</p>",
+    "url": "/pulse/why-berenbergs-45-gold-plus-barbell-will-underperform-in-2026s-reflation-setup/",
+    "tags": [
+      "pulse",
+      "macro",
+      "portfolio-allocation",
+      "gold",
+      "bitcoin",
+      "commodities",
+      "reflation"
+    ],
+    "pulse_slug": "why-berenbergs-45-gold-plus-barbell-will-underperform-in-2026s-reflation-setup",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-22",
+    "published_at": "2026-04-22T10:02:58Z",
+    "title": "Oil Prices Whipsaw on Ceasefire Talk But Hormuz Fragility Keeps Brent Biased Higher Through Summer",
+    "body": "<p>Markets cheer every &#x27;open&#x27; declaration. Physical tanker traffic and damaged infrastructure say not so fast.</p><p>The market is convinced the Iran war is winding down. Ceasefire announcements, Iran's repeated declarations that the Strait of Hormuz is \"open,\" and a quick 10% Brent drop on April 17 have everyone breathing easy. Analysts are already penciling in $80-90 oil by mid-2026, betting diplomacy and symbolic OPEC+ quota tweaks will flood the market with supply and send prices back to pre-war levels. You hear it everywhere: this was just another geopolitical headline, temporary noise, nothing that changes the long-term supply picture.</p><p>Reality is the punchline, and it's still throttling tankers in the world's most critical chokepoint.</p><p>Brent didn't politely rise\u2014it exploded more than 55% from around $72 on February 27 to a peak near $120 in March, delivering one of the largest monthly gains on record at 51-64%. That wasn't panic over tweets. It was physical reality hitting the paper market like a sledgehammer. The Strait of Hormuz normally carries about 20% of global oil and LNG. Traffic there didn't slow\u2014it cratered more than 95% in places, with only 279 ships transiting between late February and mid-April against a pre-war daily average of roughly 100-138. Even after the April 17 \"full open\" declaration, flows stayed throttled. Within days, vessel attacks and U.S. seizures pushed prices back up 5-7% toward $95, then higher again.</p>",
+    "url": "/pulse/oil-prices-whipsaw-on-ceasefire-talk-but-hormuz-fragility-keeps-brent-biased-hig/",
+    "tags": [
+      "pulse",
+      "oil",
+      "energy",
+      "geopolitics",
+      "Hormuz",
+      "Brent"
+    ],
+    "pulse_slug": "oil-prices-whipsaw-on-ceasefire-talk-but-hormuz-fragility-keeps-brent-biased-hig",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
     "date": "2026-04-21",
     "published_at": "2026-04-21T10:08:22Z",
     "title": "Retail Just Chased Bonds After Their Best Year in Five \u2014 Stocks Are Set to Lap Them Through 2026",
