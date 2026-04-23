@@ -3,6 +3,107 @@
   {
     "type": "pulse_editorial",
     "ticker": "",
+    "date": "2026-04-23",
+    "published_at": "2026-04-23T10:05:13Z",
+    "title": "L'Oreal's 9% pop prices in peak beauty momentum that IT adjustments and selective division strength are already masking",
+    "body": "<p>The market cheered a clean acceleration. The numbers show a narrower story dressed up by timing and concentration.</p><p>The market is celebrating L'Oreal's rarest daily surge in 18 years as proof that beauty demand is bulletproof. After the Q1 print, shares jumped nearly 9%\u2014the biggest one-day gain since at least 2008\u2014because analysts called the results \"impressive\" and consensus rushed to pencil in sustained outperformance versus a ~4% global beauty market. You saw the headlines: share gains everywhere, North America firing, emerging markets strong. The narrative locked in fast\u2014L'Oreal is the category king, and this quarter confirms the premium is deserved.</p><p>Reality is narrower, and the punchline is already visible in the fine print. Group sales hit \u20ac12.15 billion, up just 3.6% reported after a brutal -5.5% currency hit. Like-for-like came in at +7.6%, but strip out the IT transformation phasing and you get the adjusted 6.7% figure everyone is cheering. That adjustment? A net -90bps swing from pulling forward IT projects in Australia, the UK, and the US\u2014essentially a timing shift that flatters the comparable base this quarter while the real operational drag from the overhaul lingers. Consensus is treating 6.7% as clean acceleration. It isn't.</p>",
+    "url": "/pulse/loreals-9-pop-prices-in-peak-beauty-momentum-that-it-adjustments-and-selective-d/",
+    "tags": [
+      "pulse",
+      "earnings",
+      "contrarian",
+      "consumer",
+      "beauty"
+    ],
+    "pulse_slug": "loreals-9-pop-prices-in-peak-beauty-momentum-that-it-adjustments-and-selective-d",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-23",
+    "published_at": "2026-04-23T10:04:17Z",
+    "title": "Kevin Warsh's Trimmed PCE Fix Looks Dovish Today \u2014 It Will Force Hawkish Pain Tomorrow",
+    "body": "<p>The nominee wants a &#x27;cleaner&#x27; inflation read that currently flatters the trend at 2.3%. But when tariffs and supply shocks hit, that same gauge will scream louder than core PCE ever did.</p><p>The consensus around Kevin Warsh's Senate hearing was straightforward: here's a guy promising regime change at the Fed who just handed markets a dovish gift. He wants to ditch the standard core PCE \u2014 which strips out food and energy by design \u2014 for trimmed-mean and trimmed-median gauges that exclude the biggest price swings each month. As of February 2026, the Dallas Fed's trimmed-mean PCE clocked in at 2.3% over 12 months. Bank of America's trimmed-median version sat at 2.8%. Standard core PCE? 3.0%. Warsh called the underlying trend 'quite favorable.' Markets heard rate cuts. Everyone relaxed.</p><p>You should not. This switch looks softer right now because the tails it's trimming happen to include the usual volatile suspects. But trimmed metrics don't permanently ban food or energy like core PCE does. They rank every item by how much its price moved that month and chop the extremes symmetrically \u2014 often the top and bottom 25% or so. That means moderate but persistent supply-driven spikes in groceries, fuel, or beef can still sneak into the calculation if they're not the absolute wildest movers. Core PCE ignores them outright. Trimmed averages? They judge on the day.</p>",
+    "url": "/pulse/kevin-warshs-trimmed-pce-fix-looks-dovish-today-it-will-force-hawkish-pain-tomor/",
+    "tags": [
+      "pulse",
+      "macro",
+      "fed",
+      "inflation",
+      "kevin-warsh",
+      "pce",
+      "trimmed-mean"
+    ],
+    "pulse_slug": "kevin-warshs-trimmed-pce-fix-looks-dovish-today-it-will-force-hawkish-pain-tomor",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-23",
+    "published_at": "2026-04-23T10:03:54Z",
+    "title": "IBM's 51% Z mainframe surge exposes the laziness in AI disruption fears",
+    "body": "<p>The stock dropped 6% on flat guidance. The data says AI is accelerating the strongest Z cycle on record.</p><p>You saw the headlines: IBM crushes Q1 expectations, posts a monster beat in infrastructure, and then the stock drops 6% because guidance stayed flat. Consensus read that as confirmation of the big AI disruption story\u2014legacy mainframes and core software supposedly headed for the scrap heap as generative tools rewrite everything. Reality just laughed in their face. Z mainframe hardware revenue surged 51% year-over-year, the z17 cycle is already the strongest on record, and management flat-out called Watsonx an accelerator for the entire mainframe portfolio. The market is punishing a beat while ignoring the data that says AI is supercharging, not cannibalizing, IBM\u2019s most durable franchise.</p><p>Let\u2019s start with the numbers that actually matter. Overall revenue hit $15.92 billion, up 9% year-over-year and ahead of the $15.60\u201315.62 billion consensus range. Infrastructure revenue jumped 15% to $3.33 billion, beating estimates of around $3.16 billion. Inside that, the Z hardware piece exploded 51%. That\u2019s not a one-off; transaction processing grew 2% as clients monetized the new capacity, and hybrid infrastructure was up 25%. Management noted they\u2019re four quarters into the z17 launch and have already shipped over 100% growth in new MIPS compared to the prior cycle\u2019s first year. This isn\u2019t nostalgia for old iron\u2014it\u2019s clients paying up for resiliency, security, compliance, and now AI capabilities layered directly on top.</p>",
+    "url": "/pulse/ibms-51-z-mainframe-surge-exposes-the-laziness-in-ai-disruption-fears/",
+    "tags": [
+      "pulse",
+      "ibm",
+      "mainframe",
+      "ai",
+      "earnings",
+      "contrarian"
+    ],
+    "pulse_slug": "ibms-51-z-mainframe-surge-exposes-the-laziness-in-ai-disruption-fears",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-23",
+    "published_at": "2026-04-23T10:02:26Z",
+    "title": "ServiceNow's 14% Selloff Prices a 75bp ME Delay as AI Demand Collapse",
+    "body": "<p>Beat, raised guide, accelerating cRPO, and 80% more big deals\u2014yet Wall Street treated a temporary regional headwind and Armis integration math like the end of the platform flywheel.</p><p>You saw ServiceNow drop 14% after hours on Q1 results that beat expectations and raised full-year guidance. Consensus immediately pinned it on the Iran conflict delaying a few on-prem government deals plus margin noise from the fresh Armis acquisition. The market decided this signaled weakening enterprise demand and execution cracks in a premium AI software name. Shares cratered from around $103 to the mid-80s, as if the AI control tower suddenly lost its pull. Reality is the punchline: the street overreacted to a quantified 75 basis point one-quarter headwind while ignoring that underlying subscription momentum held strong and the full-year outlook moved higher on AI strength.</p><p>Q1 subscription revenue hit $3.671 billion, beating the $3.65 billion consensus. That was 22% growth year-over-year or 19% constant currency, even after absorbing an explicit 75bp drag from those delayed Middle East on-prem closings. Total revenue came in at $3.77 billion against $3.74-3.75 billion expected, with adjusted EPS at $0.97. Management called out the ME impact directly\u2014no excuses, just the isolated number. Strip that temporary timing noise and the print would have shown nearly 1 point stronger growth. The beat happened despite the geopolitics, not because of it.</p>",
+    "url": "/pulse/servicenows-14-selloff-prices-a-75bp-me-delay-as-ai-demand-collapse/",
+    "tags": [
+      "pulse",
+      "ServiceNow",
+      "NOW",
+      "AI software",
+      "earnings reaction",
+      "contrarian",
+      "Armis acquisition"
+    ],
+    "pulse_slug": "servicenows-14-selloff-prices-a-75bp-me-delay-as-ai-demand-collapse",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-23",
+    "published_at": "2026-04-23T10:02:19Z",
+    "title": "IBM's 51% Z Mainframe Surge Proves AI Accelerates Legacy Demand, Not Kills It",
+    "body": "<p>The street sold the stock on unchanged guidance. The numbers told a different story.</p><p>IBM shares dropped 6% after a clean Q1 beat because the company refused to raise guidance. That reaction ignores the 51% surge in Z mainframe hardware revenue\u2014the exact opposite of the AI-disruption story the street has been selling for months.</p><p>You watched the tape. Consensus piled into the fear that generative AI would obsolete IBM\u2019s high-margin mainframe business. February\u2019s 13% single-day plunge on Anthropic\u2019s COBOL modernization announcement proved the point\u2014investors decided legacy iron was toast. Then Q1 numbers landed: total revenue hit $15.92 billion, up 9% year-over-year and ahead of the $15.60 billion consensus. Infrastructure revenue climbed 15% to $3.33 billion, driven squarely by that 51% jump in Z mainframe hardware, with the new z17 model outperforming every prior cycle.</p><p>The market heard \u201cflat guidance\u201d and hit the sell button. What it missed was management\u2019s explicit read on AI. CFO James Kavanaugh and CEO Arvind Krishna both pointed out that tools like Watsonx Code Assistant are accelerating mainframe adoption, not replacing it. Clients using Watsonx for Z are growing MIPS capacity three times faster than those who aren\u2019t. Gen AI is driving higher data consumption, more automation, and heavier transaction loads\u2014the very workloads mainframes were built to handle at scale. The 51% hardware pop isn\u2019t a one-off; it\u2019s the first hard evidence that AI acts as a multiplier on IBM\u2019s core infrastructure, not a wrecking ball.</p>",
+    "url": "/pulse/ibms-51-z-mainframe-surge-proves-ai-accelerates-legacy-demand-not-kills-it/",
+    "tags": [
+      "pulse",
+      "ibm",
+      "mainframe",
+      "ai",
+      "earnings",
+      "contrarian"
+    ],
+    "pulse_slug": "ibms-51-z-mainframe-surge-proves-ai-accelerates-legacy-demand-not-kills-it",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
     "date": "2026-04-22",
     "published_at": "2026-04-22T10:05:15Z",
     "title": "Why 45% in Gold, Metals, and Bitcoin Is Portfolio Poison",
@@ -663,6 +764,29 @@
     "pulse_kicker": "pulse note"
   },
   {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-14",
+    "published_at": "2026-04-18T18:38:15Z",
+    "title": "Waller's Iran Hold Signal Already Outdated as Strait Reopens and Oil Collapses",
+    "body": "<p>The Fed dove warned that war complications lock rates in place, but the energy shock reversed in days\u2014not quarters\u2014leaving core inflation tame and labor softness back in focus.</p><p>You saw the headlines. Fed Governor Christopher Waller steps up Friday and says the Iran conflict, with its risks to energy prices and the labor market, keeps the central bank on hold. Consensus immediately piles on: doves like Waller now have to prioritize inflation threats over any softening in jobs data, so the fed funds target stays locked at 3.5-3.75% and rate cuts get pushed deep into late 2026 or beyond. War optics mess up the dual mandate. Policymakers must stay patient\u2014or even tilt hawkish. That's the story the market swallowed whole.</p><p>Reality is the punchline, and it's already laughing at that take. On April 17, Iran declared the Strait of Hormuz open to commercial traffic amid the ceasefire dynamics. Oil prices didn't just dip\u2014they collapsed more than 10% in hours. Brent crude slid toward the $88-90 range while WTI dropped to around $82. Markets instantly repriced the worst-case prolonged blockade scenarios Waller referenced, because this disruption measured in weeks, not the quarters-long embedding we saw in 2022 with Russia-Ukraine.</p>",
+    "url": "/pulse/wallers-iran-hold-signal-already-outdated-as-strait-reopens-and-oil-collapses/",
+    "tags": [
+      "pulse",
+      "fed",
+      "macro",
+      "oil",
+      "iran",
+      "rates",
+      "inflation",
+      "labor",
+      "hormuz"
+    ],
+    "pulse_slug": "wallers-iran-hold-signal-already-outdated-as-strait-reopens-and-oil-collapses",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
     "type": "earnings",
     "ticker": "AAPL",
     "date": "2026-04-13",
@@ -980,28 +1104,6 @@
       "hormuz"
     ],
     "pulse_slug": "oil-spike-to-104-on-trump-hormuz-blockade-is-a-classic-overreaction-flows-resume",
-    "pulse_editorial_order": 500,
-    "pulse_kicker": "pulse note"
-  },
-  {
-    "type": "pulse_editorial",
-    "ticker": "",
-    "date": "2026-04-12",
-    "published_at": "2026-04-18T18:30:28Z",
-    "title": "Waller's Iran Hold Signal Already Outdated as Strait Reopens and Oil Collapses",
-    "body": "<p>The Fed dove laid out a conditional framework tied to the Strait of Hormuz. Hours later, Iran declared it completely open, oil plunged over 10%, and the transient energy shock evaporated\u2014leaving doves free to confront the real issue of labor softness without inflation guilt.</p><p>You've seen the market hang on every word from Fed Governor Christopher Waller as if it's gospel. Consensus has him\u2014and the central bank\u2014locked into a hold, or worse, a hawkish bias. The Iran conflict, particularly any prolonged disruption to the Strait of Hormuz, supposedly creates an impossible dual-mandate squeeze: energy-driven inflation risks layered on softening labor data force policymakers to prioritize prices over jobs. The fed funds target stays pinned at 3.5-3.75%, doves stay sidelined, and any talk of cuts gets deferred.</p><p>Reality is the punchline, and it landed fast. On April 17, right around Waller's Auburn University speech, Iran's foreign minister declared the Strait of Hormuz \"completely open\" for commercial traffic during the ceasefire window. Brent crude didn't dip modestly\u2014it plunged as much as 11% in hours, trading below $89 per barrel after earlier spikes toward $100+ on blockage fears. That move shredded the worst-case supply disruption scenarios Waller had just referenced.</p><p>This wasn't abstract relief. Tanker traffic that slowed during the brief closure began normalizing quickly as rerouting and other measures kicked in. Markets repriced the disruption as transient\u2014measured in weeks, not the persistent multi-year scar of Russia's 2022 Ukraine invasion. Equities jumped on the signal while oil futures reflected the reopening speed almost instantly. The premium for prolonged chaos evaporated in real time.</p>",
-    "url": "/pulse/wallers-iran-hold-signal-already-outdated-as-strait-reopens-and-oil-collapses/",
-    "tags": [
-      "pulse",
-      "fed",
-      "oil",
-      "macro",
-      "iran",
-      "rates",
-      "waller",
-      "strait-of-hormuz"
-    ],
-    "pulse_slug": "wallers-iran-hold-signal-already-outdated-as-strait-reopens-and-oil-collapses",
     "pulse_editorial_order": 500,
     "pulse_kicker": "pulse note"
   },
