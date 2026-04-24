@@ -3,6 +3,47 @@
   {
     "type": "pulse_editorial",
     "ticker": "",
+    "date": "2026-04-24",
+    "published_at": "2026-04-24T10:03:25Z",
+    "title": "TI's 19% Pop Prices in AI Analog Hype\u2014Industrial Rebound Delivered the Real Punch",
+    "body": "<p>The market crowned Texas Instruments the next AI winner on its flashy 90% data center surge. Reality check: industrial&#x27;s &gt;30% YoY growth drove the bigger absolute dollar lift in a classic cyclical recovery, not some secular AI transformation.</p><p>You woke up to Texas Instruments posting its best single-day stock gain since 2000, up nearly 19%, as headlines screamed AI demand exploding for analog chips. Consensus rushed to rebrand TI as the surprise AI proxy: that 90% year-over-year data center growth, paired with upbeat Q2 guidance, supposedly proves even power management silicon now rides the hyperscaler wave. Retail and analysts piled in, convinced this marks a permanent rerating away from TI's old cyclical roots.</p><p>That's lazy labeling. The real acceleration in Q1 2026 came from industrial end markets, not a transformative AI shift. Revenue hit $4.83 billion, up 19% year-over-year and beating estimates of $4.53 billion. Analog revenue\u2014which made up roughly 81% of the total\u2014reached $3.92 billion, up 22% YoY. CEO Haviv Ilan highlighted growth led by industrial and data center, but noted industrial accelerating through the quarter and broadening across all sectors and regions.</p><p>Industrial delivered the heavier absolute dollar contribution. It surged more than 30% year-over-year and over 20% sequentially, growing broadly across energy infrastructure, automation equipment, and smaller customers re-engaging after hibernation. Data center grew a flashy 90% YoY and over 25% sequentially, yet it started from a small base\u2014historically a minority slice versus industrial's long-standing ~33% share of TI's revenue. The incremental dollars from industrial's rebound clearly outweighed data center's contribution in this beat.</p>",
+    "url": "/pulse/tis-19-pop-prices-in-ai-analog-hypeindustrial-rebound-delivered-the-real-punch/",
+    "tags": [
+      "pulse",
+      "semiconductors",
+      "TXN",
+      "earnings",
+      "analog",
+      "industrial",
+      "AI-hype",
+      "cyclical-recovery"
+    ],
+    "pulse_slug": "tis-19-pop-prices-in-ai-analog-hypeindustrial-rebound-delivered-the-real-punch",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
+    "date": "2026-04-24",
+    "published_at": "2026-04-24T10:01:23Z",
+    "title": "ServiceNow's Beat-and-Raise Crushed by AI Panic Selloff",
+    "body": "<p>The market saw disruption fears and sold 16-18%. The numbers told a different story: accelerating demand and AI as the accelerator, not the killer.</p><p>You watched software names crater Thursday after ServiceNow and IBM reported. ServiceNow shares plunged over 16%, dragging Salesforce, Workday, and Oracle lower on fresh AI-disruption panic. Consensus narrative: legacy workflow platforms face replacement by pure AI-native tools, customers delay big spends amid macro and geopolitical noise, and growth caps out. The selloff looked like confirmation. Reality delivered the punchline: ServiceNow beat and raised while the market punished results that proved AI is supercharging its platform, not burying it.</p><p>Q1 told the real tale. Total revenue hit $3.77 billion, up 22% year-over-year and beating estimates by roughly $20-30 million. Subscription revenue landed at $3.671 billion\u2014up 22% reported, 19% in constant currency\u2014exceeding the high end of guidance despite a 75-basis-point headwind from delayed Middle East on-premise deals tied to regional conflict. That beat didn't happen in a vacuum. Customers are leaning harder into ServiceNow's platform precisely because it layers AI agents directly into existing enterprise workflows faster than standalone AI can rip them out and rebuild from scratch.</p>",
+    "url": "/pulse/servicenows-beat-and-raise-crushed-by-ai-panic-selloff/",
+    "tags": [
+      "pulse",
+      "contrarian",
+      "software",
+      "AI",
+      "earnings"
+    ],
+    "pulse_slug": "servicenows-beat-and-raise-crushed-by-ai-panic-selloff",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
     "date": "2026-04-23",
     "published_at": "2026-04-23T10:05:13Z",
     "title": "L'Oreal's 9% pop prices in peak beauty momentum that IT adjustments and selective division strength are already masking",
@@ -578,6 +619,27 @@
   {
     "type": "pulse_editorial",
     "ticker": "",
+    "date": "2026-04-16",
+    "published_at": "2026-04-18T18:46:08Z",
+    "title": "Tech's Monster Rebound Week Is Short-Covering Optics, Not AI Execution Proof",
+    "body": "<p>Oracle +27%\u2014its best week since 1999\u2014on a single Bloom power deal. AMD&#x27;s 42% streak to ATH. Microsoft +14%. IGV +14%, best since 2001. The market calls this the AI rebound. You should see the warning signs.</p><p>You saw the fireworks: Oracle ripped 27% this week, its strongest performance since June 1999, after expanding a Bloom Energy deal for up to 2.8 GW of fuel cell capacity\u2014including 1.2 GW already deploying\u2014and receiving a $400 million warrant to buy Bloom shares at $113.28. AMD added 13-14% on the week, part of a 42% surge over a 13-day winning streak to a fresh all-time high, its longest run in over 20 years. Microsoft bounced nearly 14%, marking its best week since April 2015, right after its worst quarter since 2008. The iShares Expanded Tech-Software Sector ETF (IGV) surged 14%, on track for its best weekly gain since October 2001. Consensus is convinced: the YTD pain from AI disruption fears is done, power deals prove demand is real, and this rotation into beaten-down software and semis confirms a durable recovery.</p><p>Reality is the punchline. This is textbook short-covering relief in oversold names that got hammered earlier in 2026, not evidence that AI infrastructure spending is converting into sustainable revenue acceleration or margin stability. Oracle entered the week down roughly 29% YTD amid AI cloud competition worries\u2014the exact pressures this headline gigawatt deal is supposed to address. The $400 million Bloom warrant delivered paper gains as Bloom shares spiked, but no quantified revenue lift from the power contract appeared in recent filings, and one optics-heavy announcement doesn't close the gap between announced capacity and hyperscaler capex actually hitting order books or utilization metrics.</p>",
+    "url": "/pulse/techs-monster-rebound-week-is-short-covering-optics-not-ai-execution-proof/",
+    "tags": [
+      "pulse",
+      "tech",
+      "semiconductors",
+      "software",
+      "ai",
+      "contrarian",
+      "rebound"
+    ],
+    "pulse_slug": "techs-monster-rebound-week-is-short-covering-optics-not-ai-execution-proof",
+    "pulse_editorial_order": 500,
+    "pulse_kicker": "pulse note"
+  },
+  {
+    "type": "pulse_editorial",
+    "ticker": "",
     "date": "2026-04-15",
     "published_at": "2026-04-18T18:44:19Z",
     "title": "Berkshire's lag in the tech rally is exactly why it wins the long game",
@@ -1023,31 +1085,6 @@
       "geopolitical analysis"
     ],
     "pulse_kicker": "geopolitical analysis"
-  },
-  {
-    "type": "pulse_editorial",
-    "ticker": "",
-    "date": "2026-04-13",
-    "published_at": "2026-04-18T18:33:06Z",
-    "title": "Tech's Monster Rebound Week Is Short-Covering Optics, Not AI Execution Proof",
-    "body": "<p>Oracle +27% for its best week since 1999 on a Bloom Energy power deal. AMD +42% over its longest streak in 20+ years to a new ATH. Microsoft +14%, best since 2015. IGV +14%, best since 2001. The street calls this durable AI infrastructure vindication after YTD pain. You should see it for what it is: relief rally noise masking the same revenue conversion and margin gaps.</p><p>You watched the screens light up this week and felt the pull\u2014Oracle ripped 27% for its best weekly gain since 1999, AMD chained together gains for its longest streak since 2005 with a 42%+ surge to a fresh all-time high near $278, Microsoft added nearly 14% for its strongest week since 2015, and the IGV ETF jumped 14% for its best performance since October 2001. April turned the laggards into leaders: Intel +55%, Marvell +41%, with Broadcom, Micron, and ON Semiconductor each clearing big moves. Consensus immediately declared the YTD AI disruption fears over, pricing in a clean rotation and durable rebound in software and semis as power deals and momentum confirmed the narrative shift.</p><p>Reality is the punchline: this is classic short-covering in names hammered by valuation, execution worries, and uneven AI visibility\u2014not structural proof that infrastructure hype is finally converting to revenue acceleration and sustainable margins. The market took headline optics and sector rotation as vindication. But the gaps between flashy announcements and actual customer spend data, utilization rates, and margin trends sit exactly where they did before the fireworks. One week of momentum chasing doesn't erase the drivers that sent many of these holdings down 20-30%+ YTD.</p>",
-    "url": "/pulse/techs-monster-rebound-week-is-short-covering-optics-not-ai-execution-proof/",
-    "tags": [
-      "pulse",
-      "tech",
-      "semiconductors",
-      "software",
-      "AI infrastructure",
-      "Oracle",
-      "AMD",
-      "Microsoft",
-      "IGV",
-      "Bloom Energy",
-      "short covering"
-    ],
-    "pulse_slug": "techs-monster-rebound-week-is-short-covering-optics-not-ai-execution-proof",
-    "pulse_editorial_order": 500,
-    "pulse_kicker": "pulse note"
   },
   {
     "type": "pulse_editorial",
